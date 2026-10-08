@@ -29,6 +29,7 @@ if str(REPOSITORY) not in sys.path:
 
 from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice  # noqa: E402
+from tests.gate import full_run_only
 
 SLICE_CPP = REPOSITORY / "src/typed_generated/typed_slice.cpp"
 PARALLAX_ALIAS = "[[maybe_unused]] glsl::Vec2& prevUV = rayUV;"
@@ -85,6 +86,7 @@ class CommittedEmissionTests(unittest.TestCase):
         for match in ALIAS_DECLARATION.finditer(_COMMITTED_SLICE):
             self.assertFalse(match.group(2).startswith("state"))
 
+    @full_run_only
     def test_the_committed_file_is_what_the_generator_produces(self) -> None:
         self.assertEqual(_COMMITTED_SLICE, _regenerate())
 
@@ -97,6 +99,7 @@ class NeutralizationTests(unittest.TestCase):
     still finds it.
     """
 
+    @full_run_only
     def test_collecting_no_aliases_at_all_removes_every_reference(self) -> None:
         with mock.patch.object(emit_typed_cpp._Emitter,
                                "_collect_pooled_vector_aliases",
@@ -107,6 +110,7 @@ class NeutralizationTests(unittest.TestCase):
         # Authenticated value-copy declarations stay values under this mutant.
         self.assertEqual(len(_COMMITTED_SLICE) - CURRENT_ALIAS_COUNT, len(text))
 
+    @full_run_only
     def test_the_observability_condition_is_not_vacuous(self) -> None:
         # Alias every bare-identifier vector declaration, whether or not a
         # write makes it observable. If that produced the same file, the
@@ -140,6 +144,7 @@ class NeutralizationTests(unittest.TestCase):
         self.assertNotEqual(_COMMITTED_SLICE, text)
         self.assertIs(original, emit_typed_cpp._Emitter._collect_pooled_vector_aliases)
 
+    @full_run_only
     def test_dropping_the_program_scope_skip_reaches_the_emitter_guard(self) -> None:
         # `synth/osc2d` aliases the `fullResolution` BINDING and then writes
         # it. Without the skip the collector admits it and the emitter's
@@ -178,6 +183,7 @@ class NeutralizationTests(unittest.TestCase):
                       str(caught.exception))
         self.assertIn("synth/osc2d:osc2d", str(caught.exception))
 
+    @full_run_only
     def test_the_float_expr_suppression_is_vacuous_today_and_stays_anyway(self) -> None:
         """A guard that protects nothing YET, recorded as such.
 

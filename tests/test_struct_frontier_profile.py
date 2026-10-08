@@ -17,6 +17,7 @@ import hashlib
 import json
 import pathlib
 import unittest
+from tests.gate import full_run_only
 
 MODULE = "tools.glslcpp.frontend.struct_frontier_profile"
 
@@ -319,6 +320,7 @@ class ValidatorIntegrationTests(unittest.TestCase):
                     SOURCE_GLOBAL_LITERAL_INT_CAPABILITY),
                 cross_builtin_profile=CROSS_BUILTIN_PROFILE)
 
+    @full_run_only
     def test_probe_advances_every_carrier_past_the_struct_gate(self):
         """The ratchet's own probe: every carrier's first blocker is no
         longer the struct declaration, and no other program regressed."""

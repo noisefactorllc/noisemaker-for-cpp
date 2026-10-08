@@ -10,6 +10,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/median:median"
@@ -103,6 +104,7 @@ class MedianOraclePreparationTests(unittest.TestCase):
         forged = copy.deepcopy(document); forged["render_cases"][0]["expected"]["f32_words_le"][0] = "0x00000000"
         with self.assertRaises(module.MaterializationError): module.validate(forged)
 
+    @full_run_only
     def test_include_is_cxx20_wall_wextra_werror_smoke(self):
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None: self.skipTest("C++ compiler unavailable")

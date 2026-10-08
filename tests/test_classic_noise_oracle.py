@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -116,6 +117,7 @@ class ClassicNoiseOracleTests(unittest.TestCase):
             with self.assertRaises(module.OracleError):
                 module.validate(candidate)
 
+    @full_run_only
     def test_generated_include_compiles_and_reports_cardinalities(self):
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None:

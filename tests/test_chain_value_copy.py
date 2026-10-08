@@ -18,6 +18,7 @@ from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend.loop_proof import SOURCE_GLOBAL_LITERAL_INT_KEYS, SOURCE_GLOBAL_LITERAL_INT_CAPABILITY
 from tools.glslcpp.frontend.chain_value_copy_profile import CONTRACTS, authenticate_chain_value_copies
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/chain_value_copy"
@@ -51,6 +52,7 @@ def emitted_kernel(key):
         **{name: value for name, value in row.items() if name.endswith("_profile")})
 
 
+@full_run_only
 class ChainValueCopyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

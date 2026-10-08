@@ -19,6 +19,7 @@ from tools.glslcpp import check_corpus
 from tools.glslcpp.emit_typed_cpp import render_typed_cpp
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/osd_current"
@@ -49,6 +50,7 @@ def emitted_kernel():
                             factory="bind_osd_numerical_probe")
 
 
+@full_run_only
 class OsdCurrentKernelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

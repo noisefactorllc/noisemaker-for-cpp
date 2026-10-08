@@ -12,6 +12,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -233,6 +234,7 @@ class JuliaOracleTests(unittest.TestCase):
                 materializer._sidecar_hash(path)
                 materializer.validate(materializer.strict_json(forged))
 
+    @full_run_only
     def test_include_compiles_as_cxx20(self) -> None:
         compiler = shutil.which("c++") or shutil.which("clang++")
         self.assertIsNotNone(compiler, "C++20 compiler unavailable")

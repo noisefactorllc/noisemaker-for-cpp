@@ -15,12 +15,14 @@ from tools.glslcpp.check_corpus import REVISION
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.runtime_loop_bound_profile import PROFILE, apply_runtime_loop_bound
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CORPUS = ROOT / "tools/glslcpp/corpus" / REVISION / "sources"
 
 
+@full_run_only
 class ConvolutionFeedbackBindingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

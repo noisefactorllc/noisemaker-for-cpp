@@ -12,6 +12,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -141,6 +142,7 @@ class FractalOracleTests(unittest.TestCase):
             self.assertNotEqual(0, result.returncode)
             self.assertIn("authority import closure mismatch", result.stderr)
 
+    @full_run_only
     def test_include_compiles_as_cxx20(self):
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None:

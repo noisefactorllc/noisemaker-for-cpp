@@ -25,6 +25,7 @@ from tests.historical_cross_lane import historical_cross_lane
 from tests.historical_authority import historical_authority
 from historical_compare import compare_artifact_pins, format_mismatches
 from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
+from tests.gate import full_run_only
 
 
 _GENERATED_TRANSLATION_UNIT = "src/typed_generated/typed_slice.cpp"
@@ -208,6 +209,7 @@ class ClassicNoiseIntegrationTests(unittest.TestCase):
 
 
 class JuliaGeneratorIntegrationTests(unittest.TestCase):
+    @full_run_only
     def test_authenticated_julia_postfix_counter_is_admitted(self) -> None:
         from tools.glslcpp import generate_typed_slice
 
@@ -800,6 +802,7 @@ class TypedGeneratorTests(unittest.TestCase):
         self.assertNotIn("\"round\"", generate_typed_slice.APPROVED_CAPABILITIES)
         self.assertNotIn("round", generate_typed_slice._BUILTINS)
 
+    @full_run_only
     def test_task24_loader_carries_only_gather_profile_and_generates_one_new_block(self) -> None:
         import copy
         import hashlib
@@ -1198,6 +1201,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 with self.assertRaises(generate_typed_slice.GeneratorError):
                     generate_typed_slice.load_slice(repository)
 
+    @full_run_only
     def test_task24_design_section_six_forgery_and_driver_matrix_is_closed(self) -> None:
         import dataclasses
         import hashlib
@@ -1749,6 +1753,7 @@ and item["program_key"] != "filter/wobble:wobble"
             with self.subTest(mutation=name), self.assertRaises(ValueError):
                 audit(candidate)
 
+    @full_run_only
     def test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry(self) -> None:
         import copy
         import hashlib
@@ -1992,6 +1997,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual(2, len(embedded["exclusions"]["cases"]))
         self.assertEqual(3, len(embedded["exclusions"]["controls"]))
 
+    @full_run_only
     def test_task24_rejected_round_and_loop_mutations_have_exact_native_sensitivity(self) -> None:
         import dataclasses
         import hashlib
@@ -2794,6 +2800,7 @@ and item["program_key"] != "filter/wobble:wobble"
         reject(prior, prior_entry["raw_sha256"], profile,
                label="foreign-borrowed-carrier", key=prior_key)
 
+    @full_run_only
     def test_task23_six_key_counts_positions_and_generated_isolation_are_exact(self) -> None:
         import copy
         import hashlib
@@ -3066,6 +3073,7 @@ and item["program_key"] != "filter/wobble:wobble"
             ])
         self.assertEqual(expected_rows, rows)
 
+    @full_run_only
     def test_task23_rejected_structural_mutations_have_exact_native_sensitivity(self) -> None:
         import dataclasses
         import hashlib
@@ -3707,6 +3715,7 @@ and item["program_key"] != "filter/wobble:wobble"
                     TypedEmissionError):
                 render_typed_cpp(candidate, entry["program_key"], entry["raw_sha256"])
 
+    @full_run_only
     def test_refract_fixed_array_parameter_rejects_structural_and_forged_proof_mutations_at_both_boundaries(self) -> None:
         import dataclasses
         import hashlib
@@ -4922,6 +4931,7 @@ and item["program_key"] != "filter/wobble:wobble"
             with self.subTest(key=key, boundary="emitter"):
                 render_typed_cpp(prior, key, prior_entry["raw_sha256"])
 
+    @full_run_only
     def test_cellrefract_convolve_record_rejects_every_frozen_value_mutation(self) -> None:
         import dataclasses
         import hashlib
@@ -5391,6 +5401,7 @@ and item["program_key"] != "filter/wobble:wobble"
                     proof_module.PROFILES, {key: forged}):
                 self.assertIsNone(prove_fixed_array_in_parameter(typed))
 
+    @full_run_only
     def test_convolve_family_auto_attach_census_over_whole_corpus(self) -> None:
         from tools.glslcpp import check_corpus, generate_typed_slice
         from tools.glslcpp.frontend import parse_program
@@ -7327,6 +7338,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 generate_typed_slice.validate_capabilities(
                     typed, generate_typed_slice.APPROVED_CAPABILITIES)
 
+    @full_run_only
     def test_typed_generation_is_cwd_independent_and_matches_committed_slice(self) -> None:
         from tools.glslcpp import generate_typed_slice
 
@@ -8092,6 +8104,7 @@ and item["program_key"] != "filter/wobble:wobble"
                               "sacred-star-number-division-v1"}, transformed)
         self.assertNotIn(str(REPOSITORY), json.dumps(manifest, sort_keys=True))
 
+    @full_run_only
     def test_stats_final_is_exact_single_program_delta_from_blur_173(self) -> None:
         import copy
         import hashlib
@@ -8227,6 +8240,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual("runtime-loop-bound-v1",
                          current_rows[stats_key]["runtime_loop_bound_profile"])
 
+    @full_run_only
     def test_grain_is_exact_single_program_delta_from_stats_174(self) -> None:
         import copy
         import hashlib
@@ -8363,6 +8377,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual("as-u32-round-admission-v1",
                          current_rows[grain_key]["as_u32_round_profile"])
 
+    @full_run_only
     def test_gabor_is_exact_single_program_delta_from_grain_175(self) -> None:
         import copy
         import hashlib
@@ -8497,6 +8512,7 @@ and item["program_key"] != "filter/wobble:wobble"
                          current_rows[gabor_key][
                              "gabor_effective_depth_profile"])
 
+    @full_run_only
     def test_scanline_error_is_exact_single_program_delta_from_gabor_176(self) -> None:
         import copy
         import hashlib
@@ -9640,6 +9656,7 @@ and item["program_key"] != "filter/wobble:wobble"
     # byte reconstruction see the tests that mock load_slice and hash-compare
     # generate_outputs, e.g.
     # test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation.
+    @full_run_only
     def test_task21_degauss_exclusions_remain_closed(self) -> None:
         import copy
         import re
@@ -9924,6 +9941,7 @@ and item["program_key"] != "filter/wobble:wobble"
                       "fixed_affine_centers13_proof"):
             self.assertIsNone(getattr(transformed, field))
 
+    @full_run_only
     def test_task22_crt_four_mode_forgery_matrix(self) -> None:
         import dataclasses
         import hashlib
@@ -10668,6 +10686,7 @@ and item["program_key"] != "filter/wobble:wobble"
             source_hash="0" * 64, compatibility_transform=None,
             numeric_literal_contract="glsl-f32")
 
+    @full_run_only
     def test_task22_adds_only_exact_transform_no_capability_proof_or_numeric_mode(self) -> None:
         import struct
         from tools.glslcpp import generate_typed_slice
@@ -10724,6 +10743,7 @@ and item["program_key"] != "filter/wobble:wobble"
     # NOT a historical reconstruction; see the note on
     # test_task21_degauss_exclusions_remain_closed. The narrow exclusion set
     # leaves later-added programs present in the resulting live-filtered list.
+    @full_run_only
     def test_task22_crt_exclusions_remain_closed(self) -> None:
         import copy
         import hashlib
@@ -11082,6 +11102,7 @@ and item["program_key"] != "filter/wobble:wobble"
             "695adcb14194a1c68489ab2d344b3e59e40df5c82be270bc3a96018601283f1b",
             hashlib.sha256(normalized_crt.encode()).hexdigest())
 
+    @full_run_only
     def test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact(self) -> None:
         import copy
         import hashlib
@@ -11690,6 +11711,7 @@ synth/subdivide:subdivide""".splitlines())
         self.assertEqual({LENS_KEY: comparer_profile},
                          loaded["custom_comparer_profiles"])
 
+    @full_run_only
     def test_task25_lens_custom_comparer_routes_only_the_tint_predicate(self) -> None:
         from tools.glslcpp import generate_typed_slice
         from tools.glslcpp.frontend.literal_vec3_lane_index_profile import LENS_KEY
@@ -13446,6 +13468,7 @@ synth/subdivide:subdivide""".splitlines())
             with self.subTest(real_parser_boundary=name), self.assertRaises(FrontendError):
                 parse_program(source, f"task25/{name}", {})
 
+    @full_run_only
     def test_task25_selected_corpus_identity_drift_rejects_at_real_preflight(self) -> None:
         import copy
         from tools.glslcpp import check_corpus
@@ -13499,6 +13522,7 @@ synth/subdivide:subdivide""".splitlines())
                     self.assertRaises(check_corpus.CorpusError):
                 check_corpus.validate_corpus(REPOSITORY)
 
+    @full_run_only
     def test_task25_driver_rejects_patched_profile_disagreement_before_emission(self) -> None:
         import copy
         import dataclasses
@@ -13814,6 +13838,7 @@ synth/subdivide:subdivide""".splitlines())
         self.assertNotIn("LUMA_WEIGHTS", state)
         self.assertNotRegex(emitted, r"(?m)^(?:static|thread_local|const glsl::Vec3) .*LUMA_WEIGHTS")
 
+    @full_run_only
     def test_task26_generation_adds_only_smooth_block_manifest_and_catalog(self) -> None:
         import copy
         from tools.glslcpp import generate_typed_slice
@@ -14534,6 +14559,7 @@ synth/subdivide:subdivide""".splitlines())
             r"std::(?:array|vector|map).*LUMA_WEIGHTS|"
             r"\[.*LUMA_WEIGHTS.*\]")
 
+    @full_run_only
     def test_task26_generation_driver_rejects_identity_forgery_after_profile_apply(self) -> None:
         import dataclasses
         from tools.glslcpp import generate_typed_slice
@@ -14827,6 +14853,7 @@ class Task27PerlinTests(unittest.TestCase):
         with self.assertRaises(TypedEmissionError):
             render_typed_cpp(typed, typed.key, source_hash)
 
+    @full_run_only
     def test_task27_generation_wires_exact_profile_manifest_and_catalog(self) -> None:
         import copy
         from tools.glslcpp import generate_typed_slice
@@ -14890,6 +14917,7 @@ class Task27PerlinTests(unittest.TestCase):
                          row["perlin_scalar_uint_xor_profile"])
         self.assertIn("bind_synth_perlin_perlin", header)
 
+    @full_run_only
     def test_task27_generation_is_exact_single_program_delta_from_task26(self) -> None:
         import copy
         import hashlib
@@ -15969,6 +15997,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
                     candidate, candidate.key, candidate_hash,
                     rotate_mat2_return_profile=PROFILE)
 
+    @full_run_only
     def test_task28_schema_generation_and_task27_reconstruction(self) -> None:
         import copy
         import hashlib
@@ -16072,6 +16101,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         for path, digest in expected.items():
             self.assertEqual(digest, hashlib.sha256(prior[path]).hexdigest())
 
+    @full_run_only
     def test_task28_cpp_tables_are_exact_executable_frozen_transcription(self) -> None:
         import hashlib
         import struct
@@ -16786,6 +16816,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
                     candidate, candidate.key, candidate_hash,
                     focus_blur_borrowed_sampler_profile=PROFILE)
 
+    @full_run_only
     def test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation(self) -> None:
         import copy
         import hashlib
@@ -17038,6 +17069,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
             "(i < std::int32_t(64)); ++i)", helper)
         self.assertNotIn("focus_blur_borrowed_sampler_profile", current_header.decode())
 
+    @full_run_only
     def test_task29_cpp_tables_switch_helpers_and_witnesses_are_exact_frozen_transcription(self) -> None:
         import hashlib
         import struct
@@ -17596,6 +17628,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
             exact, exact.key, source_hash,
             extrude_bvec2_relational_reduction_profile=PROFILE)
 
+    @full_run_only
     def test_task30_history_coexistence_and_live_schema_matches_130_program_state(self) -> None:
         import hashlib
         from tools.glslcpp import check_corpus, generate_typed_slice
@@ -17702,6 +17735,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
 
+    @full_run_only
     def test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte(self) -> None:
         import copy
         import hashlib
@@ -17816,6 +17850,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         self.assertEqual(129, len(task29_blocks))
         self.assertNotIn(EXTRUDE_KEY, task29_blocks)
 
+    @full_run_only
     def test_task30_native_executable_tables_are_exact_frozen_transcription_and_tamper_sensitive(self) -> None:
         import hashlib
 
@@ -18620,6 +18655,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         _, source_hash, exact = self.exact_program()
         profile.authenticate_curl_vector_math(exact, source_hash, profile.PROFILE)
 
+    @full_run_only
     def test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state(self) -> None:
         import hashlib
         from tools.glslcpp import check_corpus, generate_typed_slice
@@ -18713,6 +18749,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
             item["defines"] != {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}
             for item in oracle["ineligible_render_cases"]))
 
+    @full_run_only
     def test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte(self) -> None:
         import copy
         import hashlib
@@ -19278,6 +19315,7 @@ class Task32GradeClusterTests(unittest.TestCase):
             restored, source_hash, profile.PROFILES[key])
         self.assertEqual("LUMA_WEIGHTS", declaration.symbol.name)
 
+    @full_run_only
     def test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31(
             self) -> None:
         """Removing all six grade keys from the live typed list must
@@ -19920,6 +19958,7 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
                 TypedEmissionError, r"unsupported builtin (dFdx|dFdy)"):
             emit_typed_cpp.render_typed_cpp(foreign, foreign.key, source_hash)
 
+    @full_run_only
     def test_task33_history_schema_and_vendored_oracle_match_152_program_state(self) -> None:
         import hashlib
         from tools.glslcpp import check_corpus, generate_typed_slice
@@ -20633,6 +20672,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
 
     # ---- historical reconstruction ---------------------------------------
 
+    @full_run_only
     def test_removing_only_the_new_row_reconstructs_the_183_state(self) -> None:
         import copy
         import hashlib
@@ -21882,6 +21922,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
                                  "typed_probe", "bind_probe",
                                  as_u32_round_profile=self.ROUND)
 
+    @full_run_only
     def test_driver_refuses_an_identity_profile_that_mutated_the_program(self) -> None:
         """`apply_const_global_tables` must return the SAME object."""
         import dataclasses
@@ -21898,6 +21939,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
 
     # ---- historical reconstruction ---------------------------------------
 
+    @full_run_only
     def test_removing_only_the_new_row_reconstructs_the_184_state(self) -> None:
         import copy
         import hashlib
@@ -22696,6 +22738,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     # ---- historical reconstruction ---------------------------------------
 
+    @full_run_only
     def test_removing_only_the_new_row_reconstructs_the_185_state(self) -> None:
         import copy
         import hashlib
@@ -23477,6 +23520,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     # ---- historical reconstruction ---------------------------------------
 
+    @full_run_only
     def test_removing_only_the_new_row_reconstructs_the_186_state(self) -> None:
         import copy
         import hashlib
@@ -24268,6 +24312,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
             "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
     }
 
+    @full_run_only
     def test_removing_only_the_new_row_reconstructs_the_187_state(self) -> None:
         import copy
         import hashlib
@@ -24805,6 +24850,7 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
             "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
     }
 
+    @full_run_only
     def test_removing_only_the_new_row_reconstructs_the_188_state(self) -> None:
         import copy
         import hashlib
@@ -25409,6 +25455,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),
     }
 
+    @full_run_only
     def test_removing_only_the_new_row_reconstructs_the_189_state(self) -> None:
         import copy
         import hashlib

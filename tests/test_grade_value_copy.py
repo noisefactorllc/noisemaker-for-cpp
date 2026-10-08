@@ -15,6 +15,7 @@ from tools.glslcpp import check_corpus, emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.grade_value_copy_profile import KEY, authenticate_grade_value_copy
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -94,6 +95,7 @@ class GradeValueCopyTests(unittest.TestCase):
             with self.assertRaisesRegex(emit_typed_cpp.TypedEmissionError, "value-copy emission mismatch"):
                 render(program())
 
+    @full_run_only
     def test_emitted_lut_matches_cpu26d_all_presets_and_alpha_blends(self):
         # Independent canonicalFactory59 capture from authenticated CPU
         # 26d6f42be38da7172f602373e844f85a8155356f, behavioral lock

@@ -14,6 +14,7 @@ import sys
 import tempfile
 import unittest
 from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
+from tests.gate import full_run_only
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -221,6 +222,7 @@ class MoodscapeOracleTests(unittest.TestCase):
             with self.assertRaises(module.OracleError):
                 module.validate_source_file(fake_root)
 
+    @full_run_only
     def test_materializer_modes_and_cxx20_include_smoke_compile(self):
         for args in (("--self-test",), ("--check",)):
             result = historical_run(

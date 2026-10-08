@@ -15,6 +15,7 @@ sys.path.insert(0, str(REPOSITORY))
 
 from tools.glslcpp.check_corpus import _corpus_root
 from tests import corpus_census
+from tests.gate import full_run_only
 
 
 def _task23_complete_ir_forgery_matrix(testcase, program, global_name):
@@ -1288,6 +1289,7 @@ class SemanticTests(unittest.TestCase):
                     analyze_program(parse_program(source, "bad"))
                 self.assertIn(code, str(context.exception))
 
+    @full_run_only
     def test_semantic_tool_reports_stable_explicit_body_boundary(self) -> None:
         command = [sys.executable, str(REPOSITORY / "tools/glslcpp/check_semantics.py"), "--report"]
         first = subprocess.check_output(command, cwd="/tmp", text=True)
@@ -1319,6 +1321,7 @@ class SemanticTests(unittest.TestCase):
         self.assertEqual(source_initializers, report["global_initializer_success"])
         self.assertNotIn(str(REPOSITORY), first)
 
+    @full_run_only
     def test_every_vendored_program_passes_the_body_checker(self) -> None:
         from tools.glslcpp.check_semantics import declaration_report
         report = declaration_report()

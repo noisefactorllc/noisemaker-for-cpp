@@ -9,6 +9,7 @@ import json
 import os
 import pathlib
 import unittest
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "docs/port-engineering/historic-palette-parity"
@@ -88,6 +89,7 @@ class HistoricPaletteOracleTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("symlink confinement", result.stdout)
 
+    @full_run_only
     def test_materializer_include_is_hash_bound_and_cxx20_parseable(self):
         sidecar = INCLUDE.with_name(INCLUDE.name + ".sha256")
         expected = f"{hashlib.sha256(INCLUDE.read_bytes()).hexdigest()}  {INCLUDE.name}\n"

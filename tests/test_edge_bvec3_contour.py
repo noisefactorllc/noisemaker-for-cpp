@@ -18,6 +18,7 @@ from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tests.historical_cross_lane import historical_cross_lane
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -401,6 +402,7 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
                 with self.assertRaises(generate_typed_slice.GeneratorError):
                     generate_typed_slice.load_slice(repository)
 
+    @full_run_only
     def test_edge_is_exact_single_program_delta_from_glyph_178(self):
         import re
 

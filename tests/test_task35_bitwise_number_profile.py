@@ -24,6 +24,7 @@ from tools.glslcpp.frontend.bitwise_scalar_int_ops_profile import (
 from tools.glslcpp.frontend.semantic import analyze_program
 from tests.historical_cross_lane import historical_cross_lane
 from tools.glslcpp.frontend.semantic_types import FLOAT, INT
+from tests.gate import full_run_only
 
 
 REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
@@ -271,6 +272,7 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
             "static_cast<double>(std::int32_t(1))))", emitted)
         self.assertNotIn("state.seed * std::int32_t(3)", emitted)
 
+    @full_run_only
     def test_current_and_task35_absent_generation_are_exact_and_isolated(self):
         live_outputs = generate_typed_slice.generate_outputs(REPOSITORY)
         committed = (REPOSITORY / "src/typed_generated/typed_slice.cpp").read_text()

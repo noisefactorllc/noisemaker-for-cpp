@@ -4,12 +4,14 @@ import pathlib
 import subprocess
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 class RemapRuntimeAbiTests(unittest.TestCase):
+    @full_run_only
     def test_named_std140_carrier_is_owned_copyable_and_uniform_value_alternative(self):
         source = r'''
 #include "noisemaker/glsl_runtime.hpp"

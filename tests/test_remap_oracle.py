@@ -10,6 +10,7 @@ import pathlib
 import subprocess
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 GENERATOR = ROOT / "docs/port-engineering/remap-parity/remap_oracle_generator.mjs"
@@ -133,6 +134,7 @@ class RemapOracleTests(unittest.TestCase):
             self.assertIn(f"[ok] {probe}", checked.stdout)
         self.assertNotIn("FAIL", checked.stdout)
 
+    @full_run_only
     def test_native_include_exposes_controls_alpha_and_witnesses(self):
         source = r'''#include "tests/oracles/remap_expected.inc"
 int main() {

@@ -26,6 +26,7 @@ from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tests.historical_cross_lane import historical_cross_lane
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -324,6 +325,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                     candidate, hashlib.sha256(changed.encode()).hexdigest(),
                     PROFILE)
 
+    @full_run_only
     def test_detailed_profile_rejects_complete_matrix_after_coarse_refreeze(self):
         profile = _profile()
         raw = SOURCE.read_text(encoding="utf-8")
@@ -1006,6 +1008,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 with self.assertRaises(generate_typed_slice.GeneratorError):
                     generate_typed_slice.load_slice(repository)
 
+    @full_run_only
     def test_generator_registers_exact_emboss_program_and_manifest_carrier(self):
         outputs = generate_typed_slice.generate_outputs(ROOT)
         source = outputs["src/typed_generated/typed_slice.cpp"].decode()
@@ -1025,6 +1028,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         self.assertEqual(1, catalog.count(
             "Kernel bind_filter_emboss_emboss("))
 
+    @full_run_only
     def test_shape182_is_exact_delta_over_emboss181_glitch180_edge179_and_glyph178(self):
         shape_key = "classicNoisedeck/shapeMixer:shapeMixer"
         glitch_key = "classicNoisedeck/glitch:glitch"

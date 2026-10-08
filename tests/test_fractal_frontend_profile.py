@@ -15,6 +15,7 @@ from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.loop_proof import summarize_counted_loop_proofs
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend import fractal_frontend_profile as profile
+from tests.gate import full_run_only
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -256,6 +257,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                             program, profile.KEY, profile.RAW_SHA256,
                             fractal_frontend_profile=profile.PROFILE)
 
+    @full_run_only
     def test_emitter_rejects_each_mutated_number_anchor(self):
         from unittest import mock
 
@@ -574,6 +576,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
         checkpoint = struct.unpack("<I", struct.pack("<f", red))[0]
         self.assertEqual(0x3E465527, checkpoint)
 
+    @full_run_only
     def test_fractal_render_is_strict_cpp_syntax_clean(self):
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None:

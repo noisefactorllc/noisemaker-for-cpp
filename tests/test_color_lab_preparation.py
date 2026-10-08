@@ -12,6 +12,7 @@ import sys
 import tempfile
 import unittest
 import shutil
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -122,6 +123,7 @@ class ColorLabOraclePreparationTests(unittest.TestCase):
         with self.assertRaises(module.MaterializationError):
             module.validate(forged)
 
+    @full_run_only
     def test_include_is_cxx20_smoke_compilable(self):
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None:

@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "docs/port-engineering/spooky-ticker-parity"
@@ -46,6 +47,7 @@ class SpookyTickerOracleTests(unittest.TestCase):
             self.assertTrue(case["input_immutable_exact_bits"] and case["input_lifetime_stable"] and case["public_direct_repeat_exact"])
         for mutation in document["behavioral_mutation_ledger"]:
             self.assertTrue(mutation["required_witnesses"]); self.assertTrue(all(x["mismatched_lanes"] > 0 and x["mismatched_bytes"] > 0 for x in mutation["required_witness_results"]))
+    @full_run_only
     def test_sidecars_include_and_cxx_smoke_are_self_consistent(self):
         for path in (GENERATOR, MATERIALIZER, ORACLE, REPORT, INCLUDE):
             self.assertTrue(path.is_file(), path); self.assertEqual(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n", path.with_name(path.name+".sha256").read_text())

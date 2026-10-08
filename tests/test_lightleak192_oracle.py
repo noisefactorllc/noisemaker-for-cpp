@@ -12,6 +12,7 @@ import struct
 import subprocess
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -154,6 +155,7 @@ class LightLeak192OracleTests(unittest.TestCase):
         self.assertIn("source-bound input-texture phase", report)
         self.assertIn("never infer phase from case order", report)
 
+    @full_run_only
     def test_typed_include_contract_and_cxx20_smoke(self):
         include = (ROOT / "tests/oracles/lightleak192_expected.inc").read_text()
         self.assertNotIn("kCaseControls", include)

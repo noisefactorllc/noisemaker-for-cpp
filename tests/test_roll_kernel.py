@@ -18,6 +18,7 @@ from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend.runtime_loop_bound_profile import PROFILE, apply_runtime_loop_bound
 from tools.glslcpp.frontend.ceil_admission_profile import PROFILE as CEIL_PROFILE
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/roll"
@@ -61,6 +62,7 @@ def emitted_kernel():
                             factory="bind_roll_numerical_probe")
 
 
+@full_run_only
 class RollKernelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

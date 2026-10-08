@@ -69,6 +69,7 @@ from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program, named_type
 from tools.glslcpp.frontend.typed_ir import TypedProgram
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -907,6 +908,7 @@ class VaryingUvCensusTests(unittest.TestCase):
         self.assertEqual(1, total)
         self.assertEqual(total, len(reads) + len(writes))
 
+    @full_run_only
     def test_the_whole_corpus_carries_exactly_five_varying_programs(self):
         """Keep the original five varying programs, Mesh Render's exact
         three geometry inputs, and the four vendored particle-family

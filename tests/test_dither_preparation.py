@@ -19,6 +19,7 @@ from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend import dither_frontend_profile as profile
 from tools.glslcpp import generate_dither_native_oracle_include as materializer
+from tests.gate import full_run_only
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -575,6 +576,7 @@ class DitherPreparedFrontendTests(unittest.TestCase):
                 cwd=ROOT, capture_output=True, text=True)
             self.assertNotEqual(0, linked_result.returncode)
 
+    @full_run_only
     def test_include_is_cxx20_wall_wextra_werror_smoke(self):
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None:

@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/mesh_render"
@@ -32,6 +33,7 @@ def probe_input(case):
     return " ".join(map(str, values))
 
 
+@full_run_only
 class MeshRenderAdapterTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

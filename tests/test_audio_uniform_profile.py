@@ -11,6 +11,7 @@ import unittest
 from tools.glslcpp import check_corpus, emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -27,6 +28,7 @@ def audio_program(key):
 
 
 class AudioUniformProfileTests(unittest.TestCase):
+    @full_run_only
     def test_emitted_audio_kernels_match_cpu26d_float32_captures(self):
         # Immutable CPU 26d6f42be38da7172f602373e844f85a8155356f factories
         # 284/287: 8x8 pixels plus exact x endpoints, first with an asymmetric
@@ -104,6 +106,7 @@ int main() {
         for kind, digest in enumerate(expected):
             self.assertEqual(hashlib.sha256(result.stdout[kind*2112:(kind+1)*2112]).hexdigest(), digest)
 
+    @full_run_only
     def test_audio_uniform_owns_float32_words_and_checks_read_bounds(self):
         unit = r'''
 #include "noisemaker/graph/executor.hpp"

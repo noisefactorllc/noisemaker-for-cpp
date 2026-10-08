@@ -15,6 +15,7 @@ from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import dither_frontend_profile as dither
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -31,6 +32,7 @@ def _program():
 
 
 class DitherEmitterLoweringTests(unittest.TestCase):
+    @full_run_only
     def test_bayer8_emitted_helper_preserves_all_authority_cells_and_wraps(self):
         # CPU 26d6f42be38da7172f602373e844f85a8155356f, canonicalFactory46
         # getBayer8x8. Missing final-row initializers used to shift four cells

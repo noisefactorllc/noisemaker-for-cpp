@@ -18,6 +18,7 @@ from tests import corpus_census
 from tests.historical_authority import historical_authority
 from tools.glslcpp.frontend import parse_program, noise_frontend_profile
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 
 from tests.historical_cross_lane import (
     CROSS_LANE_KEY,
@@ -39,6 +40,7 @@ class HistoricalCrossLaneTests(unittest.TestCase):
         self.assertEqual(1, len(rows))
         return rows[0]
 
+    @full_run_only
     def test_legacy_projection_emits_exact_generic_assignment_and_no_carrier(self) -> None:
         spec = self._spec()
         with historical_cross_lane(spec):
@@ -201,6 +203,7 @@ class HistoricalCrossLaneTests(unittest.TestCase):
             }, generate_typed_slice._binding_abi_sections(
                 row, generate_typed_slice._custom_adapter_defines(row)))
 
+    @full_run_only
     def test_regen_cache_detects_patched_collaborators_and_bypasses_io(self) -> None:
         spec = self._spec()
         temp_root = os.environ.get("TMPDIR")

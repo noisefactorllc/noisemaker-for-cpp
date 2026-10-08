@@ -21,6 +21,7 @@ from tools.glslcpp.frontend.corrupt_value_copy_profile import (
     PROFILE, RAW_SHA256, authenticate_corrupt_value_copy)
 from tools.glslcpp import emit_typed_cpp
 from tests import corpus_census
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/corrupt"
@@ -55,6 +56,7 @@ def emitted_kernel():
                             factory="bind_corrupt_numerical_probe")
 
 
+@full_run_only
 class CorruptKernelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

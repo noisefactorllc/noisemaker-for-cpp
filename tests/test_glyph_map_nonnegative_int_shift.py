@@ -19,6 +19,7 @@ from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tests.historical_cross_lane import historical_cross_lane
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -349,6 +350,7 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
             self.assertEqual(frozen[name][1],
                              hashlib.sha256(repr(value).encode()).hexdigest())
 
+    @full_run_only
     def test_glyph_map_is_exact_single_program_delta_from_scanline_177(self):
         # MILESTONE reconstruction of Glyph-178 over Scanline-177: everything
         # that landed after Glyph Map is excluded below, and cellRefract joins

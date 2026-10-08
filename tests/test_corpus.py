@@ -17,6 +17,7 @@ sys.path.insert(0, str(REPOSITORY))
 
 from tests import corpus_census  # noqa: E402
 from tests.simulated_python_links import symlink_metadata  # noqa: E402
+from tests.gate import full_run_only
 
 
 class CorpusTests(unittest.TestCase):
@@ -38,6 +39,7 @@ class CorpusTests(unittest.TestCase):
     def write_manifest(path: pathlib.Path, value: dict) -> None:
         path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
+    @full_run_only
     def test_committed_corpus_has_exact_stateless_gate_counts(self) -> None:
         from tools.glslcpp import check_corpus
 
@@ -69,6 +71,7 @@ class CorpusTests(unittest.TestCase):
             },
         )
 
+    @full_run_only
     def test_report_is_stable_and_has_no_absolute_paths(self) -> None:
         command = [sys.executable, str(REPOSITORY / "tools/glslcpp/check_corpus.py"), "--report"]
         first = subprocess.check_output(command, cwd="/tmp", text=True)
@@ -150,6 +153,7 @@ void main() {
         self.assertEqual("7a492aea1422528421c352187d108ea32a1d5bf48991ef74f099f8dafbe5ccea",
                          hashlib.sha256(content).hexdigest())
 
+    @full_run_only
     def test_validator_rejects_tampering_and_unsafe_records(self) -> None:
         from tools.glslcpp import check_corpus
 
@@ -231,6 +235,7 @@ void main() {
                 with self.assertRaisesRegex(check_corpus.CorpusError, "symlink"):
                     check_corpus.validate_corpus(root)
 
+    @full_run_only
     def test_safe_path_accepts_ordinary_com10_and_reports_aggregate_failures(self) -> None:
         from tools.glslcpp import check_corpus
 
@@ -248,6 +253,7 @@ void main() {
             self.assertIn(first["program_key"], str(context.exception))
             self.assertIn(second["program_key"], str(context.exception))
 
+    @full_run_only
     def test_validator_rejects_noncanonical_json_and_corpus_top_level(self) -> None:
         from tools.glslcpp import check_corpus
 

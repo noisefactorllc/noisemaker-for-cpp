@@ -9,6 +9,7 @@ import re
 import unittest
 from tests import corpus_census
 from unittest import mock
+from tests.gate import full_run_only
 
 
 REPOSITORY = Path(__file__).resolve().parents[1]
@@ -489,6 +490,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
         self.assertNotRegex(owner, r"bitwise_xor\([^\n]*std::uint32_t")
         self.assertNotIn("scalar_uint_xor", generated)
 
+    @full_run_only
     def test_grain_is_exact_single_program_delta_from_174(self) -> None:
         import copy
         from tools.glslcpp import generate_typed_slice

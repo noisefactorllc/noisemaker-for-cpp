@@ -12,6 +12,7 @@ import unittest
 from tools.glslcpp.check_corpus import REVISION
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 from tools.glslcpp.frontend.runtime_loop_bound_profile import (
     PROFILE, ROLL_KEY, apply_runtime_loop_bound, authenticate_runtime_loop_bound,
 )
@@ -50,6 +51,7 @@ class RollAdmissionTests(unittest.TestCase):
                                    'runtime_loop_bound_profile': PROFILE,
                                    'ceil_admission_profile': CEIL_PROFILE})
 
+    @full_run_only
     def test_native_factory_checks_height_before_running_the_loop(self):
         from tools.glslcpp.emit_typed_cpp import render_typed_cpp
         from tools.glslcpp.frontend.ceil_admission_profile import PROFILE as CEIL_PROFILE

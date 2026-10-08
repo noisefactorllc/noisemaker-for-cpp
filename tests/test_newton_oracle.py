@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -241,6 +242,7 @@ class NewtonOracleTests(unittest.TestCase):
         self.assertNotEqual(0, duplicate.returncode)
         self.assertIn("choose exactly one", duplicate.stderr)
 
+    @full_run_only
     def test_cxx20_include_smoke(self) -> None:
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None:

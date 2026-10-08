@@ -26,6 +26,7 @@ if str(REPOSITORY) not in sys.path:
     sys.path.insert(0, str(REPOSITORY))
 
 from tools.glslcpp import generate_typed_slice, regen_cache  # noqa: E402
+from tests.gate import full_run_only
 
 ENV = "NOISEMAKER_REGEN_CACHE"
 
@@ -281,6 +282,7 @@ class EquivalenceTests(unittest.TestCase):
     This is the one test that pays for a real regeneration.
     """
 
+    @full_run_only
     def test_a_hit_is_byte_identical_to_an_uncached_regeneration(self) -> None:
         uncached = generate_typed_slice.generate_outputs._uncached
         spec = generate_typed_slice.load_slice(REPOSITORY)
@@ -445,6 +447,7 @@ class ForgedProgramBypassTests(unittest.TestCase):
             self.assertFalse(
                 regen_cache._collaborators_are_patched(generate_typed_slice))
 
+    @full_run_only
     def test_a_forged_program_still_raises_with_the_cache_warm(self) -> None:
         """End to end: warm the cache on the live spec, then forge and
         require the generator's guard to fire anyway."""
@@ -470,6 +473,7 @@ class AuditTests(unittest.TestCase):
     aborts on the first bad entry cannot tell you how many others there are.
     """
 
+    @full_run_only
     def test_an_unverifiable_entry_is_reported_not_raised(self) -> None:
         with _CacheTempDir() as root:
             # A spec that cannot possibly regenerate: the audit must survive it.

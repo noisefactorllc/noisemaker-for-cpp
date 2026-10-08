@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -117,6 +118,7 @@ class OsdOracleTests(unittest.TestCase):
         source = (Path(__file__).read_text())
         self.assertNotRegex(source, r"/(?:private|Users|tmp)/")
 
+    @full_run_only
     def test_include_compiles_with_cxx20(self):
         source = """
 #include <cstdint>

@@ -3,6 +3,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -10,6 +11,7 @@ CONSUMER_ROOT = REPOSITORY_ROOT / "tests" / "cmake_package_consumer"
 
 
 class CMakePackageTests(unittest.TestCase):
+    @full_run_only
     def test_installed_package_builds_external_consumer(self):
         environment = os.environ.copy()
         environment["PYTHONDONTWRITEBYTECODE"] = "1"

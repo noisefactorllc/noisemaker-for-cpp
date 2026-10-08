@@ -16,6 +16,7 @@ from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -341,6 +342,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
                         shape_mixer_builtin_profile=PROFILE,
                     )
 
+    @full_run_only
     def test_validator_and_emitter_reject_same_candidate_role_forgery(self):
         profile = _profile()
         program = _analyzed()
@@ -631,6 +633,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
                 with self.assertRaises(generate_typed_slice.GeneratorError):
                     generate_typed_slice.load_slice(repository)
 
+    @full_run_only
     def test_generated_outputs_register_exact_shape_program_once(self):
         outputs = generate_typed_slice.generate_outputs(ROOT)
         source = outputs["src/typed_generated/typed_slice.cpp"].decode()

@@ -16,6 +16,7 @@ sys.path.insert(0, str(REPOSITORY))
 
 from tests import corpus_census  # noqa: E402
 from tools.glslcpp import check_corpus, corpus_ratchet  # noqa: E402
+from tests.gate import full_run_only
 
 
 class CorpusRatchetTests(unittest.TestCase):
@@ -43,6 +44,7 @@ class CorpusRatchetTests(unittest.TestCase):
         recorded = {item["program_key"]: item["blocker"] for item in document["pending"]}
         return lambda key, source, effect: copy.deepcopy(recorded[key])
 
+    @full_run_only
     def test_committed_split_is_closed_over_the_authority_and_every_blocker_reprobes_exactly(self) -> None:
         document = corpus_ratchet.check_pending(REPOSITORY)
         authority = {item["program_key"] for item in document["authority"]["programs"]}
@@ -57,6 +59,7 @@ class CorpusRatchetTests(unittest.TestCase):
     def test_manifest_builder_reproduces_every_vendored_record(self) -> None:
         corpus_ratchet.verify_builder_reproduces_manifest(REPOSITORY)
 
+    @full_run_only
     def test_closure_rejects_a_dropped_or_duplicated_program(self) -> None:
         def duplicate(document):
             document["pending"].append({**document["pending"][0],
@@ -77,6 +80,7 @@ class CorpusRatchetTests(unittest.TestCase):
                 with self.assertRaisesRegex(check_corpus.CorpusError, message):
                     check_corpus.validate_corpus(root)
 
+    @full_run_only
     def test_pending_sources_are_hash_bound_and_exactly_enumerated(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
@@ -90,6 +94,7 @@ class CorpusRatchetTests(unittest.TestCase):
             with self.assertRaisesRegex(check_corpus.CorpusError, "pending source file set drift"):
                 check_corpus.validate_corpus(root)
 
+    @full_run_only
     def test_pending_effect_projections_are_exactly_the_unvendored_effects(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
@@ -97,6 +102,7 @@ class CorpusRatchetTests(unittest.TestCase):
             with self.assertRaisesRegex(check_corpus.CorpusError, "pending effect projections drift"):
                 check_corpus.validate_corpus(root)
 
+    @full_run_only
     def test_a_changed_blocker_fails_the_ratchet(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
@@ -113,6 +119,7 @@ class CorpusRatchetTests(unittest.TestCase):
                     self.assertRaisesRegex(check_corpus.CorpusError, f"{first}: blocker changed"):
                 corpus_ratchet.check_pending(root)
 
+    @full_run_only
     def test_a_pending_program_that_starts_passing_fails_the_ratchet(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
@@ -143,6 +150,7 @@ class CorpusRatchetTests(unittest.TestCase):
         defines = {"passes": [{"name": "d", "program": "p", "defines": {"A": 1}}], "params": {}}
         self.assertIn("pass-level defines", corpus_ratchet.probe_program("x/y:p", b"", defines)["diagnostic"])
 
+    @full_run_only
     def test_derived_gates_follow_the_split(self) -> None:
         counts = check_corpus.validate_corpus()["counts"]
         self.assertEqual(counts["passes"] + counts["pending"], counts["authority_programs"])

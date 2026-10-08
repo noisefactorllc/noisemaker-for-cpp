@@ -11,6 +11,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "docs/port-engineering/palette-parity"
@@ -93,6 +94,7 @@ class PaletteOracleTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertIn("dimension validation precedes storage access", result.stdout)
 
+    @full_run_only
     def test_include_compiles_as_cxx20(self):
         compiler = shutil.which("c++") or shutil.which("clang++")
         if compiler is None:

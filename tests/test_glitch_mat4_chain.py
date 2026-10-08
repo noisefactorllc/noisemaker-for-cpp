@@ -22,6 +22,7 @@ from tools.glslcpp import (
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tests.historical_cross_lane import historical_cross_lane
+from tests.gate import full_run_only
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -598,6 +599,7 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
                 with self.assertRaises(generate_typed_slice.GeneratorError):
                     generate_typed_slice.load_slice(repository)
 
+    @full_run_only
     def test_glitch_is_exact_delta_over_edge179_and_frozen_glyph178(self):
         # MILESTONE reconstruction of the Glitch-180/Edge-179/Glyph-178 chain:
         # later rows are excluded below, and cellRefract joins the exclusion

@@ -20,6 +20,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend.reverb_value_copy_profile import (
     RAW_SHA256, authenticate_reverb_value_copies)
 from tools.glslcpp import emit_typed_cpp
+from tests.gate import full_run_only
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/reverb"
@@ -47,6 +48,7 @@ def emitted_kernel():
                             factory="bind_reverb_numerical_probe")
 
 
+@full_run_only
 class ReverbKernelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
