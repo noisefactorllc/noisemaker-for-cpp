@@ -3109,7 +3109,7 @@ and item["program_key"] != "filter/wobble:wobble"
             ("spin-global-bound-32-to-8", "filter/spinBlur:spinBlur", None,
              "N", "global", 32, "8", 8),
             ("spin-jitter-disabled", "filter/spinBlur:spinBlur", "main", "jitter",
-             "local", ("binary", "float", None, "*", 51, 21), "0.0", 0.0),
+             "local", ("binary", "float", None, "*", 49, 21), "0.0", 0.0),
             ("strokes-global-bound-24-to-8", "filter/strokes:stkSmear", None,
              "MAX_TAPS", "global", 24, "8", 8),
             ("strokes-field-selection-forced-135", "filter/strokes:stkSmear", "main",
