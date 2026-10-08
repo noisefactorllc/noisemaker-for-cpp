@@ -30,7 +30,11 @@ struct SurfaceReference {
 };
 
 struct PlanValue {
-  enum class Kind { null_value, boolean, number, string, array, surface };
+  // `oscillator` is an `osc(...)` automation value: `number` holds the oscKind
+  // (0-6) and `array` its five fields in order -- min, max, speed, offset,
+  // seed -- each a number or a nested oscillator. It is resolved to a number
+  // per render, never bound as-is.
+  enum class Kind { null_value, boolean, number, string, array, surface, oscillator };
   Kind kind = Kind::null_value;
   bool boolean = false;
   double number = 0.0;
@@ -44,6 +48,14 @@ struct PlanValue {
   static PlanValue string_value(std::string value) { PlanValue result; result.kind = Kind::string; result.string = std::move(value); return result; }
   static PlanValue array_value(std::vector<PlanValue> value) { PlanValue result; result.kind = Kind::array; result.array = std::move(value); return result; }
   static PlanValue surface_value(SurfaceReference value) { PlanValue result; result.kind = Kind::surface; result.surface = std::move(value); return result; }
+  static PlanValue oscillator_value(int osc_type, PlanValue min, PlanValue max, PlanValue speed,
+                                    PlanValue offset, PlanValue seed) {
+    PlanValue result;
+    result.kind = Kind::oscillator;
+    result.number = osc_type;
+    result.array = {std::move(min), std::move(max), std::move(speed), std::move(offset), std::move(seed)};
+    return result;
+  }
 };
 
 struct ParameterBinding { std::string name; PlanValue value; };

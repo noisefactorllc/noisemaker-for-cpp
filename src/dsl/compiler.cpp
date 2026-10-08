@@ -70,6 +70,10 @@ void plan_value(CanonicalWriter& writer, const PlanValue& input) {
       writer.token(input.surface.name);
       writer.size(input.surface.index);
       break;
+    case PlanValue::Kind::oscillator:
+      writer.size(static_cast<std::size_t>(input.number));
+      for (const auto& field : input.array) plan_value(writer, field);
+      break;
   }
 }
 
@@ -303,7 +307,88 @@ using InternalBinding = std::variant<PlanValue, Partial>;
   throw DslError(std::move(message), loc);
 }
 
-PlanValue evaluate(const Value& value, const std::map<std::string, InternalBinding>& bindings) {
+PlanValue evaluate(const Value& value, const std::map<std::string, InternalBinding>& bindings,
+                   int osc_depth = 0);
+
+// Mirrors upstream std_enums.js oscKind (sine..noise2d; noise/noise1d alias kind
+// 5, noise2d is the two-stage periodic noise).
+constexpr std::array<std::pair<std::string_view, int>, 8> kOscKinds{{
+    {"sine", 0}, {"tri", 1}, {"saw", 2}, {"sawInv", 3}, {"square", 4},
+    {"noise", 5}, {"noise1d", 5}, {"noise2d", 6}}};
+constexpr std::array<std::string_view, 6> kOscParamOrder{"type", "min", "max", "speed", "offset", "seed"};
+constexpr int kMaxAutomationDepth = 8;
+
+// The authority's compileOscillator: positional arguments fill
+// type/min/max/speed/offset/seed in order (extras are ignored), named ones
+// select by name, every field takes the upstream default, min/max clamp into
+// [0, 1], fields may nest osc(), and the type resolves from an integer 0-6 or an
+// oscKind name (bare or oscKind-qualified).
+PlanValue compile_oscillator(const Call& call, const std::map<std::string, InternalBinding>& bindings,
+                             int depth) {
+  if (depth > kMaxAutomationDepth) {
+    value_error("Automation nesting exceeds the maximum depth of " + std::to_string(kMaxAutomationDepth), call.loc);
+  }
+  std::array<const Value*, kOscParamOrder.size()> fields{};
+  if (call.argument_mode == Call::ArgumentMode::named) {
+    for (const auto& argument : call.arguments) {
+      const auto found = std::find(kOscParamOrder.begin(), kOscParamOrder.end(), *argument.name);
+      if (found == kOscParamOrder.end()) {
+        value_error("osc() unknown parameter '" + *argument.name + "'; valid: type, min, max, speed, offset, seed",
+                    call.loc);
+      }
+      fields[static_cast<std::size_t>(found - kOscParamOrder.begin())] = &argument.value;
+    }
+  } else {
+    for (std::size_t index = 0; index < call.arguments.size() && index < fields.size(); ++index) {
+      fields[index] = &call.arguments[index].value;
+    }
+  }
+
+  int osc_type = 0;
+  if (fields[0] != nullptr) {
+    const PlanValue raw = evaluate(*fields[0], bindings, depth + 1);
+    if (raw.kind == PlanValue::Kind::number) {
+      if (!(std::isfinite(raw.number) && raw.number == std::trunc(raw.number) && raw.number >= 0 &&
+            raw.number <= 6)) {
+        value_error("osc() type must resolve to a supported oscKind value (0-6)", call.loc);
+      }
+      osc_type = static_cast<int>(raw.number);
+    } else if (raw.kind == PlanValue::Kind::string) {
+      constexpr std::string_view prefix = "oscKind.";
+      const std::string_view name = std::string_view(raw.string).substr(
+          raw.string.rfind(prefix, 0) == 0 ? prefix.size() : 0);
+      const auto kind = std::find_if(kOscKinds.begin(), kOscKinds.end(),
+                                     [&](const auto& item) { return item.first == name; });
+      if (kind == kOscKinds.end()) {
+        value_error("osc() type must resolve to a supported oscKind value; got \"" + raw.string + "\"", call.loc);
+      }
+      osc_type = kind->second;
+    } else {
+      value_error("osc() type must resolve to a supported oscKind value", call.loc);
+    }
+  }
+
+  const auto number_field = [&](std::size_t index, std::string_view name, double fallback, bool clamp) {
+    if (fields[index] == nullptr) return PlanValue::number_value(fallback);
+    const PlanValue value = evaluate(*fields[index], bindings, depth + 1);
+    if (value.kind == PlanValue::Kind::oscillator) return value;
+    if (value.kind == PlanValue::Kind::boolean) return PlanValue::number_value(value.boolean ? 1.0 : 0.0);
+    if (value.kind != PlanValue::Kind::number || !std::isfinite(value.number)) {
+      value_error("osc() " + std::string(name) + " must be a number or a nested osc()", call.loc);
+    }
+    return PlanValue::number_value(clamp ? std::max(0.0, std::min(1.0, value.number)) : value.number);
+  };
+  PlanValue min = number_field(1, "min", 0.0, true);
+  PlanValue max = number_field(2, "max", 1.0, true);
+  PlanValue speed = number_field(3, "speed", 1.0, false);
+  PlanValue offset = number_field(4, "offset", 0.0, false);
+  PlanValue seed = number_field(5, "seed", 1.0, false);
+  return PlanValue::oscillator_value(osc_type, std::move(min), std::move(max), std::move(speed),
+                                     std::move(offset), std::move(seed));
+}
+
+PlanValue evaluate(const Value& value, const std::map<std::string, InternalBinding>& bindings,
+                   int osc_depth) {
   switch (value.kind) {
     case Value::Kind::number: return PlanValue::number_value(value.number());
     case Value::Kind::string: return PlanValue::string_value(value.string_value());
@@ -320,8 +405,12 @@ PlanValue evaluate(const Value& value, const std::map<std::string, InternalBindi
     case Value::Kind::array: {
       std::vector<PlanValue> values;
       values.reserve(value.array_value().values.size());
-      for (const auto& item : value.array_value().values) values.push_back(evaluate(item, bindings));
+      for (const auto& item : value.array_value().values) values.push_back(evaluate(item, bindings, osc_depth));
       return PlanValue::array_value(std::move(values));
+    }
+    case Value::Kind::call: {
+      if (value.call().name == "osc") return compile_oscillator(value.call(), bindings, osc_depth);
+      value_error("Unsupported DSL value Call \"" + value.call().name + "\"", value.loc);
     }
     case Value::Kind::identifier: {
       const auto& identifier = value.identifier_value();
@@ -440,7 +529,10 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
   std::map<std::string, InternalBinding> bindings;
   for (const auto& binding : program.bindings) {
     if (bindings.find(binding.name) != bindings.end()) throw DslError("Duplicate binding \"" + binding.name + "\"", binding.loc);
-    if (std::holds_alternative<Call>(binding.value)) {
+    if (std::holds_alternative<Call>(binding.value) && std::get<Call>(binding.value).name == "osc") {
+      // `let name = osc(...)` binds an automation value, not an effect partial.
+      bindings.emplace(binding.name, compile_oscillator(std::get<Call>(binding.value), bindings, 0));
+    } else if (std::holds_alternative<Call>(binding.value)) {
       const auto& call = std::get<Call>(binding.value);
       bindings.emplace(binding.name, Partial{resolve_call(call, bindings)});
     } else {

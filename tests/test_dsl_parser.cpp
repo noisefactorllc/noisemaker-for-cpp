@@ -187,6 +187,8 @@ std::string values_json(const std::vector<Value>& values) {
   return out.str();
 }
 
+std::string call_json(const noisemaker::dsl::Call& call);
+
 std::string value_json(const Value& value) {
   std::ostringstream out;
   switch (value.kind) {
@@ -234,6 +236,7 @@ std::string value_json(const Value& value) {
           << ",\"right\":" << value_json(*value.binary().right)
           << ",\"loc\":" << loc_json(value.loc) << '}';
       break;
+    case Value::Kind::call: out << call_json(value.call()); break;
   }
   return out.str();
 }

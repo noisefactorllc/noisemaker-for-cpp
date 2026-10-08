@@ -214,7 +214,7 @@ jobs:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
           NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
           NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
-        run: python3 -B -m unittest tests.test_dsl_corpus_parity tests.test_case_driver_dimensions -v
+        run: python3 -B -m unittest tests.test_dsl_corpus_parity tests.test_case_driver_dimensions tests.test_osc_automation_parity -v
 
       # The corpus lane renders each effect once, at 17x11, with default
       # parameters. That single point hid real divergences, so it is not the

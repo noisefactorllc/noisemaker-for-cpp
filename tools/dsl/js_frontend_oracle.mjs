@@ -187,8 +187,8 @@ else process.stdout.write(text)
 
 async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
-  const FIXTURE_SHA256 = '2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6'
-  const EXPECTED_STREAM_SHA256 = 'd2ee32c713af47aa545264e3560e807d40d4bb81143b7e806f0ceb2529b53482'
+  const FIXTURE_SHA256 = '8eb08b02fc06393ffc4e95947a70d30a854399b3a345a28840246a01d4515c0d'
+  const EXPECTED_STREAM_SHA256 = 'bfa64cc3d728ad48a22dc30ddc832eaa7e8c33011575b98f91cf2806548c6555'
   if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
   const root = path.resolve(cpuRoot)
   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')
@@ -298,6 +298,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     if (Array.isArray(value)) return { kind: 'array', values: value.map(tagged) }
     if (value?.kind === 'input') return { kind: 'surface', value: { kind: 'input' } }
     if (value?.kind === 'surface') return { kind: 'surface', value: { kind: 'named', name: value.name, index: Number(value.name.slice(1)) } }
+    if (value?.type === 'Oscillator') return { kind: 'oscillator', oscType: value.oscType, fields: [value.min, value.max, value.speed, value.offset, value.seed].map(tagged) }
     return tagged(null)
   }
   function loc(value) { return { sourceName: value.sourceName, line: value.line, column: value.column, index: value.index } }
@@ -393,12 +394,13 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     const entries = value.kind === 'object' ? value.entries : []; writer.size(entries.length); entries.forEach(([name, item]) => { writer.token(name); writeEffectValue(writer, item) })
   }
   function writePlanValue(writer, value) {
-    const kind = value?.kind ?? 'null'; const kinds = { null: 0, boolean: 1, number: 2, string: 3, array: 4, surface: 5 }; writer.size(kinds[kind])
+    const kind = value?.kind ?? 'null'; const kinds = { null: 0, boolean: 1, number: 2, string: 3, array: 4, surface: 5, oscillator: 6 }; writer.size(kinds[kind])
     if (kind === 'boolean') writer.boolean(value.value)
     else if (kind === 'number') writer.number(Number(String(value.value).replace(/^number:/, '')))
     else if (kind === 'string') writer.token(value.value)
     else if (kind === 'array') { writer.size(value.values.length); value.values.forEach((item) => writePlanValue(writer, item)) }
     else if (kind === 'surface') { const surface = value.value; writer.size(surface.kind === 'input' ? 1 : 2); writer.token(surface.name ?? ''); writer.size(surface.index ?? 0) }
+    else if (kind === 'oscillator') { writer.size(value.oscType); value.fields.forEach((item) => writePlanValue(writer, item)) }
   }
   function writePairs(writer, values, valueWriter) { writer.size(values.length); values.forEach(([name, value]) => { writer.token(name); valueWriter(writer, value) }) }
   function writeOptionalEffect(writer, value) { writer.optional(value.present); if (value.present) writeEffectValue(writer, value.value) }

@@ -12,6 +12,7 @@
 namespace noisemaker::dsl {
 
 struct Value;
+struct Call;
 using ValuePtr = std::unique_ptr<Value>;
 
 struct ColorValue {
@@ -49,6 +50,11 @@ struct BinaryValue {
   ValuePtr right;
 };
 
+// `osc(...)`, the one call the DSL accepts in a value position.
+struct CallValue {
+  std::unique_ptr<Call> call;
+};
+
 struct Value {
   enum class Kind {
     number,
@@ -61,11 +67,12 @@ struct Value {
     vector,
     unary,
     binary,
+    call,
   };
 
   using Storage = std::variant<double, std::string, bool, ColorValue, SurfaceValue,
                                ArrayValue, IdentifierValue, VectorValue, UnaryValue,
-                               BinaryValue>;
+                               BinaryValue, CallValue>;
 
   Kind kind = Kind::number;
   Storage data = 0.0;
@@ -91,6 +98,7 @@ struct Value {
   static Value vector(std::size_t width, std::vector<Value> values, SourceLocation location);
   static Value unary(char operator_token, Value argument, SourceLocation location);
   static Value binary(char operator_token, Value left, Value right, SourceLocation location);
+  static Value call_value(Call call, SourceLocation location);
 
   [[nodiscard]] double number() const { return std::get<double>(data); }
   [[nodiscard]] const std::string& string_value() const { return std::get<std::string>(data); }
@@ -102,6 +110,7 @@ struct Value {
   [[nodiscard]] const VectorValue& vector() const { return std::get<VectorValue>(data); }
   [[nodiscard]] const UnaryValue& unary() const { return std::get<UnaryValue>(data); }
   [[nodiscard]] const BinaryValue& binary() const { return std::get<BinaryValue>(data); }
+  [[nodiscard]] const Call& call() const { return *std::get<CallValue>(data).call; }
 };
 
 struct CallArgument {

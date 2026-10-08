@@ -51,6 +51,7 @@ add_library(noisemaker-cpu
   src/dsl/compiler.cpp
   src/graph/resource.cpp
   src/graph/executor.cpp
+  src/graph/automation.cpp
   src/graph/iteration.cpp
   src/graph/chain_bundle.cpp
   src/renderer.cpp
@@ -190,6 +191,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_graph_features.cpp
   tests/test_mesh_render_graph.cpp
   tests/test_graph_iteration.cpp
+  tests/test_automation.cpp
   tests/test_graph_iterated_execution.cpp
   tests/test_graph_chain_bundle.cpp
   tests/test_snow_kernel.cpp

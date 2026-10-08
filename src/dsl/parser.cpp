@@ -204,6 +204,14 @@ class Parser {
       return value;
     }
     if (token.type == TokenType::identifier) {
+      // `osc(...)` is the one value-position call the DSL supports (oscillator
+      // automation); it parses as a regular call and the compiler turns it into
+      // an oscillator value. Any other call in a value position stays a parse
+      // error at the dangling '('.
+      if (token.lexeme == "osc" && peek(1).lexeme == "(") {
+        const SourceLocation loc = location(token);
+        return Value::call_value(call(), loc);
+      }
       ++current_;
       if (token.lexeme == "read" && match("(")) {
         if (peek().type == TokenType::identifier && peek(1).lexeme == ":") {
@@ -315,6 +323,10 @@ Value Value::binary(char operator_token, Value left, Value right, SourceLocation
           std::move(location)};
 }
 
+Value Value::call_value(Call call, SourceLocation location) {
+  return {Kind::call, CallValue{std::make_unique<Call>(std::move(call))}, std::move(location)};
+}
+
 namespace {
 Value::Storage clone_storage(const Value::Storage& storage) {
   return std::visit(
@@ -325,6 +337,8 @@ Value::Storage clone_storage(const Value::Storage& storage) {
         } else if constexpr (std::is_same_v<T, BinaryValue>) {
           return BinaryValue{value.operator_token, std::make_unique<Value>(*value.left),
                              std::make_unique<Value>(*value.right)};
+        } else if constexpr (std::is_same_v<T, CallValue>) {
+          return CallValue{std::make_unique<Call>(*value.call)};
         } else {
           return value;
         }

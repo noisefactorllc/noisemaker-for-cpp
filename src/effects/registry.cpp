@@ -663,6 +663,12 @@ PlanValue color_value(PlanValue value, const std::string& name) {
 
 PlanValue normalize_value(const ParameterDefinition& parameter, PlanValue value,
                           const std::string& name) {
+  // An `osc(...)` automation value (numeric parameters only, matching
+  // upstream's uniformSpecs contract) is kept as-is here and resolved to a
+  // concrete number per render; static values validate as before.
+  if (value.kind == PlanValue::Kind::oscillator && (parameter.type == "float" || parameter.type == "int")) {
+    return value;
+  }
   const auto is_number = value.kind == PlanValue::Kind::number;
   if (parameter.type == "float") {
     if (!is_number || !std::isfinite(value.number)) type_error(name, "must be a finite number");

@@ -70,6 +70,7 @@ The live list is the top block of [`docs/port-engineering/NEXT_CODING_AGENT_HAND
 - **Corpus lane** (`tests/test_dsl_corpus_parity.py`): every admitted effect renders once at 17x11 with default parameters, and must match the authority byte for byte. This single point is not enough on its own to prove parity.
 - **Parameter sweep** (`tools/parity/sweep.py --gate kit`): every authority effect renders at many sizes, including 1x1 and non-square, with many seeds and times, randomized parameter values, and generator/filter/mixer chains. Each render is compared on RGBA8 and on the float32 surface behind it.
 - **Define enumeration** (`--define-enum`): every compile-define parameter renders at each value in its domain.
+- **Automation lane** (`tests/test_osc_automation_parity.py`): `osc(...)` parameter automation renders byte for byte at several times, including nested, frequency-modulated and noise oscillators.
 - **Gates**: both sweeps run in CI with `--gate kit`, which checks cases whose participating effects are all claimed by the kit. Cases outside that set remain reported gaps. Full closure requires `--gate all`, complete authority coverage, and Debug and Release evidence.
 - **Kit coverage** (`export-kit/check-authority-coverage.mjs`): fails until the kit claims every effect the authority renders.
 
@@ -146,6 +147,8 @@ A DSL program names effects from the catalog. To see what is available:
 ```bash
 ./build/noisemaker-render --list-effects   # every catalog key, sorted
 ```
+
+Float and int parameters also accept `osc(type, min, max, speed, offset, seed)` automation. It resolves per render at the normalized time, as the authority does.
 
 Rendering is fail-closed. If the executor refuses a program, the command reports the executor's reason and returns a nonzero exit status. It writes nothing:
 

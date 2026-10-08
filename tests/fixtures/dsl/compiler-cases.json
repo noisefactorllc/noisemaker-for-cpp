@@ -248,5 +248,60 @@
     "name": "custom-duplicate-stored-map-set", "registryMode": "custom", "sourceName": "stored-map.dsl",
     "source": "search fixture\nlet p = source(first: 1, first: 2)\np(first: 3).write(o0)\n", "options": {"requireExecutable": false},
     "sourceSha256": "391c18708b4d8a1af296de6d7cba062d2dc3104d4a92c7f6600b2e185010fa6a"
+  },
+  {
+    "name": "catalog-osc-positional", "registryMode": "catalog_records", "sourceName": "osc-positional.dsl",
+    "source": "search synth\npattern(scale: osc(sine, 0.2, 0.8, 2, 0.1, 7), thickness: osc()).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "3a908fd70d19ed446dd775275b3d59b18985a78b0dd8da952293e744fc3c2107"
+  },
+  {
+    "name": "catalog-osc-named-nested", "registryMode": "catalog_records", "sourceName": "osc-nested.dsl",
+    "source": "search synth\nlet wobble = osc(type: saw, speed: -0.5)\npattern(rotation: osc(type: oscKind.tri, min: 0.1, max: wobble, speed: osc(noise, 0.25, 0.75), offset: 0.25, seed: 3), type: osc(square, 0, 1)).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "608ab267527317d631e5ed0d5abfdc856a5f0ff49c2147182800c54365b13550"
+  },
+  {
+    "name": "catalog-osc-noise2d-int", "registryMode": "catalog_records", "sourceName": "osc-noise2d.dsl",
+    "source": "search synth\npattern(speed: osc(noise2d, 0, 1, 1.5, 0, 42), smoothness: osc(3, true, false)).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "3cb7c8ca0fa8cdaec95102d8852ef577152a472735210c526e8ecb3b7fecc91b"
+  },
+  {
+    "name": "catalog-osc-unknown-parameter", "registryMode": "catalog_records", "sourceName": "osc-unknown.dsl",
+    "source": "search synth\npattern(scale: osc(kind: sine)).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "7197ae1eb04ad1946e2b505f72b2412b08a6a130b527308025955c4f34702a89"
+  },
+  {
+    "name": "catalog-osc-type-out-of-range", "registryMode": "catalog_records", "sourceName": "osc-type7.dsl",
+    "source": "search synth\npattern(scale: osc(7)).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "e268038b5d20e991870e037e7ce8dbf90d7f2d1edc597e2d268c3150c1145fed"
+  },
+  {
+    "name": "catalog-osc-type-unknown-name", "registryMode": "catalog_records", "sourceName": "osc-type-name.dsl",
+    "source": "search synth\npattern(scale: osc(wobble)).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "a1572ab1bfed3655c8f6f4ccf9f9232018bad15800081144a76d161586cfa4bf"
+  },
+  {
+    "name": "catalog-osc-min-not-number", "registryMode": "catalog_records", "sourceName": "osc-min-string.dsl",
+    "source": "search synth\npattern(scale: osc(sine, \"a\")).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "ea53fdc9efcd5f46378bbe8193168fa6954fb7b8b5f434a4fe038a59bc16a6e6"
+  },
+  {
+    "name": "catalog-osc-color-parameter", "registryMode": "catalog_records", "sourceName": "osc-color.dsl",
+    "source": "search synth\npattern(fgColor: osc()).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "e9b490dd09e744c2e50b379fa9b89d04a9bdbe6272749b10214be53d888af701"
+  },
+  {
+    "name": "catalog-osc-depth-limit", "registryMode": "catalog_records", "sourceName": "osc-depth.dsl",
+    "source": "search synth\npattern(scale: osc(sine, osc(sine, osc(sine, osc(sine, osc(sine, osc(sine, osc(sine, osc(sine, osc(sine, osc(sine, 0.5))))))))))).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "4d8b756cc969acddd3e4ab29fdcf1e905463319bfc00fc1bff94b2eb139ddc9d"
+  },
+  {
+    "name": "catalog-osc-arithmetic", "registryMode": "catalog_records", "sourceName": "osc-arithmetic.dsl",
+    "source": "search synth\npattern(scale: osc() + 1).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "8974c64bdb1a4e947a67f43f2db7c87e093d15c3a657e34dfeeb5d2aa591f2f6"
+  },
+  {
+    "name": "catalog-value-call-not-osc", "registryMode": "catalog_records", "sourceName": "value-call.dsl",
+    "source": "search synth\npattern(scale: noise()).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "33bb2595c4a2f5e72dbf2944e6e0a2626624d9f1aab92fd95316384f7ca4d2a8"
   }
 ]

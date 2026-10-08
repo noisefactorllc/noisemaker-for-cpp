@@ -401,6 +401,12 @@ std::string oracle_value(const noisemaker::graph::PlanValue& value) {
     for (std::size_t index = 0; index < value.array.size(); ++index) { if (index) result += ','; result += oracle_value(value.array[index]); }
     return result + "]}";
   }
+  if (value.kind == Kind::oscillator) {
+    std::string result = "{\"kind\":\"oscillator\",\"oscType\":" +
+                         std::to_string(static_cast<int>(value.number)) + ",\"fields\":[";
+    for (std::size_t index = 0; index < value.array.size(); ++index) { if (index) result += ','; result += oracle_value(value.array[index]); }
+    return result + "]}";
+  }
   if (value.surface.kind == noisemaker::graph::SurfaceReference::Kind::input) return "{\"kind\":\"surface\",\"value\":{\"kind\":\"input\"}}";
   if (value.surface.kind == noisemaker::graph::SurfaceReference::Kind::named) {
     return "{\"kind\":\"surface\",\"value\":{\"kind\":\"named\",\"name\":" + oracle_escape(value.surface.name) + ",\"index\":" + std::to_string(value.surface.index) + "}}";

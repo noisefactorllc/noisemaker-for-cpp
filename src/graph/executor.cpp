@@ -6,6 +6,7 @@
 #include "noisemaker/effects/mesh_render.hpp"
 #include "noisemaker/effects/mesh_render_contract.hpp"
 #include "noisemaker/fdlibm.hpp"
+#include "noisemaker/graph/automation.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/graph/chain_bundle.hpp"
 #include "noisemaker/graph/generated/classic_noisedeck_palette_table.hpp"
@@ -86,6 +87,31 @@ namespace {
     if (item.name == name) return &item.value;
   }
   return nullptr;
+}
+
+[[nodiscard]] bool has_automation(const EffectStep& step) {
+  return std::any_of(step.params.begin(), step.params.end(), [](const ParameterBinding& binding) {
+    return binding.value.kind == PlanValue::Kind::oscillator;
+  });
+}
+
+// The authority's resolveEffectAutomation: every `osc(...)` parameter becomes
+// a concrete number for this render's normalized time, scaled into its
+// parameter's spec; a step without automation is returned unchanged.
+[[nodiscard]] EffectStep with_resolved_automation(const EffectStep& step,
+                                                  const effects::EffectDefinition& definition,
+                                                  double normalized_time) {
+  EffectStep resolved = step;
+  for (auto& binding : resolved.params) {
+    if (binding.value.kind != PlanValue::Kind::oscillator) continue;
+    const effects::ParameterDefinition* declared = nullptr;
+    for (const auto& candidate : definition.parameters) {
+      if (candidate.name == binding.name) declared = &candidate;
+    }
+    binding.value = PlanValue::number_value(
+        resolve_automation(binding.value, normalized_time, automation_spec(declared)));
+  }
+  return resolved;
 }
 
 // The executor resolves every declared sampler route against the arena while
@@ -1159,11 +1185,13 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         }
         available_routes.insert(write->surface.name);
       } else {
-        const auto& effect = std::get<EffectStep>(variant);
-        if (effect.snapshot_index >= plan.effects.size()) {
+        const auto& raw_effect = std::get<EffectStep>(variant);
+        if (raw_effect.snapshot_index >= plan.effects.size()) {
           throw GraphError(GraphErrorCode::invalid_snapshot, "effect snapshot index is out of range");
         }
-        const auto& snapshot = plan.effects[effect.snapshot_index];
+        const auto& snapshot = plan.effects[raw_effect.snapshot_index];
+        // Preflight the parameters this render binds: automation resolved.
+        const EffectStep effect = with_resolved_automation(raw_effect, snapshot.definition, inputs.time);
         const auto* group = group_of[step_index];
         const bool iterated = group != nullptr && group->iterated;
         // Declared textures with no producer, and consumed underscore-prefixed
@@ -2859,10 +2887,13 @@ void store_step_resource(std::unordered_map<std::string, noisemaker::Surface>& r
 // unchanged through all `N` iterations.
 struct GroupStepState {
   const PlanEffectSnapshot* snapshot = nullptr;
-  // Possibly a stateSize-overridden clone (apply_owner_state_size_override);
-  // every downstream lookup (dimensions, uniforms, pass enable/repeat) reads
-  // this, never the original chain step.
+  // Possibly a stateSize-overridden clone (apply_owner_state_size_override)
+  // with automation resolved; every downstream lookup (dimensions, uniforms,
+  // pass enable/repeat) reads this, never the original chain step.
   EffectStep effective_step{};
+  // The same clone before automation resolves (renderer.js `rawStep`): each
+  // iteration re-resolves `osc(...)` parameters from it at its own time.
+  EffectStep raw_step{};
   // state.resources: declared scratch, refreshed inputTex/surface-parameter
   // routes. Persists across all N iterations; never touches ResourceArena.
   std::unordered_map<std::string, noisemaker::Surface> resources;
@@ -3454,10 +3485,11 @@ struct GroupPublishResult {
     const auto& snapshot = plan.effects[step->snapshot_index];
     GroupStepState state;
     state.snapshot = &snapshot;
-    state.effective_step = (position > 0U && owner_state_size.has_value() &&
-                            parameter(*step, "stateSize") != nullptr)
-                               ? apply_owner_state_size_override(*step, *owner_state_size)
-                               : *step;
+    state.raw_step = (position > 0U && owner_state_size.has_value() &&
+                      parameter(*step, "stateSize") != nullptr)
+                         ? apply_owner_state_size_override(*step, *owner_state_size)
+                         : *step;
+    state.effective_step = with_resolved_automation(state.raw_step, snapshot.definition, inputs.time);
     state.uses_self_tex = step_uses_self_tex(snapshot.definition);
     if (state.uses_self_tex) {
       const auto* out_texture = texture_for(snapshot.definition, "outputTex");
@@ -3495,6 +3527,12 @@ struct GroupPublishResult {
     bool have_carried = false;
 
     for (auto& state : step_states) {
+      // renderer.js refreshIterationParams: automation re-resolves against this
+      // iteration's own normalized time; other steps keep their init params.
+      if (has_automation(state.raw_step)) {
+        state.effective_step = with_resolved_automation(state.raw_step, state.snapshot->definition,
+                                                        iteration_inputs.time);
+      }
       auto step_result = run_group_step_iteration(state, step_input, step_states, group_resources,
                                                    arena, iteration_inputs, pass_count,
                                                    empty_surface);
@@ -3683,6 +3721,9 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             throw GraphError(GraphErrorCode::invalid_dimension, error.what(), effective_step.effect.id);
           }
         }
+        // renderer.js effectParams -> resolveEffectAutomation, after
+        // inheritVolumeSize: `osc(...)` parameters read this render's time.
+        effective_step = with_resolved_automation(effective_step, snapshot.definition, inputs.time);
         const auto& step = effective_step;
         GraphResource* effect_output = current;
         // The authority binds `inputTex` once per effect, before any pass of
