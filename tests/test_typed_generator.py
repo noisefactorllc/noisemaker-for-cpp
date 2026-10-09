@@ -26510,6 +26510,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "points/life:agent": {"xors": 2, "rel": "points/life/agent.glsl"},
             "points/physarum:agent": {"xors": 2, "rel": "points/physarum/agent.glsl"},
             "points/dla:agent": {"xors": 2, "rel": "points/dla/agent.glsl"},
+            "points/attractor:agent": {"xors": 2, "rel": "points/attractor/agent.glsl"},
         }
 
         self.assertEqual(HASH_SCALAR_UINT_XOR_KEYS, frozenset(expected_counts.keys()))
@@ -26723,6 +26724,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "points/life:agent": {"rshifts": 3, "rel": "points/life/agent.glsl"},
             "points/physarum:agent": {"rshifts": 3, "rel": "points/physarum/agent.glsl"},
             "points/dla:agent": {"rshifts": 3, "rel": "points/dla/agent.glsl"},
+            "points/attractor:agent": {"rshifts": 3, "rel": "points/attractor/agent.glsl"},
         }
 
         self.assertEqual(HASH_SCALAR_UINT_RSHIFT_KEYS, frozenset(expected_counts.keys()))
