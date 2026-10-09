@@ -1,6 +1,6 @@
 {
   "schema": "noisemaker-cpp.dsl-corpus-parity-exclusions.v1",
-  "byteExactCount": 183,
+  "byteExactCount": 184,
   "executorRefused": {},
   "authorityRefused": []
 }

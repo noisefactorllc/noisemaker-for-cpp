@@ -1076,6 +1076,13 @@
       "program_key": "mixer/uvRemap:uvRemap"
     },
     {
+      "attractor_any_isnan_profile": "attractor-isnan-any-admission-v1",
+      "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "points/attractor:agent"
+    },
+    {
       "defines": {},
       "program_key": "points/attractor:passthrough"
     },

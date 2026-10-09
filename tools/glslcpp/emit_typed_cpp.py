@@ -256,6 +256,9 @@ from .frontend.points_post_profile import (
 from .frontend.waves_any_notequal_profile import (
     WAVES_KEY, PROFILE as WAVES_ANY_NOTEQUAL_PROFILE,
     authenticate_waves_any_notequal_admission)
+from .frontend.attractor_any_isnan_profile import (
+    ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
+    authenticate_attractor_any_isnan_admission)
 from .frontend.inout_vec3_swap_profile import (
     WATERCOLOR_KEY as INOUT_VEC3_SWAP_KEY,
     PROFILE as INOUT_VEC3_SWAP_PROFILE,
@@ -1127,6 +1130,7 @@ class _Emitter:
     as_u32_round_profile: str | None = None
     ceil_admission_profile: str | None = None
     waves_any_notequal_profile: str | None = None
+    attractor_any_isnan_profile: str | None = None
     inout_vec3_swap_profile: str | None = None
     out_inout_admission_profile: str | None = None
     log_admission_profile: str | None = None
@@ -1591,6 +1595,10 @@ class _Emitter:
         init=False, default=())
     emitted_waves_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_attractor_any_isnan_proof: object = field(
+        init=False, default=None)
+    emitted_attractor_nodes: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_inout_vec3_swap_proof: object = field(init=False, default=None)
     emitted_inout_vec3_swap_calls: list[TypedExpression] = field(
         init=False, default_factory=list)
@@ -2032,6 +2040,8 @@ class _Emitter:
         self.authorized_waves_relationals = ()
         self.authorized_waves_reductions = ()
         self.emitted_waves_nodes = []
+        self.authorized_attractor_any_isnan_proof = None
+        self.emitted_attractor_nodes = []
         self.authorized_inout_vec3_swap_proof = None
         self.emitted_inout_vec3_swap_calls = []
         self.authorized_out_inout_parameters = ()
@@ -3465,6 +3475,23 @@ class _Emitter:
         elif self.program.key == WAVES_KEY:
             raise _error(self.program, self.program,
                          "exact Waves any/notEqual admission profile carrier required")
+        # attractor_any_isnan_profile is deliberately light-checked, the same
+        # style as waves_any_notequal_profile immediately above.
+        if self.attractor_any_isnan_profile is not None:
+            if (self.program.key != ATTRACTOR_KEY
+                    or self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "Attractor any/isnan admission profile metadata mismatch")
+            try:
+                attractor_proof = authenticate_attractor_any_isnan_admission(
+                    self.program, self.source_hash, self.attractor_any_isnan_profile)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+            self.authorized_attractor_any_isnan_proof = attractor_proof
+        elif self.program.key == ATTRACTOR_KEY:
+            raise _error(self.program, self.program,
+                         "exact Attractor any/isnan admission profile carrier required")
         # inout_vec3_swap_profile is deliberately light-checked, the same
         # style as posterize_round_profile/waves_any_notequal_profile above.
         if self.inout_vec3_swap_profile is not None:
@@ -9088,9 +9115,31 @@ class _Emitter:
                     # them.
                     nodes = (*self.authorized_waves_reductions,
                             *self.authorized_waves_relationals)
-                    if not any(value is item for item in nodes):
+                    # Independently, the Attractor agent's single
+                    # `any(isnan(vec3))` reduction is emitted only for the
+                    # exact node authenticated by
+                    # attractor-isnan-any-admission-v1, by object identity,
+                    # with the same no-vocabulary discipline.
+                    attractor_reduction = (
+                        self.authorized_attractor_any_isnan_proof is not None
+                        and value is self.authorized_attractor_any_isnan_proof.reduction)
+                    if (not any(value is item for item in nodes)
+                            and not attractor_reduction):
                         raise _error(self.program, value,
                                      f"unsupported builtin {value.callee}")
+                    if attractor_reduction:
+                        if (len(arguments) != 1
+                                or value.type.display() != "bool"
+                                or value.children[0].type.display() != "bvec3"):
+                            raise _error(self.program, value,
+                                         "malformed authenticated Attractor reduction")
+                        if any(value is item
+                               for item in self.emitted_attractor_nodes):
+                            raise _error(
+                                self.program, value,
+                                "authenticated Attractor node emitted twice")
+                        self.emitted_attractor_nodes.append(value)
+                        return f"glsl::any({arguments[0]})"
                     self.emitted_waves_nodes.append(value)
                     if value.callee == "any":
                         if len(arguments) != 1:
@@ -9099,6 +9148,27 @@ class _Emitter:
                     if len(arguments) != 2:
                         raise _error(self.program, value, "notEqual arity")
                     return f"glsl::notEqual({arguments[0]}, {arguments[1]})"
+                if value.callee == "isnan":
+                    # Emitted only for the exact node this emitter itself
+                    # authenticated (attractor-isnan-any-admission-v1), by
+                    # object identity. Like any/notEqual, it never enters
+                    # _TYPES/_BUILTIN_NAMES so no other program can reach it.
+                    if (self.authorized_attractor_any_isnan_proof is None
+                            or value is not self.authorized_attractor_any_isnan_proof.test):
+                        raise _error(self.program, value,
+                                     f"unsupported builtin {value.callee}")
+                    if (len(arguments) != 1
+                            or value.type.display() != "bvec3"
+                            or value.children[0].type.display() != "vec3"):
+                        raise _error(self.program, value,
+                                     "malformed authenticated Attractor isnan")
+                    if any(value is item
+                           for item in self.emitted_attractor_nodes):
+                        raise _error(
+                            self.program, value,
+                            "authenticated Attractor node emitted twice")
+                    self.emitted_attractor_nodes.append(value)
+                    return f"glsl::isnan({arguments[0]})"
                 if value.callee in {"dFdx", "dFdy", "fwidth"}:
                     # Emitted only for the exact nodes this emitter itself
                     # authenticated. Every generated pixel/helper function
@@ -13393,6 +13463,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      as_u32_round_profile: str | None = None,
                      ceil_admission_profile: str | None = None,
                      waves_any_notequal_profile: str | None = None,
+                     attractor_any_isnan_profile: str | None = None,
                      inout_vec3_swap_profile: str | None = None,
                      out_inout_admission_profile: str | None = None,
                      log_admission_profile: str | None = None,
@@ -13504,6 +13575,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        as_u32_round_profile,
                        ceil_admission_profile,
                        waves_any_notequal_profile,
+                       attractor_any_isnan_profile,
                        inout_vec3_swap_profile,
                        out_inout_admission_profile,
                        log_admission_profile,
@@ -14373,6 +14445,14 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
         if len(emitted) != len(expected) or any(
                 not any(value is item for item in emitted) for value in expected):
             raise _error(program, program, "authenticated Waves emission mismatch")
+    if emitter.authorized_attractor_any_isnan_proof is not None:
+        proof = emitter.authorized_attractor_any_isnan_proof
+        expected = (proof.reduction, proof.test)
+        emitted = emitter.emitted_attractor_nodes
+        if len(emitted) != len(expected) or any(
+                not any(value is item for item in emitted) for value in expected):
+            raise _error(program, program,
+                         "authenticated Attractor emission mismatch")
     if emitter.authorized_inout_vec3_swap_proof is not None:
         expected = emitter.authorized_inout_vec3_swap_proof.calls
         emitted = emitter.emitted_inout_vec3_swap_calls

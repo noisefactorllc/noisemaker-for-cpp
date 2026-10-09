@@ -2,6 +2,7 @@
 
 #include <array>
 #include <bit>
+#include <cmath>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
@@ -507,6 +508,27 @@ template <std::size_t N> requires(N == 2)
 }
 
 template <std::size_t N> requires(N == 2)
+[[nodiscard]] constexpr bool any(const Vec<N, bool>& value) noexcept {
+  for (std::size_t index = 0; index < N; ++index)
+    if (value[index]) return true;
+  return false;
+}
+
+// genBType isnan(vec3) -> bvec3, plus the matching bvec3 `any` reduction.
+// Deliberately constrained to N == 3 and to float lanes: only the exact
+// `any(isnan(newPos))` divergence-check closure authenticated by
+// attractor-isnan-any-admission-v1 is authorized to lower to these, so
+// scalar isnan, integer lanes and other widths remain compile errors rather
+// than a silently available generalization. Widening requires its own
+// authenticated capability.
+[[nodiscard]] inline Vec<3, bool> isnan(const Vec<3, float>& value) noexcept {
+  Vec<3, bool> result;
+  for (std::size_t index = 0; index < 3; ++index)
+    result[index] = std::isnan(value[index]);
+  return result;
+}
+
+template <std::size_t N> requires(N == 3)
 [[nodiscard]] constexpr bool any(const Vec<N, bool>& value) noexcept {
   for (std::size_t index = 0; index < N; ++index)
     if (value[index]) return true;

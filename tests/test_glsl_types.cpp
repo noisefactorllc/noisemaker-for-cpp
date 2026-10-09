@@ -854,6 +854,64 @@ TEST(glsl_glitch_ordered_splat_evaluates_rhs_twice_after_lane_zero_store) {
   REQUIRE(reversed != canonical);
 }
 
+// Attractor divergence check: the only authenticated bvec3 closure.
+// genBType isnan(vec3) -> bvec3 and the matching bvec3 `any` reduction are
+// deliberately constrained to N == 3 and to float lanes (see the runtime
+// surface in glsl_types.hpp): scalar isnan, integer lanes and other widths
+// remain compile errors rather than a silently available generalization.
+// Widening requires its own authenticated capability.
+template <typename T>
+concept HasGlslIsnanVec3 = requires(const T& value) {
+  { noisemaker::glsl::isnan(value) } -> std::same_as<noisemaker::glsl::BVec3>;
+};
+
+static_assert(HasGlslIsnanVec3<noisemaker::glsl::Vec3>);
+static_assert(!HasGlslIsnanVec3<noisemaker::glsl::Vec2>);
+static_assert(!HasGlslIsnanVec3<noisemaker::glsl::Vec4>);
+static_assert(!HasGlslIsnanVec3<noisemaker::glsl::IVec3>);
+static_assert(!HasGlslIsnanVec3<float>);
+
+template <typename T>
+concept HasGlslAnyBVec3 = requires(const T& value) {
+  { noisemaker::glsl::any(value) } -> std::same_as<bool>;
+};
+
+static_assert(HasGlslAnyBVec3<noisemaker::glsl::BVec3>);
+// bvec2 belongs to Extrude's pre-existing two-lane reduction; bvec4 stays
+// closed, and float lanes are not boolean vectors.
+static_assert(!HasGlslAnyBVec3<noisemaker::glsl::BVec4>);
+static_assert(!HasGlslAnyBVec3<noisemaker::glsl::Vec3>);
+
+TEST(glsl_bvec3_isnan_and_any_lower_the_attractor_divergence_check) {
+  using namespace noisemaker::glsl;
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+
+  // Every NaN of either sign flags its own lane only; ±0.0 and infinities
+  // are not NaN.
+  REQUIRE((noisemaker::glsl::isnan(Vec3(nan, 0.0f, -0.0f)) ==
+           BVec3(true, false, false)));
+  REQUIRE((noisemaker::glsl::isnan(Vec3(0.0f, nan, -0.0f)) ==
+           BVec3(false, true, false)));
+  REQUIRE((noisemaker::glsl::isnan(Vec3(1.0f, 2.0f, 3.0f)) ==
+           BVec3(false, false, false)));
+  const float infinity = std::numeric_limits<float>::infinity();
+  REQUIRE((noisemaker::glsl::isnan(Vec3(infinity, -infinity, -0.0f)) ==
+           BVec3(false, false, false)));
+
+  // any(isnan(v)) is exactly the divergence condition the emitter lowers:
+  // true iff some lane is NaN.
+  REQUIRE(any(noisemaker::glsl::isnan(Vec3(0.0f, nan, 0.0f))));
+  REQUIRE(any(noisemaker::glsl::isnan(Vec3(nan, nan, nan))));
+  REQUIRE(!any(noisemaker::glsl::isnan(Vec3(0.0f, 0.0f, 0.0f))));
+
+  // The bvec3 reduction itself covers every lane pattern.
+  REQUIRE(any(BVec3(true, false, false)));
+  REQUIRE(any(BVec3(false, true, false)));
+  REQUIRE(any(BVec3(false, false, true)));
+  REQUIRE(!any(BVec3(false, false, false)));
+  REQUIRE(any(BVec3(true, true, true)));
+}
+
 // Task 30: the exact bvec2 relational/reduction pair Extrude needs. Only the
 // two-lane width is instantiable; bvec3/bvec4 relational reduction must remain
 // a compile error, not merely an untested path.

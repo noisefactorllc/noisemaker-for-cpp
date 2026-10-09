@@ -3358,19 +3358,6 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: points/attractor:agent:177:9: E_NO_OVERLOAD: no exact overload for any\npoints/attractor:agent:177:9: E_OPERATOR: || requires bool operands\npoints/attractor:agent:177:13: E_NO_OVERLOAD: no exact overload for isnan",
-        "stage": "semantics.defaults"
-      },
-      "effect_id": "points/attractor",
-      "program": "agent",
-      "program_key": "points/attractor:agent",
-      "raw_bytes": 4936,
-      "raw_sha256": "5ec5c8c92dc026ca123c37cb735386c4bca9df0e2b2ebbd9831d3fbc32ac127e",
-      "source": "pending-sources/points/attractor/agent.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
         "diagnostic": "points/physarum:passthrough: bound by 2 authority passes (copy, passthrough); the corpus manifest records exactly one pass per program",
         "stage": "corpus.pass_binding"
       },

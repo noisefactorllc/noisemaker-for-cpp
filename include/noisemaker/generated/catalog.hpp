@@ -205,6 +205,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_mixer_split_split(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_thresholdMix_thresholdMix(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_uvRemap_uvRemap(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_attractor_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_attractor_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_buddhabrot_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_buddhabrot_passthrough(const glsl::Bindings& bindings);

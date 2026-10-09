@@ -386,6 +386,10 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.waves_any_notequal_profile import (
         WAVES_KEY, PROFILE as WAVES_ANY_NOTEQUAL_PROFILE,
         apply_waves_any_notequal_admission, authenticate_waves_any_notequal_admission)
+    from tools.glslcpp.frontend.attractor_any_isnan_profile import (
+        ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
+        apply_attractor_any_isnan_admission,
+        authenticate_attractor_any_isnan_admission)
     from tools.glslcpp.frontend.inout_vec3_swap_profile import (
         WATERCOLOR_KEY as INOUT_VEC3_SWAP_KEY,
         PROFILE as INOUT_VEC3_SWAP_PROFILE,
@@ -826,6 +830,10 @@ else:
     from .frontend.waves_any_notequal_profile import (
         WAVES_KEY, PROFILE as WAVES_ANY_NOTEQUAL_PROFILE,
         apply_waves_any_notequal_admission, authenticate_waves_any_notequal_admission)
+    from .frontend.attractor_any_isnan_profile import (
+        ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
+        apply_attractor_any_isnan_admission,
+        authenticate_attractor_any_isnan_admission)
     from .frontend.inout_vec3_swap_profile import (
         WATERCOLOR_KEY as INOUT_VEC3_SWAP_KEY,
         PROFILE as INOUT_VEC3_SWAP_PROFILE,
@@ -1875,6 +1883,12 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             expected = expected | {"runtime_loop_bound_profile"}
         if key == RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY:
             expected = expected | {"runtime_loop_bound_profile"}
+        # The Attractor agent carries its any/isnan identity carrier on top
+        # of the shared scalar-uint hash carrier arm above (both rshift and
+        # xor), curl-style composition: the one extra field, no shared-arm
+        # widening.
+        if key == ATTRACTOR_KEY:
+            expected = expected | {"attractor_any_isnan_profile"}
         # points/lenia:convolve carries BOTH its runtime window-radius
         # loop-bound record and its independent ceil-admission companion
         # (the int(ceil(searchRadius)) cast), curl-style composition.
@@ -2386,6 +2400,13 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for item in programs if "waves_any_notequal_profile" in item]
     if waves_any_notequal_profiles != [(WAVES_KEY, WAVES_ANY_NOTEQUAL_PROFILE)]:
         raise GeneratorError("typed slice Waves any/notEqual admission profile drift")
+    attractor_any_isnan_profiles = [
+        (item["program_key"], item.get("attractor_any_isnan_profile"))
+        for item in programs if "attractor_any_isnan_profile" in item]
+    if (attractor_any_isnan_profiles
+            and attractor_any_isnan_profiles != [(ATTRACTOR_KEY, ATTRACTOR_ANY_ISNAN_PROFILE)]):
+        raise GeneratorError(
+            "typed slice Attractor any/isnan admission profile drift")
     inout_vec3_swap_profiles = [
         (item["program_key"], item.get("inout_vec3_swap_profile"))
         for item in programs if "inout_vec3_swap_profile" in item]
@@ -3667,6 +3688,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           as_u32_round_profile: str | None = None,
                           ceil_admission_profile: str | None = None,
                           waves_any_notequal_profile: str | None = None,
+                          attractor_any_isnan_profile: str | None = None,
                           inout_vec3_swap_profile: str | None = None,
                           out_inout_admission_profile: str | None = None,
                           mutable_global_frame_profile: str | None = None,
@@ -4456,6 +4478,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_waves_relationals: tuple[TypedExpression, ...] = ()
     authorized_waves_reductions: tuple[TypedExpression, ...] = ()
     visited_waves_nodes: list[TypedExpression] = []
+    authorized_attractor_any_isnan_proof = None
+    visited_attractor_nodes: list[TypedExpression] = []
     authorized_inout_vec3_swap_proof = None
     visited_inout_vec3_swap_calls: list[TypedExpression] = []
     visited_out_inout_parameters: list[object] = []
@@ -6369,6 +6393,22 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == WAVES_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Waves any/notEqual admission profile carrier required")
+    # attractor_any_isnan_profile is deliberately light-checked, the same
+    # style as posterize_round_profile/waves_any_notequal_profile above.
+    if attractor_any_isnan_profile is not None:
+        if (typed.key != ATTRACTOR_KEY or compatibility_transform is not None
+                or numeric_literal_contract != "glsl-f32"):
+            raise GeneratorError(
+                f"{typed.key}: Attractor any/isnan admission profile metadata mismatch")
+        try:
+            authorized_attractor_any_isnan_proof = (
+                authenticate_attractor_any_isnan_admission(
+                    typed, source_hash, attractor_any_isnan_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key == ATTRACTOR_KEY:
+        raise GeneratorError(
+            f"{typed.key}: exact Attractor any/isnan admission profile carrier required")
     # inout_vec3_swap_profile is deliberately light-checked, the same style as
     # posterize_round_profile/waves_any_notequal_profile immediately above --
     # it never coexists with any other profile on this program key, so no
@@ -6613,6 +6653,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             nodes = (() if authorized_edge_proof is None
                      else authorized_edge_proof.bvec_nodes)
             if any(value is item for item in nodes):
+                return
+            # The Attractor agent's single `isnan(vec3)` result is admitted
+            # only as the exact authenticated attractor-isnan-any-admission-v1
+            # test node, consumed immediately by its paired `any`. Type
+            # admission and builtin admission must independently agree.
+            if (authorized_attractor_any_isnan_proof is not None
+                    and value is authorized_attractor_any_isnan_proof.test):
                 return
             raise GeneratorError(
                 f"{location(value)}: unsupported typed type {typ.display()}")
@@ -8056,10 +8103,46 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 # `round`, these never enter the capability vocabulary.
                 authorized_waves_nodes = (*authorized_waves_reductions,
                                           *authorized_waves_relationals)
-                if not any(value is item for item in authorized_waves_nodes):
+                # Independently, the Attractor agent's single
+                # `any(isnan(vec3))` reduction is admitted by the exact
+                # attractor-isnan-any-admission-v1 identity, by object
+                # identity only, with the same no-vocabulary discipline.
+                attractor_reduction = (
+                    authorized_attractor_any_isnan_proof is not None
+                    and value is authorized_attractor_any_isnan_proof.reduction)
+                if (not any(value is item for item in authorized_waves_nodes)
+                        and not attractor_reduction):
                     raise GeneratorError(
                         f"{location(value)}: unsupported builtin {value.callee}")
-                visited_waves_nodes.append(value)
+                if attractor_reduction:
+                    if (value.type.display() != "bool"
+                            or len(value.children) != 1
+                            or value.children[0].type.display() != "bvec3"):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed authenticated Attractor reduction")
+                    if any(value is item for item in visited_attractor_nodes):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated Attractor node visited twice")
+                    visited_attractor_nodes.append(value)
+                else:
+                    visited_waves_nodes.append(value)
+            elif value.callee == "isnan":
+                # Admitted only for the exact node authenticated by
+                # attractor-isnan-any-admission-v1, by object identity.
+                # Like round/any, it never enters the capability vocabulary.
+                if (authorized_attractor_any_isnan_proof is None
+                        or value is not authorized_attractor_any_isnan_proof.test):
+                    raise GeneratorError(
+                        f"{location(value)}: unsupported builtin {value.callee}")
+                if (value.type.display() != "bvec3"
+                        or len(value.children) != 1
+                        or value.children[0].type.display() != "vec3"):
+                    raise GeneratorError(
+                        f"{location(value)}: malformed authenticated Attractor isnan")
+                if any(value is item for item in visited_attractor_nodes):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated Attractor node visited twice")
+                visited_attractor_nodes.append(value)
             elif value.callee in {"dFdx", "dFdy", "fwidth"}:
                 # Admitted only for the exact nodes authenticated by
                 # derivative-admission-v1, by object identity. Like
@@ -8186,7 +8269,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                                     "floatBitsToUint", "tanh",
                                     "dFdx", "dFdy", "fwidth", "reflect",
                                     "any", "notEqual", "ceil",
-                    "textureLod", "log", "log2", "cross", "uintBitsToFloat"}):
+                    "textureLod", "log", "log2", "cross", "uintBitsToFloat",
+                    "isnan"}):
                 used.add(value.callee)
         elif value.kind == "unary" and value.operator not in {"+", "-", "!"}:
             if (value.operator == "~"
@@ -9184,6 +9268,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 for value in authorized_waves_all_nodes):
             raise GeneratorError(
                 f"{typed.key}: authenticated Waves traversal mismatch")
+    if authorized_attractor_any_isnan_proof is not None and (
+            len(visited_attractor_nodes) != 2
+            or not any(value is authorized_attractor_any_isnan_proof.reduction
+                       for value in visited_attractor_nodes)
+            or not any(value is authorized_attractor_any_isnan_proof.test
+                       for value in visited_attractor_nodes)):
+        raise GeneratorError(
+            f"{typed.key}: authenticated Attractor traversal mismatch")
     if authorized_inout_vec3_swap_proof is not None and (
             len(visited_inout_vec3_swap_calls) != len(authorized_inout_vec3_swap_proof.calls)
             or any(not any(value is item for item in visited_inout_vec3_swap_calls)
@@ -9580,6 +9672,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             if profiled is not typed:
                 raise GeneratorError(
                     f"{key}: hash scalar uint right shift identity profile mutated program")
+            typed = profiled
+        attractor_any_isnan_profile = slice_spec["programs"][index].get(
+            "attractor_any_isnan_profile")
+        if attractor_any_isnan_profile is not None:
+            try:
+                profiled = apply_attractor_any_isnan_admission(
+                    typed, source_hash, attractor_any_isnan_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: Attractor any/isnan identity profile mutated program")
             typed = profiled
         vec_scalar_modulo_profile = slice_spec["programs"][index].get(
             "vec_scalar_modulo_profile")
@@ -10253,6 +10357,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               as_u32_round_profile=as_u32_round_profile,
                               ceil_admission_profile=ceil_admission_profile,
                               waves_any_notequal_profile=waves_any_notequal_profile,
+                              attractor_any_isnan_profile=(
+                                  attractor_any_isnan_profile),
                               inout_vec3_swap_profile=inout_vec3_swap_profile,
                               out_inout_admission_profile=out_inout_admission_profile,
                               struct_declaration_profile=struct_declaration_profile,
@@ -10337,6 +10443,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            as_u32_round_profile=as_u32_round_profile,
                                            ceil_admission_profile=ceil_admission_profile,
                                            waves_any_notequal_profile=waves_any_notequal_profile,
+                                           attractor_any_isnan_profile=(
+                                               attractor_any_isnan_profile),
                                            inout_vec3_swap_profile=inout_vec3_swap_profile,
                                            out_inout_admission_profile=out_inout_admission_profile,
                                            struct_declaration_profile=struct_declaration_profile,
@@ -10444,6 +10552,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if hash_scalar_uint_rshift_profile is not None:
             manifest_program["hash_scalar_uint_rshift_profile"] = (
                 hash_scalar_uint_rshift_profile)
+        if attractor_any_isnan_profile is not None:
+            manifest_program["attractor_any_isnan_profile"] = (
+                attractor_any_isnan_profile)
         if vec_scalar_modulo_profile is not None:
             manifest_program["vec_scalar_modulo_profile"] = (
                 vec_scalar_modulo_profile)

@@ -13,6 +13,7 @@ Authenticates exact scalar uint XOR (^) expressions across hash functions:
 - points/life:agent (hash_uint)
 - points/physarum:agent (hash_uint)
 - points/dla:agent (hash_uint)
+- points/attractor:agent (hash_uint)
 
 All candidate XOR expressions operate strictly on uint operands and evaluate to uint.
 """
@@ -38,6 +39,7 @@ FLOCK_AGENT_KEY = "points/flock:agent"
 LIFE_AGENT_KEY = "points/life:agent"
 PHYSARUM_AGENT_KEY = "points/physarum:agent"
 DLA_AGENT_KEY = "points/dla:agent"
+ATTRACTOR_AGENT_KEY = "points/attractor:agent"
 
 HASH_SCALAR_UINT_XOR_KEYS = frozenset({
     NOISE3D_PRECOMPUTE_KEY,
@@ -52,6 +54,7 @@ HASH_SCALAR_UINT_XOR_KEYS = frozenset({
     LIFE_AGENT_KEY,
     PHYSARUM_AGENT_KEY,
     DLA_AGENT_KEY,
+    ATTRACTOR_AGENT_KEY,
 })
 
 _PROFILES = {
@@ -173,6 +176,16 @@ _PROFILES = {
         "functions_sha256": "bf3bc64bed802a11e5676f0c4310a39a604f68edd20c3aa73eee83e4b7fecdfd",
         "whole_sha256": "d56645842caf80c89c5a4b89feaaf2ce03c4fe52e2ec5dfc7e6c31bd82ed6b97",
         "interface_sha256": "28db1449b3e1ae28184383f5649b1cca9dd5aab5ecc40467ccafb03863cc55a9",
+        "xor_count": 2,
+    },
+    ATTRACTOR_AGENT_KEY: {
+        "raw_bytes": 4936,
+        "raw_sha256": "5ec5c8c92dc026ca123c37cb735386c4bca9df0e2b2ebbd9831d3fbc32ac127e",
+        "norm_bytes": 4037,
+        "norm_sha256": "d6b8f3bdd40429533066d5a36851310e4fd2f12c4d5fbbfeef9e722e2b03c0aa",
+        "functions_sha256": "b48ff25068d3a828af049eb2877b9a7b78dba0fe01b064815fb2cd21aa108ec2",
+        "whole_sha256": "01dbb7768fad041b71cd7f21da1edc1214fac2c0498af2b3ebf5ce6d2ee85c74",
+        "interface_sha256": "743337eb60a5726ea3f547181b79d65013ebd67850e3484f367fd73b1cebda61",
         "xor_count": 2,
     },
 }

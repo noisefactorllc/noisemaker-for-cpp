@@ -269,6 +269,9 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         POINTS_POST_KEYS, PROFILE as POINTS_POST_PROFILE,
         apply_points_post_admission,
     )
+    from tools.glslcpp.frontend.attractor_any_isnan_profile import (
+        ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
+    )
     from tools.glslcpp.frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, PROFILE as CEIL_ADMISSION_PROFILE,
     )
@@ -277,6 +280,9 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     )
     from tools.glslcpp.frontend.struct_frontier_profile import (
         PROFILES as STRUCT_FRONTIER_PROFILES, STRUCT_FRONTIER_KEYS,
+    )
+    attractor_any_isnan_profile = (
+        ATTRACTOR_ANY_ISNAN_PROFILE if key == ATTRACTOR_KEY else None
     )
     ceil_admission_profile = (
         CEIL_ADMISSION_PROFILE if key in CEIL_ADMISSION_KEYS else None
@@ -355,7 +361,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             points_post_profile=points_post_profile,
             ceil_admission_profile=ceil_admission_profile,
             fractal3d_log_profile=fractal3d_log_profile,
-            struct_frontier_profile=struct_frontier_profile)
+            struct_frontier_profile=struct_frontier_profile,
+            attractor_any_isnan_profile=attractor_any_isnan_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
@@ -374,7 +381,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             flow_round_profile=flow_round_profile,
             points_post_profile=points_post_profile,
             ceil_admission_profile=ceil_admission_profile,
-            fractal3d_log_profile=fractal3d_log_profile)
+            fractal3d_log_profile=fractal3d_log_profile,
+            attractor_any_isnan_profile=attractor_any_isnan_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -653,6 +661,9 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     from tools.glslcpp.frontend.points_post_profile import (
         POINTS_POST_KEYS, PROFILE as POINTS_POST_PROFILE,
     )
+    from tools.glslcpp.frontend.attractor_any_isnan_profile import (
+        ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
+    )
 
     path = repository / "tools/glslcpp/typed_slice.json"
     spec = json.loads(path.read_text(encoding="utf-8"))
@@ -685,6 +696,8 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
             row["flow_round_profile"] = FLOW_ROUND_PROFILE
         if entry["program_key"] in POINTS_POST_KEYS:
             row["points_post_profile"] = POINTS_POST_PROFILE
+        if entry["program_key"] == ATTRACTOR_KEY:
+            row["attractor_any_isnan_profile"] = ATTRACTOR_ANY_ISNAN_PROFILE
         rows.setdefault(entry["program_key"], row)
     spec["programs"] = [rows[key] for key in sorted(rows)]
     path.write_bytes(_json_bytes(spec))
