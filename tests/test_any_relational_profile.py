@@ -341,7 +341,7 @@ class ValidatorIntegrationTests(unittest.TestCase):
 
 
 class EmitterLoweringTests(unittest.TestCase):
-    def _emitted(self, key: str, with_profile: bool):
+    def _emitted(self, key: str, with_profile: bool, **extra):
         from tools.glslcpp.emit_typed_cpp import render_typed_cpp
         from tools.glslcpp.frontend.cross_builtin_profile import (
             PROFILE as CROSS_BUILTIN_PROFILE)
@@ -354,6 +354,7 @@ class EmitterLoweringTests(unittest.TestCase):
             kwargs["cross_builtin_profile"] = CROSS_BUILTIN_PROFILE
         if with_profile:
             kwargs["any_relational_profile"] = PROFILE
+        kwargs.update(extra)
         return render_typed_cpp(
             _analyzed(key), key, _source_hash(_source_text(key)),
             "typed_test", "bind_test", **kwargs)
@@ -379,15 +380,16 @@ class EmitterLoweringTests(unittest.TestCase):
                                     "carrier required"):
             self._emitted(RENDERLIT_KEY, with_profile=False)
 
-    def test_renderlit_emitter_advances_to_the_struct_frontier(self):
-        """With the closure carrier, every any/relational site lowers and the
-        emitter reaches its next authentic frontier: the IsoHit struct
-        emission, exactly the frontier of its render3d/renderCubemap3d
-        siblings."""
-        from tools.glslcpp.emit_typed_cpp import TypedEmissionError
-        with self.assertRaisesRegex(TypedEmissionError,
-                                    "unsupported typed type IsoHit"):
-            self._emitted(RENDERLIT_KEY, with_profile=True)
+    def test_renderlit_emitter_renders_with_the_struct_frontier(self):
+        """With the closure and struct-frontier carriers together, every
+        any/relational site lowers and the IsoHit struct emission is
+        authenticated -- the former frontier of the render3d/renderCubemap3d
+        siblings is admitted."""
+        from tools.glslcpp.frontend.struct_frontier_profile import (
+            PROFILES as STRUCT_FRONTIER_PROFILES)
+        self.assertIn("IsoHit raymarch", self._emitted(
+            RENDERLIT_KEY, with_profile=True,
+            struct_frontier_profile=STRUCT_FRONTIER_PROFILES[RENDERLIT_KEY]))
 
 
 if __name__ == "__main__":  # pragma: no cover

@@ -262,6 +262,10 @@ from .frontend.attractor_any_isnan_profile import (
 from .frontend.any_relational_profile import (
     ANY_RELATIONAL_KEYS, PROFILE as ANY_RELATIONAL_PROFILE,
     authenticate_any_relational_admission)
+from .frontend.struct_frontier_profile import (
+    PROFILES as STRUCT_FRONTIER_PROFILES,
+    STRUCT_FRONTIER_KEYS,
+    authenticate_struct_frontier)
 from .frontend.inout_vec3_swap_profile import (
     WATERCOLOR_KEY as INOUT_VEC3_SWAP_KEY,
     PROFILE as INOUT_VEC3_SWAP_PROFILE,
@@ -1135,6 +1139,7 @@ class _Emitter:
     waves_any_notequal_profile: str | None = None
     attractor_any_isnan_profile: str | None = None
     any_relational_profile: str | None = None
+    struct_frontier_profile: str | None = None
     inout_vec3_swap_profile: str | None = None
     out_inout_admission_profile: str | None = None
     log_admission_profile: str | None = None
@@ -1608,6 +1613,13 @@ class _Emitter:
         init=False, default_factory=list)
     emitted_any_relational_relationals: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_struct_frontier: object = field(init=False, default=None)
+    emitted_frontier_struct_definitions: list[str] = field(
+        init=False, default_factory=list)
+    emitted_frontier_locals: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_frontier_members: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_inout_vec3_swap_proof: object = field(init=False, default=None)
     emitted_inout_vec3_swap_calls: list[TypedExpression] = field(
         init=False, default_factory=list)
@@ -2054,6 +2066,10 @@ class _Emitter:
         self.authorized_any_relational_proof = None
         self.emitted_any_relational_reductions = []
         self.emitted_any_relational_relationals = []
+        self.authorized_struct_frontier = None
+        self.emitted_frontier_struct_definitions = []
+        self.emitted_frontier_locals = []
+        self.emitted_frontier_members = []
         self.authorized_inout_vec3_swap_proof = None
         self.emitted_inout_vec3_swap_calls = []
         self.authorized_out_inout_parameters = ()
@@ -3522,6 +3538,26 @@ class _Emitter:
         elif self.program.key in ANY_RELATIONAL_KEYS:
             raise _error(self.program, self.program,
                          "exact any-relational admission profile carrier required")
+        # struct_frontier_profile is deliberately light-checked, the same
+        # style as the admission profiles above. The emitter authenticates
+        # the same frozen census the validator authenticates, so the struct
+        # plumbing it lowers (type names, definitions, locals, member
+        # sites) is exactly the census -- nothing more is unblocked.
+        if self.struct_frontier_profile is not None:
+            if (self.program.key not in STRUCT_FRONTIER_KEYS
+                    or self.struct_frontier_profile
+                    != STRUCT_FRONTIER_PROFILES[self.program.key]):
+                raise _error(self.program, self.program,
+                             "struct frontier profile metadata mismatch")
+            try:
+                self.authorized_struct_frontier = authenticate_struct_frontier(
+                    self.program, self.source_hash,
+                    self.struct_frontier_profile)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        elif self.program.key in STRUCT_FRONTIER_KEYS:
+            raise _error(self.program, self.program,
+                         "exact struct frontier profile carrier required")
         # inout_vec3_swap_profile is deliberately light-checked, the same
         # style as posterize_round_profile/waves_any_notequal_profile above.
         if self.inout_vec3_swap_profile is not None:
@@ -6498,6 +6534,11 @@ class _Emitter:
                 and self.authorized_struct_declaration
                 and self.authorized_struct_declaration[0].name == "POIData"):
             return "POIData"
+        if (name in {"VoxelHit", "IsoHit"}
+                and self.authorized_struct_frontier is not None
+                and any(item.name == name
+                        for item in self.authorized_struct_frontier.structs)):
+            return name
         if name in {"HistoricPalette", "PaletteEntry"}:
             if ((name == "HistoricPalette"
                  and self.authorized_historic_palette_proof is not None)
@@ -6513,6 +6554,11 @@ class _Emitter:
         # Canonical scalar temporaries retain JavaScript Number precision;
         # constructors, builtins, calls, uniforms, and outputs remain the
         # explicit GLSL float32 consumption/storage boundaries.
+        if (value.display() in {"VoxelHit", "IsoHit"}
+                and self.authorized_struct_frontier is not None
+                and any(item.name == value.display()
+                        for item in self.authorized_struct_frontier.structs)):
+            return value.display()
         if (value.display() == "vec2[8]"
                 and self.authorized_newton_roots_declaration is not None):
             return "std::array<glsl::Vec2, 8>"
@@ -7672,6 +7718,14 @@ class _Emitter:
                 return f"{self.expression(value.children[0])}.{value.member}"
             members = (self.authorized_struct_declaration[2]
                        if self.authorized_struct_declaration else ())
+            frontier = self.authorized_struct_frontier
+            if (frontier is not None
+                    and any(value is item for item in frontier.members)):
+                if any(value is item for item in self.emitted_frontier_members):
+                    raise _error(self.program, value,
+                                 "authenticated struct-frontier member emitted twice")
+                self.emitted_frontier_members.append(value)
+                return f"{self.expression(value.children[0])}.{value.member}"
             if (not any(value is item for item in members)
                     or len(value.children) != 1
                     or value.member not in {"center", "deg", "maxZoom"}
@@ -9463,6 +9517,16 @@ class _Emitter:
             if not value.member or any(lane not in _SWIZZLE for lane in value.member):
                 raise _error(self.program, value, "unsupported swizzle lvalue")
             return target, ", ".join(str(_SWIZZLE[lane]) for lane in value.member)
+        if value.kind == "member":
+            # A struct-frontier member store (`result.dist = ...`). The
+            # expression() member arm enforces the frozen census identity;
+            # the store target is the plain member access itself.
+            frontier = self.authorized_struct_frontier
+            if (frontier is None
+                    or not any(value is item for item in frontier.members)):
+                raise _error(self.program, value,
+                             "unauthenticated struct member lvalue")
+            return self.expression(value), None
         raise _error(self.program, value, "unsupported lvalue")
 
     def _consume_shape_mixer_guard(self, value: TypedExpression) -> None:
@@ -9852,6 +9916,38 @@ class _Emitter:
                     lines.append(
                         f"{indent}[[maybe_unused]] std::array<{array.native_element_type}, 9> "
                         f"{emitted_name}{{}};")
+                    continue
+                if (declaration.type.kind == "struct"
+                        and self.authorized_struct_frontier is not None
+                        and any(item.name == declaration.type.display()
+                                for item in
+                                self.authorized_struct_frontier.structs)):
+                    # A struct-frontier local (`VoxelHit result;` or an
+                    # `IsoHit hit = isosurfaceTrace(...)` binding). The
+                    # census freezes every struct local by node identity;
+                    # value-initializing the uninitialized form is
+                    # observable-equivalent because the carriers assign
+                    # every member before any read.
+                    frontier = self.authorized_struct_frontier
+                    if (frontier is None
+                            or not any(declaration is item[1]
+                                       for item in frontier.locals)):
+                        raise _error(self.program, declaration,
+                                     "unauthenticated struct local")
+                    if any(declaration is item
+                           for item in self.emitted_frontier_locals):
+                        raise _error(self.program, declaration,
+                                     "authenticated struct local emitted twice")
+                    self.emitted_frontier_locals.append(declaration)
+                    if len(declaration.children) > 1:
+                        raise _error(self.program, declaration,
+                                     "malformed struct local initializer")
+                    initializer = (self.expression(declaration.children[0])
+                                   if declaration.children else "{}")
+                    lines.append(
+                        f"{indent}[[maybe_unused]] "
+                        f"{self.local_type(declaration.type)} "
+                        f"{emitted_name} = {initializer};")
                     continue
                 initializer = self.expression(declaration.children[0]) if declaration.children else "{}"
                 edge = self.authorized_edge_proof
@@ -12360,6 +12456,24 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 "",
             ])
             self.emitted_newton_struct_count += 1
+        if self.authorized_struct_frontier is not None:
+            # One `struct X final { ... };` per frozen census declaration,
+            # members in frozen field order, native member types straight
+            # from the approved type table. Only the census's field sets are
+            # legal; any other member shape is a compile-time unknown and a
+            # review-visible hard failure here.
+            for item in self.authorized_struct_frontier.structs:
+                if item.name in self.emitted_frontier_struct_definitions:
+                    raise _error(self.program, self.program,
+                                 "struct-frontier definition emitted twice")
+                self.emitted_frontier_struct_definitions.append(item.name)
+                lines.extend([
+                    f"struct {item.name} final {{",
+                    *(f"  {self.type(field.type)} {field.name};"
+                      for field in item.fields),
+                    "};",
+                    "",
+                ])
         contract = getattr(self, "authorized_frame_contract", None)
         if contract is not None:
             # Emitted ONLY for a carrier program, and only from the closure's
@@ -13543,6 +13657,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      waves_any_notequal_profile: str | None = None,
                      attractor_any_isnan_profile: str | None = None,
                      any_relational_profile: str | None = None,
+                     struct_frontier_profile: str | None = None,
                      inout_vec3_swap_profile: str | None = None,
                      out_inout_admission_profile: str | None = None,
                      log_admission_profile: str | None = None,
@@ -13656,6 +13771,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        waves_any_notequal_profile,
                        attractor_any_isnan_profile,
                        any_relational_profile,
+                       struct_frontier_profile,
                        inout_vec3_swap_profile,
                        out_inout_admission_profile,
                        log_admission_profile,
@@ -14542,6 +14658,26 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 not any(value is item for item in emitted) for value in expected):
             raise _error(program, program,
                          "authenticated any-relational emission mismatch")
+    if emitter.authorized_struct_frontier is not None:
+        record = emitter.authorized_struct_frontier
+        if (len(emitter.emitted_frontier_struct_definitions)
+                != len({item.name for item in record.structs})
+                or any(name not in {item.name for item in record.structs}
+                       for name in emitter.emitted_frontier_struct_definitions)):
+            raise _error(program, program,
+                         "authenticated struct-frontier definition mismatch")
+        expected_locals = tuple(item[1] for item in record.locals)
+        expected_members = tuple(record.members)
+        emitted_locals = emitter.emitted_frontier_locals
+        emitted_members = emitter.emitted_frontier_members
+        if (len(emitted_locals) != len(expected_locals)
+                or any(not any(value is item for item in emitted_locals)
+                       for value in expected_locals)
+                or len(emitted_members) != len(expected_members)
+                or any(not any(value is item for item in emitted_members)
+                       for value in expected_members)):
+            raise _error(program, program,
+                         "authenticated struct-frontier emission mismatch")
     if emitter.authorized_inout_vec3_swap_proof is not None:
         expected = emitter.authorized_inout_vec3_swap_proof.calls
         emitted = emitter.emitted_inout_vec3_swap_calls

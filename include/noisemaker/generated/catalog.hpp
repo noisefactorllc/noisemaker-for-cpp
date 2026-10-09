@@ -247,7 +247,10 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_render_pointsRender_blend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsRender_copy(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsRender_diffuse(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_render_render3d_render3d(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_render_renderCubemap3d_renderCubemap3d(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_render_renderCubemapSurface_renderCubemapSurface(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_render_renderLit3d_renderLit3d(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_bitwise_bitwise(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_cell_cell(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_cellularAutomata_ca(const glsl::Bindings& bindings);

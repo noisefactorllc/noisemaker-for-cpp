@@ -19989,6 +19989,184 @@
         }
       }
     },
+    "render/render3d": {
+      "func": "render3d",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0.02,
+            0.02,
+            0.02
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "filtering": {
+          "choices": {
+            "isosurface": 0,
+            "voxel": 1
+          },
+          "default": 0,
+          "define": "FILTERING",
+          "type": "int"
+        },
+        "invert": {
+          "default": false,
+          "define": "INVERT",
+          "type": "boolean"
+        },
+        "orbitSpeed": {
+          "default": 1,
+          "max": 5,
+          "min": -5,
+          "type": "int",
+          "uniform": "orbitSpeed"
+        },
+        "threshold": {
+          "default": 0.5,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "threshold"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/render3d:render3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "render3d"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
+    "render/renderCubemap3d": {
+      "func": "renderCubemap3d",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0.02,
+            0.02,
+            0.02
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "cubeBasis": {
+          "default": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "type": "mat3",
+          "uniform": "cubeBasis"
+        },
+        "filtering": {
+          "choices": {
+            "isosurface": 0,
+            "voxel": 1
+          },
+          "default": 0,
+          "define": "FILTERING",
+          "type": "int"
+        },
+        "invert": {
+          "default": false,
+          "define": "INVERT",
+          "type": "boolean"
+        },
+        "threshold": {
+          "default": 0.5,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "threshold"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/renderCubemap3d:renderCubemap3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "renderCubemap3d"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
     "render/renderCubemapSurface": {
       "func": "renderCubemapSurface",
       "kind": "filter",
@@ -20072,6 +20250,182 @@
             "geoOut": "screenGeoBuffer"
           },
           "program": "renderCubemapSurface"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
+    "render/renderLit3d": {
+      "func": "renderLit3d",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "ambientColor": {
+          "default": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "type": "color",
+          "uniform": "ambientColor"
+        },
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0,
+            0,
+            0
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "cameraPosition": {
+          "default": [
+            0,
+            0.1425,
+            1
+          ],
+          "max": [
+            1,
+            1,
+            1
+          ],
+          "min": [
+            -1,
+            -1,
+            -1
+          ],
+          "type": "vec3",
+          "uniform": "cameraPosition"
+        },
+        "diffuseColor": {
+          "default": [
+            1,
+            1,
+            1
+          ],
+          "type": "color",
+          "uniform": "diffuseColor"
+        },
+        "diffuseIntensity": {
+          "default": 0.7,
+          "max": 2,
+          "min": 0,
+          "type": "float",
+          "uniform": "diffuseIntensity"
+        },
+        "invert": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "invert"
+        },
+        "lightDirection": {
+          "default": [
+            0.5,
+            0.5,
+            1
+          ],
+          "type": "vec3",
+          "uniform": "lightDirection"
+        },
+        "orbitSpeed": {
+          "default": 1,
+          "max": 5,
+          "min": -5,
+          "type": "int",
+          "uniform": "orbitSpeed",
+          "zero": 0
+        },
+        "rimIntensity": {
+          "default": 0.15,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "rimIntensity"
+        },
+        "rimPower": {
+          "default": 3,
+          "max": 8,
+          "min": 0.5,
+          "type": "float",
+          "uniform": "rimPower"
+        },
+        "shape": {
+          "choices": {
+            "cube": 0,
+            "sphere": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "shape"
+        },
+        "shininess": {
+          "default": 32,
+          "max": 256,
+          "min": 1,
+          "type": "float",
+          "uniform": "shininess"
+        },
+        "specularColor": {
+          "default": [
+            1,
+            1,
+            1
+          ],
+          "type": "color",
+          "uniform": "specularColor"
+        },
+        "specularIntensity": {
+          "default": 0.3,
+          "max": 2,
+          "min": 0,
+          "type": "float",
+          "uniform": "specularIntensity"
+        },
+        "threshold": {
+          "default": 0.5,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "threshold"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/renderLit3d:renderLit3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "renderLit3d"
         }
       ],
       "textures": {
@@ -25285,7 +25639,10 @@
       "render/pointsBillboardRender",
       "render/pointsEmit",
       "render/pointsRender",
+      "render/render3d",
+      "render/renderCubemap3d",
       "render/renderCubemapSurface",
+      "render/renderLit3d",
       "synth/cellularAutomata",
       "synth/mnca",
       "synth/navierStokes",

@@ -145,13 +145,13 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             # log admission, the attractor:agent any/isnan identity
             # admission and the heightmap3d any-relational identity
             # admission to the compatible program census.
-            self.assertEqual(283, provenance["counts"]["compatible_programs"])
+            self.assertEqual(286, provenance["counts"]["compatible_programs"])
             self.assertEqual(1, provenance["counts"]["incompatible_programs"])
             # Pending authority passes remain explicit in the compatibility
             # census; attractor:agent's promotion drops one of the two
             # missing agent passes for points/attractor and heightmap3d's
             # promotion drops its missing precompute pass.
-            self.assertEqual(59, provenance["counts"]["missing_passes"])
+            self.assertEqual(56, provenance["counts"]["missing_passes"])
             self.assertEqual(5, provenance["counts"]["scatter_passes"])
             self.assertEqual("f8f99a758dad34cde8dbcd70e7f367f7a957a230385ef4a94037bebc3e3b5161", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)

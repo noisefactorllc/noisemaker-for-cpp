@@ -394,7 +394,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             ceil_admission_profile=ceil_admission_profile,
             fractal3d_log_profile=fractal3d_log_profile,
             attractor_any_isnan_profile=attractor_any_isnan_profile,
-            any_relational_profile=any_relational_profile)
+            any_relational_profile=any_relational_profile,
+            struct_frontier_profile=struct_frontier_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None

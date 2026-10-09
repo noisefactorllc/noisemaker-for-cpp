@@ -1280,8 +1280,27 @@
       "program_key": "render/pointsRender:diffuse"
     },
     {
+      "defines": {
+        "FILTERING": 0,
+        "INVERT": false
+      },
+      "program_key": "render/render3d:render3d"
+    },
+    {
+      "defines": {
+        "FILTERING": 0,
+        "INVERT": false
+      },
+      "program_key": "render/renderCubemap3d:renderCubemap3d"
+    },
+    {
       "defines": {},
       "program_key": "render/renderCubemapSurface:renderCubemapSurface"
+    },
+    {
+      "any_relational_profile": "any-relational-admission-v1",
+      "defines": {},
+      "program_key": "render/renderLit3d:renderLit3d"
     },
     {
       "bitwise_scalar_int_ops_profile": "bitwise-scalar-int-ops-v2",

@@ -429,7 +429,7 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.struct_frontier_profile import (
         PROFILES as STRUCT_FRONTIER_PROFILES,
         STRUCT_FRONTIER_KEYS,
-        authenticate_struct_frontier)
+        apply_struct_frontier, authenticate_struct_frontier)
     from tools.glslcpp.frontend.texture_lod_admission_profile import (
         PARALLAX_KEY as TEXTURE_LOD_ADMISSION_PARALLAX_KEY,
         PARALLAX_PROFILE as TEXTURE_LOD_ADMISSION_PROFILE,
@@ -879,7 +879,7 @@ else:
     from .frontend.struct_frontier_profile import (
         PROFILES as STRUCT_FRONTIER_PROFILES,
         STRUCT_FRONTIER_KEYS,
-        authenticate_struct_frontier)
+        apply_struct_frontier, authenticate_struct_frontier)
     from .frontend.texture_lod_admission_profile import (
         PARALLAX_KEY as TEXTURE_LOD_ADMISSION_PARALLAX_KEY,
         PARALLAX_PROFILE as TEXTURE_LOD_ADMISSION_PROFILE,
@@ -2553,6 +2553,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         "filter3d/flow3d:diffuse": {"BEHAVIOR": 1},
         **({"filter3d/flow3d:agent": {"BEHAVIOR": 1}} if "filter3d/flow3d:agent" in keys else {}),
         "synth3d/noise3d:precompute": {"COLOR_MODE": 0, "OCTAVES": 1, "RIDGES": False},
+        "render/render3d:render3d": {"FILTERING": 0, "INVERT": False},
+        "render/renderCubemap3d:renderCubemap3d": {"FILTERING": 0, "INVERT": False},
     }
     actual_defines = {item["program_key"]: item["defines"] for item in programs if item["defines"]}
     if actual_defines != expected_defines:
@@ -9806,6 +9808,37 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: any-relational identity profile mutated program")
             typed = profiled
+        # The struct-frontier carriers key their emitter-side admission by
+        # program key, not by row field: the census is frozen per key and
+        # both validator and emitter authenticate the same record on the
+        # same post-admission tree. cross admission composes the same way
+        # for the two cross carriers (renderLit3d additionally carries the
+        # any-relational row above).
+        struct_frontier_profile = (
+            STRUCT_FRONTIER_PROFILES[key]
+            if key in STRUCT_FRONTIER_KEYS else None)
+        if struct_frontier_profile is not None:
+            try:
+                profiled = apply_struct_frontier(
+                    typed, source_hash, struct_frontier_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: struct frontier identity profile mutated program")
+            typed = profiled
+        cross_builtin_profile = (
+            CROSS_BUILTIN_PROFILE if key in CROSS_KEYS else None)
+        if cross_builtin_profile is not None:
+            try:
+                profiled = apply_cross_admission(
+                    typed, source_hash, cross_builtin_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: cross builtin identity profile mutated program")
+            typed = profiled
         vec_scalar_modulo_profile = slice_spec["programs"][index].get(
             "vec_scalar_modulo_profile")
         if vec_scalar_modulo_profile is not None:
@@ -10481,6 +10514,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               attractor_any_isnan_profile=(
                                   attractor_any_isnan_profile),
                               any_relational_profile=any_relational_profile,
+                              struct_frontier_profile=struct_frontier_profile,
+                              cross_builtin_profile=cross_builtin_profile,
                               inout_vec3_swap_profile=inout_vec3_swap_profile,
                               out_inout_admission_profile=out_inout_admission_profile,
                               struct_declaration_profile=struct_declaration_profile,
@@ -10568,6 +10603,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            attractor_any_isnan_profile=(
                                                attractor_any_isnan_profile),
                                            any_relational_profile=any_relational_profile,
+                                           struct_frontier_profile=struct_frontier_profile,
+                                           cross_builtin_profile=cross_builtin_profile,
                                            inout_vec3_swap_profile=inout_vec3_swap_profile,
                                            out_inout_admission_profile=out_inout_admission_profile,
                                            struct_declaration_profile=struct_declaration_profile,

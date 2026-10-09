@@ -22717,17 +22717,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39114,
-                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
+                39553,
+                "b306905afaba7408b22cc81f3a285585f17c5735a2f906ccc0c4bbf52e07797f"),
             "src/typed_generated/typed_slice.cpp": (
-                3293848,
-                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
+                3373421,
+                "7cbc00b2dfaaee57244a98c0543c2a81a9c4123a9c536ff81f5e8f7df5a4a3b7"),
             "src/typed_generated/typed_manifest.json": (
-                864764,
-                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
+                875094,
+                "e33877eb39b60d0b8cbc461f03aed91f10913732ac67b8ff81ee44493af96038"),
             "include/noisemaker/generated/catalog.hpp": (
-                27812,
-                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
+                28108,
+                "449c75a0157b1b89cfc70d9257e1b0258cc69c92813c934663b094f2b74d55f0"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23499,17 +23499,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39114,
-                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
+                39553,
+                "b306905afaba7408b22cc81f3a285585f17c5735a2f906ccc0c4bbf52e07797f"),
             "src/typed_generated/typed_slice.cpp": (
-                3293848,
-                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
+                3373421,
+                "7cbc00b2dfaaee57244a98c0543c2a81a9c4123a9c536ff81f5e8f7df5a4a3b7"),
             "src/typed_generated/typed_manifest.json": (
-                864764,
-                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
+                875094,
+                "e33877eb39b60d0b8cbc461f03aed91f10913732ac67b8ff81ee44493af96038"),
             "include/noisemaker/generated/catalog.hpp": (
-                27812,
-                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
+                28108,
+                "449c75a0157b1b89cfc70d9257e1b0258cc69c92813c934663b094f2b74d55f0"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24261,17 +24261,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39114,
-                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
+                39553,
+                "b306905afaba7408b22cc81f3a285585f17c5735a2f906ccc0c4bbf52e07797f"),
             "src/typed_generated/typed_slice.cpp": (
-                3293848,
-                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
+                3373421,
+                "7cbc00b2dfaaee57244a98c0543c2a81a9c4123a9c536ff81f5e8f7df5a4a3b7"),
             "src/typed_generated/typed_manifest.json": (
-                864764,
-                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
+                875094,
+                "e33877eb39b60d0b8cbc461f03aed91f10913732ac67b8ff81ee44493af96038"),
             "include/noisemaker/generated/catalog.hpp": (
-                27812,
-                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
+                28108,
+                "449c75a0157b1b89cfc70d9257e1b0258cc69c92813c934663b094f2b74d55f0"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24799,17 +24799,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39114,
-                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
+                39553,
+                "b306905afaba7408b22cc81f3a285585f17c5735a2f906ccc0c4bbf52e07797f"),
             "src/typed_generated/typed_slice.cpp": (
-                3293848,
-                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
+                3373421,
+                "7cbc00b2dfaaee57244a98c0543c2a81a9c4123a9c536ff81f5e8f7df5a4a3b7"),
             "src/typed_generated/typed_manifest.json": (
-                864764,
-                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
+                875094,
+                "e33877eb39b60d0b8cbc461f03aed91f10913732ac67b8ff81ee44493af96038"),
             "include/noisemaker/generated/catalog.hpp": (
-                27812,
-                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
+                28108,
+                "449c75a0157b1b89cfc70d9257e1b0258cc69c92813c934663b094f2b74d55f0"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25401,17 +25401,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39114,
-                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
+                39553,
+                "b306905afaba7408b22cc81f3a285585f17c5735a2f906ccc0c4bbf52e07797f"),
             "src/typed_generated/typed_slice.cpp": (
-                3293848,
-                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
+                3373421,
+                "7cbc00b2dfaaee57244a98c0543c2a81a9c4123a9c536ff81f5e8f7df5a4a3b7"),
             "src/typed_generated/typed_manifest.json": (
-                864764,
-                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
+                875094,
+                "e33877eb39b60d0b8cbc461f03aed91f10913732ac67b8ff81ee44493af96038"),
             "include/noisemaker/generated/catalog.hpp": (
-                27812,
-                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
+                28108,
+                "449c75a0157b1b89cfc70d9257e1b0258cc69c92813c934663b094f2b74d55f0"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25814,9 +25814,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # bounded by `MAX_STEPS * 2` (256*2=512, exactly the trip cap), proved
         # by the sound product bound in _annotate_statement. The two cross
         # carriers' cross-builtin profiles are re-locked to these
-        # seed-attached post-proof trees. Every loop proves; the frontier
-        # advances from `unsupported counted-for program proof` to the
-        # struct declaration in all three, and no program is promoted.
+        # seed-attached post-proof trees. Every loop proves. PROMOTED: the
+        # struct declaration frontier (VoxelHit + IsoHit) was admitted by the
+        # emitter-side struct-frontier leg, and all three programs vendored.
         corpus = pathlib.Path(
             f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         pending = _json.loads((corpus / "pending.json").read_text(encoding="utf-8"))
@@ -25833,16 +25833,20 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             landed = loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
             self.assertEqual(("MAX_STEPS", landed["integer"][1], "256", 256),
                              landed["integer"])
-            source_path = corpus / f"pending-sources/{effect_id}/{program_name}.glsl"
+            source_path = corpus / f"sources/{effect_id}/{program_name}.glsl"
             raw = source_path.read_text(encoding="utf-8")
             self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(),
                              landed["raw"])
-            record = next(item for item in pending["pending"]
+            vendored = _json.loads((corpus / "manifest.json").read_text(
+                encoding="utf-8"))["programs"]
+            record = next(item for item in vendored
                           if item["program_key"] == key)
             self.assertEqual(record["raw_sha256"], landed["raw"])
 
+            metadata_doc = _json.loads(
+                (corpus / "metadata.json").read_text(encoding="utf-8"))
             defaults = check_semantics._metadata_defaults(
-                {"effects": {effect_id: pending["effects"][effect_id]}}, key)
+                metadata_doc, key)
 
             # Without the profile the carrier requirement fails closed.
             typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
@@ -25853,8 +25857,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             self.assertIn("exact source-global literal-int carrier required",
                           str(ctx.exception))
 
-            # With the seed carrier every loop proves and the frontier is the
-            # struct declaration.
+            # With the seed carrier every loop proves; the programs are
+            # vendored now -- the struct declaration frontier was admitted by
+            # the emitter-side struct-frontier leg (VoxelHit + IsoHit).
             typed = analyze_program(
                 parse_program(raw, key, defaults), key,
                 source_global_literal_int_profile=
@@ -25905,8 +25910,28 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             self.assertIn(
                 ("exact any-relational admission profile carrier required"
                  if key == "render/renderLit3d:renderLit3d"
-                 else "unsupported typed type"),
+                 else "exact struct frontier profile carrier required"),
                 str(ctx.exception))
+
+            # With the full carrier set (seed + cross + struct frontier, plus
+            # the any-relational row for renderLit3d) validation and emission
+            # both succeed -- the vendored programs render completely.
+            full_kwargs = dict(
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
+                struct_frontier_profile=generate_typed_slice
+                .STRUCT_FRONTIER_PROFILES[key],
+                **cross_kwargs)
+            if key == "render/renderLit3d:renderLit3d":
+                full_kwargs["any_relational_profile"] = (
+                    generate_typed_slice.ANY_RELATIONAL_PROFILE)
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"], **full_kwargs)
+            emit_typed_cpp.render_typed_cpp(
+                typed, key, landed["raw"], "pixel",
+                "bind_" + key.replace("/", "_").replace(":", "_"),
+                **full_kwargs)
 
             # Forged source bytes fail closed even with the exact profile.
             with self.assertRaises(Exception) as ctx:
@@ -26190,8 +26215,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 landed["raw"], CROSS_PROFILE)
         self.assertIn("mismatch", str(ctx.exception))
 
-        # With both carriers the frontier is the FractalResult struct
-        # declaration (the program's next authentic blocker); no promotion.
+        # With both carriers the frontier is the FractalResult `out`
+        # parameter (the program's next authentic blocker); no promotion.
         with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
             generate_typed_slice.validate_capabilities(
                 typed, generate_typed_slice.APPROVED_CAPABILITIES,
@@ -26201,14 +26226,6 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 cross_builtin_profile=CROSS_PROFILE)
         self.assertIn(
             "exact struct frontier profile carrier required", str(ctx.exception))
-        with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
-            emit_typed_cpp.render_typed_cpp(
-                typed, key, landed["raw"], "pixel",
-                "bind_synth3d_flythrough3d_precompute",
-                source_global_literal_int_profile=
-                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
-                cross_builtin_profile=CROSS_PROFILE)
-        self.assertIn("unsupported typed type", str(ctx.exception))
 
         # Forged source bytes fail closed even with the exact profile.
         with self.assertRaises(Exception) as ctx:
@@ -27602,8 +27619,13 @@ void main() {
 
         for key, expected_count in sorted(expected_counts.items()):
             effect_id, program_name = key.split(":")
-            record = next((item for item in pending["pending"]
+            vendored = json.loads((corpus_root / "manifest.json").read_text(
+                encoding="utf-8"))["programs"]
+            record = next((item for item in vendored
                            if item["program_key"] == key), None)
+            if record is None:
+                record = next((item for item in pending["pending"]
+                               if item["program_key"] == key), None)
             self.assertIsNotNone(record)
             source_path = corpus_root / record["source"]
             raw = source_path.read_text(encoding="utf-8")
@@ -27712,7 +27734,8 @@ void main() {
                 self.assertIn(
                     (("exact any-relational admission profile carrier required"
                       if key == "render/renderLit3d:renderLit3d"
-                      else "unsupported typed type") if seed_kwargs
+                      else "exact struct frontier profile carrier required")
+                     if seed_kwargs
                      else "unsupported counted-for program proof"),
                     str(ctx.exception))
 
