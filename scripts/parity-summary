@@ -7,7 +7,8 @@ digest) twice -- once with the pinned JavaScript CPU authority runner and once
 with this port's ``noisemaker-dsl-cpu-case`` driver -- from the same
 authenticated source bytes and the same options, then byte-compares the RGBA8
 buffers with the shared comparer. With no arguments every admitted record is
-rendered; with arguments only those effect ids.
+rendered; with arguments only those manifest case ids (each admitted record's
+``id``, for example ``points/dla#default``).
 
 Counting contract (last line of output, and the only machine-readable one)::
 
@@ -104,11 +105,15 @@ def select_cases(manifest: dict, ids: list[str]) -> list[dict]:
         raise SystemExit("the manifest has no admitted records")
     if not ids:
         return records
-    by_id = {record["effectId"]: record for record in records}
+    # The manifest case id is the record's ``id`` (``<effectId>#<variant>``):
+    # arguments select cases, so the lookup must key on it, not on ``effectId``
+    # (which would both miss case-id arguments and collapse any duplicated
+    # effect ids to one record).
+    by_id = {record["id"]: record for record in records}
     selected, missing = [], []
-    for effect_id in ids:
-        record = by_id.get(effect_id)
-        (selected.append(record) if record else missing.append(effect_id))
+    for case_id in ids:
+        record = by_id.get(case_id)
+        (selected.append(record) if record else missing.append(case_id))
     return selected
 
 
