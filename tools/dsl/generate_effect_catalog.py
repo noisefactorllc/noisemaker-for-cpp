@@ -25,7 +25,7 @@ DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-COMPATIBILITY_SHA256 = "356a703f9df1fc7562ed79a0a9e5f02c849cbd02a3dc19318f8fdcb24027117a"
+COMPATIBILITY_SHA256 = "55abda64d7d21ea40d82f2537bc4ae9eff7cc310dc0ecba4f5670cd12bf8d2c6"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",

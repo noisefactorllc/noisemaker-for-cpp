@@ -259,6 +259,9 @@ from .frontend.waves_any_notequal_profile import (
 from .frontend.attractor_any_isnan_profile import (
     ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
     authenticate_attractor_any_isnan_admission)
+from .frontend.any_relational_profile import (
+    ANY_RELATIONAL_KEYS, PROFILE as ANY_RELATIONAL_PROFILE,
+    authenticate_any_relational_admission)
 from .frontend.inout_vec3_swap_profile import (
     WATERCOLOR_KEY as INOUT_VEC3_SWAP_KEY,
     PROFILE as INOUT_VEC3_SWAP_PROFILE,
@@ -1131,6 +1134,7 @@ class _Emitter:
     ceil_admission_profile: str | None = None
     waves_any_notequal_profile: str | None = None
     attractor_any_isnan_profile: str | None = None
+    any_relational_profile: str | None = None
     inout_vec3_swap_profile: str | None = None
     out_inout_admission_profile: str | None = None
     log_admission_profile: str | None = None
@@ -1599,6 +1603,11 @@ class _Emitter:
         init=False, default=None)
     emitted_attractor_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_any_relational_proof: object = field(init=False, default=None)
+    emitted_any_relational_reductions: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_any_relational_relationals: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_inout_vec3_swap_proof: object = field(init=False, default=None)
     emitted_inout_vec3_swap_calls: list[TypedExpression] = field(
         init=False, default_factory=list)
@@ -2042,6 +2051,9 @@ class _Emitter:
         self.emitted_waves_nodes = []
         self.authorized_attractor_any_isnan_proof = None
         self.emitted_attractor_nodes = []
+        self.authorized_any_relational_proof = None
+        self.emitted_any_relational_reductions = []
+        self.emitted_any_relational_relationals = []
         self.authorized_inout_vec3_swap_proof = None
         self.emitted_inout_vec3_swap_calls = []
         self.authorized_out_inout_parameters = ()
@@ -3492,6 +3504,24 @@ class _Emitter:
         elif self.program.key == ATTRACTOR_KEY:
             raise _error(self.program, self.program,
                          "exact Attractor any/isnan admission profile carrier required")
+        # any_relational_profile is deliberately light-checked, the same
+        # style as waves/attractor immediately above.
+        if self.any_relational_profile is not None:
+            if (self.program.key not in ANY_RELATIONAL_KEYS
+                    or self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "any-relational admission profile metadata mismatch")
+            try:
+                self.authorized_any_relational_proof = (
+                    authenticate_any_relational_admission(
+                        self.program, self.source_hash,
+                        self.any_relational_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        elif self.program.key in ANY_RELATIONAL_KEYS:
+            raise _error(self.program, self.program,
+                         "exact any-relational admission profile carrier required")
         # inout_vec3_swap_profile is deliberately light-checked, the same
         # style as posterize_round_profile/waves_any_notequal_profile above.
         if self.inout_vec3_swap_profile is not None:
@@ -9087,7 +9117,32 @@ class _Emitter:
                     if len(arguments) != 2:
                         raise _error(self.program, value, "lessThanEqual arity")
                     return f"glsl::lessThanEqual({arguments[0]}, {arguments[1]})"
-                if value.callee in {"greaterThanEqual", "lessThan"}:
+                if value.callee in {"greaterThanEqual", "lessThan", "greaterThan"}:
+                    # The exact nodes authenticated by any-relational-admission-v1
+                    # are emitted by object identity, independent of the Edge
+                    # closure's (vec3, FloatExpr) shapes below.
+                    any_relational_proof = self.authorized_any_relational_proof
+                    any_relational_node = (
+                        any_relational_proof is not None
+                        and any(value is item
+                                for item in any_relational_proof.relationals))
+                    if any_relational_node:
+                        if (len(arguments) != 2
+                                or value.type.display() != "bvec3"
+                                or tuple(child.type.display()
+                                         for child in value.children)
+                                not in (("ivec3", "ivec3"), ("vec3", "vec3"))):
+                            raise _error(self.program, value,
+                                         "malformed authenticated any-relational site")
+                        if any(value is item
+                               for item in self.emitted_any_relational_relationals):
+                            raise _error(self.program, value,
+                                         "authenticated any-relational site emitted twice")
+                        self.emitted_any_relational_relationals.append(value)
+                        return f"glsl::{value.callee}({arguments[0]}, {arguments[1]})"
+                    if value.callee == "greaterThan":
+                        raise _error(self.program, value,
+                                     f"unsupported builtin {value.callee}")
                     proof = self.authorized_edge_proof
                     nodes = () if proof is None else proof.relationals
                     if (not any(value is item for item in nodes)
@@ -9123,10 +9178,33 @@ class _Emitter:
                     attractor_reduction = (
                         self.authorized_attractor_any_isnan_proof is not None
                         and value is self.authorized_attractor_any_isnan_proof.reduction)
+                    # Independently, the heightmap3d density bounds and the
+                    # renderLit3d march volume-exit check carry the exact
+                    # `any(relational(...))` reductions of
+                    # any-relational-admission-v1, by object identity only,
+                    # with the same no-vocabulary discipline.
+                    any_relational_proof = self.authorized_any_relational_proof
+                    any_relational_reduction = (
+                        any_relational_proof is not None
+                        and any(value is item
+                                for item in any_relational_proof.reductions))
                     if (not any(value is item for item in nodes)
-                            and not attractor_reduction):
+                            and not attractor_reduction
+                            and not any_relational_reduction):
                         raise _error(self.program, value,
                                      f"unsupported builtin {value.callee}")
+                    if any_relational_reduction:
+                        if (len(arguments) != 1
+                                or value.type.display() != "bool"
+                                or value.children[0].type.display() != "bvec3"):
+                            raise _error(self.program, value,
+                                         "malformed authenticated any-relational reduction")
+                        if any(value is item
+                               for item in self.emitted_any_relational_reductions):
+                            raise _error(self.program, value,
+                                         "authenticated any-relational reduction emitted twice")
+                        self.emitted_any_relational_reductions.append(value)
+                        return f"glsl::any({arguments[0]})"
                     if attractor_reduction:
                         if (len(arguments) != 1
                                 or value.type.display() != "bool"
@@ -13464,6 +13542,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      ceil_admission_profile: str | None = None,
                      waves_any_notequal_profile: str | None = None,
                      attractor_any_isnan_profile: str | None = None,
+                     any_relational_profile: str | None = None,
                      inout_vec3_swap_profile: str | None = None,
                      out_inout_admission_profile: str | None = None,
                      log_admission_profile: str | None = None,
@@ -13576,6 +13655,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        ceil_admission_profile,
                        waves_any_notequal_profile,
                        attractor_any_isnan_profile,
+                       any_relational_profile,
                        inout_vec3_swap_profile,
                        out_inout_admission_profile,
                        log_admission_profile,
@@ -14453,6 +14533,15 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 not any(value is item for item in emitted) for value in expected):
             raise _error(program, program,
                          "authenticated Attractor emission mismatch")
+    if emitter.authorized_any_relational_proof is not None:
+        proof = emitter.authorized_any_relational_proof
+        expected = (*proof.reductions, *proof.relationals)
+        emitted = (*emitter.emitted_any_relational_reductions,
+                   *emitter.emitted_any_relational_relationals)
+        if len(emitted) != len(expected) or any(
+                not any(value is item for item in emitted) for value in expected):
+            raise _error(program, program,
+                         "authenticated any-relational emission mismatch")
     if emitter.authorized_inout_vec3_swap_proof is not None:
         expected = emitter.authorized_inout_vec3_swap_proof.calls
         emitted = emitter.emitted_inout_vec3_swap_calls

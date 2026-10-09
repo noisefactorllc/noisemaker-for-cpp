@@ -3180,100 +3180,6 @@
           }
         }
       }
-    },
-    "synth3d/heightmap3d": {
-      "func": "heightmap3d",
-      "kind": "generator",
-      "namespace": "synth3d",
-      "params": {
-        "baseHeight": {
-          "default": 0,
-          "max": 1,
-          "min": 0,
-          "type": "float",
-          "uniform": "baseHeight"
-        },
-        "heightScale": {
-          "default": 0.35,
-          "max": 1,
-          "min": 0,
-          "type": "float",
-          "uniform": "heightScale"
-        },
-        "heightTex": {
-          "default": "none",
-          "type": "surface"
-        },
-        "tex": {
-          "default": "none",
-          "type": "surface"
-        },
-        "volumeSize": {
-          "choices": {
-            "x128": 128,
-            "x16": 16,
-            "x32": 32,
-            "x64": 64
-          },
-          "default": 64,
-          "type": "int",
-          "uniform": "volumeSize"
-        }
-      },
-      "passes": [
-        {
-          "drawBuffers": 2,
-          "inputs": {
-            "heightTex": "heightTex",
-            "tex": "tex"
-          },
-          "key": "synth3d/heightmap3d:precompute",
-          "name": "precompute",
-          "outputs": {
-            "fragColor": "volumeCache",
-            "geoOut": "geoBuffer"
-          },
-          "program": "precompute",
-          "type": "compute",
-          "viewport": {
-            "height": {
-              "default": 4096,
-              "param": "volumeSize",
-              "power": 2
-            },
-            "width": {
-              "default": 64,
-              "param": "volumeSize"
-            }
-          }
-        }
-      ],
-      "textures": {
-        "geoBuffer": {
-          "format": "rgba16f",
-          "height": {
-            "default": 4096,
-            "param": "volumeSize",
-            "power": 2
-          },
-          "width": {
-            "default": 64,
-            "param": "volumeSize"
-          }
-        },
-        "volumeCache": {
-          "format": "rgba16f",
-          "height": {
-            "default": 4096,
-            "param": "volumeSize",
-            "power": 2
-          },
-          "width": {
-            "default": 64,
-            "param": "volumeSize"
-          }
-        }
-      }
     }
   },
   "pending": [
@@ -3475,8 +3381,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/renderLit3d:renderLit3d:236:17: unsupported builtin any",
-        "stage": "typed.validator"
+        "diagnostic": "TypedEmissionError: render/renderLit3d:renderLit3d:1:1: unsupported typed type IsoHit",
+        "stage": "typed.emitter"
       },
       "effect_id": "render/renderLit3d",
       "program": "renderLit3d",
@@ -3523,19 +3429,6 @@
       "raw_bytes": 11404,
       "raw_sha256": "e4288dfc3384f76e63eda968ad4ce3219a9b96989d8e6ff38755dbcf44f788f3",
       "source": "pending-sources/synth3d/flythrough3d/precompute.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: synth3d/heightmap3d:precompute:28:9: unsupported builtin any",
-        "stage": "typed.validator"
-      },
-      "effect_id": "synth3d/heightmap3d",
-      "program": "precompute",
-      "program_key": "synth3d/heightmap3d:precompute",
-      "raw_bytes": 1985,
-      "raw_sha256": "2a634fd3355925d3590f5857523acf185f7d77e0d32a5488c6546a5ea51e1427",
-      "source": "pending-sources/synth3d/heightmap3d/precompute.glsl"
     }
   ],
   "revision": "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d",

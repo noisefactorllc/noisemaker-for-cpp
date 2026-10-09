@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "4b829dfa193b2da7dfd07d6ba0696c055535cc6a803f0bff289b0a5ff9ccc6a0",
+  "metadata_sha256": "51f17a0eb85162fc0c5972009687cd167194d996c214de2e98001df1990c93cf",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -5179,6 +5179,25 @@
       "raw_sha256": "8ab3dfe63e16d4406deee719c1f822d405c712bae21bd1348ae5b75b79a14d41",
       "runtime_key": "synth3d/fractal3d:precompute",
       "source": "sources/synth3d/fractal3d/precompute.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth3d/heightmap3d",
+      "normalized_bytes": 1667,
+      "normalized_sha256": "fc9f74e1a388e251dc5663c7022639ae8d9981c81c44abd6ba9d16edb581c0bc",
+      "outputs": [
+        "fragColor",
+        "geoOut"
+      ],
+      "pass_index": 0,
+      "pass_name": "precompute",
+      "program": "precompute",
+      "program_key": "synth3d/heightmap3d:precompute",
+      "raw_bytes": 1985,
+      "raw_sha256": "2a634fd3355925d3590f5857523acf185f7d77e0d32a5488c6546a5ea51e1427",
+      "runtime_key": "synth3d/heightmap3d:precompute",
+      "source": "sources/synth3d/heightmap3d/precompute.glsl",
       "status": "generated",
       "varyings": []
     },

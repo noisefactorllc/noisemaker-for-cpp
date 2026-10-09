@@ -912,6 +912,51 @@ TEST(glsl_bvec3_isnan_and_any_lower_the_attractor_divergence_check) {
   REQUIRE(any(BVec3(true, true, true)));
 }
 
+// heightmap3d density bounds and renderLit3d march volume-exit check: the
+// exact bvec3 relational closures admitted by any-relational-admission-v1
+// (node identity in tools/glslcpp/frontend/any_relational_profile.py).
+// Integer lanes compare exactly; the float constructor RHS is emitted as a
+// FloatExpr<3> and is materialized through Vec3 before comparing, the same
+// canonical Float32Array boundary the Edge closure uses. `greaterThan` did
+// not exist on this surface before this closure, and widening any of these
+// requires its own authenticated capability.
+TEST(glsl_bvec3_relational_overloads_lower_the_any_relational_closures) {
+  using namespace noisemaker::glsl;
+
+  // heightmap3d: any(lessThan(p, ivec3(0))) with a negative lane.
+  REQUIRE((lessThan(IVec3(-1, 0, 1), IVec3(0, 0, 0)) ==
+           BVec3(true, false, false)));
+  REQUIRE((lessThan(IVec3(0, 0, 0), IVec3(0, 0, 0)) ==
+           BVec3(false, false, false)));
+  // heightmap3d: any(greaterThanEqual(p, ivec3(volumeSize))) at the exact
+  // boundary lane.
+  REQUIRE((greaterThanEqual(IVec3(0, 4, 2), IVec3(4, 4, 4)) ==
+           BVec3(false, true, false)));
+  REQUIRE((greaterThanEqual(IVec3(3, 3, 3), IVec3(4, 4, 4)) ==
+           BVec3(false, false, false)));
+  // The reductions over the closed lanes.
+  REQUIRE(any(lessThan(IVec3(-1, 0, 1), IVec3(0, 0, 0))));
+  REQUIRE(!any(lessThan(IVec3(0, 0, 0), IVec3(0, 0, 0))));
+  REQUIRE(any(greaterThanEqual(IVec3(0, 5, 2), IVec3(4, 4, 4))));
+  REQUIRE(!any(greaterThanEqual(IVec3(3, 3, 3), IVec3(4, 4, 4))));
+
+  // renderLit3d: any(lessThan(p, vec3(-1.0))) with a FloatExpr broadcast
+  // RHS materialized before comparing.
+  REQUIRE((lessThan(Vec3(-2.0f, 0.0f, 1.0f), FloatExpr<3>(-1.0f)) ==
+           BVec3(true, false, false)));
+  REQUIRE((lessThan(Vec3(-1.0f, -1.0f, -1.0f), FloatExpr<3>(-1.0f)) ==
+           BVec3(false, false, false)));
+  // renderLit3d: any(greaterThan(p, vec3(1.0))) at the exact boundary lane.
+  REQUIRE((greaterThan(Vec3(0.0f, 1.0f, 2.0f), FloatExpr<3>(1.0f)) ==
+           BVec3(false, false, true)));
+  REQUIRE((greaterThan(Vec3(1.0f, 1.0f, 1.0f), FloatExpr<3>(1.0f)) ==
+           BVec3(false, false, false)));
+  REQUIRE(any(lessThan(Vec3(-2.0f, 0.0f, 1.0f), FloatExpr<3>(-1.0f))));
+  REQUIRE(!any(lessThan(Vec3(-1.0f, -1.0f, -1.0f), FloatExpr<3>(-1.0f))));
+  REQUIRE(any(greaterThan(Vec3(0.0f, 1.0f, 2.0f), FloatExpr<3>(1.0f))));
+  REQUIRE(!any(greaterThan(Vec3(1.0f, 1.0f, 1.0f), FloatExpr<3>(1.0f))));
+}
+
 // Task 30: the exact bvec2 relational/reduction pair Extrude needs. Only the
 // two-lane width is instantiable; bvec3/bvec4 relational reduction must remain
 // a compile error, not merely an untested path.

@@ -272,6 +272,11 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     from tools.glslcpp.frontend.attractor_any_isnan_profile import (
         ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
     )
+    from tools.glslcpp.frontend.any_relational_profile import (
+        HEIGHTMAP_KEY as ANY_RELATIONAL_HEIGHTMAP_KEY,
+        RENDERLIT_KEY as ANY_RELATIONAL_RENDERLIT_KEY,
+        PROFILE as ANY_RELATIONAL_PROFILE,
+    )
     from tools.glslcpp.frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, PROFILE as CEIL_ADMISSION_PROFILE,
     )
@@ -283,6 +288,11 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     )
     attractor_any_isnan_profile = (
         ATTRACTOR_ANY_ISNAN_PROFILE if key == ATTRACTOR_KEY else None
+    )
+    any_relational_profile = (
+        ANY_RELATIONAL_PROFILE
+        if key in (ANY_RELATIONAL_HEIGHTMAP_KEY, ANY_RELATIONAL_RENDERLIT_KEY)
+        else None
     )
     ceil_admission_profile = (
         CEIL_ADMISSION_PROFILE if key in CEIL_ADMISSION_KEYS else None
@@ -362,7 +372,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             ceil_admission_profile=ceil_admission_profile,
             fractal3d_log_profile=fractal3d_log_profile,
             struct_frontier_profile=struct_frontier_profile,
-            attractor_any_isnan_profile=attractor_any_isnan_profile)
+            attractor_any_isnan_profile=attractor_any_isnan_profile,
+            any_relational_profile=any_relational_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
@@ -382,7 +393,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             points_post_profile=points_post_profile,
             ceil_admission_profile=ceil_admission_profile,
             fractal3d_log_profile=fractal3d_log_profile,
-            attractor_any_isnan_profile=attractor_any_isnan_profile)
+            attractor_any_isnan_profile=attractor_any_isnan_profile,
+            any_relational_profile=any_relational_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -664,6 +676,11 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     from tools.glslcpp.frontend.attractor_any_isnan_profile import (
         ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
     )
+    from tools.glslcpp.frontend.any_relational_profile import (
+        HEIGHTMAP_KEY as ANY_RELATIONAL_HEIGHTMAP_KEY,
+        RENDERLIT_KEY as ANY_RELATIONAL_RENDERLIT_KEY,
+        PROFILE as ANY_RELATIONAL_PROFILE,
+    )
 
     path = repository / "tools/glslcpp/typed_slice.json"
     spec = json.loads(path.read_text(encoding="utf-8"))
@@ -698,6 +715,9 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
             row["points_post_profile"] = POINTS_POST_PROFILE
         if entry["program_key"] == ATTRACTOR_KEY:
             row["attractor_any_isnan_profile"] = ATTRACTOR_ANY_ISNAN_PROFILE
+        if entry["program_key"] in (ANY_RELATIONAL_HEIGHTMAP_KEY,
+                                    ANY_RELATIONAL_RENDERLIT_KEY):
+            row["any_relational_profile"] = ANY_RELATIONAL_PROFILE
         rows.setdefault(entry["program_key"], row)
     spec["programs"] = [rows[key] for key in sorted(rows)]
     path.write_bytes(_json_bytes(spec))

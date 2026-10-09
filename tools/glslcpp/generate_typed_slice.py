@@ -390,6 +390,12 @@ if __package__ in (None, ""):
         ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
         apply_attractor_any_isnan_admission,
         authenticate_attractor_any_isnan_admission)
+    from tools.glslcpp.frontend.any_relational_profile import (
+        ANY_RELATIONAL_KEYS, HEIGHTMAP_KEY as ANY_RELATIONAL_HEIGHTMAP_KEY,
+        RENDERLIT_KEY as ANY_RELATIONAL_RENDERLIT_KEY,
+        PROFILE as ANY_RELATIONAL_PROFILE,
+        apply_any_relational_admission,
+        authenticate_any_relational_admission)
     from tools.glslcpp.frontend.inout_vec3_swap_profile import (
         WATERCOLOR_KEY as INOUT_VEC3_SWAP_KEY,
         PROFILE as INOUT_VEC3_SWAP_PROFILE,
@@ -834,6 +840,12 @@ else:
         ATTRACTOR_KEY, PROFILE as ATTRACTOR_ANY_ISNAN_PROFILE,
         apply_attractor_any_isnan_admission,
         authenticate_attractor_any_isnan_admission)
+    from .frontend.any_relational_profile import (
+        ANY_RELATIONAL_KEYS, HEIGHTMAP_KEY as ANY_RELATIONAL_HEIGHTMAP_KEY,
+        RENDERLIT_KEY as ANY_RELATIONAL_RENDERLIT_KEY,
+        PROFILE as ANY_RELATIONAL_PROFILE,
+        apply_any_relational_admission,
+        authenticate_any_relational_admission)
     from .frontend.inout_vec3_swap_profile import (
         WATERCOLOR_KEY as INOUT_VEC3_SWAP_KEY,
         PROFILE as INOUT_VEC3_SWAP_PROFILE,
@@ -1889,6 +1901,13 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         # widening.
         if key == ATTRACTOR_KEY:
             expected = expected | {"attractor_any_isnan_profile"}
+        # The heightmap3d density check and renderLit3d march volume-exit
+        # check carry the any-relational identity carrier: the one extra
+        # field, no shared-arm widening (heightmap3d has no other arm;
+        # renderLit3d's loop-proof/struct-frontier carriers attach by key,
+        # never as row fields).
+        if key in {ANY_RELATIONAL_HEIGHTMAP_KEY, ANY_RELATIONAL_RENDERLIT_KEY}:
+            expected = expected | {"any_relational_profile"}
         # points/lenia:convolve carries BOTH its runtime window-radius
         # loop-bound record and its independent ceil-admission companion
         # (the int(ceil(searchRadius)) cast), curl-style composition.
@@ -2407,6 +2426,17 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             and attractor_any_isnan_profiles != [(ATTRACTOR_KEY, ATTRACTOR_ANY_ISNAN_PROFILE)]):
         raise GeneratorError(
             "typed slice Attractor any/isnan admission profile drift")
+    any_relational_profiles = [
+        (item["program_key"], item.get("any_relational_profile"))
+        for item in programs if "any_relational_profile" in item]
+    allowed_any_relational = [(key, ANY_RELATIONAL_PROFILE)
+                              for key in ANY_RELATIONAL_KEYS]
+    if (any_relational_profiles
+            and (len(any_relational_profiles)
+                 != len({key for key, _ in any_relational_profiles})
+                 or any(pair not in allowed_any_relational
+                        for pair in any_relational_profiles))):
+        raise GeneratorError("typed slice any-relational profile drift")
     inout_vec3_swap_profiles = [
         (item["program_key"], item.get("inout_vec3_swap_profile"))
         for item in programs if "inout_vec3_swap_profile" in item]
@@ -3689,6 +3719,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           ceil_admission_profile: str | None = None,
                           waves_any_notequal_profile: str | None = None,
                           attractor_any_isnan_profile: str | None = None,
+                          any_relational_profile: str | None = None,
                           inout_vec3_swap_profile: str | None = None,
                           out_inout_admission_profile: str | None = None,
                           mutable_global_frame_profile: str | None = None,
@@ -4480,6 +4511,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_waves_nodes: list[TypedExpression] = []
     authorized_attractor_any_isnan_proof = None
     visited_attractor_nodes: list[TypedExpression] = []
+    authorized_any_relational_proof = None
+    visited_any_relational_reductions: list[TypedExpression] = []
+    visited_any_relational_relationals: list[TypedExpression] = []
     authorized_inout_vec3_swap_proof = None
     visited_inout_vec3_swap_calls: list[TypedExpression] = []
     visited_out_inout_parameters: list[object] = []
@@ -5608,6 +5642,24 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key in CROSS_KEYS:
         raise GeneratorError(
             f"{typed.key}: exact cross builtin admission profile carrier required")
+    # any_relational_profile is deliberately light-checked, the same style as
+    # waves_any_notequal_profile/attractor_any_isnan_profile. It runs before
+    # the struct-frontier frontier check so a pending render-family program
+    # reports its newest authentic blocker first, matching the emitter order.
+    if any_relational_profile is not None:
+        if (typed.key not in ANY_RELATIONAL_KEYS
+                or compatibility_transform is not None
+                or numeric_literal_contract != "glsl-f32"):
+            raise GeneratorError(
+                f"{typed.key}: any-relational admission profile metadata mismatch")
+        try:
+            authorized_any_relational_proof = authenticate_any_relational_admission(
+                typed, source_hash, any_relational_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key in ANY_RELATIONAL_KEYS:
+        raise GeneratorError(
+            f"{typed.key}: exact any-relational admission profile carrier required")
     if struct_frontier_profile is not None:
         if (typed.key not in STRUCT_FRONTIER_KEYS
                 or struct_frontier_profile
@@ -6660,6 +6712,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             # admission and builtin admission must independently agree.
             if (authorized_attractor_any_isnan_proof is not None
                     and value is authorized_attractor_any_isnan_proof.test):
+                return
+            # Independently, the exact heightmap3d/renderLit3d relational
+            # results of any-relational-admission-v1 are admitted, consumed
+            # immediately by their paired `any`. Type admission and builtin
+            # admission must independently agree.
+            if (authorized_any_relational_proof is not None
+                    and any(value is item
+                            for item in authorized_any_relational_proof.relationals)):
                 return
             raise GeneratorError(
                 f"{location(value)}: unsupported typed type {typ.display()}")
@@ -8080,21 +8140,48 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     visited_emboss_reductions.append(value)
                 else:
                     visited_extrude_nodes.append(value)
-            elif value.callee in {"greaterThanEqual", "lessThan"}:
-                nodes = (() if authorized_edge_proof is None
-                         else authorized_edge_proof.relationals)
-                if (not any(value is item for item in nodes)
-                        or len(value.children) != 2
-                        or value.type.display() != "bvec3"
-                        or tuple(child.type.display()
-                                 for child in value.children)
-                        != ("vec3", "vec3")):
+            elif value.callee in {"greaterThanEqual", "lessThan", "greaterThan"}:
+                # The exact nodes authenticated by any-relational-admission-v1
+                # (heightmap3d's ivec3 density bounds, renderLit3d's vec3 march
+                # bounds) are admitted by object identity, independent of the
+                # Edge closure's (vec3, FloatExpr) shapes below.
+                any_relational_node = (
+                    authorized_any_relational_proof is not None
+                    and any(value is item
+                            for item in authorized_any_relational_proof.relationals))
+                if any_relational_node:
+                    if (len(value.children) != 2
+                            or value.type.display() != "bvec3"
+                            or tuple(child.type.display()
+                                     for child in value.children)
+                            not in (("ivec3", "ivec3"), ("vec3", "vec3"))):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed authenticated "
+                            f"any-relational site")
+                    if any(value is item
+                           for item in visited_any_relational_relationals):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated any-relational site "
+                            "visited twice")
+                    visited_any_relational_relationals.append(value)
+                elif value.callee == "greaterThan":
                     raise GeneratorError(
                         f"{location(value)}: unsupported builtin {value.callee}")
-                if any(value is item for item in visited_edge_relationals):
-                    raise GeneratorError(
-                        f"{typed.key}: authenticated Edge relational visited twice")
-                visited_edge_relationals.append(value)
+                else:
+                    nodes = (() if authorized_edge_proof is None
+                             else authorized_edge_proof.relationals)
+                    if (not any(value is item for item in nodes)
+                            or len(value.children) != 2
+                            or value.type.display() != "bvec3"
+                            or tuple(child.type.display()
+                                     for child in value.children)
+                            != ("vec3", "vec3")):
+                        raise GeneratorError(
+                            f"{location(value)}: unsupported builtin {value.callee}")
+                    if any(value is item for item in visited_edge_relationals):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated Edge relational visited twice")
+                    visited_edge_relationals.append(value)
             elif value.callee in {"any", "notEqual"}:
                 # Admitted only for the exact nodes authenticated by
                 # waves-any-notequal-admission-v1, by object identity.
@@ -8110,11 +8197,33 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 attractor_reduction = (
                     authorized_attractor_any_isnan_proof is not None
                     and value is authorized_attractor_any_isnan_proof.reduction)
+                # Independently, the heightmap3d density bounds and the
+                # renderLit3d march volume-exit check carry the exact
+                # `any(relational(vec3|ivec3, ...))` reductions of
+                # any-relational-admission-v1, by object identity only.
+                any_relational_reduction = (
+                    authorized_any_relational_proof is not None
+                    and any(value is item
+                            for item in authorized_any_relational_proof.reductions))
                 if (not any(value is item for item in authorized_waves_nodes)
-                        and not attractor_reduction):
+                        and not attractor_reduction
+                        and not any_relational_reduction):
                     raise GeneratorError(
                         f"{location(value)}: unsupported builtin {value.callee}")
-                if attractor_reduction:
+                if any_relational_reduction:
+                    if (value.type.display() != "bool"
+                            or len(value.children) != 1
+                            or value.children[0].type.display() != "bvec3"):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed authenticated "
+                            f"any-relational reduction")
+                    if any(value is item
+                           for item in visited_any_relational_reductions):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated any-relational "
+                            "reduction visited twice")
+                    visited_any_relational_reductions.append(value)
+                elif attractor_reduction:
                     if (value.type.display() != "bool"
                             or len(value.children) != 1
                             or value.children[0].type.display() != "bvec3"):
@@ -8265,7 +8374,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         in authorized_shape_mixer_proof.exceptional_nodes))
             if (not shape_profile_builtin
                     and value.callee not in {"round", "all", "equal", "lessThanEqual",
-                                    "greaterThanEqual", "lessThan",
+                                    "greaterThanEqual", "lessThan", "greaterThan",
                                     "floatBitsToUint", "tanh",
                                     "dFdx", "dFdy", "fwidth", "reflect",
                                     "any", "notEqual", "ceil",
@@ -9685,6 +9794,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: Attractor any/isnan identity profile mutated program")
             typed = profiled
+        any_relational_profile = slice_spec["programs"][index].get(
+            "any_relational_profile")
+        if any_relational_profile is not None:
+            try:
+                profiled = apply_any_relational_admission(
+                    typed, source_hash, any_relational_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: any-relational identity profile mutated program")
+            typed = profiled
         vec_scalar_modulo_profile = slice_spec["programs"][index].get(
             "vec_scalar_modulo_profile")
         if vec_scalar_modulo_profile is not None:
@@ -10359,6 +10480,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               waves_any_notequal_profile=waves_any_notequal_profile,
                               attractor_any_isnan_profile=(
                                   attractor_any_isnan_profile),
+                              any_relational_profile=any_relational_profile,
                               inout_vec3_swap_profile=inout_vec3_swap_profile,
                               out_inout_admission_profile=out_inout_admission_profile,
                               struct_declaration_profile=struct_declaration_profile,
@@ -10445,6 +10567,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            waves_any_notequal_profile=waves_any_notequal_profile,
                                            attractor_any_isnan_profile=(
                                                attractor_any_isnan_profile),
+                                           any_relational_profile=any_relational_profile,
                                            inout_vec3_swap_profile=inout_vec3_swap_profile,
                                            out_inout_admission_profile=out_inout_admission_profile,
                                            struct_declaration_profile=struct_declaration_profile,
@@ -10555,6 +10678,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if attractor_any_isnan_profile is not None:
             manifest_program["attractor_any_isnan_profile"] = (
                 attractor_any_isnan_profile)
+        if any_relational_profile is not None:
+            manifest_program["any_relational_profile"] = any_relational_profile
         if vec_scalar_modulo_profile is not None:
             manifest_program["vec_scalar_modulo_profile"] = (
                 vec_scalar_modulo_profile)

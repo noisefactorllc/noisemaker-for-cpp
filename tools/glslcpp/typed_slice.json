@@ -1484,6 +1484,11 @@
       "program_key": "synth3d/fractal3d:precompute"
     },
     {
+      "any_relational_profile": "any-relational-admission-v1",
+      "defines": {},
+      "program_key": "synth3d/heightmap3d:precompute"
+    },
+    {
       "defines": {
         "COLOR_MODE": 0,
         "OCTAVES": 1,

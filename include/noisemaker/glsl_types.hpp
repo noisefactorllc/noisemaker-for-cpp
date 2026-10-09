@@ -435,6 +435,44 @@ template <std::size_t N> requires(N == 2)
 [[nodiscard]] Vec<3, bool> greaterThanEqual(
     const Vec<3, float>&, const Vec<3, float>&) = delete;
 
+// Exact heightmap3d density-bound and renderLit3d march volume-exit call
+// shapes, admitted by any-relational-admission-v1 (node identity in
+// tools/glslcpp/frontend/any_relational_profile.py). The integer lanes
+// compare exactly; the renderLit3d float constructor RHS is emitted as a
+// FloatExpr<3> and is materialized through Vec3 before comparing, the same
+// canonical Float32Array boundary the Edge closure uses. `greaterThan` did
+// not exist on this surface at all before this closure, and widening any of
+// these requires its own authenticated capability.
+[[nodiscard]] inline Vec<3, bool> lessThan(
+    const Vec<3, std::int32_t>& left, const Vec<3, std::int32_t>& right) noexcept {
+  Vec<3, bool> result;
+  for (std::size_t index = 0; index < 3; ++index)
+    result[index] = left[index] < right[index];
+  return result;
+}
+
+[[nodiscard]] inline Vec<3, bool> greaterThanEqual(
+    const Vec<3, std::int32_t>& left, const Vec<3, std::int32_t>& right) noexcept {
+  Vec<3, bool> result;
+  for (std::size_t index = 0; index < 3; ++index)
+    result[index] = left[index] >= right[index];
+  return result;
+}
+
+[[nodiscard]] inline Vec<3, bool> greaterThan(
+    const Vec<3, float>& left, const FloatExpr<3>& right) noexcept {
+  const Vec<3, float> materialized(right);
+  Vec<3, bool> result;
+  for (std::size_t index = 0; index < 3; ++index)
+    result[index] = left[index] > materialized[index];
+  return result;
+}
+
+[[nodiscard]] Vec<3, bool> greaterThan(
+    const FloatExpr<3>&, const Vec<3, float>&) = delete;
+[[nodiscard]] Vec<3, bool> greaterThan(
+    const Vec<3, float>&, const Vec<3, float>&) = delete;
+
 template <std::size_t N> requires(N == 2)
 [[nodiscard]] constexpr bool all(const Vec<N, bool>& value) noexcept {
   for (std::size_t index = 0; index < N; ++index)

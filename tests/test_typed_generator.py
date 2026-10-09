@@ -22713,21 +22713,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 282-program tree at the current CPU authority, QUOTED FROM
+        # The four artifacts of the LIVE 283-program tree at the current CPU authority, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38963,
-                "894ba5fd3f5a86e8cce1afd419f6464c79371f704c821107a16eb4bb38cb95b1"),
+                39114,
+                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
             "src/typed_generated/typed_slice.cpp": (
-                3286919,
-                "03eb41d3d34b49ee2c70aadff2cc683696477288e8bdc98db643bb34f5caca91"),
+                3293848,
+                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
             "src/typed_generated/typed_manifest.json": (
-                862057,
-                "639ffea0a856e54a67505b6aeb11331c80f470189c091bb484db70a91b10fd5c"),
+                864764,
+                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
             "include/noisemaker/generated/catalog.hpp": (
-                27714,
-                "18eb64d9c303ff06886f3b256b426ab91867f95a40c4faabd12d3318d1da912c"),
+                27812,
+                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23495,21 +23495,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 282-program tree at the current CPU authority, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 283-program tree at the current CPU authority, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38963,
-                "894ba5fd3f5a86e8cce1afd419f6464c79371f704c821107a16eb4bb38cb95b1"),
+                39114,
+                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
             "src/typed_generated/typed_slice.cpp": (
-                3286919,
-                "03eb41d3d34b49ee2c70aadff2cc683696477288e8bdc98db643bb34f5caca91"),
+                3293848,
+                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
             "src/typed_generated/typed_manifest.json": (
-                862057,
-                "639ffea0a856e54a67505b6aeb11331c80f470189c091bb484db70a91b10fd5c"),
+                864764,
+                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
             "include/noisemaker/generated/catalog.hpp": (
-                27714,
-                "18eb64d9c303ff06886f3b256b426ab91867f95a40c4faabd12d3318d1da912c"),
+                27812,
+                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24257,21 +24257,21 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 283-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38963,
-                "894ba5fd3f5a86e8cce1afd419f6464c79371f704c821107a16eb4bb38cb95b1"),
+                39114,
+                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
             "src/typed_generated/typed_slice.cpp": (
-                3286919,
-                "03eb41d3d34b49ee2c70aadff2cc683696477288e8bdc98db643bb34f5caca91"),
+                3293848,
+                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
             "src/typed_generated/typed_manifest.json": (
-                862057,
-                "639ffea0a856e54a67505b6aeb11331c80f470189c091bb484db70a91b10fd5c"),
+                864764,
+                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
             "include/noisemaker/generated/catalog.hpp": (
-                27714,
-                "18eb64d9c303ff06886f3b256b426ab91867f95a40c4faabd12d3318d1da912c"),
+                27812,
+                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24795,21 +24795,21 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 283-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38963,
-                "894ba5fd3f5a86e8cce1afd419f6464c79371f704c821107a16eb4bb38cb95b1"),
+                39114,
+                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
             "src/typed_generated/typed_slice.cpp": (
-                3286919,
-                "03eb41d3d34b49ee2c70aadff2cc683696477288e8bdc98db643bb34f5caca91"),
+                3293848,
+                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
             "src/typed_generated/typed_manifest.json": (
-                862057,
-                "639ffea0a856e54a67505b6aeb11331c80f470189c091bb484db70a91b10fd5c"),
+                864764,
+                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
             "include/noisemaker/generated/catalog.hpp": (
-                27714,
-                "18eb64d9c303ff06886f3b256b426ab91867f95a40c4faabd12d3318d1da912c"),
+                27812,
+                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25397,21 +25397,21 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 283-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38963,
-                "894ba5fd3f5a86e8cce1afd419f6464c79371f704c821107a16eb4bb38cb95b1"),
+                39114,
+                "e4d072fdc3185e52b9207c668bc072ec5ed011367a7217f22110030ea3f3e875"),
             "src/typed_generated/typed_slice.cpp": (
-                3286919,
-                "03eb41d3d34b49ee2c70aadff2cc683696477288e8bdc98db643bb34f5caca91"),
+                3293848,
+                "453532176cce9eb342762be760036418a7fa91ac9d15cf2dd5e3b48dcc6f7ccc"),
             "src/typed_generated/typed_manifest.json": (
-                862057,
-                "639ffea0a856e54a67505b6aeb11331c80f470189c091bb484db70a91b10fd5c"),
+                864764,
+                "f206e4559a7a97dcd75968b0c90527e8cf6b3d5e8630e58f465b783c2e868a40"),
             "include/noisemaker/generated/catalog.hpp": (
-                27714,
-                "18eb64d9c303ff06886f3b256b426ab91867f95a40c4faabd12d3318d1da912c"),
+                27812,
+                "9100c3f3cbfae166fa6d103fb80789898665286479e9414be4dfaf8a898c3704"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25891,7 +25891,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                     loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
                     **cross_kwargs)
             self.assertIn(
-                "exact struct frontier profile carrier required",
+                ("exact any-relational admission profile carrier required"
+                 if key == "render/renderLit3d:renderLit3d"
+                 else "exact struct frontier profile carrier required"),
                 str(ctx.exception))
             with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
                 emit_typed_cpp.render_typed_cpp(
@@ -25900,7 +25902,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                     source_global_literal_int_profile=
                     loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
                     **cross_kwargs)
-            self.assertIn("unsupported typed type", str(ctx.exception))
+            self.assertIn(
+                ("exact any-relational admission profile carrier required"
+                 if key == "render/renderLit3d:renderLit3d"
+                 else "unsupported typed type"),
+                str(ctx.exception))
 
             # Forged source bytes fail closed even with the exact profile.
             with self.assertRaises(Exception) as ctx:
@@ -27681,8 +27687,10 @@ void main() {
                     **seed_kwargs,
                 )
             self.assertIn(
-                ("exact struct frontier profile carrier required" if seed_kwargs
-                 else "unsupported counted-for program proof"),
+                (("exact any-relational admission profile carrier required"
+                  if key == "render/renderLit3d:renderLit3d"
+                  else "exact struct frontier profile carrier required")
+                 if seed_kwargs else "unsupported counted-for program proof"),
                 str(ctx.exception))
 
             # 3. Emitter integration. With the full carrier set the cross
@@ -27702,7 +27710,9 @@ void main() {
                         **profile_kwargs,
                     )
                 self.assertIn(
-                    ("unsupported typed type" if seed_kwargs
+                    (("exact any-relational admission profile carrier required"
+                      if key == "render/renderLit3d:renderLit3d"
+                      else "unsupported typed type") if seed_kwargs
                      else "unsupported counted-for program proof"),
                     str(ctx.exception))
 
