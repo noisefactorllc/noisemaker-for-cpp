@@ -97,16 +97,21 @@ def _source_text(key: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def _metadata_doc() -> dict:
+    return json.loads((_corpus_root() / "metadata.json").read_text(
+        encoding="utf-8"))
+
+
+def _effect_record(key: str) -> dict:
+    effect_id = key.split(":", 1)[0]
+    return (_metadata_doc()["effects"].get(effect_id)
+            or _pending()["effects"][effect_id])
+
+
 def _defaults(key: str) -> dict:
     from tools.glslcpp import check_semantics
-    pending = _pending()
-    effect = pending["effects"][key.split(":", 1)[0]]
     return check_semantics._metadata_defaults(
-        {"effects": {key.split(":", 1)[0]: effect}}, key)
-
-
-def _effect(key: str) -> dict:
-    return _pending()["effects"][key.split(":", 1)[0]]
+        {"effects": {key.split(":", 1)[0]: _effect_record(key)}}, key)
 
 
 def _analyzed(key: str, source: str | None = None):
@@ -293,10 +298,10 @@ class ValidatorIntegrationTests(unittest.TestCase):
             f"{key}: exact struct frontier profile carrier required",
             str(ctx.exception))
 
-    def test_render3d_validator_accepts_and_emitter_still_rejects(self):
-        """The render3d family has no other validator blocker left, so the
-        profile carries it through validation; the emitter -- deliberately
-        untouched this leg -- still rejects the struct type."""
+    def test_render3d_validator_accepts_and_emitter_renders_with_the_profile(self):
+        """The render3d family has no validator blocker left, so the profile
+        carries it through validation; the emitter demands the same carrier
+        and lowers the IsoHit struct emission once it is supplied."""
         from tools.glslcpp import emit_typed_cpp, generate_typed_slice
         from tools.glslcpp.frontend.cross_builtin_profile import (
             PROFILE as CROSS_BUILTIN_PROFILE)
@@ -312,37 +317,51 @@ class ValidatorIntegrationTests(unittest.TestCase):
             cross_builtin_profile=CROSS_BUILTIN_PROFILE,
             struct_frontier_profile=PROFILES[key]))
         with self.assertRaisesRegex(emit_typed_cpp.TypedEmissionError,
-                                    "unsupported typed type IsoHit"):
+                                    "exact struct frontier profile carrier "
+                                    "required"):
             emit_typed_cpp.render_typed_cpp(
                 program, key, _source_hash(_source_text(key)),
                 "typed_test", "bind_test",
                 source_global_literal_int_profile=(
                     SOURCE_GLOBAL_LITERAL_INT_CAPABILITY),
                 cross_builtin_profile=CROSS_BUILTIN_PROFILE)
+        emitted = emit_typed_cpp.render_typed_cpp(
+            program, key, _source_hash(_source_text(key)),
+            "typed_test", "bind_test",
+            source_global_literal_int_profile=(
+                SOURCE_GLOBAL_LITERAL_INT_CAPABILITY),
+            cross_builtin_profile=CROSS_BUILTIN_PROFILE,
+            struct_frontier_profile=PROFILES[key])
+        self.assertIn("IsoHit isosurfaceTrace", emitted)
 
     @full_run_only
     def test_probe_advances_every_carrier_past_the_struct_gate(self):
-        """The ratchet's own probe: every carrier's first blocker is no
-        longer the struct declaration, and no other program regressed."""
+        """The ratchet's own probe: the three render-family carriers pass
+        every stage and are vendored; the two remaining pending carriers'
+        first blockers are unchanged."""
         from tools.glslcpp import corpus_ratchet
         expected_frontiers = {
             SHAPES3D_KEY: ("typed.validator", "unsupported builtin round"),
-            "render/renderCubemap3d:renderCubemap3d":
-                ("typed.emitter", "unsupported typed type IsoHit"),
-            RENDER3D_KEY: ("typed.emitter", "unsupported typed type IsoHit"),
-            "render/renderLit3d:renderLit3d":
-                ("typed.validator", "unsupported builtin any"),
             "synth3d/flythrough3d:precompute":
                 ("typed.validator", "unsupported parameter direction out"),
+        }
+        promoted = {
+            RENDER3D_KEY,
+            "render/renderCubemap3d:renderCubemap3d",
+            "render/renderLit3d:renderLit3d",
         }
         for key in KEYS:
             with self.subTest(key=key):
                 blocker = corpus_ratchet.probe_program(
-                    key, _source_text(key).encode("utf-8"), _effect(key))
-                self.assertIsNotNone(blocker)
-                stage, diagnostic = expected_frontiers[key]
-                self.assertEqual(stage, blocker["stage"])
-                self.assertIn(diagnostic, blocker["diagnostic"])
+                    key, _source_text(key).encode("utf-8"),
+                    _effect_record(key))
+                if key in promoted:
+                    self.assertIsNone(blocker)
+                else:
+                    stage, diagnostic = expected_frontiers[key]
+                    self.assertIsNotNone(blocker)
+                    self.assertEqual(stage, blocker["stage"])
+                    self.assertIn(diagnostic, blocker["diagnostic"])
 
 
 class CorpusCensusTests(unittest.TestCase):
@@ -350,9 +369,24 @@ class CorpusCensusTests(unittest.TestCase):
         """Every pending program that declares a top-level struct is either
         an admitted carrier or is blocked earlier than the struct gate
         (palette3d's global declarations, renderLandscape3d's tan variant):
-        none of them reaches the emitter past an unadmitted struct."""
+        none of them reaches the emitter past an unadmitted struct. The
+        three render-family carriers are vendored now; their struct
+        declarations live under sources/ and the census covers them
+        through the manifest."""
         module = _module()
         declaring = set()
+        vendored_keys = set()
+        for item in json.loads(
+                (_corpus_root() / "manifest.json").read_text(
+                    encoding="utf-8"))["programs"]:
+            vendored_keys.add(item["program_key"])
+            try:
+                source = _source_text(item["program_key"])
+            except FileNotFoundError:
+                continue
+            import re
+            if re.search(r"^struct\s+\w+", source, re.MULTILINE):
+                declaring.add(item["program_key"])
         for key in (item["program_key"] for item in _pending()["pending"]):
             try:
                 source = _source_text(key)
@@ -361,13 +395,13 @@ class CorpusCensusTests(unittest.TestCase):
             import re
             if re.search(r"^struct\s+\w+", source, re.MULTILINE):
                 declaring.add(key)
-        self.assertLessEqual(frozenset(KEYS), declaring)
-        pending = {item["program_key"]: item for item in _pending()["pending"]}
-        for key in declaring - frozenset(KEYS):
-            self.assertNotEqual("typed.emitter", pending[key]["blocker"]["stage"],
-                                key)
         for key in KEYS:
             self.assertIn(key, declaring)
+        pending = {item["program_key"]: item for item in _pending()["pending"]}
+        for key in declaring - frozenset(KEYS):
+            if key not in vendored_keys:
+                self.assertNotEqual("typed.emitter", pending[key]["blocker"]["stage"],
+                                    key)
 
 
 if __name__ == "__main__":  # pragma: no cover
