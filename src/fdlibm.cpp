@@ -1575,6 +1575,12 @@ double atan2(double y, double x) noexcept { return fd_atan2(y, x); }
 // same OS on the same machine), no algorithm needs porting for that
 // branch -- calling std::pow here IS calling exactly what V8 calls.
 // ============================================================
+[[nodiscard]] double pin_lane_nan(double value) noexcept {
+  return std::isnan(value)
+             ? std::copysign(std::numeric_limits<double>::quiet_NaN(), -1.0)
+             : value;
+}
+
 double pow(double x, double y) noexcept {
   if (std::isnan(y)) {
     return std::numeric_limits<double>::quiet_NaN();
@@ -1582,18 +1588,28 @@ double pow(double x, double y) noexcept {
   if (std::isinf(y) && (x == 1.0 || x == -1.0)) {
     return std::numeric_limits<double>::quiet_NaN();
   }
-  // pow(-0.1, 0.5) on the pinned lane returns the raw -NaN double
-  // (0xFFF8000000000000) and Math.pow(-1, Infinity) the canonical +NaN;
-  // the two explicit quiet_NaN guards above reproduce the special cases,
-  // everything else must stay the raw std::pow/std::sqrt result so the
-  // f32 words written into a surface match V8's bit for bit.
+  // The pinned lane's JS surface path preserves the raw NaN bits of the
+  // linked libm (V8 26.0.0, Linux x86-64: Math.pow(-0.1, 0.5) -> the raw
+  // double 0xFFF8000000000000, whose f32 narrowing is 0xFFC00000 in the
+  // meshRender `negative-color-nan` capture). Raw libm bits are host
+  // specific, so an invalid-operation NaN is pinned to exactly that bit
+  // pattern (copysign is bit-exact on every IEEE-754 host: the quiet NaN
+  // with the sign bit set, 0xFFF8000000000000) deterministically on macOS
+  // and Linux alike, byte-identical to the frozen captures. A NaN that
+  // propagates from an input is NOT rewritten: the captures carry the
+  // propagated payload unmodified (missing-normal-tail keeps +NaN through
+  // pow), matching V8's operand propagation. The two explicit quiet_NaN
+  // guards above keep the +NaN the JS special cases return (observed
+  // Math.pow(-1, Infinity) -> 0x7FF8000000000000).
   if (y == 2.0) {
     return x * x;
   } else if (y == 0.5) {
     if (std::isinf(x)) return std::numeric_limits<double>::infinity();
-    return std::sqrt(x + 0.0);
+    if (std::isnan(x)) return std::sqrt(x + 0.0);
+    return pin_lane_nan(std::sqrt(x + 0.0));
   }
-  return std::pow(x, y);
+  if (std::isnan(x)) return std::pow(x, y);
+  return pin_lane_nan(std::pow(x, y));
 }
 
 // hypot() (2/3/N-arg) lives in src/fdlibm_off.cpp -- Math.hypot is a
