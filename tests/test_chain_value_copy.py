@@ -105,7 +105,7 @@ class ChainValueCopyTests(unittest.TestCase):
     def test_capture_provenance_and_live_reproduction(self):
         for name, digest in {
             "cases.json": "609b4825df1db6ad466798e5f4f54cbf7cc4af454cb158d11b9a2ec7f182a141",
-            "expected.json": "e66e25c8d5bf3e369bacf3a2f67d533558d9a44f19a72a39d6ee0bf8627c6e6c",
+            "expected.json": "cf855852d9efcccb667c234b1f0f2080c4e2246336892a5b09d8ff675d85e270",
         }.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         configured = os.environ.get("NOISEMAKER_CPU_ROOT")

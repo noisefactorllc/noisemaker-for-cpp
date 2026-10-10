@@ -6,9 +6,10 @@ The counted-for queue's remaining 3D render/synth families all stop at the
 (declarations, fields, struct-return functions, struct-typed parameters,
 struct locals, member sites, absent constructor/global sets) and admits it
 proof-gated: admission is by object identity into the module's frozen
-records only, the capability vocabulary does not move, and the emitter
-keeps every struct type rejected (this leg advances the validator; the
-emitter frontier is a later slice).
+records only, the capability vocabulary does not move. The emitter lowers
+exactly the profile's frozen struct types (VoxelHit/IsoHit: prelude struct
+definitions, value-initialized locals, member read/write lowering) and
+keeps every struct type the frozen record does not cover rejected.
 """
 
 from __future__ import annotations

@@ -105,6 +105,17 @@ class Authority8ae8e2aCaptureTests(unittest.TestCase):
         configured = os.environ.get("NOISEMAKER_CPU_ROOT")
         if not configured:
             self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce the 8ae8e2a capture")
+        # This fixture pins the historical 8ae8e2a authority byte-for-byte (its
+        # reference.mjs authenticates that revision). Its native-table and
+        # provenance assertions above always run; the live reproduce leg needs
+        # that exact revision present -- a later pinned authority is a
+        # different CPU and fails the fixture's own hash gate, so skip when
+        # the configured root is not the 8ae8e2a revision.
+        pinned = "f4f3c23286da0d72032a6156ed1bd641b93a39d54a6e1812079280d2d3243e70"
+        canonical = pathlib.Path(configured) / "src/effects/generated/canonical-kernels.js"
+        digest = hashlib.sha256(canonical.read_bytes()).hexdigest()
+        if digest != pinned:
+            self.skipTest(f"the 8ae8e2a capture needs that CPU revision, not {digest[:12]}")
         result = subprocess.run(["node", str(FIXTURE / "reference.mjs"), configured,
                                  str(FIXTURE / "cases.json")], capture_output=True, check=True)
         self.assertEqual(result.stdout, (FIXTURE / "expected.json").read_bytes())

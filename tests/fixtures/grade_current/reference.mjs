@@ -5,8 +5,8 @@ import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 
 const hashes = {
-  'src/effects/generated/canonical-kernels.js': 'bb84452590f921e1f7e04302da058229af1f153664aaf41400ba959120845e59',
-  'src/csl/glsl-runtime.js': 'a1ceb0e4580ba989ecebf8c06ceca81847434623c040deaa143a3014ea1fd9e5',
+  'src/effects/generated/canonical-kernels.js': 'eda3ca5153d7759cbf9e92982cc8579c2474828f770d29343c38dc31fcac9904',
+  'src/csl/glsl-runtime.js': 'b47fa69f3358822c314315ad985c14c94fff5c973ff98fe953d7304135b84722',
   'src/runtime/sampler.js': '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328',
   'src/runtime/surface.js': '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   'src/runtime/texture-format.js': '10af8fd92813c7872eecf51b203c01a4e6ebc79a4c5fa7d38661a12192efbcfe',
@@ -46,7 +46,7 @@ try {
       rgba8.push(...output.toRgba8());
     }
   }
-  console.log(JSON.stringify({cpu_revision: '26d6f42be38da7172f602373e844f85a8155356f',
+  console.log(JSON.stringify({cpu_revision: '5b686a45b5c56329adf0c63cbcf572eb6f23fad1',
     source_hashes: hashes, pixels: raw.length, float32_sha256: sha(Buffer.concat(raw)),
     rgba8_sha256: sha(Buffer.from(rgba8))}));
 } finally {

@@ -70,7 +70,7 @@ class MeshRenderAdapterTests(unittest.TestCase):
 class MeshRenderAuthorityTests(unittest.TestCase):
     def test_capture_has_immutable_cpu_provenance(self):
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "26d6f42be38da7172f602373e844f85a8155356f")
+        self.assertEqual(expected["cpu_revision"], "5b686a45b5c56329adf0c63cbcf572eb6f23fad1")
         self.assertEqual(expected["source_hashes"], {
             "src/effects/cpu/mesh-render.js": "4fa90cc2681e51dce259e79bf807fb352868cc5e31823a313c818b7c1deeb051",
             "src/runtime/surface.js": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
@@ -102,5 +102,5 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
 FIXTURE_HASHES = {
     "cases.json": "161358e3d0bfb3bcb2798d05ff5c2c681982d369441726256d265458b8c65830",
-    "expected.json": "01a96fd648596c5d3de2b2a9afd6a7e9ce95ef1da241c6a29e865e1b3804b854",
+    "expected.json": "62faf71403bdc09f1fa98ffb23433608f3d18f4ffed8f05d5d14d7486da46c0c",
 }

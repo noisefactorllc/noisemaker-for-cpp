@@ -92,10 +92,10 @@ class OsdCurrentKernelTests(unittest.TestCase):
 
 class OsdCurrentReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
-        for name, digest in {'cases.json': '0a507681df91bbd819a5126bc88c55739ecb17642e3dc81b0849388a32fb9f4b', 'expected.json': 'd204aef525ccf32be9bd3e033548bf7a05f6552edf6e30e726ad0592ccadc136'}.items():
+        for name, digest in {'cases.json': '0a507681df91bbd819a5126bc88c55739ecb17642e3dc81b0849388a32fb9f4b', 'expected.json': 'ef2c7cff76818ada54115890381e6fd65691dba04bd8331bcdb6f2b9bf624d99'}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "26d6f42be38da7172f602373e844f85a8155356f")
+        self.assertEqual(expected["cpu_revision"], "5b686a45b5c56329adf0c63cbcf572eb6f23fad1")
         self.assertEqual(len(expected["source_hashes"]), 5)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual(len(cases), 38)

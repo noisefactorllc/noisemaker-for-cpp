@@ -1552,15 +1552,15 @@ double acos(double x) noexcept { return fd_acos(x); }
 double atan(double x) noexcept { return fd_atan(x); }
 double atan2(double y, double x) noexcept { return fd_atan2(y, x); }
 
-// JS never produces an observable NaN other than the canonical positive
-// quiet NaN: V8 canonicalizes every NaN when it crosses back into a JS
-// Number (heap-number boxing, typed-array loads and stores). C++-resident
-// call chains keep the raw libm NaN -- sign bit set on x86 -- so any
-// wrapper modeling a JS builtin must canonicalize its NaN results itself.
-[[nodiscard]] double canonicalize_js_nan(double value) noexcept {
-  return std::isnan(value) ? std::numeric_limits<double>::quiet_NaN() : value;
-}
-
+// V8 does NOT canonicalize NaNs on the paths that feed a render surface:
+// a Math.pow/Math.sqrt result stays a raw machine double in a register,
+// Math.fround preserves its bits, and typed-array stores write those bits
+// verbatim. Empirically on the pinned lane (V8 26.0.0, Linux x86-64):
+// Math.pow(-0.1, 0.5) -> 0xFFF8000000000000 and the meshRender
+// `negative-color-nan` capture carries the f32 raw pattern 0xFFC00000 in
+// destination.words. C++-resident call chains must therefore return the
+// same raw std::pow/std::sqrt NaN the linked libm produces on this
+// platform, not a canonicalized one.
 // ============================================================
 // pow(x, y): V8's LIVE Math.pow (v8::internal::math::pow,
 // src/numbers/ieee754.cc, active whenever `use_std_math_pow` is true --
@@ -1582,20 +1582,18 @@ double pow(double x, double y) noexcept {
   if (std::isinf(y) && (x == 1.0 || x == -1.0)) {
     return std::numeric_limits<double>::quiet_NaN();
   }
-  // JS never observes a signed NaN: every NaN result canonicalizes to the
-  // positive quiet NaN when it crosses back into a JS Number (V8 heap-number
-  // boxing and typed-array stores both canonicalize), so callers had no need
-  // to canonicalize here. But C++-resident call chains -- e.g. the mesh
-  // renderer's gamma, whose double never crosses a JS boundary -- keep the
-  // libm's raw NaN (sign bit set on x86), so pow must return the JS-visible
-  // bit pattern itself.
+  // pow(-0.1, 0.5) on the pinned lane returns the raw -NaN double
+  // (0xFFF8000000000000) and Math.pow(-1, Infinity) the canonical +NaN;
+  // the two explicit quiet_NaN guards above reproduce the special cases,
+  // everything else must stay the raw std::pow/std::sqrt result so the
+  // f32 words written into a surface match V8's bit for bit.
   if (y == 2.0) {
-    return canonicalize_js_nan(x * x);
+    return x * x;
   } else if (y == 0.5) {
     if (std::isinf(x)) return std::numeric_limits<double>::infinity();
-    return canonicalize_js_nan(std::sqrt(x + 0.0));
+    return std::sqrt(x + 0.0);
   }
-  return canonicalize_js_nan(std::pow(x, y));
+  return std::pow(x, y);
 }
 
 // hypot() (2/3/N-arg) lives in src/fdlibm_off.cpp -- Math.hypot is a
