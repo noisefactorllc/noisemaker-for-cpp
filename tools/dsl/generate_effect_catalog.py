@@ -25,7 +25,7 @@ DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-COMPATIBILITY_SHA256 = "1fbeef32f84141f30bd3a37e37e23cb69b6d3cd59bf866eaff073526c637f83e"
+COMPATIBILITY_SHA256 = "538f2af4353fd674b5aeb901b06f3e2ed83438fdbd3ee33586cf3c8c6dea8507"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
@@ -455,6 +455,14 @@ def _program_compatibility_cpp(row: dict[str, Any]) -> list[str]:
     if row.get("factory", {}).get("canonical"): lines.append(f"      p.canonical_factory = {_cpp_optional_string(row['factory']['canonical'])};")
     if row.get("new_raw_sha256"): lines.append(f"      p.source_sha256 = {_cpp_optional_string(row['new_raw_sha256'])};")
     if row.get("semantic", {}).get("old_typed_ir_sha256"): lines.append(f"      p.semantic_sha256 = {_cpp_optional_string(row['semantic']['old_typed_ir_sha256'])};")
+    for binding in row.get("binding_outputs", []):
+        lines += [f"      {{", f"        ProgramCompatibility::BindingOutputs b;",
+                  f"        b.pass_index = {binding['pass_index']};",
+                  f"        b.pass_name = {_cpp_string(str(binding['pass_name']))};"]
+        for output in binding["outputs"]:
+            lines.append("        b.outputs.emplace_back(" + str(output.get("slot", 0)) + ", " +
+                         ", ".join(_cpp_string(str(output.get(k, ''))) for k in ("physical_name", "logical_route", "cpp_type")) + ");")
+        lines += ["        p.binding_outputs.push_back(std::move(b));", "      }"]
     lines.append(f"      p.raw = {_raw_pairs(row)};")
     lines += ["      c.canonical_programs.push_back(std::move(p));", "    }"]
     return lines

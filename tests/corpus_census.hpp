@@ -37,6 +37,19 @@ namespace corpus_census {
   return keys;
 }
 
+// Expected single-output canonical route rows: one row per program, plus one
+// extra row per additional binding of a multi-bound program -- each binding
+// carries its own ordered output-ABI anchor in the generated route table.
+[[nodiscard]] inline std::size_t expected_single_output_route_rows() {
+  std::size_t rows = 0;
+  for (const auto& row : noisemaker::effects::effect_catalog().canonical_programs) {
+    if (output_count(row) == 1U && row.program_key != "render/meshRender:render") {
+      rows += row.binding_outputs.empty() ? 1U : row.binding_outputs.size();
+    }
+  }
+  return rows;
+}
+
 // Every canonical multi-output program key, sorted.
 [[nodiscard]] inline std::vector<std::string> mrt_program_keys() {
   std::vector<std::string> keys;

@@ -875,7 +875,7 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
                             "detail": f"{axis}={json.dumps(value, sort_keys=True)}"})
     status = "compatible" if not reasons else "incompatible"
     factory = typed_record.get("factory")
-    return {
+    entry_result = {
         "program_key": key, "effect_id": entry["effect_id"], "program": entry["program"],
         "source": entry["source"], "old_raw_sha256": _sha(old), "old_raw_bytes": len(old),
         "new_raw_sha256": _sha(new), "new_raw_bytes": len(new),
@@ -903,6 +903,51 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
                             "outputs": current_pass.get("outputs", {}), "uniforms": current_pass.get("uniforms", {}),
                             "blend": current_pass.get("blend", False), "repeat": current_pass.get("repeat")},
     }
+    if len(authority_passes) > 1:
+        # One compiled program renders from every pass that binds it, and each
+        # pass routes the program's outputs into its own resources (and may
+        # size them differently). The canonical row keeps the first binding's
+        # ABI; binding_outputs records every binding's own output routes and
+        # extent so a dispatch through any binding authenticates against this
+        # document. The first binding must reproduce the canonical row exactly.
+        bindings: list[dict[str, Any]] = []
+        for index, pass_item in enumerate(effect["passes"]):
+            if pass_item.get("program") != entry["program"]:
+                continue
+            logical = list(pass_item.get("outputs", {}).values())
+            if len(logical) != len(physical_outputs):
+                raise CompatibilityError(
+                    f"{key}: binding pass {pass_item.get('name')} output count "
+                    f"differs from the program ABI "
+                    f"(physical={len(physical_outputs)} logical={len(logical)})")
+            binding_extent = _extent(effect, pass_item, logical[0] if logical else "outputTex")
+            # Input routes are per-pass too: the same program reads different
+            # resources from different passes (physarum's passthrough program
+            # reads the pheromone state from its copy pass and the user input
+            # from its passthrough pass). Remap each sampler's resource through
+            # this pass's inputs; a sampler the pass does not feed is a
+            # generation defect, not a silent route carry-over.
+            binding_samplers = []
+            for sampler in samplers:
+                inputs_map = pass_item.get("inputs", {})
+                if sampler["name"] not in inputs_map:
+                    raise CompatibilityError(
+                        f"{key}: binding pass {pass_item.get('name')} does not feed "
+                        f"sampler {sampler['name']}")
+                binding_samplers.append({**sampler, "resource": inputs_map[sampler["name"]]})
+            bindings.append({
+                "pass_index": index, "pass_name": pass_item.get("name"),
+                "samplers": binding_samplers,
+                "outputs": [{"slot": slot, "physical_name": physical,
+                             "logical_route": logical[slot] if slot < len(logical) else None,
+                             "cpp_type": "glsl::Vec4"}
+                            for slot, physical in enumerate(physical_outputs)],
+                "extent": binding_extent,
+            })
+        if bindings[0]["outputs"] != outputs or bindings[0]["extent"] != extent or bindings[0]["samplers"] != samplers:
+            raise CompatibilityError(f"{key}: first binding ABI drift against the canonical row")
+        entry_result["binding_outputs"] = bindings
+    return entry_result
 
 
 def _shader_path(entry: dict[str, Any]) -> str:

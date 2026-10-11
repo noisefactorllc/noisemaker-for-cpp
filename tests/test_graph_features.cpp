@@ -339,7 +339,7 @@ TEST(graph_mesh_loader_preserves_float32_until_output_quantization) {
 
 TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
   const auto routes = canonical_factory_routes();
-  REQUIRE(routes.size() == corpus_census::single_output_program_keys().size() + 1U);
+  REQUIRE(routes.size() == corpus_census::expected_single_output_route_rows() + 1U);
   // Every multi-output corpus program is published through the MRT table
   // instead, and never through the single-output one.
   const auto mrt_routes = canonical_factory_routes_mrt();
@@ -408,7 +408,7 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
   // every other single-output corpus program is a typed-emitter route.
   REQUIRE(custom_adapter == 4U);
   REQUIRE(whole_pass == 1U);
-  REQUIRE(typed_emitter == corpus_census::single_output_program_keys().size() - custom_adapter);
+  REQUIRE(typed_emitter == corpus_census::expected_single_output_route_rows() - custom_adapter);
 }
 
 TEST(graph_executor_dispatches_the_duplicate_canonical_invert_route) {

@@ -51,7 +51,11 @@ class EffectRegistry {
   std::vector<ReferencePassCompatibility> reference_passes_;
   std::optional<ScatterCompatibility> scatter_;
   std::vector<ScatterCompatibility> scatter_contracts_;
-  std::vector<graph::PassAdmission> canonical_views_;
+  // One projection per canonical compatibility row; a row whose program is
+  // bound by several authority passes carries one projection per binding,
+  // each with that binding's own output routes, extent and binding-ABI
+  // digest. Indexed parallel to canonical_programs_.
+  std::vector<std::vector<graph::PassAdmission>> canonical_views_;
   CatalogProvenance provenance_;
   bool manifest_backed_ = false;
 };

@@ -40,6 +40,8 @@ class BackendCompatibilityTests(unittest.TestCase):
         rows = {row["program_key"]: row for row in cls.document["canonical_programs"]}
         rows[cls.document["scatter"]["program_key"]] = cls.document["scatter"]
         cls.factory_evidence = generator._factory_evidence(ROOT, typed_rows, rows)
+        cls.authority_effects = {item["id"]: item
+                                 for item in generator._node_effect_records(CPU_ROOT)}
 
     def test_authority_and_backend_census_are_authenticated(self) -> None:
         document = self.document
@@ -101,6 +103,59 @@ class BackendCompatibilityTests(unittest.TestCase):
                 for item in reference:
                     self.assertEqual("compatible", item["status"])
                     self.assertEqual([], item["reasons"])
+
+    def test_multi_pass_rows_record_every_binding_output_route(self) -> None:
+        # One compiled program renders from every pass that binds it, and each
+        # pass routes the program's outputs into its own resources (physarum's
+        # passthrough program lands in the pheromone state from its copy pass
+        # and in the effect output from its passthrough pass). The canonical
+        # row keeps the first binding's ABI; binding_outputs records every
+        # binding's own output routes and output extent so a dispatch through
+        # any binding authenticates against the document. Single-binding rows
+        # carry no binding_outputs: their one binding already owns the row.
+        # Input routes are per-binding too: the same program reads different
+        # resources from different passes (physarum's passthrough program reads
+        # the pheromone state from its copy pass and the user input from its
+        # passthrough pass).
+        for key, effect_id, expected in (
+            ("points/physarum:passthrough", "points/physarum",
+             [("copy", "global_physarum_pheromone"), ("passthrough", "outputTex")]),
+            ("render/loopEnd:copy", "render/loopEnd",
+             [("feedback", "global_accum"), ("output", "outputTex")]),
+            ("filter/temporalAberration:delayShift", "filter/temporalAberration",
+             [(f"shift{power}", f"_h{power}") for power in range(8, 0, -1)]),
+        ):
+            with self.subTest(program_key=key):
+                row = next(row for row in self.document["canonical_programs"]
+                           if row["program_key"] == key)
+                effect = self.authority_effects[effect_id]
+                bindings = row["binding_outputs"]
+                self.assertEqual([item["pass_name"] for item in bindings],
+                                 [name for name, _ in expected])
+                self.assertEqual([item["pass_index"] for item in bindings],
+                                 [index for index, pass_item in enumerate(effect["passes"])
+                                  if pass_item["program"] == row["program"]])
+                for item, (_, route) in zip(bindings, expected):
+                    self.assertEqual([output["logical_route"] for output in item["outputs"]],
+                                     [route])
+                    self.assertEqual([output["physical_name"] for output in item["outputs"]],
+                                     [output["physical_name"] for output in row["outputs"]])
+                    pass_item = next(pass_item for pass_item in effect["passes"]
+                                     if pass_item["name"] == item["pass_name"])
+                    self.assertEqual(item["extent"],
+                                     generator._extent(effect, pass_item, route))
+                    # Samplers: program facts stay, the resource follows the
+                    # pass's inputs mapping.
+                    self.assertEqual(len(item["samplers"]), len(row["samplers"]))
+                    for row_sampler, binding_sampler in zip(row["samplers"], item["samplers"]):
+                        self.assertEqual(binding_sampler["name"], row_sampler["name"])
+                        self.assertEqual(binding_sampler["type"], row_sampler["type"])
+                        self.assertEqual(binding_sampler["cpp_type"], row_sampler["cpp_type"])
+                        self.assertEqual(binding_sampler["resource"],
+                                         pass_item["inputs"][row_sampler["name"]])
+        row = next(row for row in self.document["canonical_programs"]
+                   if row["program_key"] == "synth/solid:solid")
+        self.assertNotIn("binding_outputs", row)
 
     def test_output_extent_uses_authority_default_for_absent_and_explicit_formats(self) -> None:
         effect = {"textures": {"_blurTemp": {"width": "input", "height": "input", "format": "rgba8unorm"}}}

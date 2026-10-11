@@ -10874,15 +10874,49 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
     admission_source_hashes = _compatibility_source_hashes(repository, manifest_programs)
     compatibility_rows = _compatibility_canonical_rows(repository)
 
+    def binding_row(row: dict[str, Any] | None, binding: dict[str, Any]) -> dict[str, Any]:
+        """One binding's view of a canonical row: its own routes and extent.
+
+        The row keeps the program-level facts (samplers' names/types, uniforms,
+        defines, factories, source identity); a multi-bound program's sampler
+        resources, logical output routes and output extent belong to the
+        dispatching pass, so the projection swaps those sections for the
+        binding's.
+        """
+        projected = dict(row)
+        # Docs written before per-binding sampler routes carried none; fall
+        # back to the row's samplers so the fixed-point transition converges
+        # (the doc generator requires the field, so a stale doc is rewritten).
+        projected["samplers"] = binding.get("samplers", row["samplers"])
+        projected["outputs"] = binding["outputs"]
+        projected["output_abi"] = {**row["output_abi"], "extent": binding["extent"],
+                                   "logical_routes": [output["logical_route"]
+                                                      for output in binding["outputs"]]}
+        return projected
+
     def routes_for(items: list[dict[str, Any]]) -> list[dict[str, str]]:
-        return sorted(
-            (_factory_route_descriptor(
-                item,
-                bind_factory=_CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]),
-                source_sha256=admission_source_hashes[item["program_key"]],
-                compatibility_row=compatibility_rows.get(item["program_key"]))
-             for item in items),
-            key=lambda item: item["key"])
+        descriptors: list[dict[str, str]] = []
+        for item in items:
+            row = compatibility_rows.get(item["program_key"])
+            bindings = (row or {}).get("binding_outputs") or []
+            if not bindings:
+                descriptors.append(_factory_route_descriptor(
+                    item,
+                    bind_factory=_CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]),
+                    source_sha256=admission_source_hashes[item["program_key"]],
+                    compatibility_row=row))
+                continue
+            # One compiled program renders from every pass that binds it, and
+            # each binding carries its own ordered output ABI; emit one route
+            # row per binding so a dispatch through any of them authenticates
+            # against the generated anchor for exactly that binding.
+            for binding in bindings:
+                descriptors.append(_factory_route_descriptor(
+                    item,
+                    bind_factory=_CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]),
+                    source_sha256=admission_source_hashes[item["program_key"]],
+                    compatibility_row=binding_row(row, binding)))
+        return sorted(descriptors, key=lambda item: item["key"])
 
     canonical_routes = routes_for(single_output_programs)
     canonical_routes_mrt = routes_for(mrt_programs)

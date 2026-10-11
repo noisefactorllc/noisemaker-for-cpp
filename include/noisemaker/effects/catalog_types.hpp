@@ -207,6 +207,14 @@ struct EffectDefinition {
 };
 
 struct ProgramCompatibility {
+  // One binding's projection of a multi-bound canonical row: the pass that
+  // binds the program plus that pass's own ordered output routes. The
+  // program-level facts stay on the row.
+  struct BindingOutputs {
+    std::size_t pass_index = 0;
+    std::string pass_name;
+    std::vector<std::tuple<std::size_t, std::string, std::string, std::string>> outputs;
+  };
   std::string effect_id;
   std::string program;
   std::string program_key;
@@ -215,6 +223,7 @@ struct ProgramCompatibility {
   std::optional<std::string> canonical_factory;
   std::optional<std::string> source_sha256;
   std::optional<std::string> semantic_sha256;
+  std::vector<BindingOutputs> binding_outputs;
   std::vector<std::pair<std::string, Value>> raw;
 };
 

@@ -2005,20 +2005,53 @@ std::span<const FactoryRouteDescriptor> canonical_factory_routes() {
     std::vector<FactoryRouteDescriptor> result;
     const auto generated_routes = generated::canonical_routes();
     result.reserve(generated_routes.size());
-    std::unordered_set<std::string> pairs;
+    // A program bound by several authority passes legitimately appears once
+    // per binding: same (key, factory) pair, one ordered output ABI per
+    // binding. Only a byte-identical duplicate of the whole descriptor --
+    // anchors, identity and bind factory included -- is a generation defect.
+    struct FullPayload {
+      std::string_view emitted_factory;
+      std::string_view route_kind;
+      std::string_view source_sha256;
+      std::string_view typed_abi_sha256;
+      std::string_view define_contract;
+      std::string_view defines;
+      std::string_view sampler_abi_sha256;
+      std::string_view uniform_abi_sha256;
+      std::string_view output_abi_sha256;
+      std::string_view output_extent_sha256;
+      std::string_view compile_define_abi_sha256;
+      BoundKernel (*bind)(const glsl::Bindings&);
+      bool operator==(const FullPayload&) const = default;
+    };
+    std::unordered_map<std::string, std::vector<FullPayload>> pairs;
     for (const auto& route : generated_routes) {
       const bool known_kind = route.route_kind == "typed_emitter" ||
                               route.route_kind == "custom_adapter";
       if (route.key.empty() || route.canonical_factory.empty() ||
           route.emitted_factory.empty() || !known_kind ||
           !is_sha256(route.source_sha256) ||
-          !is_sha256(route.typed_abi_sha256) || route.bind == nullptr ||
-          !pairs.insert(std::string(route.key) + "\x1f" +
-                        std::string(route.canonical_factory)).second) {
+          !is_sha256(route.typed_abi_sha256) || route.bind == nullptr) {
         throw GraphError(GraphErrorCode::invalid_snapshot,
                          "generated canonical route table is malformed", {}, 0,
                          {}, std::string(route.key));
       }
+      const FullPayload payload{route.emitted_factory, route.route_kind,
+                                route.source_sha256, route.typed_abi_sha256,
+                                route.define_contract, route.defines,
+                                route.sampler_abi_sha256,
+                                route.uniform_abi_sha256,
+                                route.output_abi_sha256,
+                                route.output_extent_sha256,
+                                route.compile_define_abi_sha256, route.bind};
+      auto& seen = pairs[std::string(route.key) + "\x1f" +
+                         std::string(route.canonical_factory)];
+      if (std::find(seen.begin(), seen.end(), payload) != seen.end()) {
+        throw GraphError(GraphErrorCode::invalid_snapshot,
+                         "generated canonical route table is malformed", {}, 0,
+                         {}, std::string(route.key));
+      }
+      seen.push_back(payload);
       result.push_back({route.key, route.canonical_factory,
                         route.emitted_factory, route.route_kind,
                         route.source_sha256, route.typed_abi_sha256,
@@ -2037,48 +2070,77 @@ const FactoryRouteDescriptor* authenticate_factory_route(
     const EffectStep& step, const PassAdmission& admission,
     std::span<const FactoryRouteDescriptor> routes) {
   const auto table = routes.empty() ? canonical_factory_routes() : routes;
-  const auto* route = find_factory_route(table, admission.identity.program_key,
-                                         admission.canonical_factory);
-  if (route == nullptr || (route->bind == nullptr &&
-      !(route->route_kind == "whole_pass" && route->program_key == effects::mesh_contract::route.program_key))) {
+  // A program bound by several authority passes has one route row per
+  // binding: same (key, factory) pair, one ordered output ABI per binding.
+  // The dispatching admission authenticates against the row whose baked
+  // anchors match its own sections; a key/factory pair alone is not
+  // provenance, and a plan whose sections match no generated row refuses.
+  std::vector<const FactoryRouteDescriptor*> candidates;
+  for (const auto& route : table) {
+    if (route.program_key == admission.identity.program_key &&
+        route.canonical_factory == admission.canonical_factory) {
+      candidates.push_back(&route);
+    }
+  }
+  if (candidates.empty()) {
     throw binding_error(step, admission, GraphErrorCode::unavailable_pass,
                         "canonical factory route is not admitted");
   }
-  // A key/factory pair alone is not provenance.  Every remaining descriptor
-  // field must equal the value-owned admission before the payload is used.
-  if (route->emitted_factory != admission.emitted_factory ||
-      route->route_kind != admission.route_kind ||
-      route->source_sha256 != admission.source_sha256 ||
-      route->typed_abi_sha256 != admission.typed_abi_sha256) {
-    throw binding_error(step, admission, GraphErrorCode::unavailable_pass,
-                        "generated route metadata differs from the admission");
-  }
-  // The identity strings do not themselves cover the ordered ABI. Each section
-  // of the admission's own ordered lists is re-digested and compared to the
-  // generated anchor, which the typed-slice generator baked from the
-  // authenticated compatibility document -- an authority outside the plan.
-  // Every section reports its own code and detail.
   const auto sections = binding_abi_sections(admission);
-  const std::array<std::tuple<const std::string*, std::string_view, GraphErrorCode,
-                              std::string_view>, 5>
-      anchored = {{
-          {&sections.samplers, route->sampler_abi_sha256, GraphErrorCode::missing_binding,
-           "ordered sampler ABI differs from the generated route anchor"},
-          {&sections.uniforms, route->uniform_abi_sha256, GraphErrorCode::binding_type,
-           "ordered uniform ABI differs from the generated route anchor"},
-          {&sections.outputs, route->output_abi_sha256, GraphErrorCode::invalid_snapshot,
-           "output ABI differs from the generated route anchor"},
-          {&sections.extent, route->output_extent_sha256, GraphErrorCode::invalid_format,
-           "output extent differs from the generated route anchor"},
-          {&sections.defines, route->compile_define_abi_sha256,
-           GraphErrorCode::unavailable_pass,
-           "compile define ABI differs from the generated route anchor"},
-      }};
-  for (const auto& [bytes, expected, code, detail] : anchored) {
-    if (detail::sha256(*bytes) != expected) {
-      throw binding_error(step, admission, code, std::string(detail));
+  std::optional<GraphError> first_error;
+  std::optional<const FactoryRouteDescriptor*> matched_route;
+  for (const FactoryRouteDescriptor* route : candidates) {
+    if (route->bind == nullptr &&
+        !(route->route_kind == "whole_pass" && route->program_key == effects::mesh_contract::route.program_key)) {
+      if (!first_error) first_error = binding_error(step, admission, GraphErrorCode::unavailable_pass,
+                                                    "canonical factory route is not admitted");
+      continue;
+    }
+    // Every remaining descriptor field must equal the value-owned admission
+    // before the payload is used.
+    if (route->emitted_factory != admission.emitted_factory ||
+        route->route_kind != admission.route_kind ||
+        route->source_sha256 != admission.source_sha256 ||
+        route->typed_abi_sha256 != admission.typed_abi_sha256) {
+      if (!first_error) first_error = binding_error(step, admission, GraphErrorCode::unavailable_pass,
+                                                    "generated route metadata differs from the admission");
+      continue;
+    }
+    // The identity strings do not themselves cover the ordered ABI. Each
+    // section of the admission's own ordered lists is re-digested and compared
+    // to the generated anchor, which the typed-slice generator baked from the
+    // authenticated compatibility document -- an authority outside the plan.
+    // Every section reports its own code and detail.
+    const std::array<std::tuple<const std::string*, std::string_view, GraphErrorCode,
+                                std::string_view>, 5>
+        anchored = {{
+            {&sections.samplers, route->sampler_abi_sha256, GraphErrorCode::missing_binding,
+             "ordered sampler ABI differs from the generated route anchor"},
+            {&sections.uniforms, route->uniform_abi_sha256, GraphErrorCode::binding_type,
+             "ordered uniform ABI differs from the generated route anchor"},
+            {&sections.outputs, route->output_abi_sha256, GraphErrorCode::invalid_snapshot,
+             "output ABI differs from the generated route anchor"},
+            {&sections.extent, route->output_extent_sha256, GraphErrorCode::invalid_format,
+             "output extent differs from the generated route anchor"},
+            {&sections.defines, route->compile_define_abi_sha256,
+             GraphErrorCode::unavailable_pass,
+             "compile define ABI differs from the generated route anchor"},
+        }};
+    bool matched = true;
+    for (const auto& [bytes, expected, code, detail] : anchored) {
+      if (detail::sha256(*bytes) != expected) {
+        if (!first_error) first_error = binding_error(step, admission, code, std::string(detail));
+        matched = false;
+        break;
+      }
+    }
+    if (matched) {
+      matched_route = route;
+      break;
     }
   }
+  if (!matched_route) throw *first_error;
+  const auto* route = *matched_route;
   // The plan also carries the registry's own digest of the same document. It
   // is a projection cross-check, not an authority: a disagreement means the
   // registry projection and the value-owned admission have diverged.

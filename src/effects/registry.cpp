@@ -40,17 +40,23 @@ const Value& required_field(const Fields& fields,
 }
 
 template <typename Fields>
+std::string string_field(const Fields& fields, std::string_view name);
+template <typename Fields>
 void exact_object(const Fields& fields,
                   std::initializer_list<std::string_view> allowed,
-                  const std::string& context) {
+                  const std::string& context,
+                  std::initializer_list<std::string_view> optional = {}) {
   std::set<std::string_view> names(allowed.begin(), allowed.end());
+  names.insert(optional.begin(), optional.end());
+  std::set<std::string_view> required(allowed.begin(), allowed.end());
   std::set<std::string> seen;
   for (const auto& pair : fields) {
     if (!names.count(pair.first) || !seen.insert(pair.first).second)
       throw std::invalid_argument("Malformed compatible compatibility row " + context + ": exact object keys");
   }
-  if (seen.size() != names.size())
-    throw std::invalid_argument("Malformed compatible compatibility row " + context + ": missing object key");
+  for (const auto& name : required)
+    if (!seen.count(std::string(name)))
+      throw std::invalid_argument("Malformed compatible compatibility row " + context + ": missing object key");
 }
 
 void nonempty_string(const Value& value, const std::string& context) {
@@ -179,7 +185,63 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
     }
     return;
   }
-  exact_object(raw, {"row_kind", "effect_id", "program", "program_key", "status", "reasons", "source", "old_raw_sha256", "new_raw_sha256", "typed_abi_sha256", "old_raw_bytes", "new_raw_bytes", "source_classification", "compatibility_transform", "derivative_use", "draw_mode", "dimensionality", "capabilities", "uniforms", "samplers", "outputs", "output_abi", "semantic", "factory", "authority_pass"}, context);
+  exact_object(raw, {"row_kind", "effect_id", "program", "program_key", "status", "reasons", "source", "old_raw_sha256", "new_raw_sha256", "typed_abi_sha256", "old_raw_bytes", "new_raw_bytes", "source_classification", "compatibility_transform", "derivative_use", "draw_mode", "dimensionality", "capabilities", "uniforms", "samplers", "outputs", "output_abi", "semantic", "factory", "authority_pass"}, context, {"binding_outputs"});
+  if (const auto* bindings = field(raw, "binding_outputs"); bindings != nullptr) {
+    // A program bound by several authority passes records every binding's own
+    // output routes and extent. Each binding must join the authenticated
+    // output-ABI shape (same ordered physical outputs as the row) and name a
+    // distinct pass; the constructor cross-checks each binding against the
+    // registered definition. The first binding reproduces the canonical row
+    // exactly -- it is the row's own identity.
+    if (bindings->kind != ValueKind::array || bindings->array.empty())
+      throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding_outputs");
+    for (const auto& item : bindings->array) {
+      if (item.kind != ValueKind::object)
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding_outputs entry");
+      exact_object(item.object, {"pass_index", "pass_name", "samplers", "outputs", "extent"}, context + ".binding_outputs");
+      // Input routes are per-binding too (a multi-bound program reads
+      // different resources from different passes); everything else about a
+      // sampler -- name, type, source, cpp_type -- is a program fact and must
+      // match the row exactly.
+      const auto& binding_samplers = required_field(item.object, "samplers", ValueKind::array, context + ".binding_outputs");
+      const auto& row_samplers = required_field(raw, "samplers", ValueKind::array, context);
+      if (binding_samplers.array.size() != row_samplers.array.size())
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler count");
+      for (std::size_t slot = 0; slot < binding_samplers.array.size(); ++slot) {
+        if (binding_samplers.array[slot].kind != ValueKind::object || row_samplers.array[slot].kind != ValueKind::object)
+          throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler entry");
+        if (string_field(binding_samplers.array[slot].object, "name") != string_field(row_samplers.array[slot].object, "name") ||
+            string_field(binding_samplers.array[slot].object, "type") != string_field(row_samplers.array[slot].object, "type") ||
+            string_field(binding_samplers.array[slot].object, "source") != string_field(row_samplers.array[slot].object, "source") ||
+            string_field(binding_samplers.array[slot].object, "cpp_type") != string_field(row_samplers.array[slot].object, "cpp_type"))
+          throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler ABI");
+      }
+      const auto& index = required_field(item.object, "pass_index", ValueKind::number, context + ".binding_outputs");
+      if (!std::isfinite(index.number) || index.number < 0 || std::trunc(index.number) != index.number)
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding pass index");
+      nonempty_string(required_field(item.object, "pass_name", ValueKind::string, context + ".binding_outputs"),
+                      context + ".binding_outputs.pass_name");
+      const auto& outputs = required_field(item.object, "outputs", ValueKind::array, context + ".binding_outputs");
+      const auto& row_outputs = required_field(raw, "outputs", ValueKind::array, context);
+      if (outputs.array.size() != row_outputs.array.size())
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding output count");
+      for (std::size_t slot = 0; slot < outputs.array.size(); ++slot) {
+        if (outputs.array[slot].kind != ValueKind::object || row_outputs.array[slot].kind != ValueKind::object)
+          throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding output entry");
+        exact_object(outputs.array[slot].object, {"slot", "physical_name", "logical_route", "cpp_type"},
+                     context + ".binding_outputs.outputs");
+        if (string_field(outputs.array[slot].object, "physical_name") !=
+                string_field(row_outputs.array[slot].object, "physical_name") ||
+            field(outputs.array[slot].object, "slot")->number != field(row_outputs.array[slot].object, "slot")->number ||
+            string_field(outputs.array[slot].object, "cpp_type") != string_field(row_outputs.array[slot].object, "cpp_type"))
+          throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding output ABI");
+      }
+      const auto& extent = required_field(item.object, "extent", ValueKind::object, context + ".binding_outputs");
+      exact_object(extent.object, {"width", "height", "format"}, context + ".binding_outputs.extent");
+    }
+    if (bindings->array.size() < 2U)
+      throw std::invalid_argument("Malformed compatible compatibility row " + context + ": single-binding binding_outputs");
+  }
   for (const auto name : {"effect_id", "program", "program_key"}) nonempty_string(required_field(raw, name, ValueKind::string, context), context + "." + std::string(name));
   if (field(raw, "program_key")->string != field(raw, "effect_id")->string + ":" + field(raw, "program")->string)
     throw std::invalid_argument("Malformed compatible compatibility row " + context + ": program identity");
@@ -413,13 +475,25 @@ std::string extent_token(const Value* value) {
   return {};
 }
 
+// A canonical row's binding entry names a registered definition pass; resolve
+// it with bounds and program agreement enforced, failing closed otherwise.
+[[nodiscard]] const PassDefinition& required_definition_pass(
+    const EffectDefinition* definition, std::size_t index, const std::string& context) {
+  if (definition == nullptr || index >= definition->passes.size())
+    throw std::invalid_argument("Canonical compatibility binding pass is not registered: " + context);
+  return definition->passes[index];
+}
+
 // The binding-ABI digest, serialized from the authenticated compatibility row
 // rather than from the projection the executor sees. `graph::executor`
 // re-serializes the same grammar from the value-owned admission and refuses to
 // dispatch when the two disagree, so this is a deliberate second
 // implementation of one grammar, not a shared helper.
 std::string binding_abi_digest(const std::vector<std::pair<std::string, Value>>& raw,
-                               const std::vector<graph::CompatibilityBinding>& defines) {
+                               const std::vector<graph::CompatibilityBinding>& defines,
+                               const Value* samplers_override = nullptr,
+                               const Value* outputs_override = nullptr,
+                               const Value* extent_override = nullptr) {
   std::string bytes;
   const auto emit = [&bytes](std::string_view value) {
     bytes.append(value);
@@ -429,9 +503,10 @@ std::string binding_abi_digest(const std::vector<std::pair<std::string, Value>>&
     bytes.append(name);
     bytes.push_back('\x1e');
   };
-  const auto binding_array_digest = [&](std::string_view name) {
+  const auto binding_array_digest = [&](std::string_view name, const Value* override_value = nullptr) {
     section(name);
-    if (const auto* items = field(raw, name); items != nullptr && items->kind == ValueKind::array) {
+    const auto* items = override_value != nullptr ? override_value : field(raw, name);
+    if (items != nullptr && items->kind == ValueKind::array) {
       for (const auto& item : items->array) {
         if (item.kind != ValueKind::object) continue;
         emit(string_field(item.object, "name"));
@@ -444,10 +519,13 @@ std::string binding_abi_digest(const std::vector<std::pair<std::string, Value>>&
     }
     bytes.push_back('\x1e');
   };
-  binding_array_digest("samplers");
+  // A binding-aware caller substitutes the dispatching pass's own sampler
+  // routes, output routes and extent; the grammar is otherwise the row's.
+  binding_array_digest("samplers", samplers_override);
   binding_array_digest("uniforms");
   section("outputs");
-  if (const auto* outputs = field(raw, "outputs"); outputs != nullptr && outputs->kind == ValueKind::array) {
+  const Value* outputs = outputs_override != nullptr ? outputs_override : field(raw, "outputs");
+  if (outputs != nullptr && outputs->kind == ValueKind::array) {
     for (const auto& item : outputs->array) {
       if (item.kind != ValueKind::object) continue;
       const auto* slot = field(item.object, "slot");
@@ -461,7 +539,11 @@ std::string binding_abi_digest(const std::vector<std::pair<std::string, Value>>&
   }
   bytes.push_back('\x1e');
   section("extent");
-  if (const auto* output_abi = field(raw, "output_abi");
+  if (extent_override != nullptr) {
+    emit(extent_token(field(extent_override->object, "width")));
+    emit(extent_token(field(extent_override->object, "height")));
+    emit(extent_token(field(extent_override->object, "format")));
+  } else if (const auto* output_abi = field(raw, "output_abi");
       output_abi != nullptr && output_abi->kind == ValueKind::object) {
     if (const auto* extent = field(output_abi->object, "extent");
         extent != nullptr && extent->kind == ValueKind::object) {
@@ -762,9 +844,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d" ||
-      provenance_.generated_payload_sha256 != "58d29e75f2f23501856d53eb1c29f39d292b539000db246ad0206eac9ab62fad" ||
+      provenance_.generated_payload_sha256 != "5026dc9bfff1b618bba58cafdda66b2d24c6b98fa136496835f754b2d2922b46" ||
       provenance_.normalized_record_stream_sha256 != "f8f99a758dad34cde8dbcd70e7f367f7a957a230385ef4a94037bebc3e3b5161" ||
-      provenance_.compatibility_sha256 != "1fbeef32f84141f30bd3a37e37e23cb69b6d3cd59bf866eaff073526c637f83e" ||
+      provenance_.compatibility_sha256 != "538f2af4353fd674b5aeb901b06f3e2ed83438fdbd3ee33586cf3c8c6dea8507" ||
       provenance_.cpu_behavioral_lock != "42ea669d94c89e32b2eff03bdbdaf79855fb4550bc305586dbead9832ead43bb" ||
       provenance_.cpu_behavioral_file_count != 95 ||
       provenance_.cpu_revision != "42ea669d94c89e32b2eff03bdbdaf79855fb4550bc305586dbead9832ead43bb" ||
@@ -820,6 +902,24 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
         throw std::invalid_argument("Canonical compatibility identity cross-check failed: " + row.program_key);
       validate_authority_pass(row, definition->passes[pass_index]);
     }
+    const auto* binding_outputs = field(row.raw, "binding_outputs");
+    if (binding_outputs != nullptr && binding_outputs->kind == ValueKind::array) {
+      // Every binding entry must join the registered definition: the pass at
+      // the recorded index runs exactly this program under exactly this name.
+      // The first binding is the row's own identity -- the derived first
+      // definition pass with this program -- so the projections cannot drift.
+      for (const auto& item : binding_outputs->array) {
+        const std::size_t binding_index = static_cast<std::size_t>(
+            field(item.object, "pass_index")->number);
+        const auto& binding_pass = required_definition_pass(definition, binding_index, row.program_key);
+        if (binding_pass.name != field(item.object, "pass_name")->string ||
+            binding_pass.program != row.program)
+          throw std::invalid_argument("Canonical compatibility binding does not join catalog: " + row.program_key);
+      }
+      const auto& first = binding_outputs->array.front();
+      if (static_cast<std::size_t>(field(first.object, "pass_index")->number) != pass_index)
+        throw std::invalid_argument("Canonical compatibility first binding is not the row identity: " + row.program_key);
+    }
     graph::PassAdmission view;
     view.status = row.status == "compatible" ? graph::AvailabilityStatus::compatible : graph::AvailabilityStatus::incompatible;
     view.identity = {pass_index, definition->passes[pass_index].name, row.program_key};
@@ -872,7 +972,6 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
         view.output_extent.format = extent_token(field(extent->object, "format"));
       }
     }
-    view.binding_abi_sha256 = binding_abi_digest(row.raw, view.compile_defines);
     view.dimensionality = string_field(row.raw, "dimensionality");
     view.draw_mode = string_field(row.raw, "draw_mode");
     for (const auto& reason : row.reasons) view.reasons.push_back({reason.first, reason.second});
@@ -881,7 +980,38 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     output_array(field(row.raw, "outputs"), view.outputs);
     if (const auto* capabilities = field(row.raw, "capabilities"); capabilities != nullptr)
       for (const auto& item : capabilities->array) view.capabilities.push_back(item.string);
-    canonical_views_.push_back(std::move(view));
+    canonical_views_.emplace_back();
+    if (binding_outputs != nullptr && binding_outputs->kind == ValueKind::array) {
+      // One projection per binding: the binding's own output routes and
+      // extent, and the binding-ABI digest serialized over them. The
+      // program-level facts (factories, samplers, uniforms, defines, source
+      // identity) stay shared.
+      for (const auto& item : binding_outputs->array) {
+        graph::PassAdmission binding_view = view;
+        binding_view.identity = {
+            static_cast<std::size_t>(field(item.object, "pass_index")->number),
+            string_field(item.object, "pass_name"), row.program_key};
+        // The base copy already carries the row's own samplers/outputs; a
+        // binding's per-pass routes REPLACE them, never append.
+        binding_view.samplers.clear();
+        binding_view.outputs.clear();
+        binding_array(field(item.object, "samplers"), binding_view.samplers);
+        output_array(field(item.object, "outputs"), binding_view.outputs);
+        if (const auto* extent = field(item.object, "extent");
+            extent != nullptr && extent->kind == ValueKind::object) {
+          binding_view.output_extent.width = extent_token(field(extent->object, "width"));
+          binding_view.output_extent.height = extent_token(field(extent->object, "height"));
+          binding_view.output_extent.format = extent_token(field(extent->object, "format"));
+        }
+        binding_view.binding_abi_sha256 = binding_abi_digest(
+            row.raw, view.compile_defines, field(item.object, "samplers"),
+            field(item.object, "outputs"), field(item.object, "extent"));
+        canonical_views_.back().push_back(std::move(binding_view));
+      }
+    } else {
+      view.binding_abi_sha256 = binding_abi_digest(row.raw, view.compile_defines);
+      canonical_views_.back().push_back(std::move(view));
+    }
   }
   std::set<std::tuple<std::string, std::size_t, std::string>> reference_keys;
   std::size_t expected_reference = 0;
@@ -1079,7 +1209,17 @@ graph::PassAdmission EffectRegistry::admission(const EffectDefinition& definitio
   const auto canonical = std::find_if(canonical_programs_.begin(), canonical_programs_.end(), [&](const auto& item) { return item.program_key == reference->program_key; });
   if (canonical != canonical_programs_.end()) {
     const std::size_t index = static_cast<std::size_t>(canonical - canonical_programs_.begin());
-    const auto& view = canonical_views_[index];
+    // A program bound by several authority passes carries one projection per
+    // binding; dispatch always authenticates through the projection of the
+    // pass being dispatched. A pass with no projection is a generation defect
+    // and must fail closed here, not at the executor's ABI check.
+    const auto& views = canonical_views_[index];
+    const auto view_iterator = std::find_if(views.begin(), views.end(), [&](const auto& item) {
+      return item.identity.index == pass_index && item.identity.name == pass.name;
+    });
+    if (view_iterator == views.end())
+      throw std::invalid_argument("Canonical compatibility binding is not projected: " + reference->program_key);
+    const auto& view = *view_iterator;
     result.canonical_factory = view.canonical_factory;
     result.source_sha256 = view.source_sha256;
     result.semantic_sha256 = view.semantic_sha256;
