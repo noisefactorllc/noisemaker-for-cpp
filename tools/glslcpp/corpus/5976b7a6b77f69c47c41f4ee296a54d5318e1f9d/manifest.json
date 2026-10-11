@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "4a4ef2b490f3299cffd7fbe3bc6e2dd471c293f7f6ba65c76091df79d35c200a",
+  "metadata_sha256": "5caa86ef57bebf3d72c31559478ef042dcda538006343aacf655855550fe801c",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -2760,6 +2760,56 @@
       "varyings": []
     },
     {
+      "effect_id": "filter/temporalAberration",
+      "normalized_bytes": 237,
+      "normalized_sha256": "c83a191f76a2fff5cc7e952391ef691b54e1ff1126705a8b8b9ee1edbe93deb4",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_bindings": [
+        {
+          "pass_index": 1,
+          "pass_name": "shift8"
+        },
+        {
+          "pass_index": 2,
+          "pass_name": "shift7"
+        },
+        {
+          "pass_index": 3,
+          "pass_name": "shift6"
+        },
+        {
+          "pass_index": 4,
+          "pass_name": "shift5"
+        },
+        {
+          "pass_index": 5,
+          "pass_name": "shift4"
+        },
+        {
+          "pass_index": 6,
+          "pass_name": "shift3"
+        },
+        {
+          "pass_index": 7,
+          "pass_name": "shift2"
+        },
+        {
+          "pass_index": 8,
+          "pass_name": "shift1"
+        }
+      ],
+      "program": "delayShift",
+      "program_key": "filter/temporalAberration:delayShift",
+      "raw_bytes": 677,
+      "raw_sha256": "ad1376bf6f09e0f778f1ecf00bae7b2dc16d14b110e404fee1637b9b72f9fa8f",
+      "runtime_key": "filter/temporalAberration:delayShift",
+      "source": "sources/filter/temporalAberration/delayShift.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "filter/tetraColorArray",
       "normalized_bytes": 7834,
       "normalized_sha256": "588484a8290e24b5f8f7db53a3f76c6f3a839ba1ea274ae7680078534878ba56",
@@ -4128,6 +4178,32 @@
       "varyings": []
     },
     {
+      "effect_id": "points/physarum",
+      "normalized_bytes": 178,
+      "normalized_sha256": "1c50029c0b27ac3e9ebd3e53191e4e3d84c85872e5bb89d7fd0a023c09a6d850",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_bindings": [
+        {
+          "pass_index": 2,
+          "pass_name": "copy"
+        },
+        {
+          "pass_index": 4,
+          "pass_name": "passthrough"
+        }
+      ],
+      "program": "passthrough",
+      "program_key": "points/physarum:passthrough",
+      "raw_bytes": 266,
+      "raw_sha256": "9831abb1e757196018520d2c7b33139ec265ca87e1c6ab71ab956db6bda771d6",
+      "runtime_key": "points/physarum:passthrough",
+      "source": "sources/points/physarum/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "points/physical",
       "normalized_bytes": 2927,
       "normalized_sha256": "c3a280a29bf0271343121e06bf8c9345a893015a3978a633e9bce7b1ba5a97ed",
@@ -4180,6 +4256,32 @@
       "raw_sha256": "5ddaa003e23b516d8f17dde75e09f106fea0f0b938898b1f3880d025167c2168",
       "runtime_key": "render/loopBegin:loopBegin",
       "source": "sources/render/loopBegin/loopBegin.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/loopEnd",
+      "normalized_bytes": 198,
+      "normalized_sha256": "dc5a7a2386472f7c84cc0d1a30dddb89979c8cc7d5ebfedd817f965aec7b5eb5",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_bindings": [
+        {
+          "pass_index": 0,
+          "pass_name": "feedback"
+        },
+        {
+          "pass_index": 1,
+          "pass_name": "output"
+        }
+      ],
+      "program": "copy",
+      "program_key": "render/loopEnd:copy",
+      "raw_bytes": 351,
+      "raw_sha256": "629a13aaba037b2eb01219741ea98b3e2161fda3f2c38b8533fe4bbebab3563e",
+      "runtime_key": "render/loopEnd:copy",
+      "source": "sources/render/loopEnd/copy.glsl",
       "status": "generated",
       "varyings": []
     },

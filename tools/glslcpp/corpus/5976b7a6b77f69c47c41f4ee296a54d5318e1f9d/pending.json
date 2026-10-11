@@ -1978,192 +1978,6 @@
       ],
       "textures": {}
     },
-    "filter/temporalAberration": {
-      "func": "temporalAberration",
-      "kind": "filter",
-      "namespace": "filter",
-      "params": {
-        "blueDelay": {
-          "default": 8,
-          "max": 8,
-          "min": 0,
-          "type": "float",
-          "uniform": "blueDelay"
-        },
-        "greenDelay": {
-          "default": 4,
-          "max": 8,
-          "min": 0,
-          "type": "float",
-          "uniform": "greenDelay"
-        },
-        "iterationCount": {
-          "cpuOnly": true,
-          "default": 60,
-          "max": 10000,
-          "min": 0,
-          "type": "int"
-        },
-        "redDelay": {
-          "default": 0,
-          "max": 8,
-          "min": 0,
-          "type": "float",
-          "uniform": "redDelay"
-        }
-      },
-      "passes": [
-        {
-          "inputs": {
-            "h1": "_h1",
-            "h2": "_h2",
-            "h3": "_h3",
-            "h4": "_h4",
-            "h5": "_h5",
-            "h6": "_h6",
-            "h7": "_h7",
-            "h8": "_h8",
-            "inputTex": "inputTex"
-          },
-          "key": "filter/temporalAberration:temporalAberration",
-          "name": "main",
-          "outputs": {
-            "fragColor": "outputTex"
-          },
-          "program": "temporalAberration"
-        },
-        {
-          "inputs": {
-            "srcTex": "_h7"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift8",
-          "outputs": {
-            "fragColor": "_h8"
-          },
-          "program": "delayShift"
-        },
-        {
-          "inputs": {
-            "srcTex": "_h6"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift7",
-          "outputs": {
-            "fragColor": "_h7"
-          },
-          "program": "delayShift"
-        },
-        {
-          "inputs": {
-            "srcTex": "_h5"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift6",
-          "outputs": {
-            "fragColor": "_h6"
-          },
-          "program": "delayShift"
-        },
-        {
-          "inputs": {
-            "srcTex": "_h4"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift5",
-          "outputs": {
-            "fragColor": "_h5"
-          },
-          "program": "delayShift"
-        },
-        {
-          "inputs": {
-            "srcTex": "_h3"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift4",
-          "outputs": {
-            "fragColor": "_h4"
-          },
-          "program": "delayShift"
-        },
-        {
-          "inputs": {
-            "srcTex": "_h2"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift3",
-          "outputs": {
-            "fragColor": "_h3"
-          },
-          "program": "delayShift"
-        },
-        {
-          "inputs": {
-            "srcTex": "_h1"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift2",
-          "outputs": {
-            "fragColor": "_h2"
-          },
-          "program": "delayShift"
-        },
-        {
-          "inputs": {
-            "srcTex": "inputTex"
-          },
-          "key": "filter/temporalAberration:delayShift",
-          "name": "shift1",
-          "outputs": {
-            "fragColor": "_h1"
-          },
-          "program": "delayShift"
-        }
-      ],
-      "textures": {
-        "_h1": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        },
-        "_h2": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        },
-        "_h3": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        },
-        "_h4": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        },
-        "_h5": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        },
-        "_h6": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        },
-        "_h7": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        },
-        "_h8": {
-          "format": "rgba8unorm",
-          "height": "input",
-          "width": "input"
-        }
-      }
-    },
     "filter3d/palette3d": {
       "func": "palette3d",
       "kind": "filter",
@@ -2316,37 +2130,6 @@
           }
         }
       }
-    },
-    "render/loopEnd": {
-      "func": "loopEnd",
-      "kind": "filter",
-      "namespace": "render",
-      "params": {},
-      "passes": [
-        {
-          "inputs": {
-            "inputTex": "inputTex"
-          },
-          "key": "render/loopEnd:copy",
-          "name": "feedback",
-          "outputs": {
-            "fragColor": "global_accum"
-          },
-          "program": "copy"
-        },
-        {
-          "inputs": {
-            "inputTex": "inputTex"
-          },
-          "key": "render/loopEnd:copy",
-          "name": "output",
-          "outputs": {
-            "fragColor": "outputTex"
-          },
-          "program": "copy"
-        }
-      ],
-      "textures": {}
     },
     "render/renderLandscape3d": {
       "func": "renderLandscape3d",
@@ -2871,19 +2654,6 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "filter/temporalAberration:delayShift: bound by 8 authority passes (shift8, shift7, shift6, shift5, shift4, shift3, shift2, shift1); the corpus manifest records exactly one pass per program",
-        "stage": "corpus.pass_binding"
-      },
-      "effect_id": "filter/temporalAberration",
-      "program": "delayShift",
-      "program_key": "filter/temporalAberration:delayShift",
-      "raw_bytes": 677,
-      "raw_sha256": "ad1376bf6f09e0f778f1ecf00bae7b2dc16d14b110e404fee1637b9b72f9fa8f",
-      "source": "pending-sources/filter/temporalAberration/delayShift.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
         "diagnostic": "GeneratorError: filter/temporalAberration:temporalAberration:30:10: unsupported typed type vec4[9]",
         "stage": "typed.validator"
       },
@@ -2908,32 +2678,6 @@
       "source": "pending-sources/filter3d/palette3d/palette3d.glsl"
     },
     {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "points/physarum:passthrough: bound by 2 authority passes (copy, passthrough); the corpus manifest records exactly one pass per program",
-        "stage": "corpus.pass_binding"
-      },
-      "effect_id": "points/physarum",
-      "program": "passthrough",
-      "program_key": "points/physarum:passthrough",
-      "raw_bytes": 266,
-      "raw_sha256": "9831abb1e757196018520d2c7b33139ec265ca87e1c6ab71ab956db6bda771d6",
-      "source": "pending-sources/points/physarum/passthrough.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "render/loopEnd:copy: bound by 2 authority passes (feedback, output); the corpus manifest records exactly one pass per program",
-        "stage": "corpus.pass_binding"
-      },
-      "effect_id": "render/loopEnd",
-      "program": "copy",
-      "program_key": "render/loopEnd:copy",
-      "raw_bytes": 351,
-      "raw_sha256": "629a13aaba037b2eb01219741ea98b3e2161fda3f2c38b8533fe4bbebab3563e",
-      "source": "pending-sources/render/loopEnd/copy.glsl"
-    },
-    {
       "authority_status": "adapter",
       "blocker": {
         "diagnostic": "render/pointsBillboardRender:deposit: drawMode billboards is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit and filter3d/flow3d:deposit, points/dla:depositGrid, points/lenia:deposit, points/physarum:deposit",
@@ -2949,7 +2693,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "render/pointsBillboardRender:depthKeys: bound by 2 authority passes (depthKeys_1, depthKeys_2); the corpus manifest records exactly one pass per program",
+        "diagnostic": "render/pointsBillboardRender:depthKeys: authority pass depthKeys_1 declares pass-level defines {\"VIEW_MODE\": 1}; the typed slice bakes the effect's default defines",
         "stage": "corpus.pass_binding"
       },
       "effect_id": "render/pointsBillboardRender",
@@ -2962,8 +2706,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "render/pointsBillboardRender:depthMerge: bound by 22 authority passes (depthMerge0, depthMerge1, depthMerge2, depthMerge3, depthMerge4, depthMerge5, depthMerge6, depthMerge7, depthMerge8, depthMerge9, depthMerge10, depthMerge11, depthMerge12, depthMerge13, depthMerge14, depthMerge15, depthMerge16, depthMerge17, depthMerge18, depthMerge19, depthMerge20, depthMerge21); the corpus manifest records exactly one pass per program",
-        "stage": "corpus.pass_binding"
+        "diagnostic": "GeneratorError: render/pointsBillboardRender:depthMerge:31:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
       },
       "effect_id": "render/pointsBillboardRender",
       "program": "depthMerge",

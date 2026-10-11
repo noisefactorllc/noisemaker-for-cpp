@@ -133,11 +133,15 @@ def _validate_manifest(manifest: dict[str, Any]) -> list[dict[str, Any]]:
         raise CorpusError("manifest: programs must be a nonempty list")
     required = {"effect_id", "program", "program_key", "status", "source", "raw_bytes", "raw_sha256",
                 "normalized_bytes", "normalized_sha256", "outputs", "varyings", "pass_index", "pass_name", "runtime_key"}
+    # A program bound by more than one authority pass records every binding
+    # instead of the single-pass ``pass_index``/``pass_name`` pair. Both shapes
+    # carry the same identity/hash/interface fields.
+    multi_required = required - {"pass_index", "pass_name"} | {"pass_bindings"}
     keys: set[str] = set()
     sources: set[str] = set()
     runtime_keys: set[str] = set()
     for entry in programs:
-        if not isinstance(entry, dict) or set(entry) != required:
+        if not isinstance(entry, dict) or set(entry) not in (required, multi_required):
             raise CorpusError("manifest: invalid program fields")
         key = entry["program_key"]
         if (not isinstance(entry["effect_id"], str) or not isinstance(entry["program"], str)
@@ -159,9 +163,20 @@ def _validate_manifest(manifest: dict[str, Any]) -> list[dict[str, Any]]:
                 or len(set(entry["outputs"])) != len(entry["outputs"])
                 or len(set(entry["varyings"])) != len(entry["varyings"])
                 or set(entry["outputs"]) & set(entry["varyings"])
-                or type(entry["pass_index"]) is not int or entry["pass_index"] < 0 or not isinstance(entry["pass_name"], str)
                 or (entry["runtime_key"] is not None and not isinstance(entry["runtime_key"], str))):
             raise CorpusError(f"{key}: outputs and varyings must be lists")
+        if "pass_bindings" in entry:
+            bindings = entry["pass_bindings"]
+            if (not isinstance(bindings, list) or len(bindings) < 2
+                    or any(not isinstance(item, dict) or set(item) != {"pass_index", "pass_name"}
+                           or type(item["pass_index"]) is not int or item["pass_index"] < 0
+                           or not isinstance(item["pass_name"], str) for item in bindings)
+                    or [item["pass_index"] for item in bindings] != sorted({item["pass_index"] for item in bindings})
+                    or len({item["pass_name"] for item in bindings}) != len(bindings)):
+                raise CorpusError(f"{key}: invalid pass bindings")
+        elif (type(entry["pass_index"]) is not int or entry["pass_index"] < 0
+                or not isinstance(entry["pass_name"], str)):
+            raise CorpusError(f"{key}: invalid single-pass binding")
         if entry["runtime_key"] is not None:
             if entry["runtime_key"] in runtime_keys:
                 raise CorpusError(f"{key}: duplicate runtime key")
@@ -171,14 +186,28 @@ def _validate_manifest(manifest: dict[str, Any]) -> list[dict[str, Any]]:
     return sorted(programs, key=lambda entry: entry["program_key"])
 
 
+def _entry_bindings(entry: dict[str, Any]) -> set[tuple[int, str]]:
+    """The manifest entry's recorded (pass_index, pass_name) authority bindings.
+
+    A program bound by more than one authority pass records all of them in
+    ``pass_bindings``; every other entry records the single ``pass_index``/
+    ``pass_name`` pair.
+    """
+    if "pass_bindings" in entry:
+        return {(item["pass_index"], item["pass_name"]) for item in entry["pass_bindings"]}
+    return {(entry["pass_index"], entry["pass_name"])}
+
+
 def _validate_metadata(metadata: dict[str, Any], programs: list[dict[str, Any]],
                        pending_keys: frozenset[str] = frozenset()) -> None:
-    """Every vendored program is bound by exactly one metadata pass; every other pass is pending.
+    """Every vendored program is bound by exactly its recorded metadata passes; every other pass is pending.
 
     The effect set, pass count, keyed-runtime count and draw-op override count
     are all derived from the vendored manifest: metadata carries exactly the
     effects that own a vendored program, and a metadata pass whose program is
-    not vendored must be a recorded pending program.
+    not vendored must be a recorded pending program. A multi-pass manifest
+    entry (``pass_bindings``) must be bound by every metadata pass its
+    program owns, each matching one recorded binding exactly.
     """
     if set(metadata) != {"schema", "revision", "provenance", "effects"}:
         raise CorpusError("metadata: unexpected top-level fields")
@@ -192,7 +221,7 @@ def _validate_metadata(metadata: dict[str, Any], programs: list[dict[str, Any]],
     pass_count = 0
     keyed = 0
     overrides = 0
-    bound: set[str] = set()
+    matched: dict[str, int] = {}
     for effect_id, effect in sorted(effects.items()):
         if not isinstance(effect_id, str) or not isinstance(effect, dict) or not isinstance(effect.get("passes"), list):
             raise CorpusError(f"metadata: invalid effect {effect_id!r}")
@@ -206,22 +235,26 @@ def _validate_metadata(metadata: dict[str, Any], programs: list[dict[str, Any]],
                     continue
                 raise CorpusError(f"{key}: metadata pass has no canonical source")
             pass_count += 1
-            if key in bound or record["pass_index"] != index or record["pass_name"] != current_pass.get("name"):
+            if (index, current_pass.get("name")) not in _entry_bindings(record):
                 raise CorpusError(f"{key}: metadata pass relationship drift")
-            bound.add(key)
+            matched[key] = matched.get(key, 0) + 1
             if record["runtime_key"] != current_pass.get("key"):
                 raise CorpusError(f"{key}: runtime key relationship drift")
             if current_pass.get("key") is not None:
                 keyed += 1
             elif current_pass.get("drawMode") in ("points", "billboards"):
                 overrides += 1
-    if bound != set(records_by_key):
-        raise CorpusError(f"metadata pass relationship drift: unbound {sorted(set(records_by_key) - bound)}")
+    unbound = sorted(key for key, record in records_by_key.items()
+                     if matched.get(key, 0) != len(_entry_bindings(record)))
+    if unbound:
+        raise CorpusError(f"metadata pass relationship drift: unbound {unbound}")
     wormhole = effects.get("filter/wormhole", {}).get("passes", [])
     if len(wormhole) < 2 or wormhole[1].get("program") != "deposit" or wormhole[1].get("key") is not None or wormhole[1].get("drawMode") != "points":
         raise CorpusError("filter/wormhole:deposit: expected points draw-op override")
     runtime_keys = sum(entry["runtime_key"] is not None for entry in programs)
-    if (pass_count, keyed, overrides) != (len(programs), runtime_keys, len(programs) - runtime_keys):
+    fragment_bindings = sum(len(_entry_bindings(entry)) for entry in programs if entry["runtime_key"] is not None)
+    if (pass_count, keyed, overrides) != (fragment_bindings + len(programs) - runtime_keys,
+                                          fragment_bindings, len(programs) - runtime_keys):
         raise CorpusError("metadata: pass/key/override gate drift")
 
 

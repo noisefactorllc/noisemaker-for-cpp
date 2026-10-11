@@ -71,6 +71,37 @@ class BackendCompatibilityTests(unittest.TestCase):
         self.assertEqual("noisemaker::effects::bind_bit_effects", bit["factory"]["canonical"])
         self.assertEqual("custom_adapter", bit["factory"]["route"]["kind"])
 
+    def test_multi_pass_programs_admit_through_their_first_binding(self) -> None:
+        # A program bound by several authority passes is admitted once: the
+        # canonical row carries the first binding's identity/ABI (the same
+        # first-pass identity src/effects/registry.cpp records), and every
+        # binding appears in reference_passes with the same compatible status.
+        for key, effect_id, program in (
+            ("points/physarum:passthrough", "points/physarum", "passthrough"),
+            ("render/loopEnd:copy", "render/loopEnd", "copy"),
+            ("filter/temporalAberration:delayShift", "filter/temporalAberration", "delayShift"),
+        ):
+            with self.subTest(program_key=key):
+                row = next(row for row in self.document["canonical_programs"]
+                           if row["program_key"] == key)
+                self.assertEqual("compatible", row["status"])
+                self.assertEqual([], row["reasons"])
+                reference = [item for item in self.document["reference_passes"]
+                             if item["program_key"] == key]
+                self.assertGreaterEqual(len(reference), 2)
+                self.assertEqual([(item["pass_index"], item["pass_name"]) for item in reference],
+                                 [(item["pass_index"], item["pass_name"])
+                                  for item in next(entry["pass_bindings"] for entry in
+                                                   generator.check_corpus._validate_manifest(
+                                                       generator.check_corpus._load_json(
+                                                           generator.check_corpus._corpus_root(ROOT) / "manifest.json",
+                                                           "manifest"))
+                                                   if entry["program_key"] == key)])
+                self.assertEqual(reference[0]["pass_name"], row["authority_pass"]["name"])
+                for item in reference:
+                    self.assertEqual("compatible", item["status"])
+                    self.assertEqual([], item["reasons"])
+
     def test_output_extent_uses_authority_default_for_absent_and_explicit_formats(self) -> None:
         effect = {"textures": {"_blurTemp": {"width": "input", "height": "input", "format": "rgba8unorm"}}}
         current_pass = {"viewport": {"width": "screen", "height": "screen"}}

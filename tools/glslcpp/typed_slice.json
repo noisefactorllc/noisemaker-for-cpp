@@ -880,6 +880,10 @@
     },
     {
       "defines": {},
+      "program_key": "filter/temporalAberration:delayShift"
+    },
+    {
+      "defines": {},
       "program_key": "filter/tetraColorArray:tetraColorArray",
       "runtime_loop_bound_profile": "runtime-loop-bound-v1"
     },
@@ -1210,6 +1214,10 @@
     },
     {
       "defines": {},
+      "program_key": "points/physarum:passthrough"
+    },
+    {
+      "defines": {},
       "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
       "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
       "program_key": "points/physical:agent"
@@ -1221,6 +1229,10 @@
     {
       "defines": {},
       "program_key": "render/loopBegin:loopBegin"
+    },
+    {
+      "defines": {},
+      "program_key": "render/loopEnd:copy"
     },
     {
       "defines": {},

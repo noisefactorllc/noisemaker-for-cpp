@@ -236,6 +236,42 @@ void main() {
                     check_corpus.validate_corpus(root)
 
     @full_run_only
+    def test_multi_pass_manifest_records_are_bound_by_every_authority_pass(self) -> None:
+        from tools.glslcpp import check_corpus
+
+        manifest = json.loads(self.manifest_path(REPOSITORY).read_text())
+        multi_indexes = [index for index, entry in enumerate(manifest["programs"])
+                         if "pass_bindings" in entry]
+        self.assertTrue(multi_indexes)
+        multi_index = multi_indexes[0]
+
+        def mutate(root: pathlib.Path, callback) -> None:
+            path = self.manifest_path(root)
+            value = json.loads(path.read_text())
+            callback(value["programs"][multi_index])
+            self.write_manifest(path, value)
+
+        cases = {
+            "dropped-binding": (lambda entry: entry["pass_bindings"].pop(),
+                                "metadata pass relationship drift"),
+            "renamed-binding": (lambda entry: entry["pass_bindings"][0].update(pass_name="forged"),
+                                "metadata pass relationship drift"),
+            "single-binding": (lambda entry: entry.update(pass_bindings=entry["pass_bindings"][:1]),
+                               "invalid pass bindings"),
+            "duplicate-names": (lambda entry: entry["pass_bindings"][1].update(
+                                    pass_name=entry["pass_bindings"][0]["pass_name"]),
+                                "invalid pass bindings"),
+            "unsorted": (lambda entry: entry.update(pass_bindings=list(reversed(entry["pass_bindings"]))),
+                         "invalid pass bindings"),
+        }
+        for name, (callback, message) in cases.items():
+            with self.subTest(case=name), self.temporary_repository() as temporary:
+                root = pathlib.Path(temporary)
+                with self.assertRaisesRegex(check_corpus.CorpusError, message):
+                    mutate(root, callback)
+                    check_corpus.validate_corpus(root)
+
+    @full_run_only
     def test_safe_path_accepts_ordinary_com10_and_reports_aggregate_failures(self) -> None:
         from tools.glslcpp import check_corpus
 

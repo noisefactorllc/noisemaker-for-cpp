@@ -28,9 +28,11 @@ The probe runs the stages a vendored program faces, in pipeline order, using
 the pipeline's own functions and no frontend profile (a pending program is no
 profile's carrier):
 
-1. ``corpus.pass_binding`` -- the corpus records one fragment pass per program
-   (``check_corpus._validate_metadata``); a points/billboards pass is a scatter
-   member, admitted only through the backend compatibility scatter contract.
+1. ``corpus.pass_binding`` -- the corpus records every authority pass that
+   binds a program (``check_corpus._validate_metadata``); a points/billboards
+   pass is a scatter member, admitted only through the backend compatibility
+   scatter contract, and a pass-level define stays refused (the typed slice
+   bakes the effect's default defines).
 2. ``corpus.parse`` -- ``normalize`` + ``parse_program`` (``check_corpus``).
 3. ``semantics.defaults`` -- ``parse_program`` with the effect's default
    defines, ``analyze_program``, ``_validate_typed_ir`` (``check_semantics``).
@@ -106,20 +108,29 @@ def manifest_entry(effect_id: str, program: str, file: str, raw: bytes, status: 
     from tools.glslcpp.frontend.preprocess import normalize
 
     matches = [(index, item) for index, item in enumerate(effect["passes"]) if item["program"] == program]
-    if len(matches) != 1:
-        raise RatchetError(f"{effect_id}:{program}: expected exactly one authority pass")
-    pass_index, current_pass = matches[0]
+    if not matches:
+        raise RatchetError(f"{effect_id}:{program}: no authority pass runs this program")
     normalized = normalize(raw.decode("utf-8"))
     normalized_bytes = normalized["source"].encode("utf-8")
-    return {
+    entry = {
         "effect_id": effect_id, "program": program, "program_key": f"{effect_id}:{program}",
         "status": status, "source": f"sources/{effect_id}/{file}",
         "raw_bytes": len(raw), "raw_sha256": _sha(raw),
         "normalized_bytes": len(normalized_bytes), "normalized_sha256": _sha(normalized_bytes),
         "outputs": list(normalized["outputs"]), "varyings": list(normalized["varyings"]),
-        "pass_index": pass_index, "pass_name": current_pass.get("name"),
-        "runtime_key": runtime_key(effect_id, current_pass),
+        "runtime_key": runtime_key(effect_id, matches[0][1]),
     }
+    if len(matches) == 1:
+        pass_index, current_pass = matches[0]
+        entry["pass_index"] = pass_index
+        entry["pass_name"] = current_pass.get("name")
+    else:
+        # The program is bound by several authority passes: record every
+        # binding (see check_corpus._entry_bindings). The typed pipeline
+        # represents the program once; the binding set is runtime evidence.
+        entry["pass_bindings"] = [{"pass_index": index, "pass_name": item.get("name")}
+                                  for index, item in matches]
+    return entry
 
 
 def metadata_effect(record: dict[str, Any]) -> dict[str, Any]:
@@ -182,16 +193,12 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
                 "diagnostic": f"{key}: drawMode {'/'.join(scatter)} is a scatter pass; backend compatibility "
                               f"registers a scatter contract only for {SCATTER_KEY} "
                               f"and {', '.join(sorted(SCATTER_CONTRACT_KEYS))}"}
-    if len(passes) != 1:
-        names = ", ".join(str(item.get("name")) for item in passes)
-        return {"stage": "corpus.pass_binding",
-                "diagnostic": f"{key}: bound by {len(passes)} authority passes ({names}); the corpus "
-                              "manifest records exactly one pass per program"}
-    if passes[0].get("defines"):
-        return {"stage": "corpus.pass_binding",
-                "diagnostic": f"{key}: authority pass {passes[0].get('name')} declares pass-level defines "
-                              f"{json.dumps(passes[0]['defines'], sort_keys=True)}; the typed slice bakes the "
-                              "effect's default defines"}
+    for current_pass in passes:
+        if current_pass.get("defines"):
+            return {"stage": "corpus.pass_binding",
+                    "diagnostic": f"{key}: authority pass {current_pass.get('name')} declares pass-level defines "
+                                  f"{json.dumps(current_pass['defines'], sort_keys=True)}; the typed slice bakes the "
+                                  "effect's default defines"}
     try:
         source = source_bytes.decode("utf-8")
         normalize(source)

@@ -12405,6 +12405,192 @@
         }
       }
     },
+    "filter/temporalAberration": {
+      "func": "temporalAberration",
+      "kind": "filter",
+      "namespace": "filter",
+      "params": {
+        "blueDelay": {
+          "default": 8,
+          "max": 8,
+          "min": 0,
+          "type": "float",
+          "uniform": "blueDelay"
+        },
+        "greenDelay": {
+          "default": 4,
+          "max": 8,
+          "min": 0,
+          "type": "float",
+          "uniform": "greenDelay"
+        },
+        "iterationCount": {
+          "cpuOnly": true,
+          "default": 60,
+          "max": 10000,
+          "min": 0,
+          "type": "int"
+        },
+        "redDelay": {
+          "default": 0,
+          "max": 8,
+          "min": 0,
+          "type": "float",
+          "uniform": "redDelay"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "h1": "_h1",
+            "h2": "_h2",
+            "h3": "_h3",
+            "h4": "_h4",
+            "h5": "_h5",
+            "h6": "_h6",
+            "h7": "_h7",
+            "h8": "_h8",
+            "inputTex": "inputTex"
+          },
+          "key": "filter/temporalAberration:temporalAberration",
+          "name": "main",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "temporalAberration"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h7"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift8",
+          "outputs": {
+            "fragColor": "_h8"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h6"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift7",
+          "outputs": {
+            "fragColor": "_h7"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h5"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift6",
+          "outputs": {
+            "fragColor": "_h6"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h4"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift5",
+          "outputs": {
+            "fragColor": "_h5"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h3"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift4",
+          "outputs": {
+            "fragColor": "_h4"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h2"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift3",
+          "outputs": {
+            "fragColor": "_h3"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h1"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift2",
+          "outputs": {
+            "fragColor": "_h2"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "inputTex"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift1",
+          "outputs": {
+            "fragColor": "_h1"
+          },
+          "program": "delayShift"
+        }
+      ],
+      "textures": {
+        "_h1": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h2": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h3": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h4": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h5": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h6": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h7": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h8": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        }
+      }
+    },
     "filter/tetraColorArray": {
       "func": "tetraColorArray",
       "kind": "filter",
@@ -17724,6 +17910,37 @@
             "fragColor": "outputTex"
           },
           "program": "loopBegin"
+        }
+      ],
+      "textures": {}
+    },
+    "render/loopEnd": {
+      "func": "loopEnd",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {},
+      "passes": [
+        {
+          "inputs": {
+            "inputTex": "inputTex"
+          },
+          "key": "render/loopEnd:copy",
+          "name": "feedback",
+          "outputs": {
+            "fragColor": "global_accum"
+          },
+          "program": "copy"
+        },
+        {
+          "inputs": {
+            "inputTex": "inputTex"
+          },
+          "key": "render/loopEnd:copy",
+          "name": "output",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "copy"
         }
       ],
       "textures": {}
@@ -25621,6 +25838,7 @@
       "filter/convolutionFeedback",
       "filter/feedback",
       "filter/motionBlur",
+      "filter/temporalAberration",
       "filter3d/flow3d",
       "points/attractor",
       "points/buddhabrot",
@@ -25634,6 +25852,7 @@
       "points/physarum",
       "points/physical",
       "render/loopBegin",
+      "render/loopEnd",
       "render/meshLoader",
       "render/meshRender",
       "render/pointsBillboardRender",

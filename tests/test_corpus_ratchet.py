@@ -141,14 +141,39 @@ class CorpusRatchetTests(unittest.TestCase):
                 check_corpus.validate_corpus(root)
 
     def test_probe_reports_pass_binding_blockers_before_source_stages(self) -> None:
-        passthrough = {"passes": [{"name": "copy", "program": "p"}, {"name": "again", "program": "p"}], "params": {}}
-        blocker = corpus_ratchet.probe_program("x/y:p", b"not glsl at all", passthrough)
-        self.assertEqual("corpus.pass_binding", blocker["stage"])
-        self.assertIn("bound by 2 authority passes (copy, again)", blocker["diagnostic"])
         scatter = {"passes": [{"name": "deposit", "program": "p", "drawMode": "points"}], "params": {}}
         self.assertIn("scatter pass", corpus_ratchet.probe_program("x/y:p", b"", scatter)["diagnostic"])
         defines = {"passes": [{"name": "d", "program": "p", "defines": {"A": 1}}], "params": {}}
         self.assertIn("pass-level defines", corpus_ratchet.probe_program("x/y:p", b"", defines)["diagnostic"])
+        multi_defines = {"passes": [{"name": "a", "program": "p"},
+                                    {"name": "b", "program": "p", "defines": {"A": 1}}], "params": {}}
+        blocker = corpus_ratchet.probe_program("x/y:p", b"", multi_defines)
+        self.assertEqual("corpus.pass_binding", blocker["stage"])
+        self.assertIn("authority pass b declares pass-level defines", blocker["diagnostic"])
+        # A clean multi-pass binding set is no longer a pass_binding blocker:
+        # the corpus manifest records every bound pass, so the probe moves on
+        # to the source stages (this malformed source fails at corpus.parse).
+        multipass = {"passes": [{"name": "copy", "program": "p"}, {"name": "again", "program": "p"}], "params": {}}
+        blocker = corpus_ratchet.probe_program("x/y:p", b"not glsl at all", multipass)
+        self.assertEqual("corpus.parse", blocker["stage"])
+
+    def test_manifest_builder_records_the_single_and_multi_pass_shapes(self) -> None:
+        single = {"passes": [{"name": "main", "program": "p"}], "params": {}}
+        entry = corpus_ratchet.manifest_entry("x/y", "p", "p.glsl", b"void main() {}", "generated", single)
+        self.assertEqual(0, entry["pass_index"])
+        self.assertEqual("main", entry["pass_name"])
+        self.assertNotIn("pass_bindings", entry)
+        multi = {"passes": [{"name": "copy", "program": "p"},
+                            {"name": "other", "program": "q"},
+                            {"name": "again", "program": "p"}], "params": {}}
+        entry = corpus_ratchet.manifest_entry("x/y", "p", "p.glsl", b"void main() {}", "generated", multi)
+        self.assertNotIn("pass_index", entry)
+        self.assertNotIn("pass_name", entry)
+        self.assertEqual([{"pass_index": 0, "pass_name": "copy"},
+                          {"pass_index": 2, "pass_name": "again"}], entry["pass_bindings"])
+        with self.assertRaisesRegex(corpus_ratchet.RatchetError, "no authority pass runs this program"):
+            corpus_ratchet.manifest_entry("x/y", "p", "p.glsl", b"void main() {}", "generated",
+                                          {"passes": [{"name": "other", "program": "q"}], "params": {}})
 
     @full_run_only
     def test_derived_gates_follow_the_split(self) -> None:

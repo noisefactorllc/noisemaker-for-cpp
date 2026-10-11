@@ -591,6 +591,20 @@ def _pass_index(effect: dict[str, Any], key: str) -> dict[str, Any]:
     return matches[0]
 
 
+def _authority_passes(effect: dict[str, Any], key: str) -> list[dict[str, Any]]:
+    """Every authority pass that binds this program, in effect order.
+
+    A fragment program may be bound by several passes (each a distinct
+    runtime binding of the same compiled program; the corpus manifest records
+    the full binding set). Scatter adapters stay strictly single-pass.
+    """
+    _, program = key.split(":", 1)
+    matches = [item for item in effect.get("passes", []) if item.get("program") == program]
+    if not matches:
+        raise CompatibilityError(f"{key}: no authority pass runs this program")
+    return matches
+
+
 def _authority_pass(current_pass: dict[str, Any]) -> dict[str, Any]:
     return {
         "blend": current_pass.get("blend", False),
@@ -773,7 +787,16 @@ def _snow_top_level_binding_abi() -> tuple[dict[str, Any], list[dict[str, Any]],
 
 def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any]], defines: dict[str, Any], effect: dict[str, Any], entry: dict[str, Any], old: bytes, new: bytes) -> dict[str, Any]:
     key = entry["program_key"]
-    current_pass = _pass_index(effect, key)
+    authority_passes = _authority_passes(effect, key)
+    # The canonical row is the program's compiled admission. Its identity,
+    # binding ABI and output extent are projected from the program's first
+    # authority binding -- the same first-pass identity
+    # src/effects/registry.cpp records for the canonical row -- while every
+    # binding (including its own inputs/uniforms/outputs routes) stays
+    # enumerated in the document's reference_passes rows for this program.
+    if any(item.get("defines") for item in authority_passes):
+        raise CompatibilityError(f"{key}: authority pass declares pass-level defines")
+    current_pass = authority_passes[0]
     old_text = old.decode("utf-8")
     classification = "raw_exact" if old == new else "incompatible"
     old_token = _canonical_token_hash(old_text)
@@ -1284,7 +1307,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         effect = effects.get(entry["effect_id"])
         if effect is None:
             raise CompatibilityError(f"{key}: authority effect missing")
-        current_pass = _pass_index(effect, key)
+        current_pass = _authority_passes(effect, key)[0]
         old = (corpus_root / entry["source"]).read_bytes()
         new = _git_blob(shader_git, UPSTREAM_REVISION, _shader_path(entry))
         if key == mesh_render_contract.KEY:

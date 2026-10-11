@@ -162,6 +162,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_strayHair_strayHairBlend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_strokes_stkPost(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_strokes_stkSmear(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter_temporalAberration_delayShift(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_tetraColorArray_tetraColorArray(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_tetraCosine_tetraCosine(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_text_text(const glsl::Bindings& bindings);
@@ -231,9 +232,11 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_points_life_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_physarum_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_physarum_diffuse(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_physarum_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_physical_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_physical_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_loopBegin_loopBegin(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_loopEnd_copy(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_meshLoader_preview(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_meshRender_clear(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_blend(const glsl::Bindings& bindings);
