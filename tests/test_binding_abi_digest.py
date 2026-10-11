@@ -119,21 +119,40 @@ class BindingAbiDigestTest(unittest.TestCase):
                          {key for key, row in rows.items()
                           if row["factory"]["route"]["kind"] == "whole_pass"})
         entries += whole_pass_entries
-        self.assertEqual(len(entries), len(rows))
-        seen = set()
+        # A program bound by several authority passes has one route row per
+        # binding (same key, one ordered output ABI per binding), so the entry
+        # count exceeds the row count by the extra bindings; every key must
+        # still appear exactly once per binding and every single-binding key's
+        # anchors must equal the row's own sections.
+        def binding_projections(row):
+            projections = []
+            for binding in row.get("binding_outputs", []):
+                projected = dict(row)
+                projected["samplers"] = binding["samplers"]
+                projected["outputs"] = binding["outputs"]
+                projected["output_abi"] = {**row["output_abi"], "extent": binding["extent"]}
+                projections.append(projected)
+            return projections or [row]
+
+        projections_by_key = {key: binding_projections(row) for key, row in rows.items()}
+        self.assertEqual(len(entries), sum(len(v) for v in projections_by_key.values()))
+        seen: dict[str, int] = {}
         for key, fields in entries:
             values = re.findall(r'"([^"]*)"', fields)
             # key, canonical, emitted, kind, source, typed_abi, contract, defines,
             # sampler, uniform, output, extent, define-abi
             self.assertEqual(len(values), 12, key)
-            expected = sections(rows[key])
+            index = seen.get(key, 0)
+            projections = projections_by_key[key]
+            self.assertLess(index, len(projections), f"{key} binding ordinal")
+            expected = sections(projections[index])
             self.assertEqual(values[7], digest(expected["samplers"]), f"{key} samplers")
             self.assertEqual(values[8], digest(expected["uniforms"]), f"{key} uniforms")
             self.assertEqual(values[9], digest(expected["outputs"]), f"{key} outputs")
             self.assertEqual(values[10], digest(expected["extent"]), f"{key} extent")
             self.assertEqual(values[11], digest(expected["defines"]), f"{key} defines")
-            seen.add(key)
-        self.assertEqual(seen, set(rows))
+            seen[key] = index + 1
+        self.assertEqual(seen, {key: len(v) for key, v in projections_by_key.items()})
 
     def test_js_oracle_derives_the_same_digest_as_this_derivation(self) -> None:
         """Bind the JavaScript mirror to the same grammar.

@@ -203,41 +203,54 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
       // different resources from different passes); everything else about a
       // sampler -- name, type, source, cpp_type -- is a program fact and must
       // match the row exactly.
-      const auto& binding_samplers = required_field(item.object, "samplers", ValueKind::array, context + ".binding_outputs");
-      const auto& row_samplers = required_field(raw, "samplers", ValueKind::array, context);
-      if (binding_samplers.array.size() != row_samplers.array.size())
+      // Pointer probes rather than reference bindings: gcc's
+      // -Wdangling-reference false-positives on template functions that
+      // return references into their arguments, and the check fires -Werror
+      // in the sanitizers build.
+      const Value* binding_samplers = field(item.object, "samplers");
+      const Value* row_samplers = field(raw, "samplers");
+      if (binding_samplers == nullptr || row_samplers == nullptr ||
+          binding_samplers->kind != ValueKind::array || row_samplers->kind != ValueKind::array)
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding samplers");
+      if (binding_samplers->array.size() != row_samplers->array.size())
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler count");
-      for (std::size_t slot = 0; slot < binding_samplers.array.size(); ++slot) {
-        if (binding_samplers.array[slot].kind != ValueKind::object || row_samplers.array[slot].kind != ValueKind::object)
+      for (std::size_t slot = 0; slot < binding_samplers->array.size(); ++slot) {
+        if (binding_samplers->array[slot].kind != ValueKind::object || row_samplers->array[slot].kind != ValueKind::object)
           throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler entry");
-        if (string_field(binding_samplers.array[slot].object, "name") != string_field(row_samplers.array[slot].object, "name") ||
-            string_field(binding_samplers.array[slot].object, "type") != string_field(row_samplers.array[slot].object, "type") ||
-            string_field(binding_samplers.array[slot].object, "source") != string_field(row_samplers.array[slot].object, "source") ||
-            string_field(binding_samplers.array[slot].object, "cpp_type") != string_field(row_samplers.array[slot].object, "cpp_type"))
+        if (string_field(binding_samplers->array[slot].object, "name") != string_field(row_samplers->array[slot].object, "name") ||
+            string_field(binding_samplers->array[slot].object, "type") != string_field(row_samplers->array[slot].object, "type") ||
+            string_field(binding_samplers->array[slot].object, "source") != string_field(row_samplers->array[slot].object, "source") ||
+            string_field(binding_samplers->array[slot].object, "cpp_type") != string_field(row_samplers->array[slot].object, "cpp_type"))
           throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler ABI");
       }
-      const auto& index = required_field(item.object, "pass_index", ValueKind::number, context + ".binding_outputs");
-      if (!std::isfinite(index.number) || index.number < 0 || std::trunc(index.number) != index.number)
+      const Value* index = field(item.object, "pass_index");
+      if (index == nullptr || index->kind != ValueKind::number ||
+          !std::isfinite(index->number) || index->number < 0 || std::trunc(index->number) != index->number)
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding pass index");
       nonempty_string(required_field(item.object, "pass_name", ValueKind::string, context + ".binding_outputs"),
                       context + ".binding_outputs.pass_name");
-      const auto& outputs = required_field(item.object, "outputs", ValueKind::array, context + ".binding_outputs");
-      const auto& row_outputs = required_field(raw, "outputs", ValueKind::array, context);
-      if (outputs.array.size() != row_outputs.array.size())
+      const Value* outputs = field(item.object, "outputs");
+      const Value* row_outputs = field(raw, "outputs");
+      if (outputs == nullptr || row_outputs == nullptr ||
+          outputs->kind != ValueKind::array || row_outputs->kind != ValueKind::array)
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding outputs");
+      if (outputs->array.size() != row_outputs->array.size())
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding output count");
-      for (std::size_t slot = 0; slot < outputs.array.size(); ++slot) {
-        if (outputs.array[slot].kind != ValueKind::object || row_outputs.array[slot].kind != ValueKind::object)
+      for (std::size_t slot = 0; slot < outputs->array.size(); ++slot) {
+        if (outputs->array[slot].kind != ValueKind::object || row_outputs->array[slot].kind != ValueKind::object)
           throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding output entry");
-        exact_object(outputs.array[slot].object, {"slot", "physical_name", "logical_route", "cpp_type"},
+        exact_object(outputs->array[slot].object, {"slot", "physical_name", "logical_route", "cpp_type"},
                      context + ".binding_outputs.outputs");
-        if (string_field(outputs.array[slot].object, "physical_name") !=
-                string_field(row_outputs.array[slot].object, "physical_name") ||
-            field(outputs.array[slot].object, "slot")->number != field(row_outputs.array[slot].object, "slot")->number ||
-            string_field(outputs.array[slot].object, "cpp_type") != string_field(row_outputs.array[slot].object, "cpp_type"))
+        if (string_field(outputs->array[slot].object, "physical_name") !=
+                string_field(row_outputs->array[slot].object, "physical_name") ||
+            field(outputs->array[slot].object, "slot")->number != field(row_outputs->array[slot].object, "slot")->number ||
+            string_field(outputs->array[slot].object, "cpp_type") != string_field(row_outputs->array[slot].object, "cpp_type"))
           throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding output ABI");
       }
-      const auto& extent = required_field(item.object, "extent", ValueKind::object, context + ".binding_outputs");
-      exact_object(extent.object, {"width", "height", "format"}, context + ".binding_outputs.extent");
+      const Value* extent = field(item.object, "extent");
+      if (extent == nullptr || extent->kind != ValueKind::object)
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding extent");
+      exact_object(extent->object, {"width", "height", "format"}, context + ".binding_outputs.extent");
     }
     if (bindings->array.size() < 2U)
       throw std::invalid_argument("Malformed compatible compatibility row " + context + ": single-binding binding_outputs");

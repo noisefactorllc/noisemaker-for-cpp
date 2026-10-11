@@ -59,7 +59,7 @@ class GeneratedFactoryRouteTests(unittest.TestCase):
         self.assertIn(f"constexpr std::array<KernelFactory, {corpus_census.catalog_row_count()}> kCatalog",
                       self.generated)
         self.assertIn(
-            f"constexpr std::array<FactoryRoute, {corpus_census.single_output_typed_count()}> kCanonicalRoutes",
+            f"constexpr std::array<FactoryRoute, {corpus_census.single_output_route_row_count()}> kCanonicalRoutes",
             self.generated,
         )
         self.assertIn(

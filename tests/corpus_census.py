@@ -91,6 +91,21 @@ def single_output_typed_count() -> int:
     return typed_count() - len(set(mrt_keys()) & set(typed_keys()))
 
 
+@functools.lru_cache(maxsize=None)
+def single_output_route_row_count() -> int:
+    """Canonical single-output route rows: one per program, plus one extra row
+    per additional binding of a multi-bound program -- each binding carries
+    its own ordered output-ABI anchor in the generated route table."""
+    doc = json.loads((ROOT / "src/effects/generated/backend_compatibility.json").read_text(encoding="utf-8"))
+    extra = 0
+    mrt = set(mrt_keys())
+    for row in doc["canonical_programs"]:
+        if row["program_key"] in mrt:
+            continue
+        extra += max(len(row.get("binding_outputs", [])) - 1, 0)
+    return single_output_typed_count() + extra
+
+
 def catalog_row_count() -> int:
     """Physical single-output KernelFactory rows: typed rows plus the legacy duplicates."""
     return single_output_typed_count() + len(LEGACY_DUPLICATE_KEYS)
