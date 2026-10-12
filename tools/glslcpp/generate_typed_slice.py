@@ -10916,7 +10916,24 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                     bind_factory=_CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]),
                     source_sha256=admission_source_hashes[item["program_key"]],
                     compatibility_row=binding_row(row, binding)))
-        return sorted(descriptors, key=lambda item: item["key"])
+        # Bindings whose projections are byte-identical share one route row.
+        # Dispatch authenticates each admission's own ordered ABI sections
+        # against the row's baked anchors, so identical payloads authenticate
+        # through the single row, and the executor refuses a byte-identical
+        # duplicate of a whole descriptor as a generation defect. Emitting one
+        # row per binding instead would ship a route table every render
+        # refuses as soon as a multi-bound program binds two passes whose
+        # projections coincide (ping-pong bindings that reuse the same
+        # sampler set, output routes and extent).
+        unique: list[dict[str, str]] = []
+        seen_payloads: set[tuple[tuple[str, str], ...]] = set()
+        for descriptor in descriptors:
+            payload = tuple(sorted(descriptor.items()))
+            if payload in seen_payloads:
+                continue
+            seen_payloads.add(payload)
+            unique.append(descriptor)
+        return sorted(unique, key=lambda item: item["key"])
 
     canonical_routes = routes_for(single_output_programs)
     canonical_routes_mrt = routes_for(mrt_programs)

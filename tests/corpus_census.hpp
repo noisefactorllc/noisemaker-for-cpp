@@ -18,6 +18,54 @@
 
 namespace corpus_census {
 
+// One canonical token per JSON value. The binding-projection distinctness key
+// below mirrors tests/corpus_census.py's `json.dumps(..., sort_keys=True)`
+// hashing of the same sections; the token does not sort keys because the
+// generated catalog preserves the compatibility document's field order, which
+// one generation pins.
+[[nodiscard]] inline std::string projection_token(
+    const noisemaker::effects::Value& value) {
+  using noisemaker::effects::Value;
+  using noisemaker::effects::ValueKind;
+  switch (value.kind) {
+    case ValueKind::null_value: return "null";
+    case ValueKind::boolean: return value.boolean ? "1" : "0";
+    case ValueKind::number: return std::to_string(value.number);
+    case ValueKind::string: return "\"" + value.string + "\"";
+    case ValueKind::array: {
+      std::string token = "[";
+      for (const auto& entry : value.array) token += projection_token(entry) + ",";
+      return token + "]";
+    }
+    case ValueKind::object: {
+      std::string token = "{";
+      for (const auto& entry : value.object)
+        token += "\"" + entry.first + "\":" + projection_token(entry.second) + ",";
+      return token + "}";
+    }
+  }
+  return "null";
+}
+
+// The value of one object member, or null when absent.
+[[nodiscard]] inline noisemaker::effects::Value projection_member(
+    const std::vector<std::pair<std::string, noisemaker::effects::Value>>& entries,
+    std::string_view key) {
+  for (const auto& entry : entries)
+    if (entry.first == key) return entry.second;
+  return noisemaker::effects::Value::null();
+}
+
+[[nodiscard]] inline noisemaker::effects::Value projection_member(
+    const noisemaker::effects::Value& value, std::string_view key) {
+  using noisemaker::effects::Value;
+  using noisemaker::effects::ValueKind;
+  if (value.kind != ValueKind::object) return Value::null();
+  for (const auto& entry : value.object)
+    if (entry.first == key) return entry.second;
+  return Value::null();
+}
+
 // Multi-output programs are published only through the MRT route table.
 [[nodiscard]] inline std::size_t output_count(const noisemaker::effects::ProgramCompatibility& row) {
   for (const auto& [name, value] : row.raw) {
@@ -38,13 +86,37 @@ namespace corpus_census {
 }
 
 // Expected single-output canonical route rows: one row per program, plus one
-// extra row per additional binding of a multi-bound program -- each binding
-// carries its own ordered output-ABI anchor in the generated route table.
+// extra row per additional DISTINCT binding projection of a multi-bound
+// program. The generated route table shares one row among bindings whose
+// whole descriptor is byte-identical -- the executor refuses a byte-identical
+// duplicate of a descriptor as a generation defect -- so extras count
+// distinct projections, not bindings. The projection distinctness reads the
+// row's preserved compatibility JSON (raw) and hashes the same three sections
+// the python census hashes: the binding's samplers (falling back to the row's
+// when the binding carries none), its ordered outputs, and its output extent.
 [[nodiscard]] inline std::size_t expected_single_output_route_rows() {
+  using noisemaker::effects::ValueKind;
   std::size_t rows = 0;
   for (const auto& row : noisemaker::effects::effect_catalog().canonical_programs) {
     if (output_count(row) == 1U && row.program_key != "render/meshRender:render") {
-      rows += row.binding_outputs.empty() ? 1U : row.binding_outputs.size();
+      const auto raw_row = projection_member(row.raw, "binding_outputs");
+      const auto row_samplers = projection_member(row.raw, "samplers");
+      if (raw_row.kind != ValueKind::array || raw_row.array.empty()) {
+        rows += 1U;
+        continue;
+      }
+      std::vector<std::string> distinct;
+      for (const auto& binding : raw_row.array) {
+        auto samplers = projection_member(binding, "samplers");
+        if (samplers.kind == ValueKind::null_value) samplers = row_samplers;
+        const std::string projection = projection_token(samplers) + "\x1f" +
+            projection_token(projection_member(binding, "outputs")) + "\x1f" +
+            projection_token(projection_member(binding, "extent"));
+        if (std::find(distinct.begin(), distinct.end(), projection)
+            == distinct.end())
+          distinct.push_back(projection);
+      }
+      rows += distinct.size();
     }
   }
   return rows;

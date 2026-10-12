@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import pathlib
 import re
 import unittest
 from tests import corpus_census
+from tests.gate import full_run_only
 
 
 REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
@@ -141,6 +143,90 @@ class GeneratedFactoryRouteTests(unittest.TestCase):
                 f'"{typed_abi_sha256}"',
                 self.generated,
             )
+
+
+    def test_route_row_extras_counts_distinct_binding_projections(self) -> None:
+        # On the live compatibility document every multi-bound program's
+        # binding projections are distinct, so the distinct-projection count
+        # equals the per-binding count the table emitted before the dedupe
+        # rule existed.
+        doc = self.compatibility
+        mrt = set(corpus_census.mrt_keys())
+        per_binding = sum(
+            len(row["binding_outputs"]) - 1
+            for row in doc["canonical_programs"]
+            if row["program_key"] not in mrt and row.get("binding_outputs"))
+        self.assertGreater(per_binding, 0)
+        self.assertEqual(corpus_census._route_row_extras(doc), per_binding)
+
+        # Synthetic byte-identical bindings collapse: N identical bindings
+        # contribute one row (zero extras), and each distinct projection
+        # contributes its own extra row.
+        # temporalAberration:delayShift carries the live multi-binding data
+        # (eight bindings).
+        row = next(row for row in doc["canonical_programs"]
+                   if row["program_key"] == "filter/temporalAberration:delayShift")
+        binding = row["binding_outputs"][0]
+        # The live extent is {"width": "input", "height": "input",
+        # "format": ...}; a distinct projection changes the format token.
+        distinct = {**binding,
+                    "extent": {**binding["extent"], "format": "rgba16float"}}
+        duplicated = {**row, "binding_outputs": [binding, copy.deepcopy(binding),
+                                                 copy.deepcopy(binding)]}
+        split = {**row, "binding_outputs": [binding, copy.deepcopy(binding), distinct]}
+        self.assertEqual(0, corpus_census._route_row_extras(
+            {"canonical_programs": [duplicated]}))
+        self.assertEqual(1, corpus_census._route_row_extras(
+            {"canonical_programs": [split]}))
+
+    @full_run_only
+    def test_route_table_ships_no_byte_identical_descriptor_duplicate(self) -> None:
+        """One route row per DISTINCT binding projection, never a duplicate.
+
+        The executor refuses a byte-identical duplicate of a whole route
+        descriptor as a generation defect, so the generator shares one row
+        among bindings whose projections coincide (ping-pong bindings that
+        reuse the same sampler set, output routes and extent) while a binding
+        that differs anywhere keeps its own row.
+        """
+        from unittest import mock
+
+        from tools.glslcpp import generate_typed_slice
+
+        rows = generate_typed_slice._compatibility_canonical_rows(REPOSITORY)
+        row = rows["filter/temporalAberration:delayShift"]
+        binding = row["binding_outputs"][0]
+        distinct = {**binding,
+                    "extent": {**binding["extent"], "format": "rgba16float"}}
+        mocked = dict(rows)
+        mocked["filter/temporalAberration:delayShift"] = {
+            **row,
+            "binding_outputs": [binding, copy.deepcopy(binding), distinct],
+        }
+        with mock.patch.object(generate_typed_slice, "_compatibility_canonical_rows",
+                               return_value=mocked):
+            outputs = generate_typed_slice.generate_outputs(REPOSITORY)
+        cpp = outputs["src/typed_generated/typed_slice.cpp"].decode()
+        start = cpp.index("kCanonicalRoutes{{")
+        block = cpp[start:cpp.index("std::span<const KernelFactory> catalog()", start)]
+        pattern = (r'\{"([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)", "([0-9a-f]{64})", '
+                   r'"([0-9a-f]{64})", "([^"]*)", "([^"]*)", "([0-9a-f]{64})", '
+                   r'"([0-9a-f]{64})", "([0-9a-f]{64})", "([0-9a-f]{64})", '
+                   r'"([0-9a-f]{64})", &([^}]+)\}')
+        entries = re.findall(pattern, block)
+        self.assertGreater(len(entries), 0)
+        # No two emitted rows are byte-identical: the executor's generation
+        # defect must be unreachable by construction.
+        self.assertEqual(len(entries), len({tuple(entry) for entry in entries}))
+        delayed_rows = [entry for entry in entries
+                        if entry[0] == "filter/temporalAberration:delayShift"]
+        # The mocked row carries three bindings: two byte-identical (they
+        # collapse to the first row) and one with a distinct output extent
+        # (it keeps its own row).
+        self.assertEqual(2, len(delayed_rows))
+        self.assertEqual(2, len({tuple(entry) for entry in delayed_rows}))
+        # The two rows differ exactly in the binding's output-extent anchor.
+        self.assertEqual(2, len({entry[11] for entry in delayed_rows}))
 
 
 if __name__ == "__main__":

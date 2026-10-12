@@ -91,19 +91,37 @@ def single_output_typed_count() -> int:
     return typed_count() - len(set(mrt_keys()) & set(typed_keys()))
 
 
-@functools.lru_cache(maxsize=None)
-def single_output_route_row_count() -> int:
-    """Canonical single-output route rows: one per program, plus one extra row
-    per additional binding of a multi-bound program -- each binding carries
-    its own ordered output-ABI anchor in the generated route table."""
-    doc = json.loads((ROOT / "src/effects/generated/backend_compatibility.json").read_text(encoding="utf-8"))
+def _route_row_extras(doc: dict) -> int:
+    """Extra route rows beyond one per program.
+
+    One extra row per additional DISTINCT binding projection of a multi-bound
+    program. The generated route table shares one row among bindings whose
+    whole descriptor is byte-identical -- the executor refuses a byte-identical
+    duplicate of a descriptor as a generation defect -- so extras count
+    distinct projections, not bindings. Distinctness mirrors the generator's
+    descriptor: the row's samplers (a binding may swap the sampler set), the
+    binding's ordered outputs, and the binding's output extent.
+    """
     extra = 0
     mrt = set(mrt_keys())
     for row in doc["canonical_programs"]:
         if row["program_key"] in mrt:
             continue
-        extra += max(len(row.get("binding_outputs", [])) - 1, 0)
-    return single_output_typed_count() + extra
+        bindings = row.get("binding_outputs", [])
+        if not bindings:
+            continue
+        distinct = {(json.dumps(binding.get("samplers", row["samplers"]), sort_keys=True),
+                     json.dumps(binding["outputs"], sort_keys=True),
+                     json.dumps(binding["extent"], sort_keys=True))
+                    for binding in bindings}
+        extra += len(distinct) - 1
+    return extra
+
+
+@functools.lru_cache(maxsize=None)
+def single_output_route_row_count() -> int:
+    doc = json.loads((ROOT / "src/effects/generated/backend_compatibility.json").read_text(encoding="utf-8"))
+    return single_output_typed_count() + _route_row_extras(doc)
 
 
 def catalog_row_count() -> int:

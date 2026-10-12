@@ -120,17 +120,27 @@ class BindingAbiDigestTest(unittest.TestCase):
                           if row["factory"]["route"]["kind"] == "whole_pass"})
         entries += whole_pass_entries
         # A program bound by several authority passes has one route row per
-        # binding (same key, one ordered output ABI per binding), so the entry
-        # count exceeds the row count by the extra bindings; every key must
-        # still appear exactly once per binding and every single-binding key's
-        # anchors must equal the row's own sections.
+        # DISTINCT binding projection (same key, one ordered output ABI per
+        # distinct projection): the generator shares one row among bindings
+        # whose whole descriptor is byte-identical, because dispatch
+        # authenticates each admission's own ABI sections against the row's
+        # baked anchors and the executor refuses a byte-identical descriptor
+        # duplicate as a generation defect. The derivation mirrors that
+        # dedupe in first-occurrence order; every key must still appear
+        # exactly once per distinct projection and every single-projection
+        # key's anchors must equal the row's own sections.
         def binding_projections(row):
             projections = []
+            seen_projections: set[str] = set()
             for binding in row.get("binding_outputs", []):
                 projected = dict(row)
                 projected["samplers"] = binding["samplers"]
                 projected["outputs"] = binding["outputs"]
                 projected["output_abi"] = {**row["output_abi"], "extent": binding["extent"]}
+                payload = json.dumps(projected, sort_keys=True)
+                if payload in seen_projections:
+                    continue
+                seen_projections.add(payload)
                 projections.append(projected)
             return projections or [row]
 
