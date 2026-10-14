@@ -33,7 +33,7 @@ from tests.gate import full_run_only
 
 SLICE_CPP = REPOSITORY / "src/typed_generated/typed_slice.cpp"
 PARALLAX_ALIAS = "[[maybe_unused]] glsl::Vec2& prevUV = rayUV;"
-CURRENT_ALIAS_COUNT = 31
+CURRENT_ALIAS_COUNT = 30
 # One line per emitted alias: `[[maybe_unused]] glsl::VecN& name = source;`
 ALIAS_DECLARATION = re.compile(
     r"\[\[maybe_unused\]\] glsl::Vec[234]& (\w+) = ([A-Za-z_]\w*);")
@@ -69,8 +69,8 @@ class CommittedEmissionTests(unittest.TestCase):
 
     def test_alias_site_census_is_exact(self) -> None:
         sites = _alias_sites(_COMMITTED_SLICE)
-        # Four new and two existing Fractal3D z declarations copy pos.
-        # The remaining 31 sites retain their pooled alias semantics.
+        # Six Fractal3D z declarations copy pos and sit outside the census.
+        # The remaining 30 sites retain their pooled alias semantics.
         self.assertEqual(CURRENT_ALIAS_COUNT, len(sites))
         self.assertIn(("borderNearestPoint", "nearestPoint"), sites)
         self.assertIn(("p", "st"), sites)

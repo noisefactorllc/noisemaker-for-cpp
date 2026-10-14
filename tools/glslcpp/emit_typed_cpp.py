@@ -12495,8 +12495,7 @@ class _Emitter:
             raise _error(self.program, function,
                          "unauthenticated matrix-return function declaration")
         parameters = ", ".join([*self._emitter_bound_parameters(function), *(
-            f"[[maybe_unused]] {self.function_parameter_type(
-                function, ordinal, parameter, record_out_inout=False)} "
+            f"[[maybe_unused]] {self.function_parameter_type(function, ordinal, parameter, record_out_inout=False)} "
             f"{_safe_identifier(parameter.name, parameter.id)}"
             for ordinal, parameter in enumerate(function.parameters))])
         return_type = self._function_return_type(function)
