@@ -101,7 +101,7 @@ TEST(dsl_compiler_merges_named_partials_in_stable_key_order) {
   REQUIRE(step.params[1].value.number == 7.0);
 }
 
-TEST(dsl_compiler_preserves_scatter_and_rejects_an_unavailable_program) {
+TEST(dsl_compiler_preserves_scatter_and_rejects_an_unknown_program) {
   noisemaker::effects::EffectRegistry registry(noisemaker::effects::effect_catalog());
   const auto scatter = noisemaker::dsl::compile(
       "search filter\nread(o0).wormhole().write(o1)\nrender(o1)\n", registry);
@@ -109,12 +109,9 @@ TEST(dsl_compiler_preserves_scatter_and_rejects_an_unavailable_program) {
   bool saw_scatter = false;
   for (const auto& pass : scatter.availability) saw_scatter |= pass.status == noisemaker::graph::AvailabilityStatus::scatter;
   REQUIRE(saw_scatter);
-  const auto missing = noisemaker::dsl::compile(
-      "search synth3d, render\nnoise3d(volumeSize: 16).renderLandscape3d().write(o1)\nrender(o1)\n", registry);
-  REQUIRE(!missing.executable);
   REQUIRE_THROWS_AS(noisemaker::dsl::compile(
-      "search synth3d, render\nnoise3d(volumeSize: 16).renderLandscape3d().write(o1)\nrender(o1)\n", registry,
-      {.require_executable = true}), noisemaker::dsl::DslError);
+      "search synth3d, render\nnotInCatalog().write(o1)\nrender(o1)\n", registry),
+      noisemaker::dsl::DslError);
 }
 
 TEST(dsl_compiler_plan_copy_owns_nested_parameter_arrays) {
@@ -622,7 +619,7 @@ std::string oracle_admission(const noisemaker::graph::PassAdmission& admission) 
     if (index) result += ',';
     result += "[" + oracle_escape(admission.authority_pass.uniforms[index].first) + "," + oracle_value(admission.authority_pass.uniforms[index].second) + "]";
   }
-  result += "],\"blendKind\":" + oracle_escape(admission.authority_pass.blend_kind) + ",\"blend\":" + (admission.authority_pass.blend ? "true" : "false") + ",\"blendFactors\":[" + oracle_escape(admission.authority_pass.blend_factors[0]) + "," + oracle_escape(admission.authority_pass.blend_factors[1]) + "],\"repeat\":" + oracle_optional_plan_value(admission.authority_pass.repeat) + "}";
+  result += "],\"blendKind\":" + oracle_escape(admission.authority_pass.blend_kind) + ",\"blend\":" + (admission.authority_pass.blend ? "true" : "false") + ",\"blendFactors\":[" + oracle_escape(admission.authority_pass.blend_factors[0]) + "," + oracle_escape(admission.authority_pass.blend_factors[1]) + "],\"repeat\":" + oracle_optional_plan_value(admission.authority_pass.repeat) + ",\"defines\":" + oracle_optional_effect_value(admission.authority_pass.defines) + ",\"viewport\":" + oracle_optional_effect_value(admission.authority_pass.viewport) + "}";
   if (admission.scatter.has_value()) {
     const auto& scatter = *admission.scatter;
     result += ",\"scatter\":{\"adapter\":" + oracle_escape(scatter.adapter) + ",\"registry\":" + oracle_escape(scatter.registry) + ",\"drawMode\":" + oracle_escape(scatter.draw_mode) + ",\"dimensionality\":" + oracle_escape(scatter.dimensionality) + ",\"count\":" + oracle_escape(scatter.count) + ",\"inputTexture\":" + oracle_escape(scatter.input_texture) + ",\"destinationMutation\":" + oracle_escape(scatter.destination_mutation) + ",\"blend\":" + (scatter.blend ? "true" : "false") + ",\"uniforms\":[";

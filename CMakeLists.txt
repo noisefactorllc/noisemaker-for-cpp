@@ -173,6 +173,7 @@ add_executable(noisemaker-cpu-tests
   tests/fixtures/historical/reverb_kernel.cpp
   tests/fixtures/historical/osd_kernel.cpp
   tests/fixtures/historical/parallax_kernel.cpp
+  tests/fixtures/historical/gradient_kernel.cpp
   tests/test_scatter_wormhole.cpp
   tests/test_scatter_dla.cpp
   tests/test_scatter_lenia.cpp

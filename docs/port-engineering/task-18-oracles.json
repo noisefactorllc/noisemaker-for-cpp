@@ -1,11 +1,13 @@
 {
   "schema": "noisemaker-for-cpp.task18-fixed-grid-counter-store.canonical-oracles.v1",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "provenance": {
-    "node": "v24.7.0",
+    "node": "v26.0.0",
+    "cpu_revision": "4307ca9f26fc415e4fc5e75227d429d35cc741cd",
+    "cpu_behavioral_sha256": "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801",
     "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
     "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
-    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "canonical_kernels_sha256": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
     "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",
     "generator": "task-18-oracle-generator.mjs"
   },
@@ -24,7 +26,7 @@
         "edgeThreshold:float@5",
         "renderScale:float@6"
       ],
-      "factory_to_string_sha256": "62ffbbb0f46ac845179fef5e8d702874bdbeeac527a38abc35896c68dfa1b3d8"
+      "factory_to_string_sha256": "5b42182f397cc8833a964faa6a978925240fcb88bc743a03996ce7fee378ca58"
     },
     {
       "key": "filter/outline:outlineSobel",
@@ -40,7 +42,7 @@
         "thickness:float@5",
         "renderScale:float@6"
       ],
-      "factory_to_string_sha256": "5e19c5a1f4f2644b0d29981976c70741dcc1af4054a9608375a42e17644047b8"
+      "factory_to_string_sha256": "f1f5601359a25a0909520f934791f96271eebdf901be693c3923c58c58a1f947"
     }
   ],
   "fixture": {
@@ -108,7 +110,7 @@
         "negative-and-positive-wrapCoord",
         "RGB-lane-read"
       ],
-      "f32_sha256": "d86694f5c5a05c094b1dc9d4302b0b98cbe3044e5ce22587fdf6dd80f77d27a7",
+      "f32_sha256": "6c54f6fc55aecddb68b4c6d90ab5e6e871d2358bf28d319c5e5023fd2fcf7593",
       "rgba8_sha256": "966ca81461240fb6c35316537f631f3b74b6d0a33a7b538d05ddd12e241347e9",
       "probes": [
         {
@@ -135,15 +137,15 @@
             3
           ],
           "values": [
-            0.032109588384628296,
-            0.032109588384628296,
-            0.032109588384628296,
+            0.03210956230759621,
+            0.03210956230759621,
+            0.03210956230759621,
             1
           ],
           "f32_bits_le": [
-            "0x3d038558",
-            "0x3d038558",
-            "0x3d038558",
+            "0x3d038551",
+            "0x3d038551",
+            "0x3d038551",
             "0x3f800000"
           ]
         },
@@ -194,7 +196,7 @@
         "all-nine-counter-filled-luminosity-reads",
         "negative-and-positive-wrapCoord"
       ],
-      "f32_sha256": "048acf6f8feb3be40c9be548bc64eaeadc6de78366a61b778c899eb463575ac0",
+      "f32_sha256": "bec7dfa0806d4cf153699f79427479ac1ade2bf10d1b4ab688be49d9eedae6b6",
       "rgba8_sha256": "8d0418a7e7b046d582cafcfbbe95b1bf2c05478929a57719ab52a345de1091e5",
       "probes": [
         {

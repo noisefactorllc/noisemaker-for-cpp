@@ -11,9 +11,9 @@ const reportPath = path.join(here, 'shape-mixer-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'shape_mixer_frontend_probe.py')
 const programKey = 'classicNoisedeck/shapeMixer:shapeMixer'
-const authorityCommit = '4834b0144ee0524588144a482cca0067b15f68ec'
+const authorityCommit = '4307ca9f26fc415e4fc5e75227d429d35cc741cd'
 const authorityNode = 'v26.0.0'
-const upstreamRevision = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const upstreamRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 
 const modes = new Set(['--write', '--check'])
 function parseArgs() {
@@ -61,9 +61,9 @@ const cppLexical = lexicalDirectory(path.resolve(here, '../../..'), 'C++ checkou
 const authorityLexical = lexicalDirectory(cpuArg, 'authority root')
 const liveLexical = lexicalDirectory(liveArg, 'live root')
 const cppRoot = fs.realpathSync(cppLexical)
-// This package reproduces the immutable historical source capture.
-const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
-const corpusRevision = HISTORICAL_CORPUS_REVISION
+// This package reproduces the current pinned source capture.
+const PINNED_CORPUS_REVISION = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
+const corpusRevision = PINNED_CORPUS_REVISION
 const cpuRoot = fs.realpathSync(authorityLexical)
 const liveRoot = fs.realpathSync(liveLexical)
 const includeGeneratorPath = path.join(cppRoot, 'tools/glslcpp/generate_shape_mixer_native_oracle_include.py')
@@ -282,12 +282,12 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
-  glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -305,12 +305,12 @@ const publicFactory = kernelFactories.get(programKey)
 const canonicalText = canonicalFactory?.toString() ?? ''
 const canonicalSource = fs.readFileSync(canonicalPath, 'utf8')
 const runtimeSource = fs.readFileSync(runtimePath, 'utf8')
-if (Buffer.byteLength(runtimeSource) !== 21331 || sha256(runtimeSource) !== provenanceFiles.glsl_runtime[1]) throw new Error('pinned GLSL runtime source drift')
+if (Buffer.byteLength(runtimeSource) !== 22496 || sha256(runtimeSource) !== provenanceFiles.glsl_runtime[1]) throw new Error('pinned GLSL runtime source drift')
 const sliceStart = canonicalSource.indexOf('function canonicalFactory15')
 const sliceEnd = canonicalSource.indexOf('function canonicalFactory16', sliceStart)
 const canonicalSlice = canonicalSource.slice(sliceStart, sliceEnd)
-if (canonicalFactory?.name !== 'canonicalFactory15' || Buffer.byteLength(canonicalText) !== 26033 || sha256(canonicalText) !== '063bb7cf252349866766abd1c781bb41d32af2d9b71bb02461f34ed8404c8124') throw new Error('canonical Shape Mixer factory drift')
-if (Buffer.byteLength(canonicalSlice) !== 26035 || sha256(canonicalSlice) !== '5c870c15339e431a0972742008caae2f7859836995e508892cd823d98e32c985') throw new Error('canonical Shape Mixer source slice drift')
+if (canonicalFactory?.name !== 'canonicalFactory15' || Buffer.byteLength(canonicalText) !== 26411 || sha256(canonicalText) !== '66117b01865863338e638a22e6f676b01d4f75e3f2864b2dc67af199785f0a68') throw new Error('canonical Shape Mixer factory drift')
+if (Buffer.byteLength(canonicalSlice) !== 26413 || sha256(canonicalSlice) !== '8eca60a170872c6def34bf6a264c50b2856dd27cec95dc16daf8b64509f494e4') throw new Error('canonical Shape Mixer source slice drift')
 if (publicFactory !== canonicalFactory) throw new Error('public Shape Mixer factory is not canonical identity')
 if (canonicalAdapterFactories[programKey] !== undefined) throw new Error('unexpected Shape Mixer adapter override')
 const effect = effectRecords.find((item) => item.id === 'classicNoisedeck/shapeMixer')
@@ -648,7 +648,7 @@ addMutation('local-resolution-replaced-by-full', 'textureSize(inputTex, 0)));', 
 addMutation('loop-offset-ten-changed', 'if (LOOP_OFFSET == 10) {', 'if (LOOP_OFFSET == 11) {', ['loopscale-min', 'loopscale-max', 'tiled-fractional-ratio'])
 addMutation('rotate-palette-omitted', 't = t * repeatPalette + rotatePalette * 0.009999999776482582;', 't = t * repeatPalette;', ['palette-rgb-extremes', 'palette-hsv', 'palette-oklab-lanes'])
 addMutation('repeat-palette-omitted', 't = t * repeatPalette + rotatePalette * 0.009999999776482582;', 't = t + rotatePalette * 0.009999999776482582;', ['palette-rgb-extremes', 'palette-hsv', 'palette-oklab-lanes'])
-addMutation('palette-vector-component-order', 'var a = paletteOffset;', 'var a = new $runtime.PooledFloat32Array([paletteOffset[2], paletteOffset[0], paletteOffset[1]]);', ['palette-rgb-extremes', 'palette-hsv', 'palette-oklab-lanes'])
+addMutation('palette-vector-component-order', 'var a = paletteOffset instanceof Float32Array ? $runtime.copy(paletteOffset) : paletteOffset;', 'var a = new $runtime.PooledFloat32Array([paletteOffset[2], paletteOffset[0], paletteOffset[1]]);', ['palette-rgb-extremes', 'palette-hsv', 'palette-oklab-lanes'])
 
 function mutationResult(mutant) {
   const results = mutant.required_witnesses.map((name) => {
@@ -681,7 +681,7 @@ function directHelperLedger() {
   const exactRows = []
   const reflectI = vector(['408c4d65', 'c0407fe6', 'c0ecaf78']); const reflectN = vector(['c07d065b', '4082a176', 'c002ca11'])
   const reflectActual = resultWords(std.reflect(reflectI, reflectN))
-  if (reflectActual.join(' ') !== '0xc2dc7ddd 0x42e6b53b 0xc2854c5f') throw new Error(`published vector reflect witness drift: ${reflectActual}`)
+  if (reflectActual.join(' ') !== '0xc2dc7dde 0x42e6b53c 0xc2854c60') throw new Error(`published vector reflect witness drift: ${reflectActual}`)
   exactRows.push({ name: 'published-vector-reflect-old-one-narrow', inputs_f32_words_le: [Array.from(words(reflectI), u32Hex), Array.from(words(reflectN), u32Hex)], canonical_words_le: reflectActual, rejected_old_words_le: ['0xc2dc7ddc', '0x42e6b53b', '0xc2854c5f'] })
   const refractI = vector(['bfdc1c58', 'be8bbd72', '3fbd4587']); const refractN = vector(['bf89dd86', '3acd6835', 'bf12d8d2']); const eta = 0.6234136876035227
   const refractActual = resultWords(std.refract(refractI, refractN, eta))

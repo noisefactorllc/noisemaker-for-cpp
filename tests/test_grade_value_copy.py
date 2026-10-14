@@ -44,7 +44,7 @@ class GradeValueCopyTests(unittest.TestCase):
         result = subprocess.run(["node", str(REFERENCE), configured], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         captured = json.loads(result.stdout)
-        self.assertEqual(captured["cpu_revision"], "5b686a45b5c56329adf0c63cbcf572eb6f23fad1")
+        self.assertEqual(captured["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
         self.assertEqual(captured["pixels"], 230)
         self.assertEqual(captured["float32_sha256"], EXPECTED)
         self.assertEqual(captured["rgba8_sha256"], "0b5bec91de3a56e47fb5f54ea24fac0c73ec47ff8d11dffc801b18e03d7ba8b3")
@@ -96,10 +96,10 @@ class GradeValueCopyTests(unittest.TestCase):
                 render(program())
 
     @full_run_only
-    def test_emitted_lut_matches_cpu26d_all_presets_and_alpha_blends(self):
+    def test_emitted_lut_matches_current_cpu_all_presets_and_alpha_blends(self):
         # Independent canonicalFactory59 capture from authenticated CPU
-        # 5b686a45b5c56329adf0c63cbcf572eb6f23fad1, behavioral lock
-        # 8c4ba7bde134ad664e80fba4690d48bb16f7af5e37d98ee232fe5dc3239b79f6.
+        # 4307ca9f26fc415e4fc5e75227d429d35cc741cd, behavioral lock
+        # 9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801.
         # Two float32 input colors, presets 0..22 and five alpha values cover
         # 230 pixels. Capture includes the production RGBA16F pass store.
         body = render(program())

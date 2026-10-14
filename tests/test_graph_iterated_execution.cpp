@@ -191,7 +191,7 @@ TEST(iterated_group_output_tracks_the_base_time_it_was_given) {
   REQUIRE(high.to_rgba8() == direct_high.to_rgba8());
 }
 
-TEST(iterated_group_with_zero_iterations_clones_the_input_and_runs_no_passes) {
+TEST(iterated_group_with_zero_iterations_clears_without_input_and_runs_no_passes) {
   Renderer renderer;
   auto plan = renderer.compile(kPerlinSource, "iterated-perlin-zero.dsl");
   snapshot_for(plan, "synth/perlin").definition.iterated = true;
@@ -212,6 +212,33 @@ TEST(iterated_group_with_zero_iterations_clones_the_input_and_runs_no_passes) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == 6U * 4U * 4U);
   for (const auto byte : bytes) REQUIRE(byte == 0U);
+}
+
+TEST(iterated_group_with_zero_iterations_clones_incoming_image_and_runs_no_passes) {
+  Renderer renderer;
+  auto plan = renderer.compile(kLoopRegionSource, "iterated-loop-zero.dsl");
+  snapshot_for(plan, "filter/invert").definition.loop_role = "begin";
+  snapshot_for(plan, "filter/highPass").definition.loop_role = "end";
+  set_iteration_count(effect_step(plan, "filter/invert"), 0.0);
+  reauthenticate(plan);
+
+  const auto inputs = options(7U, 5U, 0.6, 2.0);
+  const auto incoming = renderer.render(kPerlinSource, inputs);
+  const auto result = renderer.render(plan, inputs);
+  // Only perlin runs. The loop returns a byte-exact clone of that incoming
+  // image; neither invert nor any of highPass's three passes runs.
+  REQUIRE(incoming.pass_count() == 1U);
+  REQUIRE(result.pass_count() == incoming.pass_count());
+  REQUIRE(result.width() == incoming.width());
+  REQUIRE(result.height() == incoming.height());
+  const auto original = incoming.surface().data();
+  const auto cloned = result.surface().data();
+  REQUIRE(original.size() == cloned.size());
+  REQUIRE(detail::sha256(std::string_view(
+              reinterpret_cast<const char*>(original.data()), original.size_bytes())) ==
+          detail::sha256(std::string_view(
+              reinterpret_cast<const char*>(cloned.data()), cloned.size_bytes())));
+  REQUIRE(result.to_rgba8() == incoming.to_rgba8());
 }
 
 TEST(iterated_loop_region_sweeps_two_real_steps_into_one_group) {

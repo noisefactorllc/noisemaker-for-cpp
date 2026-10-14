@@ -14,10 +14,10 @@ Frozen JavaScript ground truth for `synth/gabor:gabor`. The package authenticate
 
 ## Frozen identities
 
-- Upstream snapshot revision: `117a236679d1db3ab8f0e278230ece277b57564c`
-- Corpus revision: `a024dc3a960cc44af454abc7aebce50456c194e6`
+- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - GLSL source: 3870 bytes, SHA-256 `91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5`
-- Canonical factory: `canonicalFactory249`, 4405 bytes, SHA-256 `1a761bd2b1ab87e781ca4d7a1fc622ed450035b9695115a84e59fb36e6718c57`
+- Canonical factory: `canonicalFactory257`, 4452 bytes, SHA-256 `3a5a7e2a325d419b2a10360a1010c4036ba309e1d181fbc0d3940c11e49a3226`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
 - The canonical define map is exactly empty. The pass has no samplers and writes only `fragColor`.
 
@@ -25,13 +25,13 @@ Frozen JavaScript ground truth for `synth/gabor:gabor`. The package authenticate
 
 | Case | Size | Density | Octaves | Speed | Time | Seed | Tile offset | Float32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
-| default-landscape | 5x4 | 3 | 1 | 1 | 0 | 1 | 0,0 | `e3dab43a27e8d586867a8a60b17db94e886ec04a02e250fefad05562a765f955` | `ad5a765ae88df34f85415ccd5f478adfe1d746a68b1019f86ae909233810f14e` |
+| default-landscape | 5x4 | 3 | 1 | 1 | 0 | 1 | 0,0 | `f14e9426f45d5992436727ef36c163f096414f41483cb7f8bf627163ed98aac0` | `ad5a765ae88df34f85415ccd5f478adfe1d746a68b1019f86ae909233810f14e` |
 | max-depth-density-octaves | 4x3 | 8 | 5 | 5 | 0.125 | 100 | 0,0 | `fec494791b3b11e2b49c3b72221cb5384949421b58adf30a7eb2cefeaf369e4f` | `54c377ff0fab8e0478ea10876628e146a7f88944037794d6807df9b1a035fe71` |
-| minimum-work-speed-zero-time-a | 3x5 | 1 | 1 | 0 | 0 | 37 | 0,0 | `f0db9762f51e63299a476a509a2c01e672588d6f64f00f877f4c9bccfb1eb40e` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
-| minimum-work-speed-zero-time-b | 3x5 | 1 | 1 | 0 | 0.987500011920929 | 37 | 0,0 | `f0db9762f51e63299a476a509a2c01e672588d6f64f00f877f4c9bccfb1eb40e` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
+| minimum-work-speed-zero-time-a | 3x5 | 1 | 1 | 0 | 0 | 37 | 0,0 | `93184964f806a9d9d9fe626f7b0f34799daf92c08bdcbfc55ba18e0c08cc57e2` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
+| minimum-work-speed-zero-time-b | 3x5 | 1 | 1 | 0 | 0.987500011920929 | 37 | 0,0 | `93184964f806a9d9d9fe626f7b0f34799daf92c08bdcbfc55ba18e0c08cc57e2` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
 | intermediate-anisotropic | 6x2 | 5 | 3 | 2 | 0.375 | 17 | 0,0 | `41b341a40bb1f22bcbfe6ce72d01e8fe5b360da7a1d1e7edac848bfa06ac7803` | `6d598eb2147ac6bb562018b9e611abdd4c86c6ef2b3dbe693414a78cea431222` |
-| opposite-angle-random-orientation | 2x6 | 6 | 4 | 3 | 0.0625 | 63 | 0,0 | `73263d9bf846184b0324a958c8adad4e4fc207921cdd86317a463ef70bb8cc8a` | `9ea610c1737fa332cbe4d15f8737a619a92829dd90d1e2533caf8c7f2d60120c` |
-| tile-full-reference | 7x5 | 7 | 4 | 4 | 0.21875 | 29 | 0,0 | `fa8780a091028aabdfcec7980a99485050e8729d91688ae9bde43ba508cda659` | `9d82032633c1043c30f27b2e7c71392738684ed536f11ea57643d1efbc18fdd0` |
+| opposite-angle-random-orientation | 2x6 | 6 | 4 | 3 | 0.0625 | 63 | 0,0 | `cc8a3aa41558fdb9587420cba5ca08b849fb111da8bdd3730991f72acd2a2912` | `9ea610c1737fa332cbe4d15f8737a619a92829dd90d1e2533caf8c7f2d60120c` |
+| tile-full-reference | 7x5 | 7 | 4 | 4 | 0.21875 | 29 | 0,0 | `2b96eab7fd32b02a81decd8e752a74a8f06803d92fc35b1cc64bc3d18c8e875a` | `9d82032633c1043c30f27b2e7c71392738684ed536f11ea57643d1efbc18fdd0` |
 | tile-3x2-bottom-offset-2x1 | 3x2 | 7 | 4 | 4 | 0.21875 | 29 | 2,1 | `d2db62258d55dc4e5ebe517d6b4cd87c8fec4a5f80590a1a04c68e69da02df33` | `a13a3979f466a34c0e3e4d9c6cd5ca81f4f41073f9575c93266be5fca0f95456` |
 
 Every valid-domain case requires finite exact-grayscale output with exact alpha one, exact repeated-render identity, and direct-canonical/public-catalog equality. The paired speed-zero cases prove time identity and unused frame/external-seed identity. The tile case must exactly equal the corresponding bottom-left-origin crop from the full render.

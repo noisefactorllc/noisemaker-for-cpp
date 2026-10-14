@@ -52,6 +52,7 @@ NOISE_KEY = "synth/noise:noise"
 # `for (i = 0; i < OCTAVES; i++)`, with no helper-parameter indirection to
 # authenticate -- one loop, one program, one uniform read in its condition.
 CURL_KEY = "synth/curl:curl"
+NOISE3D_KEY = "synth3d/noise3d:precompute"
 SPRITE_MEAN_TILES_KEY = "render/pointsBillboardRender:spriteMeanTiles"
 # points/lenia's sixth key and the module's first *float-uniform-ceil* record:
 # main owns `int iRadius = int(ceil(searchRadius));` (normalized 44:5) and the
@@ -64,11 +65,12 @@ SPRITE_MEAN_TILES_KEY = "render/pointsBillboardRender:spriteMeanTiles"
 # the 40 bound genuine.
 LENIA_KEY = "points/lenia:convolve"
 ROLL_KEY = "synth/roll:roll"
+LANDSCAPE_KEY = "render/renderLandscape3d:landscape"
 # Noise lands atomically with its frame and scalar-XOR companions.
 PREPARED_RUNTIME_LOOP_BOUND_KEYS: tuple[str, ...] = ()
 RUNTIME_LOOP_BOUND_KEYS = frozenset(
-    {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, SPRITE_MEAN_TILES_KEY,
-     LENIA_KEY, ROLL_KEY, *BLUR_KEYS, *CF_KEYS})
+    {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, NOISE3D_KEY, SPRITE_MEAN_TILES_KEY,
+     LENIA_KEY, ROLL_KEY, LANDSCAPE_KEY, *BLUR_KEYS, *CF_KEYS})
 
 
 @dataclass(frozen=True, slots=True)
@@ -324,6 +326,23 @@ _CURL_EXPECTED = {
 }
 
 
+_NOISE3D_EXPECTED = {
+    "raw_bytes": 7667,
+    "raw_sha256": "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727",
+    "normalized_bytes": 5507,
+    "normalized_sha256": "d50f37ea41e0877bfac3f59ca07b5ec1dac79d67f797c32a69c07d6748962ee0",
+    "defines": (("COLOR_MODE", "str", "int"), ("OCTAVES", "str", "int"),
+                ("RIDGES", "str", "bool")),
+    "functions_sha256": "893134eafde184455c88d613b814473d7e9001be0824ce8fe685e3215fc99a11",
+    "whole_program_sha256": "28f492ae273ec55a57d38fd1d73e25ee0f71fec14e8b0b0f2d2c6b3cef0e5aba",
+    "interface_sha256": "d629b2f6836f6a81379deed6c7ab772e3f700f695875d0db2e7c6bd60c46b333",
+    "uniform": (2, "OCTAVES", "int", "uniform", False, "2:1-2:21"),
+    "helper": (21, "fbm4D", "130:1-151:2"),
+    "loop": ("136:5-149:6", "efa7f2ff59677b9207184e3f84c3744ec48ec5dfc54546826dd579b706fc65c1"),
+    "metadata": ("int", 1, 1, 6, "OCTAVES"),
+}
+
+
 _STATS_EXPECTED = {
     "raw_bytes": 959,
     "raw_sha256": "0b8daf6d5a38dc34bbd98800fdd46f9cdfa0b97f00196382023456a0b6eb1dfa",
@@ -511,6 +530,16 @@ def validate_runtime_loop_contract(
             and contract.lane_seeds == ()
             and contract.seed.provenance
             == "runtime-metadata-uniform-direct-global")
+    noise3d = (contract.seed is not None
+               and contract.key == NOISE3D_KEY and contract.kind == "integer-range"
+               and contract.uniform_name == "OCTAVES"
+               and contract.minimum == 1 and contract.uniform_maximum == 6
+               and contract.default == 1 and contract.maximum == 6
+               and contract.render_scale_name is None
+               and contract.radius_declaration is None
+               and contract.lane_seeds == ()
+               and contract.seed.provenance
+               == "runtime-metadata-uniform-direct-global")
     sprite_mean = (contract.seed is None and contract.key == SPRITE_MEAN_TILES_KEY
                    and contract.kind == "texture-tile-reduction"
                    and contract.uniform_name == "spriteTex"
@@ -547,12 +576,24 @@ def validate_runtime_loop_contract(
             and contract.lane_seeds == () and contract.tile_seeds == ()
             and contract.input_surface_name is None and contract.exact_output_extent is None
             and contract.seed.provenance == "runtime-positive-height-spread")
+    landscape = (contract.seed is not None
+                 and contract.key == LANDSCAPE_KEY
+                 and contract.kind == "volume-atlas-size"
+                 and contract.uniform_name == "volumeSize"
+                 and contract.minimum == 1 and contract.uniform_maximum == 256
+                 and contract.default == 64 and contract.maximum == 256
+                 and contract.input_surface_name == "volumeCache"
+                 and contract.render_scale_name is None
+                 and contract.radius_declaration is None
+                 and contract.lane_seeds == () and contract.tile_seeds == ()
+                 and contract.exact_output_extent is None
+                 and contract.seed.provenance == "runtime-volume-atlas-surface-cap")
     malformed_scalar = (contract.seed is not None
                         and (contract.seed.symbol_id != contract.seed.symbol.id
                              or type(contract.seed.maximum) is not int
                              or contract.seed.maximum < 0))
-    if not (tetra or blur or cf or stats or noise or curl or sprite_mean
-            or lenia or roll) or malformed_scalar:
+    if not (tetra or blur or cf or stats or noise or curl or noise3d or sprite_mean
+            or lenia or roll or landscape) or malformed_scalar:
         raise _fail("malformed authenticated runtime contract")
     return contract
 
@@ -638,6 +679,28 @@ def validate_curl_metadata(effect: object) -> None:
         raise _fail("metadata contract mismatch")
 
 
+def validate_noise3d_metadata(effect: object) -> None:
+    """Bind Noise3D's runtime defines to their exact source metadata."""
+    try:
+        rows = effect["params"]  # type: ignore[index]
+        octaves = rows["octaves"]
+        color = rows["colorMode"]
+        ridges = rows["ridges"]
+        actual = (
+            (octaves["type"], octaves["min"], octaves["default"],
+             octaves["max"], octaves["define"]),
+            (color["type"], color["default"], color["define"],
+             color["choices"]),
+            (ridges["type"], ridges["default"], ridges["define"]),
+        )
+    except (KeyError, TypeError):
+        raise _fail("metadata contract mismatch") from None
+    if actual != (_NOISE3D_EXPECTED["metadata"],
+                  ("int", 0, "COLOR_MODE", {"mono": 0, "rgb": 1}),
+                  ("boolean", False, "RIDGES")):
+        raise _fail("metadata contract mismatch")
+
+
 def validate_lenia_metadata(effect: object) -> None:
     """Validate points/lenia's authoritative ``searchRadius`` metadata record.
 
@@ -683,7 +746,9 @@ def authenticate_runtime_loop_bound(
     if program.key == NOISE_KEY:
         return _authenticate_noise(program, source_hash)
     if program.key == CURL_KEY:
-        return _authenticate_curl(program, source_hash)
+        return _authenticate_direct_define_loop(program, source_hash)
+    if program.key == NOISE3D_KEY:
+        return _authenticate_direct_define_loop(program, source_hash)
     if program.key == SPRITE_MEAN_TILES_KEY:
         return _authenticate_sprite_mean_tiles(program, source_hash)
     if program.key == LENIA_KEY:
@@ -691,6 +756,9 @@ def authenticate_runtime_loop_bound(
     if program.key == ROLL_KEY:
         from .roll_loop_profile import authenticate
         return authenticate(program, source_hash)
+    if program.key == LANDSCAPE_KEY:
+        from .landscape_volume_profile import authenticate
+        return validate_runtime_loop_contract(authenticate(program, source_hash))
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
@@ -904,9 +972,9 @@ def _authenticate_noise(program: TypedProgram,
         f"{NOISE_KEY} octaves must be in [1,8]"))
 
 
-def _authenticate_curl(program: TypedProgram,
-                       source_hash: str | None) -> RuntimeLoopBoundContract:
-    """Authenticate synth/curl's OCTAVES loop bound.
+def _authenticate_direct_define_loop(program: TypedProgram,
+                                     source_hash: str | None) -> RuntimeLoopBoundContract:
+    """Authenticate the exact OCTAVES loop in Curl or Noise3D.
 
     Structurally simpler than noise's: OCTAVES is read directly as a global
     uniform inside fbmSimplex3D's own `for (i = 0; i < OCTAVES; i++)` --
@@ -915,7 +983,9 @@ def _authenticate_curl(program: TypedProgram,
     noise's "exactly one *unproved* loop amid proved companions" census) this
     census requires exactly one loop, full stop.
     """
-    expected = _CURL_EXPECTED
+    expected = (_CURL_EXPECTED if program.key == CURL_KEY
+                else _NOISE3D_EXPECTED)
+    maximum = expected["metadata"][3]
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
     defines = tuple((item.name, item.kind, item.canonical_value)
@@ -977,16 +1047,16 @@ def _authenticate_curl(program: TypedProgram,
         proof = loop.loop_proof
         if ((proof.start_value, proof.bound_value, proof.comparison,
              proof.update, proof.trip_count, proof.bound_kind)
-                != (0, 3, "<", "++", 3,
+                != (0, maximum, "<", "++", maximum,
                     "runtime-metadata-uniform-direct-global")):
             raise _fail("loop-site profile mismatch")
 
-    seed = RuntimeScalarBoundSeed(uniform.id, 3,
+    seed = RuntimeScalarBoundSeed(uniform.id, maximum,
                                   "runtime-metadata-uniform-direct-global",
                                   uniform)
     return validate_runtime_loop_contract(RuntimeLoopBoundContract(
-        CURL_KEY, seed, "integer-range", "OCTAVES", 1, 3, 1,
-        f"{CURL_KEY} octaves must be in [1,3]"))
+        program.key, seed, "integer-range", "OCTAVES", 1, maximum, 1,
+        f"{program.key} octaves must be in [1,{maximum}]"))
 
 
 def _authenticate_blur(program: TypedProgram,
@@ -1493,13 +1563,13 @@ def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
 __all__ = (
     "PROFILE", "TETRA_KEY", "BLUR_H_KEY", "BLUR_V_KEY", "BLUR_KEYS",
     "CF_BLUR_KEY", "CF_SHARPEN_KEY", "CF_KEYS", "STATS_KEY",
-    "NOISE_KEY", "CURL_KEY", "SPRITE_MEAN_TILES_KEY", "LENIA_KEY", "ROLL_KEY",
+    "NOISE_KEY", "CURL_KEY", "NOISE3D_KEY", "SPRITE_MEAN_TILES_KEY", "LENIA_KEY", "ROLL_KEY",
     "RUNTIME_LOOP_BOUND_KEYS", "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
     "RuntimeScalarBoundSeed", "RuntimeLaneBoundSeed", "RuntimeTileBoundSeed",
     "RuntimeLoopBoundContract",
     "authenticate_runtime_loop_bound", "apply_runtime_loop_bound",
     "validate_runtime_loop_contract", "validate_tetra_metadata",
     "validate_blur_metadata", "validate_cf_metadata",
-    "validate_noise_metadata", "validate_curl_metadata",
+    "validate_noise_metadata", "validate_curl_metadata", "validate_noise3d_metadata",
     "validate_lenia_metadata",
 )

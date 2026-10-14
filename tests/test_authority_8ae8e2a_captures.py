@@ -81,10 +81,10 @@ class Authority8ae8e2aCaptureTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "0ff8b1e3a2892b3330ecefa3d5101ee74a6c13131efee5c7baf0ccf18a425bb3",
-                "expected.json": "d8b339daee1addfa3c7957c4686330f85bee909483c5cac64f53ccfdfd4799e3"}.items():
+                "expected.json": "b26ff5b77c9701eae0c56cd50728d7ca96b1e9d87d9f0f7bb6de86467cc07fe6"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest, name)
         cases, expected = _load()
-        self.assertEqual("8ae8e2ae97812952db49246a87b04d7e5a480494", expected["cpu_revision"])
+        self.assertEqual("4307ca9f26fc415e4fc5e75227d429d35cc741cd", expected["cpu_revision"])
         self.assertEqual(6, len(expected["source_hashes"]))
         self.assertEqual(
             {"classicNoisedeck/coalesce:coalesce", "classicNoisedeck/refract:refract",
@@ -105,17 +105,8 @@ class Authority8ae8e2aCaptureTests(unittest.TestCase):
         configured = os.environ.get("NOISEMAKER_CPU_ROOT")
         if not configured:
             self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce the 8ae8e2a capture")
-        # This fixture pins the historical 8ae8e2a authority byte-for-byte (its
-        # reference.mjs authenticates that revision). Its native-table and
-        # provenance assertions above always run; the live reproduce leg needs
-        # that exact revision present -- a later pinned authority is a
-        # different CPU and fails the fixture's own hash gate, so skip when
-        # the configured root is not the 8ae8e2a revision.
-        pinned = "f4f3c23286da0d72032a6156ed1bd641b93a39d54a6e1812079280d2d3243e70"
-        canonical = pathlib.Path(configured) / "src/effects/generated/canonical-kernels.js"
-        digest = hashlib.sha256(canonical.read_bytes()).hexdigest()
-        if digest != pinned:
-            self.skipTest(f"the 8ae8e2a capture needs that CPU revision, not {digest[:12]}")
+        # The current authority must pass the reference's full closure hash gate.
+        # A configured wrong revision fails instead of skipping reproduction.
         result = subprocess.run(["node", str(FIXTURE / "reference.mjs"), configured,
                                  str(FIXTURE / "cases.json")], capture_output=True, check=True)
         self.assertEqual(result.stdout, (FIXTURE / "expected.json").read_bytes())

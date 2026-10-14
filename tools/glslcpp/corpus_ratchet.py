@@ -159,6 +159,21 @@ def _diagnostic(error: BaseException) -> str:
     return f"{type(error).__name__}: {error}"
 
 
+DEPTH_KEYS_KEY = "render/pointsBillboardRender:depthKeys"
+
+
+def depth_keys_pass_defines(effect: dict[str, Any]) -> dict[str, int]:
+    """Authenticate both pass-local VIEW_MODE values before runtime lowering."""
+    passes = [item for item in effect.get("passes", [])
+              if item.get("program") == "depthKeys"]
+    if (len(passes) != 2
+            or tuple((item.get("name"), item.get("defines")) for item in passes)
+            != (("depthKeys_1", {"VIEW_MODE": 1}),
+                ("depthKeys_2", {"VIEW_MODE": 2}))):
+        raise ValueError("depthKeys requires exact depthKeys_1/2 pass defines VIEW_MODE=1/2")
+    return {"VIEW_MODE": 1}
+
+
 def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict[str, str] | None:
     """Return the first blocker ``{"stage", "diagnostic"}``, or ``None`` if every stage passes."""
     from tools.glslcpp import check_semantics, generate_typed_slice
@@ -193,8 +208,15 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
                 "diagnostic": f"{key}: drawMode {'/'.join(scatter)} is a scatter pass; backend compatibility "
                               f"registers a scatter contract only for {SCATTER_KEY} "
                               f"and {', '.join(sorted(SCATTER_CONTRACT_KEYS))}"}
+    if key == DEPTH_KEYS_KEY:
+        try:
+            pass_defines = depth_keys_pass_defines(effect)
+        except ValueError as error:
+            return {"stage": "corpus.pass_binding", "diagnostic": str(error)}
+    else:
+        pass_defines = {}
     for current_pass in passes:
-        if current_pass.get("defines"):
+        if current_pass.get("defines") and key != DEPTH_KEYS_KEY:
             return {"stage": "corpus.pass_binding",
                     "diagnostic": f"{key}: authority pass {current_pass.get('name')} declares pass-level defines "
                                   f"{json.dumps(current_pass['defines'], sort_keys=True)}; the typed slice bakes the "
@@ -206,7 +228,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     except Exception as error:  # noqa: BLE001 -- the diagnostic is the record
         return {"stage": "corpus.parse", "diagnostic": _diagnostic(error)}
     metadata = {"effects": {effect_id: effect}}
-    defaults = check_semantics._metadata_defaults(metadata, key)
+    defaults = {**check_semantics._metadata_defaults(metadata, key), **pass_defines}
     try:
         typed = analyze_program(parse_program(source, key, defaults), key)
         check_semantics._validate_typed_ir(typed)
@@ -225,6 +247,12 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         except Exception as error:  # noqa: BLE001
             return {"stage": "semantics.variants",
                     "diagnostic": f"{parameter}:{define}={value!r}: {_diagnostic(error)}"}
+    if key == DEPTH_KEYS_KEY:
+        try:
+            pass_two = analyze_program(parse_program(source, key, {"VIEW_MODE": 2}), key)
+            check_semantics._validate_typed_ir(pass_two)
+        except Exception as error:  # noqa: BLE001
+            return {"stage": "semantics.pass_defines", "diagnostic": _diagnostic(error)}
     if any(not isinstance(name, str) or not isinstance(value, int) for name, value in defaults.items()):
         return {"stage": "typed.defines", "diagnostic": f"{key}: invalid default-define contract {defaults!r}"}
     source_hash = _sha(source_bytes)
@@ -288,10 +316,13 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         CEIL_ADMISSION_KEYS, PROFILE as CEIL_ADMISSION_PROFILE,
     )
     from tools.glslcpp.frontend.fractal3d_log_profile import (
-        FRACTAL3D_LOG_KEYS, PROFILE as FRACTAL3D_LOG_PROFILE,
+        PROFILES as FRACTAL3D_LOG_PROFILES,
     )
     from tools.glslcpp.frontend.struct_frontier_profile import (
         PROFILES as STRUCT_FRONTIER_PROFILES, STRUCT_FRONTIER_KEYS,
+    )
+    from tools.glslcpp.frontend.out_inout_admission_profile import (
+        FLYTHROUGH_KEY, FLYTHROUGH_PROFILE,
     )
     attractor_any_isnan_profile = (
         ATTRACTOR_ANY_ISNAN_PROFILE if key == ATTRACTOR_KEY else None
@@ -305,11 +336,12 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         CEIL_ADMISSION_PROFILE if key in CEIL_ADMISSION_KEYS else None
     )
     fractal3d_log_profile = (
-        FRACTAL3D_LOG_PROFILE if key in FRACTAL3D_LOG_KEYS else None
+        FRACTAL3D_LOG_PROFILES.get(key)
     )
     struct_frontier_profile = (
         STRUCT_FRONTIER_PROFILES[key] if key in STRUCT_FRONTIER_KEYS else None
     )
+    out_inout_admission_profile = FLYTHROUGH_PROFILE if key == FLYTHROUGH_KEY else None
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
     )
@@ -343,7 +375,21 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     points_post_profile = (
         POINTS_POST_PROFILE if key in POINTS_POST_KEYS else None
     )
-    typed = analyze_program(parse_program(source, key, defaults), key,
+    if key == "render/renderLandscape3d:landscape":
+        from tools.glslcpp.frontend.landscape_volume_profile import validate_metadata
+        try:
+            validate_metadata(effect)
+        except ValueError as error:
+            return {"stage": "corpus.parameter_uniform", "diagnostic": _diagnostic(error)}
+    typed_source = (generate_typed_slice.transform_generic_dynamic_source(source, key)
+                    if key == DEPTH_KEYS_KEY else source)
+    typed_defines = ({"FILTERING": "int", "VIEW_MODE": "int"}
+                     if key == "render/renderLandscape3d:landscape" else
+                     {"VIEW_MODE": "int"} if key == DEPTH_KEYS_KEY else defaults)
+    parsed = parse_program(typed_source, key, typed_defines)
+    if key == DEPTH_KEYS_KEY:
+        parsed["raw_source"] = source
+    typed = analyze_program(parsed, key,
                             source_global_literal_int_profile=source_global_literal_int_profile)
     if runtime_loop_bound_profile is not None:
         typed = apply_runtime_loop_bound(typed, source_hash, runtime_loop_bound_profile)
@@ -379,6 +425,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             ceil_admission_profile=ceil_admission_profile,
             fractal3d_log_profile=fractal3d_log_profile,
             struct_frontier_profile=struct_frontier_profile,
+            out_inout_admission_profile=out_inout_admission_profile,
             attractor_any_isnan_profile=attractor_any_isnan_profile,
             any_relational_profile=any_relational_profile)
     except Exception as error:  # noqa: BLE001
@@ -402,7 +449,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             fractal3d_log_profile=fractal3d_log_profile,
             attractor_any_isnan_profile=attractor_any_isnan_profile,
             any_relational_profile=any_relational_profile,
-            struct_frontier_profile=struct_frontier_profile)
+            struct_frontier_profile=struct_frontier_profile,
+            out_inout_admission_profile=out_inout_admission_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -496,9 +544,9 @@ def validate_closure(root: pathlib.Path, manifest_programs: list[dict[str, Any]]
         if record is not None and item["source"] != f"sources/{item['effect_id']}/{record['file']}":
             errors.append(f"{item['program_key']}: vendored source file differs from the authority record")
     source_root = root / PENDING_SOURCES
-    if source_root.is_symlink() or not source_root.is_dir():
+    if source_root.is_symlink() or (expected_sources and not source_root.is_dir()) or (source_root.exists() and not source_root.is_dir()):
         errors.append("pending-sources is missing or is a symlink")
-    else:
+    elif source_root.is_dir():
         actual = check_corpus._walk_regular_files(source_root)
         if actual != expected_sources:
             errors.append(f"pending source file set drift: expected {sorted(expected_sources)}, got {sorted(actual)}")

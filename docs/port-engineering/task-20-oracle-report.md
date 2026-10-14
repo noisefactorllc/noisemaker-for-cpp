@@ -2,10 +2,9 @@
 
 The Task 20 direct canonical oracle contract is frozen for exactly
 `synth/sacredGeometry:sacredGeometry` and the proposed
-`fixed-affine-centers13-v1` profile. No repository file was changed and no Git
-command was used.
+`fixed-affine-centers13-v1` profile.
 
-The generator binds the pinned `canonicalFactory273` directly through
+The generator binds the pinned `canonicalFactory283` directly through
 `canonicalKernelFactories` + `bindCanonicalKernel` + `runPass` + `Surface`.
 It does not reimplement center initialization, geometry functions, animation,
 or output mixing. Every canonical case renders twice into fresh destinations
@@ -14,26 +13,27 @@ and must have identical F32 and RGBA8 bytes before it is frozen.
 Artifacts:
 
 - `task-20-oracle-generator.mjs` — SHA-256
-  `4e9bead18c312cbf0aa5b3239bb575cfaec3ddd40cb246f3d47e8f3ccd49f75e`
+  `77ed9b8e0ac61ef45c27a4bdb14a5cfbd1f58c2577f23c81934672af20f442b0`
 - `task-20-oracles.json` — SHA-256
-  `1f71fc6fb2f91f0c3b660decda30d533ecca20070bb318cc9757242be3499d03`
+  `e7371f587324a899428d62d23eb933cfd1d08a19df80584ab85e5197658be0c4`
 
-`node docs/port-engineering/task-20-oracle-generator.mjs --check`
+With `CPU_ROOT` and `CPU_LEDGER` set to the authenticated CPU root and matching
+ledger, `node docs/port-engineering/task-20-oracle-generator.mjs --cpu-root "$CPU_ROOT" --ledger "$CPU_LEDGER" --check`
 passes and prints `ok task-20-oracles.json`.
 
 ## Frozen provenance and fixture
 
 The JSON locks:
 
-- corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`;
+- corpus revision `a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15`;
 - raw source SHA-256
   `24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de`;
 - normalized source SHA-256
   `6b3c4e8492a69969f3d6f78689cfd19de846656fd0c6d5c8dfd5a758427c61d3`;
 - canonical generated-file SHA-256
-  `e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56`;
+  `80b2e701426a5003d9ef44dce09de1f601f4c8cd1e4bff1f0c4d2b607e95e91c`;
 - exact factory-text SHA-256
-  `b4ed8af983d8bda5d48e05d418458c2fc82170f745b021199df7f7095fadb2f2`;
+  `48de593c3096b18f8ca98518fac3f1055cdc3746883860273b5b1d82e374ef37`;
 - empty runtime define map, the exact 17-uniform binding order, source output
   `fragColor:vec4@18`, no samplers, and metadata route `color -> outputTex`.
 
@@ -44,7 +44,7 @@ bottom-left fragment coordinates. Render context is:
 resolution       [37,23]       [0x42140000,0x41b80000]
 tileOffset       [5,7]         [0x40a00000,0x40e00000]
 fullResolution   [53,41]       [0x42540000,0x42240000]
-aspect           37/23 f32     1.60869562625885 / 0x3fcde9bd
+aspect           53/41 f32     1.2926828861236572 / 0x3fa576a2
 frame            11
 deltaTime        0.01666666753590107 / 0x3c888889
 seed             23 / 0x41b80000
@@ -74,19 +74,21 @@ alpha lanes are exactly 1.
 
 | Case | F32 SHA-256 | RGBA8 SHA-256 | background/foreground/mixed | nonfinite RGB lanes |
 | --- | --- | --- | ---: | ---: |
-| `geometry-0-flower-default-control` | `f21a1640b99f9261e057803162a58a10421ef8215e986ac32a5db139772e5fc7` | `5924cef44fee78454a1b0de3ad2d6ee3f6e58a5781d33d6ada23a0f3ebd94695` | 523/195/133 | 0 |
-| `geometry-1-fruit-animation-off` | `53a248d64b3e0ddd6ec1e3b0cb464f0a34a7537b195b6101ae491ed5237527bd` | `65c56e8163f4771fa4b84f9491683b268f3f690244da038aa159017491446418` | 622/120/109 | 0 |
-| `geometry-3-metatron-animation-off` | `a59f25d73a50ea89aaecef886f6716d0160e1daff66e2c2d0d903db4b78a9768` | `1bcedeeb940061ff65ecd623ed9403bc7cb527f0aeb0aa109280d94377365b56` | 125/252/474 | 0 |
-| `geometry-1-fruit-ripple` | `4860d797929366c4653b781be06b0e1ff71e50536bb8ed520451d36696353b97` | `6008029ea08dd02986f54f779201b757973456d8fe110b60c279e8f25ab2ceaf` | 500/192/159 | 0 |
-| `geometry-3-metatron-unfold` | `b230927f646ca19eec5da4afd377b834bcfba868f6ee4ac2c4c9cd2ca704b6d9` | `a8a85901eb46162d910c494f18d1d55ddd6f6c137fc01184e4502d8e6e6e00bf` | 139/0/712 | 0 |
-| `geometry-4-seed-rotate` | `aefe8af6e96a502a31f955c69d048fb0b3ea6509fcb7cbc812fe3a858c17057a` | `fb99a8983f2d2d8e7068a63741090d35687a42fac360e67c3e76398a311ff4cc` | 124/443/284 | 0 |
-| `geometry-5-vesica-pulse` | `0c64d5b84edde6e6c8ef3fb5a69a96c188cd0aa9a4061e27ace4d346d155ef11` | `3eec9bdd7df95c1027b106df8cddf374f7301379d8c19f1c0093d13873fa96cb` | 845/0/6 | 0 |
-| `geometry-6-borromean-ripple` | `0927349a467756276ad2818fad4726061093fbeada54bb67b5441c184948d368` | `0b04d4b45240d9359b1aa049e791321be93f0512c42858d33f4d8460b2d87599` | 588/143/120 | 0 |
+| `geometry-0-flower-default-control` | `fc5265d3605f4fea4fdcda273bdd06e683cb9786673f1dba7f3294c6e084c0b8` | `839c10ec3273b8bc4fc9c3245b49fc513803e1fe58c4c3bd89e70f6464a8fb11` | 433/249/169 | 0 |
+| `geometry-1-fruit-animation-off` | `f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62` | `52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e` | 616/132/103 | 0 |
+| `geometry-3-metatron-animation-off` | `7b29aafc75000b7da82a15ad30b77e1046340451ec9ad8be93c69db397dcd36c` | `116f61afd10ccf1dba02786e751ea58399b278a66766ca242b2f6b63aefc9dee` | 120/290/441 | 0 |
+| `geometry-1-fruit-ripple` | `0530845ee4f2637154a532cd32668da5cf9560ecd6e7396c24fba2a2f975d970` | `3c8fd01ab01d1a258ca14115f9816810d4d3ebd35e08c4fa4dba2880f90fb3b0` | 460/223/168 | 0 |
+| `geometry-3-metatron-unfold` | `7684e6eb202d4ad871d475f4634fae90208090eeb88475c8fce32f89a65c6fed` | `9411d0e41a6081c706b5ad6f7e0cfdfc33dc306f51416fdbe2b6203b84c244da` | 134/0/717 | 0 |
+| `geometry-4-seed-rotate` | `9e34c924e1f3877083934d62aac1d722e53cd979307641d0b63f858cb10c0497` | `8d3e2cd198ebe8257530c38512354b19116ca879fa27eceeea1665cc24970a71` | 74/489/288 | 0 |
+| `geometry-5-vesica-pulse` | `32992d8b303d92fefb2d5e7383bde606e53d6dec07a0fa12b4ca49c2f0659b83` | `683413061c05ef1c86080fb336366ccf444ffcc36af68492b5a355a222d8b381` | 851/0/0 | 0 |
+| `geometry-5-vesica-pulse-visible-scale-16` | `b7f5cda337223fc06bd2f6e95d50266fdb4b41565b6bab3dfa574652592c0cba` | `29a84ec3bfb586b33ed25b67a3306468bbaac9b25f0725fc40504688847352f7` | 696/73/82 | 0 |
+| `geometry-6-borromean-ripple` | `5fc17595d0d0a1f82a2792e73486691370a8b0ca8402f61c8c14dadbacf41961` | `2e10fb5660e04c7523c7bf29df18c0d39dd9e9e3be8ea925db194ab2978832c5` | 542/174/135 | 0 |
 | `geometry-7-star-animation-off` | `2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879` | `0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe` | 0/0/851 | 2,553 |
-| `geometry-8-triquetra-rotate` | `6b3b4a906ffa5238c87f3516f92c26f61d8a4e4b51ae0b33db8535ea2946eeaf` | `dad1ab989e22377d728fee5d982a9f1f9186580e5e4227f6c313db218ce52905` | 805/22/24 | 0 |
+| `geometry-8-triquetra-rotate` | `10c62c72cc22fdbffd860bd02913473826c46b8d4be9d216fa7ceb38d7219c0a` | `290bff21210403c0b559f347a081b0e58e88d1e904dee1f85d528248f1fc3f1f` | 848/0/3 | 0 |
 
 This covers every metadata geometry choice and every animation code across the
-matrix. The four array-path cases distinguish animation-off circles,
+matrix. The original Vesica case is exact background; the scale-16 witness
+has foreground and mixed pixels. The four array-path cases distinguish animation-off circles,
 Metatron's complete graph, distance-sensitive Ripple, and distance/line
 visibility-sensitive Unfold.
 
@@ -94,31 +96,31 @@ visibility-sensitive Unfold.
 
 Mutants are built by counted, exact replacements in a copy of the pinned
 factory text. They never replace the reference factory. Each mutant is also
-rendered through every non-array geometry case, and all six non-array controls
+rendered through every non-array geometry case, and all seven non-array controls
 must remain byte-identical. The JSON records mutated hashes, byte/lane counts,
 maximum finite difference, nonfinite transitions, and exact replacement text.
 
 | Mutation | Required detecting cases | Observed F32 lane differences |
 | --- | --- | --- |
-| center `[0,0] -> [0.375,-0.25]` | Fruit off; Metatron off | 567; 863 |
-| inner store `1+k -> 2+k` | Metatron off; Fruit Ripple | 2,553; 84 |
-| outer store `7+k -> 6+k` | Metatron off; Fruit Ripple | 2,553; 84 |
-| distance read `centers[i] -> centers[0]` | Fruit Ripple; Metatron Unfold | 955; 117 |
-| circle-position read `centers[i] -> centers[0]` | Fruit off; Metatron off | 330; 210 |
-| line endpoint `centers[j] -> centers[12]` | Metatron off; Metatron Unfold | 1,431; 1,755 |
-| inner-ring index permutation | Metatron off; Metatron Unfold | 82; 110 |
+| center `[0,0] -> [0.375,-0.25]` | Fruit off; Metatron off | 570; 914 |
+| inner store `1+k -> 2+k` | Metatron off; Fruit Ripple | 2,553; 111 |
+| outer store `7+k -> 6+k` | Metatron off; Fruit Ripple | 2,553; 111 |
+| distance read `centers[i] -> centers[0]` | Fruit Ripple; Metatron Unfold | 837; 111 |
+| circle-position read `centers[i] -> centers[0]` | Fruit off; Metatron off | 264; 177 |
+| line endpoint `centers[j] -> centers[12]` | Metatron off; Metatron Unfold | 1,431; 1,776 |
+| inner-ring index permutation | Metatron off; Metatron Unfold | 89; 116 |
 
 The `1+k -> 2+k` and `7+k -> 6+k` mutants deliberately create one duplicate
 center and one zero-filled missing center. Fruit animation-off is identical at
 this resolution because the lost outline is covered by the symmetric union;
-Fruit Ripple distinguishes both with 84 changed F32 lanes. Metatron detects
+Fruit Ripple distinguishes both with 111 changed F32 lanes. Metatron detects
 both strongly: the duplicate centers introduce a degenerate pair and canonical
 NaN propagation, changing all 2,553 RGB lanes. The proof cannot rely only on
 that NaN amplification, so the finite Fruit Ripple result is also mandatory.
 
 The index-permutation stress keeps the exact six inner vectors but rotates
 their array identities. Fruit off and Fruit Ripple remain byte-identical, as
-expected for a set of circles. Metatron changes only 82/110 F32 lanes and zero
+expected for a set of circles. Metatron changes only 89/116 F32 lanes and zero
 RGBA8 bytes because endpoint orientation and F32 evaluation order expose tiny
 differences. This is direct evidence that RGBA8 is inadequate and that runtime
 oracles cannot prove exact affine index spelling or initializer order. The
@@ -166,11 +168,11 @@ by replacing the one factory expression with `(i+2) % n`. For `starPoints=7`
 the finite control hashes are:
 
 ```text
-F32    0c8a428114ff71c11358e12f90578b72ddb686609a0165caae15b758d5793a54
-RGBA8  32a173d00b4f39b2716bf4ea8deb6f8717e8722bf1cec3f43204c74bb50ea988
+F32    155585055be5f51240ef2b5e2cd6c62cbd1e21ba1465502052e04b3ca842ff18
+RGBA8  ba1edb9f2de0b7d4af5bd22d566dceced832bdf7a4a229f7af2acbb1bb287046
 ```
 
-It produces 141 non-background pixels (74 exact foreground, 67 mixed), while
+It produces 172 non-background pixels (88 exact foreground, 84 mixed), while
 all 2,553 RGB lanes differ from the canonical qNaN output. Separate finite
 control hashes and metrics for all eight metadata `starPoints` values are
 frozen in the JSON.

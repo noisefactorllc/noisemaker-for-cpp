@@ -931,6 +931,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             "defines": {"STYLE": 0},
             "emboss_color_style_profile": PROFILE,
             "program_key": KEY,
+            "runtime_define_profile": "runtime-defines-generic-v1",
         }], rows)
         # Live-state pin: the current sorted slice has 211 programs. The
         # authenticated key-list hash below covers all later landings and
@@ -956,6 +957,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             "defines": {"STYLE": 0},
             "emboss_color_style_profile": PROFILE,
             "program_key": KEY,
+            "runtime_define_profile": "runtime-defines-generic-v1",
         }, row)
 
         mutations = {}

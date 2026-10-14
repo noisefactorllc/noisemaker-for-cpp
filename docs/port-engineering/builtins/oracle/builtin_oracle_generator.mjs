@@ -1,13 +1,19 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { createCanonicalBindings } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { bindGlslKernel, GlslCpuRuntime } from '../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { createCanonicalBindings } = await load('src/csl/glsl-kernel.js')
+const { bindGlslKernel, GlslCpuRuntime } = await load('src/csl/glsl-runtime.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 // ---------------------------------------------------------------------------
 // "Builtin admission" cluster oracle -- 6 GLSL programs blocked (today, or
@@ -74,15 +80,15 @@ import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outPath = path.join(here, 'builtin-oracles.json')
 const reportPath = path.join(here, 'builtin-oracle-report.md')
-const revision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const corpusRoot = `tools/glslcpp/corpus/${revision}`
-const glslKernelPath = '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-const glslRuntimePath = '../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-const passRunnerPath = '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-const surfacePath = '../noisemaker-for-cpu/src/runtime/surface.js'
-const catalogPath = '../noisemaker-for-cpu/src/effects/catalog.js'
-const canonicalPath = '../noisemaker-for-cpu/src/effects/generated/canonical-kernels.js'
-const adapterPath = '../noisemaker-for-cpu/src/effects/adapters/index.js'
+const revision = EXPECTED.upstreamRevision
+const corpusRoot = path.resolve(here, `../../../../tools/glslcpp/corpus/${revision}`)
+const glslKernelPath = path.join(cpuRoot, 'src/csl/glsl-kernel.js')
+const glslRuntimePath = path.join(cpuRoot, 'src/csl/glsl-runtime.js')
+const passRunnerPath = path.join(cpuRoot, 'src/runtime/pass-runner.js')
+const surfacePath = path.join(cpuRoot, 'src/runtime/surface.js')
+const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
+const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
+const adapterPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
 const f = Math.fround
 
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
@@ -101,13 +107,13 @@ function isVectorLocal(value) { return ArrayBuffer.isView(value) || Array.isArra
 // independently recomputed here, not copy-pasted trust.
 // ---------------------------------------------------------------------------
 const RUNTIME_PROVENANCE = {
-  glsl_kernel_sha256: 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa',
-  glsl_runtime_sha256: 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072',
+  glsl_kernel_sha256: 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
+  glsl_runtime_sha256: 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1',
   pass_runner_sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   surface_sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  canonical_kernels_sha256: 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56',
-  adapter_index_sha256: '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267',
+  canonical_kernels_sha256: 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
 }
 for (const [file, hash] of [
   [glslKernelPath, RUNTIME_PROVENANCE.glsl_kernel_sha256],
@@ -320,9 +326,12 @@ function normalizeUniformsTyped(typeMap, raw) {
 // ---------------------------------------------------------------------------
 // renderCase: the single rendering path every case goes through.
 // ---------------------------------------------------------------------------
-function renderCase(program, c) {
+function renderCase(program, c, nativeNumberBindings = false) {
   assertNoReservedKeysInUniforms(c.uniforms)
-  const uniforms = normalizeUniformsTyped(program.uniformTypes, c.uniforms)
+  if (nativeNumberBindings && program.key !== 'filter/lighting:lighting') throw new Error('raw Number binding capture is limited to lighting')
+  const uniforms = nativeNumberBindings
+    ? Object.fromEntries(Object.entries(c.uniforms).map(([key, value]) => [key, Array.isArray(value) ? [...value] : value]))
+    : normalizeUniformsTyped(program.uniformTypes, c.uniforms)
   const textures = { inputTex: patternedSurface(c.width, c.height, c.phase) }
   if (program.extraTextures) {
     for (const [texName, texPhaseOffset] of Object.entries(program.extraTextures)) {
@@ -344,7 +353,9 @@ function renderCase(program, c) {
   if (f32Bits(bindings.fullResolution[0]) !== f32Bits(f(intendedFullResolution[0])) || f32Bits(bindings.fullResolution[1]) !== f32Bits(f(intendedFullResolution[1]))) throw new Error(`${program.id}/${c.name}: kernel did not observe intended fullResolution`)
   for (const [k, v] of Object.entries(uniforms)) {
     const bound = bindings[k]
-    const same = ArrayBuffer.isView(v)
+    const same = nativeNumberBindings
+      ? (Array.isArray(v) ? v.every((x, i) => Object.is(x, bound[i])) : Object.is(v, bound))
+      : ArrayBuffer.isView(v)
       ? Array.from(v).every((x, i) => f32Bits(x) === f32Bits(bound[i]))
       : (typeof v === 'boolean' ? bound === v : f32Bits(typeof v === 'number' ? f(v) : v) === f32Bits(typeof bound === 'number' ? f(bound) : bound))
     if (!same) throw new Error(`${program.id}/${c.name}: kernel did not observe intended uniform "${k}" -- reserved-key or spread-order defect`)
@@ -423,7 +434,7 @@ const REFLECT_MUTATIONS = [
 const PROGRAM_DEFS = [
   {
     id: 'posterize', key: 'filter/posterize:posterize', sourceFile: 'posterize/posterize.glsl',
-    factoryName: 'canonicalFactory116', factorySha256: '317e38c428bda5e89258c3bc64cae3fbfb54ffa43e0b02f98b2329f542c546ed',
+    factoryName: 'canonicalFactory113', factorySha256: 'f7051166df1a4b7ab62675e250898e009b34f4f0e9f7f393dfba4198624d36f1',
     sourceRawBytes: 2630, sourceSha256: '460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2',
     builtin: 'round', mutations: ROUND_MUTATIONS,
     uniformTypes: { levels: 'float', gamma: 'float', antialias: 'bool' },
@@ -437,7 +448,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'waves', key: 'filter/waves:waves', sourceFile: 'waves/waves.glsl',
-    factoryName: 'canonicalFactory176', factorySha256: '4a289d05076a7588ced250d307eeaf8d8d0b1628bd5fc907ea71481b02ed2ae5',
+    factoryName: 'canonicalFactory173', factorySha256: '36330df619f8b6b6b9be94008bc3f59532e16b43487eb80cc128be2668c2d671',
     sourceRawBytes: 2622, sourceSha256: 'f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa',
     builtin: 'any', mutations: ANY_MUTATIONS,
     uniformTypes: { strength: 'float', scale: 'float', speed: 'int', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -451,7 +462,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'lighting', key: 'filter/lighting:lighting', sourceFile: 'lighting/lighting.glsl',
-    factoryName: 'canonicalFactory78', factorySha256: '9c9b70f5738071d64edb39c331ebf39b0075dd215fdae61db23b381a0898f75f',
+    factoryName: 'canonicalFactory75', factorySha256: '7e4c772f74b0c981a2006e5e28337d26af4f18f2e7a28739df3c3b9243ad2526',
     sourceRawBytes: 6049, sourceSha256: 'a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f',
     builtin: 'reflect', mutations: REFLECT_MUTATIONS,
     uniformTypes: { diffuseColor: 'vec3', specularColor: 'vec3', specularIntensity: 'float', shininess: 'float', ambientColor: 'vec3', lightDirection: 'vec3', normalStrength: 'float', smoothing: 'float', renderScale: 'float', reflection: 'float', refraction: 'float', aberration: 'float' },
@@ -466,7 +477,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'fxaa', key: 'filter/fxaa:fxaa', sourceFile: 'fxaa/fxaa.glsl',
-    factoryName: 'canonicalFactory56', factorySha256: '8c707f68d552fa852fa899d377616a0c772f0ebefce3026137af301f044bb3c0',
+    factoryName: 'canonicalFactory54', factorySha256: 'ef3d721dacdbaad31ef65b7d15a69a4bc3c4ac23dac96a2b826e6e372d56da66',
     sourceRawBytes: 4938, sourceSha256: '088449aa1fd5855489d3ce0c6ed2986b9b128fa93ace5817dbeafeff92a7bdf0',
     builtin: 'round', mutations: ROUND_MUTATIONS,
     uniformTypes: { strength: 'float', sharpness: 'float', threshold: 'float' },
@@ -481,7 +492,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'grain', key: 'filter/grain:grain', sourceFile: 'grain/grain.glsl',
-    factoryName: 'canonicalFactory65', factorySha256: '36a15bacaf42ebe94dc587fdc77cb56a5c714cae51fd40c7f7a6a187794ef44f',
+    factoryName: 'canonicalFactory63', factorySha256: 'f809a771b71039a89a89cf58568f6cb3068c73b529dfeb6573eed78828811ce3',
     sourceRawBytes: 8796, sourceSha256: '6edf8deec35e2fa3a32fc150c2be8cb6d71a9356c1c7a3cff5bd3c6c7df764f0',
     builtin: 'round', mutations: ROUND_MUTATIONS,
     uniformTypes: { renderScale: 'float', alpha: 'float', pause: 'float' },
@@ -496,7 +507,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'snow', key: 'filter/snow:snow', sourceFile: 'snow/snow.glsl',
-    factoryName: 'canonicalFactory142', factorySha256: '769bbb2ed7322417cb3334d9427a1037c8dd40fd55f5e003490cd0129ef109b1',
+    factoryName: 'canonicalFactory139', factorySha256: 'd7824584022fad9119fbfcbf6636be7ec0098089ae4b0fb5463df11e17e13937',
     sourceRawBytes: 2982, sourceSha256: 'ae057787cc101755743c17b4cdf46b51d70ed8b9896fed9535a058c8b252f48a',
     builtin: 'round', mutations: ROUND_MUTATIONS,
     uniformTypes: { alpha: 'float', pause: 'float', density: 'float' },
@@ -729,11 +740,16 @@ function build() {
       public_factory_is_canonical: program.publicIsCanonical, has_adapter_override: program.hasAdapterOverride,
       mutations: program.mutations.map((m) => ({ id: m.id, kind: m.kind, hazard: m.hazard, description: m.description })),
       cases: program.caseRecords,
+      ...(program.key === 'filter/lighting:lighting' ? {
+        native_number_binding_cases: program.cases
+          .filter(c => ['reflection-strong-sign-matters', 'all-off-diagnostic-no-reflect-call'].includes(c.name))
+          .map(c => ({ ...renderCase(program, c, true), binding_contract: 'raw JavaScript Number scalars and vector arrays; matches native double and DVec3 parameters' })),
+      } : {}),
     }
   }
   return {
     schema: 'noisemaker-for-cpp.builtins.builtin-admission-cluster-closure-oracles.v1',
-    corpus_revision: revision,
+    corpus_revision: revision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
     provenance: { ...RUNTIME_PROVENANCE, node: process.version, public_identity: true },
     authorized_defines: {},
     defines_axis_note: 'All six programs compile at exact defines {} -- confirmed live via tools.glslcpp.generate_typed_slice._defaults() for all six keys, and independently by grep: the only preprocessor directive present in any of the six sources is the universal `#ifdef GL_ES` guard. No "different define map" axis exists for this cluster.',

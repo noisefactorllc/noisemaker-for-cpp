@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import dataclasses
 import pathlib
 import sys
 import unittest
@@ -14,6 +15,7 @@ from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
 from tools.glslcpp.generate_kernels import GeneratorError
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
+from tools.glslcpp.frontend.dynamic_define_hoist import transform_source
 from tools.glslcpp.frontend.texture_frontend_profile import (
     KEY, PROFILE)
 
@@ -36,7 +38,8 @@ class TextureCentralAdmissionTests(unittest.TestCase):
                    if item["program_key"] == KEY)
         self.assertEqual(
             {"defines": {"MODE": 3}, "program_key": KEY,
-             "texture_frontend_profile": PROFILE}, row)
+             "texture_frontend_profile": PROFILE,
+             "runtime_define_profile": "runtime-defines-generic-v1"}, row)
 
     def test_validator_admits_authenticated_texture_integer_closure(self):
         program = typed()
@@ -85,6 +88,30 @@ class TextureCentralAdmissionTests(unittest.TestCase):
                    for child in proof.number_preserving_hash_conversion.children)),
         )
 
+
+    def test_runtime_material_compatibility_is_source_bound(self):
+        from tools.glslcpp.frontend.texture_frontend_profile import authenticate_texture_frontend
+        raw = SOURCE.read_text(encoding="utf-8")
+        parsed = parse_program(transform_source(raw, KEY), KEY, {"MODE": "int"})
+        parsed["raw_source"] = raw
+        program = analyze_program(parsed, KEY)
+        source_hash = hashlib.sha256(raw.encode()).hexdigest()
+        proof = authenticate_texture_frontend(program, source_hash, PROFILE)
+        self.assertEqual(2, len(proof.material_layer_conversions))
+        self.assertEqual(1, len(proof.signed_gradient_shift))
+        self.assertEqual(2, len(proof.vector_scalar_conversions))
+        rendered = render_typed_cpp(program, KEY, source_hash,
+                                    texture_frontend_profile=PROFILE)
+        self.assertEqual(2, rendered.count("std::uint32_t{0}"))
+        self.assertIn("float(glsl::detail::js_shift_right(h, 16))", rendered)
+        self.assertIn("glsl::IVec3(0, 0, 0)", rendered)
+        self.assertIn("glsl::IVec3(0, 1, 0)", rendered)
+        with self.assertRaisesRegex(ValueError, "source|structural|identity"):
+            authenticate_texture_frontend(dataclasses.replace(
+                program, raw_source=raw + " "), source_hash, PROFILE)
+        with self.assertRaisesRegex(ValueError, "source|structural|identity"):
+            authenticate_texture_frontend(dataclasses.replace(
+                program, functions=program.functions[:-1]), source_hash, PROFILE)
 
 if __name__ == "__main__":
     unittest.main()

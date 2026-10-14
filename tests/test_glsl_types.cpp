@@ -719,6 +719,31 @@ TEST(glsl_matrices_are_column_major_and_multiply_with_storage_narrowing) {
   REQUIRE(Mat3(2.0f)[0] == Vec3(2.0f, 0.0f, 0.0f));
 }
 
+TEST(glsl_cubemap_uniform_matrix_preserves_double_entries_until_ray_storage) {
+  using namespace noisemaker::glsl;
+  constexpr std::array<double, 9> values{
+      -1.5097436419112655, 0.8338904725453848, 0.8030976313762073,
+      0.5783815168611464, 1.2226387625875654, 0.8235589957020275,
+      0.4221211688745119, 0.8229414908629156, 3.9163901307685807};
+  DMat3 basis;
+  Mat3 rounded;
+  for (std::size_t col = 0; col < 3U; ++col) {
+    for (std::size_t row = 0; row < 3U; ++row) {
+      basis[col][row] = values[col * 3U + row];
+      rounded[col][row] = noisemaker::f32(values[col * 3U + row]);
+    }
+  }
+  const Vec3 direction(-1.9729729890823364F, 0.0F, 1.0F);
+  const Vec3 ray = basis * direction;
+  // Authenticated CPU4307 canonicalFactory249 at pixel (27,18), 128x37.
+  REQUIRE(ray == Vec3(3.4008045196533203F, -0.8223018646240234F,
+                     2.331900119781494F));
+  REQUIRE(normalize(ray) == Vec3(0.8088123798370361F, -0.19556781649589539F,
+                                0.5545951724052429F));
+  REQUIRE(basis * FloatExpr<3>(direction) == ray);
+  REQUIRE(rounded * direction != ray);
+}
+
 TEST(glsl_glitch_mat4_chain_matches_all_five_direct_oracles_and_mutants) {
   const auto t = glitch_mat4(kGlitchT);
   const auto s = glitch_mat4(kGlitchS);
@@ -746,7 +771,7 @@ TEST(glsl_glitch_mat4_chain_matches_all_five_direct_oracles_and_mutants) {
   }
 }
 
-TEST(glsl_glitch_vec4_mat4_and_outer_dot_preserve_orientation_and_store) {
+TEST(glsl_vec4_mat4_and_outer_dot_preserve_orientation_and_store) {
   using namespace noisemaker::glsl;
   constexpr std::array<std::uint32_t, 16> a_words{
       0xbf546cf0U, 0x3f3ea367U, 0x3fbea368U, 0xbfb93106U,
@@ -775,8 +800,9 @@ TEST(glsl_glitch_vec4_mat4_and_outer_dot_preserve_orientation_and_store) {
   for (std::size_t lane = 0; lane < 4U; ++lane)
     REQUIRE(noisemaker::float_bits_to_uint(production_vector[lane]) ==
             expected_vector[lane]);
+  // CPU 9f3bd6ad keeps matrixMult's final store, then rounds each dot term.
   REQUIRE(noisemaker::float_bits_to_uint(
-              dot(production_vector, uv)) == 0xbc00d72dU);
+              dot(production_vector, uv)) == 0xbc00d71bU);
 
   std::array<double, 4> unrounded_vector{};
   for (std::size_t column = 0; column < 4U; ++column)
@@ -785,19 +811,49 @@ TEST(glsl_glitch_vec4_mat4_and_outer_dot_preserve_orientation_and_store) {
           static_cast<double>(tv[row]) * a[column][row];
   double missing_store_dot = 0.0;
   for (std::size_t lane = 0; lane < 4U; ++lane)
-    missing_store_dot += unrounded_vector[lane] * uv[lane];
+    missing_store_dot = noisemaker::f32(
+        unrounded_vector[lane] * uv[lane] + missing_store_dot);
   REQUIRE(noisemaker::float_bits_to_uint(
-              noisemaker::f32(missing_store_dot)) == 0xbc00d765U);
+              noisemaker::f32(missing_store_dot)) == 0xbc00d73eU);
   REQUIRE(noisemaker::float_bits_to_uint(
-              noisemaker::f32(missing_store_dot)) != 0xbc00d72dU);
+              noisemaker::f32(missing_store_dot)) != 0xbc00d71bU);
 
   const Vec4 wrong_orientation = a * tv;
   for (std::size_t lane = 0; lane < 4U; ++lane)
     REQUIRE(noisemaker::float_bits_to_uint(wrong_orientation[lane]) ==
             wrong_orientation_vector[lane]);
   REQUIRE(noisemaker::float_bits_to_uint(
-              dot(wrong_orientation, uv)) == 0xb9ccdd8dU);
+              dot(wrong_orientation, uv)) == 0xb9ccdbc2U);
   REQUIRE(wrong_orientation != production_vector);
+}
+
+TEST(glsl_bicubic_nested_column_dots_match_cpu9f3) {
+  using namespace noisemaker::glsl;
+  constexpr std::array<std::uint32_t, 16> a_words{
+      0xbf546cf0U, 0x3f3ea367U, 0x3fbea368U, 0xbfb93106U,
+      0xbf7a8d9eU, 0x3f1882b9U, 0x3ff7d46dU, 0xbfdf51b4U,
+      0x409df51bU, 0xc082b931U, 0xc04d9df6U, 0x409df51cU,
+      0xc03d46cfU, 0x4015c988U, 0x4024c416U, 0xc055c988U};
+  const auto from_words = [](const std::array<std::uint32_t, 4>& words) {
+    return Vec4(noisemaker::uint_bits_to_float(words[0]),
+                noisemaker::uint_bits_to_float(words[1]),
+                noisemaker::uint_bits_to_float(words[2]),
+                noisemaker::uint_bits_to_float(words[3]));
+  };
+  const Mat4 a = glitch_mat4(a_words);
+  const Vec4 tv = from_words({0x3f800000U, 0x3ebd70a4U,
+                              0x3e0c2f84U, 0x3d4f7986U});
+  const Vec4 uv = from_words({0x3f800000U, 0x3f1c28f6U,
+                              0x3ebe83e5U, 0x3e686db6U});
+  const Vec4 columns(dot(tv, a[0]), dot(tv, a[1]),
+                     dot(tv, a[2]), dot(tv, a[3]));
+  constexpr std::array<std::uint32_t, 4> expected_columns{
+      0xbed8e840U, 0xbf14e45cU, 0x404f085bU, 0xbff44172U};
+  for (std::size_t lane = 0; lane < expected_columns.size(); ++lane)
+    REQUIRE(noisemaker::float_bits_to_uint(columns[lane]) ==
+            expected_columns[lane]);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(columns, uv)) == 0xbc00d75bU);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(tv * a, uv)) == 0xbc00d71bU);
 }
 
 TEST(glsl_glitch_ordered_splat_evaluates_rhs_twice_after_lane_zero_store) {

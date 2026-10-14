@@ -19,7 +19,7 @@ ORACLE = PACKAGE / "shape-mixer-parity-oracles.json"
 OUTPUT = ROOT / "tests/oracles/shape_mixer182_expected.inc"
 PROGRAM_KEY = "classicNoisedeck/shapeMixer:shapeMixer"
 # Revision authenticated by the immutable oracle capture.
-CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 SCHEMA = "noisemaker-for-cpp.shape-mixer182.pixel-parity.v1"
 WORD = re.compile(r"0x[0-9a-f]{8}")
 HEX64 = re.compile(r"[0-9a-f]{64}")
@@ -216,7 +216,7 @@ NON_PIXEL_BARRIERS = (
     "inverse_oklab_matrices", "vector_final_narrowing_only",
 )
 DIRECT_HELPER_LEDGER_SHA256 = (
-    "e497093f0921a55b0d25fa3b6e48e2b9823e85259991105f0576c30845e2c5ab")
+    "e1f0e97ab6ce96f96f0081f3d3b8024b16ea943f6fd7e625e029b98f04c4988c")
 NON_PIXEL_BARRIERS_SHA256 = (
     "44a9fcea1ffe35f16fac11abd6716952ae80feb8932338653a000fb93a49ea6d")
 
@@ -349,7 +349,7 @@ def load() -> tuple[dict[str, Any], str]:
         raise OracleError("Shape Mixer schema/program/define mismatch")
     provenance = oracle.get("provenance", {})
     if (provenance.get("authority_commit") !=
-            "4834b0144ee0524588144a482cca0067b15f68ec"
+            "4307ca9f26fc415e4fc5e75227d429d35cc741cd"
             or provenance.get("authority_checkout_clean") is not True
             or provenance.get("node_version") != "v26.0.0"
             or provenance.get("public_factory_is_canonical_identity") is not True
@@ -357,10 +357,10 @@ def load() -> tuple[dict[str, Any], str]:
         raise OracleError("Shape Mixer authority provenance mismatch")
     factory = provenance.get("canonical_factory", {})
     if factory != {
-            "name": "canonicalFactory15", "bytes": 26033,
-            "sha256": "063bb7cf252349866766abd1c781bb41d32af2d9b71bb02461f34ed8404c8124",
-            "source_slice_bytes": 26035,
-            "source_slice_sha256": "5c870c15339e431a0972742008caae2f7859836995e508892cd823d98e32c985"}:
+            "name": "canonicalFactory15", "bytes": 26411,
+            "sha256": "66117b01865863338e638a22e6f676b01d4f75e3f2864b2dc67af199785f0a68",
+            "source_slice_bytes": 26413,
+            "source_slice_sha256": "8eca60a170872c6def34bf6a264c50b2856dd27cec95dc16daf8b64509f494e4"}:
         raise OracleError("Shape Mixer canonical factory provenance mismatch")
     source = provenance.get("source", {})
     if (source.get("bytes"), source.get("sha256"),
@@ -468,11 +468,11 @@ def load() -> tuple[dict[str, Any], str]:
         ("vector-reflect-dot-child-order", 102,
          "4c662c611eb3791504489059e1bfaf333d04eeeed1936f4107e1fead1e09fb5f",
          "2bb7127394627068b074ac2a20dcd2b2da7c621859d0d6c7fdf4b779c683b70c",
-         "68cf768bc28afb39e022db7eea7d9806ea05137232e734239dc597029dbdcb71"),
+         "eeba744c6ac9a3bae397511e2ed771cad0e3134d28c8462d94dd90806d6df61a"),
         ("vector-refract-dot-child-order", 378,
          "9b4ef5725fe268e68a4122b69a575941d0413d50e6266ae062f969f20327753b",
          "e5881f966c801880cb99af96997b5e6a130b71fa6cb7caea9a036d8e2490072e",
-         "330051671e8280b6e6fa577ee42f5d47fd8cbe77eeaf24b3361061a8d10b6c86"),
+         "20e7279d6908cb8e135457ef7cb1651593db5f7a9cebe61d32a8e8f0ee966bfa"),
     )
     for row, (name, owner_bytes, owner_hash, mutant_hash,
               mutated_runtime_hash) in zip(
@@ -482,7 +482,7 @@ def load() -> tuple[dict[str, Any], str]:
                 "pinned noisemaker-for-cpu GLSL runtime owner slice"
                 or row.get("runtime_relative_path") != "src/csl/glsl-runtime.js"
                 or row.get("runtime_sha256") !=
-                "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"
+                "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1"
                 or row.get("owner_bytes") != owner_bytes
                 or row.get("owner_sha256") != owner_hash
                 or row.get("anchor_occurrences_in_owner") != 1

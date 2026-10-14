@@ -108,9 +108,26 @@ class ChainValueCopyTests(unittest.TestCase):
             "expected.json": "cf855852d9efcccb667c234b1f0f2080c4e2246336892a5b09d8ff675d85e270",
         }.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = os.environ.get("NOISEMAKER_CHAIN_COPY_CPU_ROOT")
         if not configured:
-            self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce chain captures")
+            self.skipTest("NOISEMAKER_CHAIN_COPY_CPU_ROOT is required to reproduce chain captures")
+        authority = pathlib.Path(configured)
+        self.assertTrue(authority.is_absolute() and authority.is_dir(),
+                        "chain copy authority root must be an absolute directory")
+        self.assertNotIn(ROOT, (authority, *authority.parents),
+                         "chain copy authority must be external to the C++ checkout")
+        self.assertFalse(any(part.is_symlink() for part in (authority, *authority.parents)),
+                         "chain copy authority path must not contain a symlink")
+        for relative in (
+                "src/effects/generated/canonical-kernels.js",
+                "src/csl/glsl-kernel.js",
+                "src/csl/glsl-runtime.js",
+                "src/runtime/sampler.js",
+                "src/runtime/surface.js"):
+            item = authority / relative
+            self.assertTrue(item.is_file() and not any(
+                part.is_symlink() for part in (item, *item.parents) if part != authority),
+                            f"chain copy authority file is not regular: {relative}")
         cases = json.loads((FIXTURE / "cases.json").read_text())
         with tempfile.TemporaryDirectory(prefix="chain-copy-inputs-") as raw:
             inputs = pathlib.Path(raw) / "inputs.json"

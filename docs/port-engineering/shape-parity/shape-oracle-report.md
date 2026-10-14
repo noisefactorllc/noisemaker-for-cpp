@@ -1,6 +1,6 @@
 # Shape184 exact-parity oracle
 
-Program `synth/shape:shape`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; exact defines
+Program `synth/shape:shape`; corpus revision `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`; exact defines
 `LOOP_A_OFFSET=40`, `LOOP_B_OFFSET=30`.
 
 ## The two contracts this program exists to prove
@@ -21,15 +21,15 @@ The shipped binding set also contains an unrelated `aspectRatio` uniform. The fa
 
 ## Authority
 
-This oracle is produced by the unmodified public canonicalFactory282 from an immutable noisemaker-for-cpu snapshot, executed through the pinned bindCanonicalKernel/GlslCpuRuntime/runPass path; no C++ output participates. The generator refuses to run unless
+This oracle is produced by the unmodified public canonicalFactory285 from an immutable noisemaker-for-cpu snapshot, executed through the pinned bindCanonicalKernel/GlslCpuRuntime/runPass path; no C++ output participates. The generator refuses to run unless
 `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
-`canonicalFactory282`, its `Function.prototype.toString` SHA-256 is `2244ce51eb45a6b0c9448179c5a29d39d2636aa6e832b0a403c7d554b38af3c4`, neither
+`canonicalFactory285`, its `Function.prototype.toString` SHA-256 is `36117882ac517282234caa52869e72e0a067b62183f6e18e787c8a5ee3f598b6`, neither
 adapter table owns the key, `canonicalAdapterFactories` matches its
 12-key census exactly, the key is absent from the
-5-key `check_corpus._ADAPTERS` eligibility table
+11-key `check_corpus._ADAPTERS` eligibility table
 **parsed out of the live `tools/glslcpp/check_corpus.py`**
 rather than transcribed, all six pinned CPU files match, and every module in the
-23-file import closure resolves by real path beneath the immutable snapshot.
+24-file import closure resolves by real path beneath the immutable snapshot.
 Bare module specifiers other than `node:` builtins are rejected, and the live checkout is refused as
 a `--cpu-root`.
 
@@ -53,13 +53,13 @@ ABI binding and is not "cleaned up".
 
 | Case | Size | Route | wrap | Float32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- | --- | --- | --- |
-| shape-landscape-16x9 | 16x9 | full | false | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | b6f413f381f5b34eb8efa7bc85159a77f93d22f7acb372f6b2fba0c8323dc1fa |
-| shape-crop-1280x720 | 40x24 | tile | true | 9f66e527ca97201a6c5102999729ec5bfc8a314996c490597dd118686403323e | 9ed74f1e20549dc9a27a6e909e88bc951c10bed98231afec30b0edbf1332a496 |
-| shape-square-12 | 12x12 | full | false | 1ca0bdd331d7d5cf01ef1547409e69041db30cc85fc73db32fa887205941d6e5 | 5c34887d8c665b5573f4cb645244da4d75288dc740a79688520b8edd0b914b72 |
+| shape-landscape-16x9 | 16x9 | full | false | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | b6f413f381f5b34eb8efa7bc85159a77f93d22f7acb372f6b2fba0c8323dc1fa |
+| shape-crop-1280x720 | 40x24 | tile | true | 153a17db413ea33621abcaae175ded2ae45dc060cc67fe9185ee6f6319d5a651 | 9ed74f1e20549dc9a27a6e909e88bc951c10bed98231afec30b0edbf1332a496 |
+| shape-square-12 | 12x12 | full | false | a20a583d57e90688520077ee2aac22688b143fda7d7adcb7cb8b36f872bd93b4 | 5c34887d8c665b5573f4cb645244da4d75288dc740a79688520b8edd0b914b72 |
 | shape-portrait-9x16 | 9x16 | full | true | c4577f3982aea3b2f1d8f4f8c26ddb2b2a9d4ac89cb05e7eff9143606226ec14 | 2f123fabb539f5d5aedacef067557cd8364ed81f2b7c23e1ebcda5ed97d702f2 |
 | shape-zero-speeds | 16x9 | full | false | c8a0219b9191bba318304cfa5bb6861d98b9dbcb3bbcfd4171ca4048ffe60f57 | a240facb7a0d5897b5826bfa52dee1963929a424e1e2d78dd2f72cd5a85cbcdf |
 | shape-wrap-live-37-61 | 4x6 | tile | true | a8aeffa8f49441b080e1606d1e5a2d87bc195a924efb659cc47b276803e37acf | c870f2fde9212887b9b0a31a8f70bdc42ef1e32b1dc26dfaab72d1a14111072f |
-| shape-negative-speeds | 16x9 | full | false | 6012d8a139bc7cd486e97d4f24a950062f3f281a30055983ca153eb2d859ae52 | 7a4bed09b7ee38b7549e6a48be7746c2e187c44519987003eaef46efb9b33884 |
+| shape-negative-speeds | 16x9 | full | false | e60e975480868fbbd06da4686917104bab35e9d828f623be1b8e20eedbc0d088 | 7a4bed09b7ee38b7549e6a48be7746c2e187c44519987003eaef46efb9b33884 |
 | shape-extreme-tile-offset | 16x12 | tile | false | 36228ff8361dcca60ecf28957962cbeb159c1fb36f525c0d73e17d8d46ed5941 | 1cf291f20b67654f0c4098ec22a8a5078b905912d0f158e91302307fee8dc177 |
 
 Every case stores exact dimensions, all 10 bindings with every float and vector lane as a
@@ -144,14 +144,14 @@ The full 1280x720 route is rendered in memory and discarded; storing all 3,686,4
 
 | Bound seed | Float32 SHA-256 | Versus baseline |
 | --- | --- | --- |
-| -2147483648 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
-| -7 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
-| 0 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
-| 1 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
-| 3 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
-| 123 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
-| 65537 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
-| 2147483647 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc | identical |
+| -2147483648 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
+| -7 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
+| 0 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
+| 1 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
+| 3 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
+| 123 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
+| 65537 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
+| 2147483647 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 | identical |
 
 At defines LOOP_A_OFFSET=40 / LOOP_B_OFFSET=30 the only main() consumers of the `seed` uniform are the two offset(...) calls. Offset 40 selects the `loopOffset >= 40 && loopOffset <= 120` arm, which dispatches shape(st, sides, freq*0.5) and never reads seedVal; offset 30 selects the absolute-distance arm, which also never reads seedVal. Every seed consumer listed above sits behind the 300..380 arm, which these defines do not select.
 
@@ -170,14 +170,14 @@ wrap only reaches the output through `lf = floor(lf)`. It is inert wherever lf =
 
 | speedA | speedB | Float32 SHA-256 |
 | ---: | ---: | --- |
-| 50 | 50 | 68d140d08cf71256a2853a547239992b10af044e130641c3eebb007b95365edc |
-| 50 | 0 | df6c831cc234d36717b7cd07a7bd9f43458892e88a1c1557212d71097a656d97 |
+| 50 | 50 | 7e53ffbbdebd0025cca8071534ae2a4e36c0d2aa9ec7b72695e7633e9ffbecd6 |
+| 50 | 0 | 50c57a5331dcb6c741d74345223953074faedc8a6f695172ca87acd3ba46dc59 |
 | 0 | 50 | e7b3638c1010c1265eb1f4c55e94552d772efaacf91811788a0f83295f1341a2 |
-| -50 | 50 | 062335c6ff1ef2ed1069c2d10783c2c91381f9f24793c400bb94d59a1b825692 |
-| 50 | -50 | bc47a6defafdc93c4a9cdc2f0cef96e52f31601e18378f4d9bc70f1544a6ce4b |
-| -50 | -50 | c983b9637878234758355f205a70d060cd429f6d626767ce6219b23e4eb6dd4c |
+| -50 | 50 | 77aa5b761e950297f97a807405cbb61fecbac8cbd2372b1963dea52aafb9530d |
+| 50 | -50 | c640c9c9f823732f17261ac3a2edc0520d8bb0cf68a6ade397495394f3c88129 |
+| -50 | -50 | 3068dfc24a2ec3945ae4552dc3f83a0e052569c9f8561f82e6644e0ba02f93bf |
 | 0 | 0 | c8a0219b9191bba318304cfa5bb6861d98b9dbcb3bbcfd4171ca4048ffe60f57 |
-| -50 | 0 | c198207b5040d116e33aeed98356216e55d10b916afe348859e519e31c87d31a |
+| -50 | 0 | 334b141b0c35b92b3b4d06af86ce18dcbb199f6c5a85985eeac905feb9f7a1f6 |
 | 0 | -50 | 878ede338316903a086b09bf04b619d699a020d771b3a927a9587c9b07c9cafd |
 
 All 9 combinations are pairwise distinct.
@@ -200,7 +200,7 @@ the f32-lane contract on globalCoord is only observable where gl_FragCoord.xy + 
 | Mutant | Case | Class | Result | Changed lanes |
 | --- | --- | --- | --- | ---: |
 | shape-aspect-f32-narrowed | shape-landscape-16x9 | witness | differs | 42 |
-| shape-aspect-f32-narrowed | shape-crop-1280x720 | witness | differs | 393 |
+| shape-aspect-f32-narrowed | shape-crop-1280x720 | witness | differs | 396 |
 | shape-aspect-f32-narrowed | shape-square-12 | control | identical | 0 |
 | shape-aspect-f32-narrowed | shape-portrait-9x16 | control | identical | 0 |
 | shape-aspect-f32-narrowed | shape-zero-speeds | control | identical | 0 |

@@ -10,6 +10,12 @@ import re
 import struct
 
 from .frontend.audio_uniform_profile import authenticate_audio_uniform
+from .frontend.physical_unused_sampler import omitted_physical_samplers
+from .frontend.local_vec4_array_profile import authenticate_local_vec4_arrays
+from .frontend.effects_zoomblur_local_array_profile import authenticate_zoomblur_local_array
+from .frontend.palette3d_profile import authenticate_palette3d
+from .frontend.cell3d_hash3_profile import (
+    KEY as CELL3D_HASH3_KEY, authenticate_cell3d_hash3)
 from .frontend.corrupt_value_copy_profile import (
     PROFILE as CORRUPT_VALUE_COPY_PROFILE, authenticate_corrupt_value_copy)
 from .frontend.grade_value_copy_profile import (
@@ -30,6 +36,8 @@ HISTORICAL_VECTOR_EQUALITY_COMPARER = "glsl::canonical_js_vector_equality_result
 # other body left as written. Historical reconstructions turn this off to
 # regenerate the murmur substitution every body used to receive.
 CURRENT_AUTHORITY_HASH_UINT_BY_BODY = True
+NOISE3D_NUMBER_SEED_SOURCE_SHA256 = (
+    "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727")
 # The canonical compiler fences `return fract((p3.x + p3.y) * p3.z);` and its
 # vec2 form by source text, in whatever function carries it. Historical
 # reconstructions turn this off to regenerate the function-name gate
@@ -177,6 +185,7 @@ from .frontend.scatter_jitter_cross_lane_assignment_profile import (
     KEY as SCATTER_JITTER_CROSS_LANE_KEY,
     PROFILE as SCATTER_JITTER_CROSS_LANE_ASSIGNMENT_PROFILE,
     authenticate_scatter_jitter_cross_lane_assignment)
+from .frontend.shape_positive_modulo_profile import authenticate_shape_positive_modulo
 from .frontend.mutable_global_frame_profile import (
     MUTABLE_GLOBAL_FRAME_KEYS,
     NOISE_KEY as PREPARED_MUTABLE_GLOBAL_FRAME_NOISE_KEY,
@@ -190,10 +199,13 @@ from .frontend.mutable_global_frame_profile import (
 from .frontend.noise_runtime_define_profile import (
     dynamic_frame_contract, is_dynamic_program)
 from .frontend.mutable_global_array_profile import (
+    EFFECTS_KEY as MUTABLE_GLOBAL_ARRAY_EFFECTS_KEY,
+    EFFECTS_PROFILE as MUTABLE_GLOBAL_ARRAY_EFFECTS_PROFILE,
     MUTABLE_GLOBAL_ARRAY_KEYS,
     PROFILES as MUTABLE_GLOBAL_ARRAY_PROFILES,
     REQUIRED_COMPANION_PROFILES as MUTABLE_GLOBAL_ARRAY_COMPANIONS,
-    authenticate_mutable_global_array, frame_contract as mutable_global_array_contract,
+    authenticate_mutable_global_array, authenticated_effects_emission_omission,
+    frame_contract as mutable_global_array_contract,
     store_census as mutable_global_array_store_census)
 from .frontend.const_global_table_profile import (
     CONST_GLOBAL_TABLE_KEYS,
@@ -215,7 +227,8 @@ from .frontend.texture_frontend_profile import (
     PROFILE as TEXTURE_FRONTEND_PROFILE,
     authenticate_texture_frontend)
 from .frontend.glyph_map_nonnegative_int_shift_profile import (
-    GLYPH_MAP_KEY, authenticate_glyph_map_nonnegative_int_shift)
+    GLYPH_MAP_KEY, authenticate_glyph_map_nonnegative_int_shift,
+    authenticated_glyph_map_tile_sites)
 from .frontend.curl_vector_math_profile import (
     CURL_KEY, authenticate_curl_vector_math)
 from .frontend.extrude_bvec2_relational_reduction_profile import (
@@ -224,10 +237,18 @@ from .frontend.edge_bvec3_contour_profile import (
     EDGE_KEY, authenticate_edge_bvec3_contour,
     authenticate_edge_center_splat)
 from .frontend.glitch_mat4_chain_profile import (
-    GLITCH_KEY, PROFILES as GLITCH_MAT4_CHAIN_PROFILES,
+    GLITCH_KEY, EFFECTS_KEY as EFFECTS_BICUBIC_KEY,
+    PROFILES as GLITCH_MAT4_CHAIN_PROFILES,
     REQUIRED_COMPANION_PROFILES as GLITCH_MAT4_CHAIN_COMPANIONS,
     authenticate_glitch_mat4_chain)
 GLITCH_MAT4_CHAIN_KEYS = frozenset(GLITCH_MAT4_CHAIN_PROFILES)
+_CURRENT_BICUBIC_NESTED_DOT_SOURCES = {
+    GLITCH_KEY: ("4bb633e963eed011c4724d9b18470baed3ac474eadce98e06288ace5c382846a",),
+    EFFECTS_BICUBIC_KEY: (
+        "1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90",
+        "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316",
+    ),
+}
 from .frontend.emboss_color_style_profile import (
     EMBOSS_KEY, authenticate_emboss_color_style)
 from .frontend.shape_mixer_builtin_profile import (
@@ -264,6 +285,7 @@ from .frontend.any_relational_profile import (
     authenticate_any_relational_admission)
 from .frontend.struct_frontier_profile import (
     PROFILES as STRUCT_FRONTIER_PROFILES,
+    RENDER_DYNAMIC_PROFILES as RENDER_DYNAMIC_STRUCT_PROFILES,
     STRUCT_FRONTIER_KEYS,
     authenticate_struct_frontier)
 from .frontend.inout_vec3_swap_profile import (
@@ -271,6 +293,8 @@ from .frontend.inout_vec3_swap_profile import (
     PROFILE as INOUT_VEC3_SWAP_PROFILE,
     authenticate_inout_vec3_swap_admission)
 from .frontend.out_inout_admission_profile import (
+    FLYTHROUGH_KEY as OUT_INOUT_ADMISSION_FLYTHROUGH_KEY,
+    FLYTHROUGH_PROFILE as OUT_INOUT_ADMISSION_FLYTHROUGH_PROFILE,
     LIGHTLEAK_KEY as OUT_INOUT_ADMISSION_LIGHTLEAK_KEY,
     LIGHTLEAK_PROFILE as OUT_INOUT_ADMISSION_LIGHTLEAK_PROFILE,
     MANDELBROT_KEY as OUT_INOUT_ADMISSION_MANDELBROT_KEY,
@@ -278,7 +302,8 @@ from .frontend.out_inout_admission_profile import (
     NEWTON_KEY as OUT_INOUT_ADMISSION_NEWTON_KEY,
     NEWTON_PROFILE as OUT_INOUT_ADMISSION_NEWTON_PROFILE,
     OUT_INOUT_ADMISSION_KEYS,
-    authenticate_out_inout_admission, direction_contract as out_inout_direction_contract)
+    authenticate_out_inout_admission, authenticate_flythrough_value_copies,
+    direction_contract as out_inout_direction_contract)
 from .frontend.log_admission_profile import (
     MANDELBROT_KEY as LOG_ADMISSION_MANDELBROT_KEY,
     MANDELBROT_PROFILE as LOG_ADMISSION_MANDELBROT_PROFILE,
@@ -287,8 +312,12 @@ from .frontend.log_admission_profile import (
 from .frontend.fractal3d_log_profile import (
     KEY as FRACTAL3D_LOG_KEY,
     PROFILE as FRACTAL3D_LOG_PROFILE,
+    PROFILES as FRACTAL3D_LOG_PROFILES,
     FRACTAL3D_LOG_KEYS,
-    authenticate_fractal3d_log_admission)
+    authenticate_fractal3d_log_admission,
+    authenticate_fractal3d_value_copies,
+    authenticate_fractal3d_pow_nan_sites)
+from .frontend.navier_hash22_sequential_profile import authenticate_navier_hash22
 from .frontend.mandelbrot_sequential_dz_assignment_profile import (
     KEY as MANDELBROT_DZ_KEY,
     PROFILE as MANDELBROT_DZ_PROFILE,
@@ -336,8 +365,8 @@ from .frontend.osd_frontend_profile import (
     PREPARED_PROFILES as OSD_PREPARED_PROFILES,
     FrontendProof as OsdFrontendProof,
     authenticate_osd_frontend)
-# CPU26d truncates the authenticated OSD glyph cell index; historical
-# reconstruction explicitly selects the pre-ddf8 behavior in tests only.
+# Current CPU truncates the authenticated OSD glyph cell and bitmap indexes;
+# historical reconstruction selects the earlier Number division in tests only.
 OSD_GLYPH_INDEX_TRUNCATES = True
 
 from .frontend.moodscape_frontend_profile import (
@@ -592,6 +621,8 @@ def _testpattern_proof_matches(actual: object,
     if left[:-1] != right[:-1] or left.node is not right.node:
         return False
     if proof.round_node is not expected.round_node:
+        return False
+    if proof.digit_division is not expected.digit_division:
         return False
     return _same_object_sequence(proof.consumed_objects,
                                  expected.consumed_objects)
@@ -858,6 +889,13 @@ _TYPES = {
     "mat2": "glsl::Mat2", "mat3": "glsl::Mat3",
 }
 
+_DOUBLE_CUBEMAP_BASIS_SOURCES = {
+    "render/renderCubemap3d:renderCubemap3d":
+        "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
+    "render/renderCubemapSurface:renderCubemapSurface":
+        "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+}
+
 # classicNoisedeck's palette-typed parameter overrides an effect's
 # paletteAmp/paletteFreq/paletteOffset/palettePhase uniforms from the
 # authority's own built-in 55-entry table (noisemaker-for-cpu
@@ -873,7 +911,7 @@ _TYPES = {
 # rarely) against the authority. This declared carrier list is the only
 # uniform/program combination this port binds as `glsl::DVec3` (double
 # lanes) instead; every other program or uniform keeps float lanes
-# unconditionally -- see `_classic_noisedeck_double_uniform_type` and
+# unconditionally -- see `_uniform_carrier_type` and
 # `_classic_noisedeck_cosine_palette_function` below.
 _CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES = (
     "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
@@ -882,6 +920,7 @@ _CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS = frozenset({
     "classicNoisedeck/cellNoise:cellNoise",
     "classicNoisedeck/colorLab:colorLab",
     "classicNoisedeck/fractal:fractal",
+    "classicNoisedeck/noise:noise",
     "classicNoisedeck/shapeMixer:shapeMixer",
     "classicNoisedeck/shapes:shapes",
 })
@@ -890,21 +929,8 @@ _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
     for program_key in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
     for uniform_name in _CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
 )
-# See `_classic_noisedeck_double_uniform_type`: the one deliberate carve-out
-# from the general vec3/vec4-uniform double rule below, kept in lockstep
-# with executor.cpp's `apply_classic_noisedeck_palette_override`.
-_CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION = frozenset(
-    (program_key, uniform_name)
-    for program_key in ("classicNoisedeck/noise:noise",)
-    for uniform_name in _CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
-)
-# classicNoisedeck/noise:noise also declares a palette-typed parameter, but
-# this port's generated route bakes `colorMode` as a compile-time constant
-# fixed at 6 ("hsv") -- the authenticated route never admits `colorMode: 4`
-# ("palette"), so `noise`'s `pal()` is unreachable dead code in this port
-# and is deliberately left off the carrier list: there is nothing for a
-# double-precision uniform to fix, and adding one would touch a program with
-# no live palette-consuming code path to prove it against.
+# Noise admits runtime COLOR_MODE=4. Its palette uniforms preserve the
+# authority's raw doubles through pal() local aliases, like the carriers above.
 
 # classicNoisedeck/shapes3d:shapes3d also declares a palette-typed
 # parameter, but its corpus record is `recordKind: "excluded"` (unrelated
@@ -1083,7 +1109,8 @@ _BUILTIN_NAMES = {
 # name). Every other vec2/vec3/vec4 uniform, in every program, is this
 # authority-double carrier.
 _DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({
-    "size", "motion", "resolution", "fullResolution", "tileOffset",
+    "size", "motion", "resolution", "fullResolution", "invFullResolution",
+    "tileOffset",
 })
 # See `_is_double_vector_uniform`'s docstring.
 _FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION = frozenset({
@@ -1158,6 +1185,17 @@ class _Emitter:
     texture_lod_admission_profile: str | None = None
     texture_frontend_profile: str | None = None
     cross_lane_assignment_profile: str | None = None
+    omitted_physical_samplers: frozenset[str] = field(init=False)
+    local_vec4_proof: object | None = field(init=False, default=None)
+    emitted_local_vec4_nodes: list = field(init=False, default_factory=list)
+    zoomblur_local_array_proof: object | None = field(init=False, default=None)
+    emitted_zoomblur_local_nodes: list = field(init=False, default_factory=list)
+    palette3d_proof: object | None = field(init=False, default=None)
+    emitted_palette3d_nodes: list = field(init=False, default_factory=list)
+    noise3d_dead_globals_proof: object | None = field(init=False, default=None)
+    cell3d_hash3_proof: object | None = field(init=False, default=None)
+    emitted_cell3d_hash3_nodes: list[TypedExpression] = field(
+        init=False, default_factory=list)
     uniforms: dict[int, object] = field(init=False)
     outputs: dict[int, object] = field(init=False)
     output_slot_names: dict[int, str] = field(init=False, default_factory=dict)
@@ -1168,6 +1206,7 @@ class _Emitter:
     gabor_effective_depth_contract: GaborEffectiveDepthContract | None = field(
         init=False, default=None)
     runtime_guard_emitted: bool = field(init=False, default=False)
+    emitted_landscape_tan: list[TypedExpression] = field(init=False, default_factory=list)
     runtime_radius_declaration_emitted: bool = field(init=False, default=False)
     function_names: dict[int, str] = field(init=False)
     ordinary_array_return_signatures: set[int] = field(init=False)
@@ -1182,6 +1221,8 @@ class _Emitter:
     alias_source_symbol_ids: set[int] = field(init=False)
     authorized_vector_value_copies: tuple[TypedExpression, ...] = field(init=False, default=())
     emitted_vector_value_copies: list[TypedExpression] = field(init=False, default_factory=list)
+    authorized_hatch_multiplier: TypedExpression | None = field(init=False, default=None)
+    emitted_hatch_multipliers: list[TypedExpression] = field(init=False, default_factory=list)
     locals: dict[int, str] = field(init=False)
     current_function_name: str | None = field(init=False, default=None)
     # The expression of the `return` statement being emitted, if any.
@@ -1294,6 +1335,8 @@ class _Emitter:
         init=False, default_factory=list)
     emitted_glitch_matrix_objects: list[object] = field(
         init=False, default_factory=list)
+    emitted_glitch_nested_dots: list[TypedExpression] = field(
+        init=False, default_factory=list)
     emitted_emboss_declarations: list[object] = field(
         init=False, default_factory=list)
     emitted_emboss_stores: list[object] = field(
@@ -1310,6 +1353,10 @@ class _Emitter:
     authorized_scanline_error_proof: object | None = field(
         init=False, default=None)
     authorized_glyph_map_proof: object | None = field(init=False, default=None)
+    authorized_glyph_map_tile_sites: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_glyph_map_tile_sites: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_curl_proof: object | None = field(init=False, default=None)
     emitted_curl_nodes: list[object] = field(init=False, default_factory=list)
     authorized_derivative_proof: object | None = field(init=False, default=None)
@@ -1347,6 +1394,8 @@ class _Emitter:
         init=False, default=())
     emitted_points_post_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_ca_posts: tuple[TypedExpression, ...] = field(init=False, default=())
+    emitted_ca_posts: list[TypedExpression] = field(init=False, default_factory=list)
     # kaleido's one `floatBitsToUint` ingress, authenticated by the scalar-XOR
     # module's per-key census (rides the same carrier; no separate row field).
     authorized_kaleido_float_bits_ingress: tuple[TypedExpression, ...] = field(
@@ -1595,6 +1644,17 @@ class _Emitter:
     emitted_reflect_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_posterize_round: TypedExpression | None = field(init=False, default=None)
+    authorized_shapes3d_rounds: tuple[TypedExpression, ...] = field(init=False, default=())
+    emitted_shapes3d_rounds: list[TypedExpression] = field(init=False, default_factory=list)
+    emitted_noise3d_rounds: list[TypedExpression] = field(init=False, default_factory=list)
+    emitted_noise3d_cellular_distances: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_noise3d_cellular_oy: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_shapes3d_indices: tuple[TypedExpression, ...] = field(init=False, default=())
+    emitted_shapes3d_indices: list[TypedExpression] = field(init=False, default_factory=list)
+    authorized_feedback_indices: tuple[TypedExpression, ...] = field(init=False, default=())
+    emitted_feedback_indices: list[TypedExpression] = field(init=False, default_factory=list)
     authorized_flow_round: TypedExpression | None = field(init=False, default=None)
     authorized_as_u32_round: TypedExpression | None = field(init=False, default=None)
     authorized_ceil: tuple = field(init=False, default=())
@@ -1609,6 +1669,11 @@ class _Emitter:
     emitted_attractor_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_any_relational_proof: object = field(init=False, default=None)
+    authorized_landscape_indexes: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    authorized_landscape_samplers: object = field(init=False, default=None)
+    authorized_landscape_perspective_call: TypedExpression | None = field(
+        init=False, default=None)
     emitted_any_relational_reductions: list[TypedExpression] = field(
         init=False, default_factory=list)
     emitted_any_relational_relationals: list[TypedExpression] = field(
@@ -1619,6 +1684,8 @@ class _Emitter:
     emitted_frontier_locals: list[TypedExpression] = field(
         init=False, default_factory=list)
     emitted_frontier_members: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_render3d_voxel_bounds: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_inout_vec3_swap_proof: object = field(init=False, default=None)
     emitted_inout_vec3_swap_calls: list[TypedExpression] = field(
@@ -1656,11 +1723,19 @@ class _Emitter:
         init=False, default=())
     emitted_fractal3d_logs: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_fractal3d_pow_nan_nodes: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_fractal3d_pow_nan_nodes: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_mandelbrot_sequential_dz_assignment: object | None = field(
         init=False, default=None)
     emitted_mandelbrot_sequential_dz_assignment: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_navier_hash22: object | None = field(init=False, default=None)
+    emitted_navier_hash22: list[TypedExpression] = field(init=False, default_factory=list)
     emitted_newton_struct_constructors: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_frontier_struct_constructors: list[TypedExpression] = field(
         init=False, default_factory=list)
     emitted_newton_members: list[TypedExpression] = field(
         init=False, default_factory=list)
@@ -1680,6 +1755,8 @@ class _Emitter:
         init=False, default=None)
     authorized_texture_frontend_hash_conversion: TypedExpression | None = field(
         init=False, default=None)
+    authorized_texture_material_layer_conversions: tuple[TypedExpression, ...] = field(
+        init=False, default=())
     emitted_texture_frontend_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
     emitted_texture_frontend_assignments: list[TypedExpression] = field(
@@ -1687,6 +1764,16 @@ class _Emitter:
     emitted_texture_frontend_inverse_sqrt: list[TypedExpression] = field(
         init=False, default_factory=list)
     emitted_texture_frontend_hash_conversion: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_texture_signed_gradient_shift: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    authorized_texture_vector_scalar_conversions: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_texture_signed_gradient_shift: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_texture_vector_scalar_conversions: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_texture_material_layer_conversions: list[TypedExpression] = field(
         init=False, default_factory=list)
     testpattern_profile: str | None = None
     testpattern_frontend_proof: FrontendProof | None = None
@@ -1706,6 +1793,13 @@ class _Emitter:
     authorized_osd_proof: object | None = field(init=False, default=None)
     authorized_moodscape_projection: object | None = field(
         init=False, default=None)
+    authorized_runtime_color_hash: object | None = field(init=False, default=None)
+    emitted_runtime_color_indexes: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_runtime_color_bits: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_runtime_color_xors: list[TypedExpression] = field(
+        init=False, default_factory=list)
     emitted_osd_array: list[object] = field(init=False, default_factory=list)
     emitted_osd_indexes: list[TypedExpression] = field(init=False, default_factory=list)
     emitted_osd_bitwise: list[TypedExpression] = field(init=False, default_factory=list)
@@ -1754,25 +1848,17 @@ class _Emitter:
         init=False, default=None)
     emitted_testpattern_bitwise: list[TypedExpression] = field(
         init=False, default_factory=list)
-    # The authority's own DSL compiler fails to resolve `temp`'s GLSL `int`
-    # type at `temp /= 10` inside `renderNumber`'s digit-extraction loop (see
-    # `src/csl/codegen.js:67,124,131` -- the `/=` int fast path requires
-    # `node.resolvedType === 'int'`, which this one compound-assign site
-    # never gets). `canonical-kernels.js` therefore emits plain, untyped
-    # `temp /= 10;`: real (non-truncating) JS division, so `temp` and the
-    # `digits[]` it feeds carry a fractional remainder forward, and reading a
-    # fractional index out of the sibling `GLYPH` table (in `sampleGlyph`)
-    # is a JS `undefined`, which every bitwise op on it coerces to zero --
-    # never a set bit. `digits`/`temp`/this one `%`/the one call site that
-    # reads a digit back out are therefore emitted as untyped JS Numbers
-    # (`double`), exactly like the analogous SpookyTicker Number quirk above,
-    # scoped to these named symbols in this one authenticated program.
+    # The CPU authority emits `temp = Math.trunc(temp / 10)` for this one
+    # source-bound digit loop. Its operands and digit array remain JS Numbers
+    # (double), and the exact division site truncates before the next store.
     emitted_testpattern_digit_extraction_declarations: list[object] = field(
         init=False, default_factory=list)
     emitted_testpattern_digit_extraction_remainder: TypedExpression | None = field(
         init=False, default=None)
     emitted_testpattern_digit_extraction_call: TypedExpression | None = field(
         init=False, default=None)
+    emitted_testpattern_digit_divisions: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_remap_proof: object | None = field(init=False, default=None)
     emitted_remap_indexes: list[TypedExpression] = field(
         init=False, default_factory=list)
@@ -1861,6 +1947,30 @@ class _Emitter:
     emitted_audio_reads: list[TypedExpression] = field(init=False, default_factory=list)
 
     def __post_init__(self) -> None:
+        if (self.program.key == "filter/hatch:hatch"
+                and len(self.program.preprocessor_defines) == 1
+                and (self.program.preprocessor_defines[0].name,
+                     self.program.preprocessor_defines[0].canonical_value)
+                == ("MODE", "int")):
+            from .frontend.hatch_degrees_profile import authenticate_hatch_multiplier
+            try:
+                self.authorized_hatch_multiplier = authenticate_hatch_multiplier(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        from .frontend.noise3d_dead_globals import authenticate_noise3d_dead_globals
+        try:
+            self.noise3d_dead_globals_proof = authenticate_noise3d_dead_globals(
+                self.program, self.source_hash)
+        except ValueError as error:
+            raise _error(self.program, self.program, str(error)) from error
+        try:
+            self.local_vec4_proof = authenticate_local_vec4_arrays(self.program, self.source_hash)
+            self.zoomblur_local_array_proof = authenticate_zoomblur_local_array(
+                self.program, self.source_hash)
+            self.palette3d_proof = authenticate_palette3d(self.program, self.source_hash)
+        except ValueError as error:
+            raise _error(self.program, self.program, str(error)) from error
         try:
             self.audio_uniform_proof = authenticate_audio_uniform(self.program, self.source_hash)
         except ValueError as error:
@@ -1907,6 +2017,7 @@ class _Emitter:
         self.authorized_edge_splat_proof = None
         self.authorized_glitch_proof = None
         self.emitted_glitch_matrix_objects = []
+        self.emitted_glitch_nested_dots = []
         self.authorized_emboss_proof = None
         self.emitted_emboss_declarations = []
         self.emitted_emboss_stores = []
@@ -1936,6 +2047,8 @@ class _Emitter:
         self.emitted_points_float_bits_ingresses = []
         self.authorized_points_post_nodes = ()
         self.emitted_points_post_nodes = []
+        self.authorized_ca_posts = ()
+        self.emitted_ca_posts = []
         self.authorized_kaleido_float_bits_ingress = ()
         self.emitted_kaleido_float_bits_ingress = []
         self.authorized_noise_float_bits_ingresses = ()
@@ -1980,6 +2093,8 @@ class _Emitter:
         self.emitted_varying_references = []
         self.emitted_glyph_map_sites = []
         self.emitted_glyph_map_noops = []
+        self.authorized_glyph_map_tile_sites = ()
+        self.emitted_glyph_map_tile_sites = []
         self.emitted_extrude_nodes = []
         self.emitted_edge_bvec_nodes = []
         self.emitted_edge_relationals = []
@@ -2055,6 +2170,15 @@ class _Emitter:
         self.authorized_reflect_node = None
         self.emitted_reflect_nodes = []
         self.authorized_posterize_round = None
+        self.authorized_shapes3d_rounds = ()
+        self.emitted_shapes3d_rounds = []
+        self.emitted_noise3d_rounds = []
+        self.emitted_noise3d_cellular_distances = []
+        self.emitted_noise3d_cellular_oy = []
+        self.authorized_shapes3d_indices = ()
+        self.emitted_shapes3d_indices = []
+        self.authorized_feedback_indices = ()
+        self.emitted_feedback_indices = []
         self.authorized_flow_round = None
         self.authorized_as_u32_round = None
         self.authorized_ceil = ()
@@ -2064,12 +2188,16 @@ class _Emitter:
         self.authorized_attractor_any_isnan_proof = None
         self.emitted_attractor_nodes = []
         self.authorized_any_relational_proof = None
+        self.authorized_landscape_indexes = ()
+        self.authorized_landscape_samplers = None
+        self.authorized_landscape_perspective_call = None
         self.emitted_any_relational_reductions = []
         self.emitted_any_relational_relationals = []
         self.authorized_struct_frontier = None
         self.emitted_frontier_struct_definitions = []
         self.emitted_frontier_locals = []
         self.emitted_frontier_members = []
+        self.emitted_render3d_voxel_bounds = []
         self.authorized_inout_vec3_swap_proof = None
         self.emitted_inout_vec3_swap_calls = []
         self.authorized_out_inout_parameters = ()
@@ -2089,9 +2217,18 @@ class _Emitter:
         self.emitted_mandelbrot_logs = []
         self.authorized_fractal3d_logs = ()
         self.emitted_fractal3d_logs = []
+        self.authorized_fractal3d_pow_nan_nodes = ()
+        self.emitted_fractal3d_pow_nan_nodes = []
         self.authorized_mandelbrot_sequential_dz_assignment = None
         self.emitted_mandelbrot_sequential_dz_assignment = []
+        try:
+            self.authorized_navier_hash22 = authenticate_navier_hash22(
+                self.program, self.source_hash)
+        except ValueError as error:
+            raise _error(self.program, self.program, str(error)) from error
+        self.emitted_navier_hash22 = []
         self.emitted_newton_struct_constructors = []
+        self.emitted_frontier_struct_constructors = []
         self.emitted_newton_members = []
         self.emitted_newton_struct_count = 0
         self.authorized_texture_lod_sites = ()
@@ -2100,10 +2237,16 @@ class _Emitter:
         self.authorized_texture_frontend_assignments = ()
         self.authorized_texture_frontend_inverse_sqrt = None
         self.authorized_texture_frontend_hash_conversion = None
+        self.authorized_texture_material_layer_conversions = ()
         self.emitted_texture_frontend_nodes = []
         self.emitted_texture_frontend_assignments = []
         self.emitted_texture_frontend_inverse_sqrt = []
         self.emitted_texture_frontend_hash_conversion = []
+        self.emitted_texture_material_layer_conversions = []
+        self.authorized_texture_signed_gradient_shift = ()
+        self.authorized_texture_vector_scalar_conversions = ()
+        self.emitted_texture_signed_gradient_shift = []
+        self.emitted_texture_vector_scalar_conversions = []
         self.authorized_testpattern_proof = None
         self.authorized_osd_proof = None
         self.emitted_osd_array = []
@@ -2136,6 +2279,7 @@ class _Emitter:
         self.emitted_testpattern_digit_extraction_declarations = []
         self.emitted_testpattern_digit_extraction_remainder = None
         self.emitted_testpattern_digit_extraction_call = None
+        self.emitted_testpattern_digit_divisions = []
         self.authorized_remap_proof = None
         self.emitted_remap_indexes = []
         self.emitted_remap_loops = []
@@ -2431,6 +2575,8 @@ class _Emitter:
                     or self.custom_comparer_profile is not None
                     or self.numeric_literal_contract != "glsl-f32"
                     or self.source_global_literal_int_profile is not None
+                    or (self.hash_scalar_uint_xor_profile is not None
+                        and self.program.key != "synth3d/noise3d:precompute")
                     or self.gather_sorted_round_profile is not None
                     or self.literal_vec3_lane_index_profile is not None
                     or self.smooth_edge_luma_weights_profile is not None
@@ -3259,6 +3405,18 @@ class _Emitter:
                         or sites[0].children[0] is not sites[1]):
                     raise ValueError(
                         "site order, uniqueness, or parent mismatch")
+                tile_sites = authenticated_glyph_map_tile_sites(
+                    proof, self.program, self.source_hash)
+                self.authorized_glyph_map_tile_sites = tile_sites
+                if tile_sites and (len(tile_sites) != 2
+                        or tile_sites[0] is not proof.tile_any
+                        or tile_sites[1] is not proof.tile_not_equal
+                        or tile_sites[0].kind != "builtin"
+                        or tile_sites[0].callee != "any"
+                        or tile_sites[1].kind != "builtin"
+                        or tile_sites[1].callee != "notEqual"
+                        or tile_sites[0].children != (tile_sites[1],)):
+                    raise ValueError("origin tile site identity mismatch")
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
         if self.curl_vector_math_profile is not None:
@@ -3428,6 +3586,23 @@ class _Emitter:
         elif self.program.key == POSTERIZE_KEY:
             raise _error(self.program, self.program,
                          "exact Posterize round admission profile carrier required")
+        if self.program.key == "classicNoisedeck/shapes3d:shapes3d":
+            from .frontend.shapes3d_round_profile import (
+                authenticate_shapes3d_rounds, authenticate_shapes3d_linear_indices)
+            try:
+                self.authorized_shapes3d_rounds = authenticate_shapes3d_rounds(
+                    self.program, self.source_hash)
+                self.authorized_shapes3d_indices = authenticate_shapes3d_linear_indices(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.program.key == "filter/feedback:feedback":
+            from .frontend.feedback_hue_index_profile import authenticate_feedback_hue_indices
+            try:
+                self.authorized_feedback_indices = authenticate_feedback_hue_indices(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         if self.flow_round_profile is not None:
             if (self.program.key != FLOW_AGENT_KEY
                     or self.compatibility_transform is not None
@@ -3457,6 +3632,13 @@ class _Emitter:
                     authenticate_points_post(
                         self.program, self.source_hash,
                         self.points_post_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.program.key == "synth3d/cellularAutomata3d:simulate":
+            from .frontend.cellular_automata_post_profile import authenticate_ca_posts
+            try:
+                self.authorized_ca_posts = authenticate_ca_posts(
+                    self.program, self.source_hash)
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
         # as_u32_round_profile is deliberately light-checked, the same style
@@ -3538,6 +3720,31 @@ class _Emitter:
         elif self.program.key in ANY_RELATIONAL_KEYS:
             raise _error(self.program, self.program,
                          "exact any-relational admission profile carrier required")
+        if (self.program.key == "filter/lowPoly:lowPoly" and
+                tuple((d.name, d.canonical_value) for d in self.program.preprocessor_defines)
+                == (("LP_BORDER", "int"), ("LP_LIGHT", "int"))):
+            from .frontend.lowpoly_runtime_profile import PROFILE, authenticate_lowpoly_runtime
+            try:
+                self.authorized_any_relational_proof = authenticate_lowpoly_runtime(
+                    self.program, self.source_hash, PROFILE)
+                self.authorized_derivative_proof = self.authorized_any_relational_proof
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.program.key == "render/renderLandscape3d:landscape":
+            from .frontend.landscape_volume_profile import (
+                axis_indexes, borrowed_samplers, perspective_call,
+                relational_nodes)
+            try:
+                self.authorized_any_relational_proof = relational_nodes(
+                    self.program, self.source_hash)
+                self.authorized_landscape_indexes = axis_indexes(
+                    self.program, self.source_hash)
+                self.authorized_landscape_samplers = borrowed_samplers(
+                    self.program, self.source_hash)
+                self.authorized_landscape_perspective_call = perspective_call(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         # struct_frontier_profile is deliberately light-checked, the same
         # style as the admission profiles above. The emitter authenticates
         # the same frozen census the validator authenticates, so the struct
@@ -3545,8 +3752,9 @@ class _Emitter:
         # sites) is exactly the census -- nothing more is unblocked.
         if self.struct_frontier_profile is not None:
             if (self.program.key not in STRUCT_FRONTIER_KEYS
-                    or self.struct_frontier_profile
-                    != STRUCT_FRONTIER_PROFILES[self.program.key]):
+                    or self.struct_frontier_profile not in (
+                        STRUCT_FRONTIER_PROFILES[self.program.key],
+                        RENDER_DYNAMIC_STRUCT_PROFILES.get(self.program.key))):
                 raise _error(self.program, self.program,
                              "struct frontier profile metadata mismatch")
             try:
@@ -3597,8 +3805,9 @@ class _Emitter:
             raise _error(self.program, self.program,
                          "exact Mandelbrot log admission profile carrier required")
         if self.fractal3d_log_profile is not None:
-            if (self.program.key != FRACTAL3D_LOG_KEY
-                    or self.fractal3d_log_profile != FRACTAL3D_LOG_PROFILE
+            if (self.program.key not in FRACTAL3D_LOG_KEYS
+                    or self.fractal3d_log_profile
+                    != FRACTAL3D_LOG_PROFILES[self.program.key]
                     or self.compatibility_transform is not None
                     or self.numeric_literal_contract != "glsl-f32"):
                 raise _error(self.program, self.program,
@@ -3697,6 +3906,8 @@ class _Emitter:
                 self.ceil_admission_profile, self.waves_any_notequal_profile,
                 self.inout_vec3_swap_profile)
             expected_out_profile = {
+                OUT_INOUT_ADMISSION_FLYTHROUGH_KEY:
+                    OUT_INOUT_ADMISSION_FLYTHROUGH_PROFILE,
                 OUT_INOUT_ADMISSION_LIGHTLEAK_KEY:
                     OUT_INOUT_ADMISSION_LIGHTLEAK_PROFILE,
                 OUT_INOUT_ADMISSION_MANDELBROT_KEY:
@@ -4034,7 +4245,7 @@ class _Emitter:
                             self.mutable_global_frame_profile))
                     contract = (dynamic_frame_contract(self.program)
                                 if is_dynamic_program(self.program)
-                                else mutable_global_frame_contract(self.program.key))
+                                else mutable_global_frame_contract(self.program))
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
             # The closure returns BOTH declarations, by object identity, in the
@@ -4143,7 +4354,7 @@ class _Emitter:
                     authenticate_mutable_global_array(
                         self.program, self.source_hash,
                         self.mutable_global_array_profile))
-                contract = mutable_global_array_contract(self.program.key)
+                contract = mutable_global_array_contract(self.program.key, self.program)
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
             # ALL FIVE declarations, by object identity, in the frozen
@@ -4624,9 +4835,13 @@ class _Emitter:
                 name for name in self.__dataclass_fields__
                 if name.endswith("_profile")
                 and name != "moodscape_frontend_profile")
+            from .frontend.moodscape_dynamic_profile import (
+                PROFILE as MOODSCAPE_RUNTIME_PROFILE,
+                authenticate_projection as authenticate_moodscape_runtime_projection)
             if (self.program.key not in MOODSCAPE_PREPARED_KEYS
-                    or self.moodscape_frontend_profile
-                    != MOODSCAPE_PREPARED_PROFILES[self.program.key]
+                    or self.moodscape_frontend_profile not in {
+                        MOODSCAPE_PREPARED_PROFILES[self.program.key],
+                        MOODSCAPE_RUNTIME_PROFILE}
                     or self.numeric_literal_contract != "glsl-f32"
                     or any(getattr(self, name) is not None
                            for name in profile_fields)
@@ -4635,7 +4850,9 @@ class _Emitter:
                              "Moodscape frontend profile metadata mismatch")
             try:
                 self.authorized_moodscape_projection = (
-                    authenticate_moodscape_projection(
+                    (authenticate_moodscape_runtime_projection
+                     if self.moodscape_frontend_profile == MOODSCAPE_RUNTIME_PROFILE
+                     else authenticate_moodscape_projection)(
                         self.program, self.source_hash,
                         self.moodscape_frontend_profile))
             except ValueError as error:
@@ -4643,6 +4860,24 @@ class _Emitter:
         elif self.program.key in MOODSCAPE_PREPARED_KEYS:
             raise _error(self.program, self.program,
                          "exact Moodscape frontend profile carrier required")
+        from .frontend import noise_frontend_profile as noise_profile
+        from .frontend.runtime_color_hash_profile import (
+            authenticate as authenticate_runtime_color_hash)
+        runtime_color_hash_selected = (
+            (self.program.key == NOISE_FRONTEND_KEY
+             and self.noise_frontend_profile == NOISE_FRONTEND_PROFILE
+             and noise_profile._dynamic_selected(self.program))
+            or (self.program.key == MOODSCAPE_KEY
+                and self.moodscape_frontend_profile == MOODSCAPE_RUNTIME_PROFILE))
+        if runtime_color_hash_selected:
+            try:
+                self.authorized_runtime_color_hash = authenticate_runtime_color_hash(
+                    self.program, self.source_hash,
+                    self.noise_frontend_profile
+                    if self.program.key == NOISE_FRONTEND_KEY
+                    else self.moodscape_frontend_profile)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         if self.osd_frontend_profile is not None:
             profile_fields = tuple(
                 name for name in self.__dataclass_fields__
@@ -4726,6 +4961,10 @@ class _Emitter:
             self.authorized_texture_frontend_inverse_sqrt = proof.inverse_sqrt
             self.authorized_texture_frontend_hash_conversion = (
                 proof.number_preserving_hash_conversion)
+            self.authorized_texture_material_layer_conversions = (
+                proof.material_layer_conversions)
+            self.authorized_texture_signed_gradient_shift = proof.signed_gradient_shift
+            self.authorized_texture_vector_scalar_conversions = proof.vector_scalar_conversions
             self.varying_fields[symbol.id] = "context.uv"
         if self.authorized_spooky_ticker_proof is not None:
             symbol = self.authorized_spooky_ticker_proof.varying_symbol
@@ -5121,8 +5360,10 @@ class _Emitter:
                 profile=self.source_global_literal_int_profile)
         except ValueError as error:
             raise _error(self.program, self.program, str(error)) from error
+        self.omitted_physical_samplers = omitted_physical_samplers(self.program)
         self.uniforms = {item.symbol.id: item.symbol for item in self.program.declarations
-                         if item.symbol.storage == "uniform"}
+                         if item.symbol.storage == "uniform"
+                         and item.symbol.name not in self.omitted_physical_samplers}
         self.outputs = {item.symbol.id: item.symbol for item in self.program.declarations
                         if item.symbol.storage == "output"}
         # One declared `out` per MRT render target, in source declaration
@@ -5177,6 +5418,9 @@ class _Emitter:
                                          if item.symbol is not None}
         self.alias_declaration_symbol_ids: set[int] = set()
         self.alias_source_symbol_ids: set[int] = set()
+        if CURRENT_AUTHORITY_VALUE_COPIES and self.authorized_cross_lane_assignment is not None:
+            self.authorized_vector_value_copies += (
+                self.authorized_cross_lane_assignment.alias_declaration,)
         if self.compatibility_transform == CORRUPT_VALUE_COPY_PROFILE:
             try:
                 self.authorized_vector_value_copies = (authenticate_corrupt_value_copy(
@@ -5201,6 +5445,42 @@ class _Emitter:
                     self.program, self.source_hash)
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
+        if (CURRENT_AUTHORITY_VALUE_COPIES
+                and self.program.key == OUT_INOUT_ADMISSION_FLYTHROUGH_KEY):
+            try:
+                self.authorized_vector_value_copies += authenticate_flythrough_value_copies(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if CURRENT_AUTHORITY_VALUE_COPIES and self.program.key == FRACTAL3D_LOG_KEY:
+            try:
+                self.authorized_vector_value_copies += authenticate_fractal3d_value_copies(
+                    self.program, self.source_hash, self.fractal3d_log_profile)
+                self.authorized_fractal3d_pow_nan_nodes = (
+                    authenticate_fractal3d_pow_nan_sites(
+                        self.program, self.source_hash,
+                        self.fractal3d_log_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.program.key == "classicNoisedeck/effects:effects":
+            from .frontend.dynamic_kernel9_profile import (
+                is_dynamic, authenticate_effects_subpixel_value_copy)
+            if is_dynamic(self.program):
+                try:
+                    self.authorized_vector_value_copies += (
+                        authenticate_effects_subpixel_value_copy(
+                            self.program, self.source_hash),)
+                except ValueError as error:
+                    raise _error(self.program, self.program, str(error)) from error
+        if self.noise3d_dead_globals_proof is not None:
+            self.authorized_vector_value_copies += (
+                self.noise3d_dead_globals_proof.value_copies)
+        if self.program.key == CELL3D_HASH3_KEY:
+            try:
+                self.cell3d_hash3_proof = authenticate_cell3d_hash3(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         for function in self.program.functions:
             for statement in function.body:
                 self._collect_pooled_vector_aliases(statement)
@@ -5213,6 +5493,12 @@ class _Emitter:
         self._validate_fixed_affine_centers13()
         self._validate_source_globals()
         self._compute_double_vector_classification()
+
+    def _cpu_iso_distance_double(self) -> bool:
+        return (self.program.key == "render/renderLandscape3d:landscape"
+                or (self.program.key in RENDER_DYNAMIC_STRUCT_PROFILES
+                    and self.struct_frontier_profile
+                    == RENDER_DYNAMIC_STRUCT_PROFILES[self.program.key]))
 
     def _literal_lane_site(self, value: object) -> tuple[TypedExpression, int, str] | None:
         if not hasattr(self, "authorized_literal_vec3_lane_sites"):
@@ -5338,8 +5624,11 @@ class _Emitter:
             raise _error(self.program, self.program, "malformed counted-for proof functions")
 
         effective_depth_limit = (
-            self.gabor_effective_depth_contract.maximum_effective_depth
-            if self.gabor_effective_depth_contract is not None else 3)
+            self.noise3d_dead_globals_proof.max_effective_depth
+            if (self.noise3d_dead_globals_proof is not None
+                and self.noise3d_dead_globals_proof.rounds)
+            else (self.gabor_effective_depth_contract.maximum_effective_depth
+                  if self.gabor_effective_depth_contract is not None else 3))
 
         def statement(actual: TypedStatement, expected: TypedStatement) -> None:
             if (actual.kind != expected.kind or actual.loop_proof != expected.loop_proof
@@ -5349,13 +5638,18 @@ class _Emitter:
             if proof is not None:
                 max_trip_count = (
                     BUDDHABROT_MAX_TRIP_COUNT if self.program.key in BUDDHABROT_KEYS
+                    else (1024 if self.program.key == "render/renderLandscape3d:landscape"
                     else (1000 if self.program.key == JULIA_FRONTEND_KEY
                           else (1537 if self.program.key == RUNTIME_LOOP_BOUND_ROLL_KEY
                                 else (2048 if self.program.key == LOG_ADMISSION_MANDELBROT_KEY
-                                      else COUNTED_FOR_V1_MAX_TRIP_COUNT))))
+                                      else COUNTED_FOR_V1_MAX_TRIP_COUNT)))))
                 max_charge = (
-                    BUDDHABROT_MAX_ENTRYPOINT_CHARGE if self.program.key in BUDDHABROT_KEYS
-                    else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)
+                    self.noise3d_dead_globals_proof.max_entrypoint_charge
+                    if (self.noise3d_dead_globals_proof is not None
+                        and self.noise3d_dead_globals_proof.rounds)
+                    else (BUDDHABROT_MAX_ENTRYPOINT_CHARGE
+                          if self.program.key in BUDDHABROT_KEYS
+                          else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE))
                 if (proof.trip_count > max_trip_count or proof.lexical_depth > 3
                         or proof.effective_depth > effective_depth_limit
                         or proof.lexical_product > COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT
@@ -5565,6 +5859,12 @@ class _Emitter:
         for declaration in self.program.declarations:
             if declaration.symbol.storage in {"uniform", "output"}:
                 continue
+            if (self.noise3d_dead_globals_proof is not None
+                    and any(declaration is item for item in
+                            self.noise3d_dead_globals_proof.globals)):
+                self.source_global_dependencies[declaration.symbol.id] = ()
+                admitted.add(declaration.symbol.id)
+                continue
             if any(declaration is item
                    for item in getattr(
                        self, "authorized_mutable_global_frames", ())):
@@ -5614,6 +5914,10 @@ class _Emitter:
                 self.source_global_dependencies[declaration.symbol.id] = ()
                 admitted.add(declaration.symbol.id)
                 self.admitted_const_global_tables.append(declaration)
+                continue
+            if self.palette3d_proof is not None and declaration is self.palette3d_proof.table:
+                self.source_global_dependencies[declaration.symbol.id] = ()
+                admitted.add(declaration.symbol.id)
                 continue
             testpattern = self._testpattern_array(declaration)
             if (testpattern is not None
@@ -6524,6 +6828,11 @@ class _Emitter:
         return self.function_type(function.return_type)
 
     def type(self, value: object) -> str:
+        if self.palette3d_proof is not None:
+            if value is self.palette3d_proof.struct.type:
+                return "PaletteEntry"
+            if value is self.palette3d_proof.table.type:
+                return "std::array<PaletteEntry, 55>"
         if (self.audio_uniform_proof is not None
                 and value is self.audio_uniform_proof.declaration.type):
             return "glsl::AudioUniform128"
@@ -6534,7 +6843,11 @@ class _Emitter:
                 and self.authorized_struct_declaration
                 and self.authorized_struct_declaration[0].name == "POIData"):
             return "POIData"
-        if (name in {"VoxelHit", "IsoHit"}
+        if (name == "bvec3"
+                and self.program.key == "render/renderLandscape3d:landscape"
+                and self.authorized_any_relational_proof is not None):
+            return "glsl::BVec3"
+        if (name in {"VoxelHit", "IsoHit", "TransformData", "ShapeParams", "FractalResult", "AtlasCoords"}
                 and self.authorized_struct_frontier is not None
                 and any(item.name == name
                         for item in self.authorized_struct_frontier.structs)):
@@ -6551,10 +6864,18 @@ class _Emitter:
             raise _error(self.program, value, f"unsupported typed type {name}") from error
 
     def local_type(self, value: object) -> str:
+        if (value.display() == "bvec3"
+                and self.program.key == "render/renderLandscape3d:landscape"
+                and self.authorized_any_relational_proof is not None):
+            return "glsl::BVec3"
+        if self.palette3d_proof is not None and (
+                value is self.palette3d_proof.struct.type
+                or value is self.palette3d_proof.table.type):
+            return self.type(value)
         # Canonical scalar temporaries retain JavaScript Number precision;
         # constructors, builtins, calls, uniforms, and outputs remain the
         # explicit GLSL float32 consumption/storage boundaries.
-        if (value.display() in {"VoxelHit", "IsoHit"}
+        if (value.display() in {"VoxelHit", "IsoHit", "TransformData", "ShapeParams", "FractalResult", "AtlasCoords"}
                 and self.authorized_struct_frontier is not None
                 and any(item.name == value.display()
                         for item in self.authorized_struct_frontier.structs)):
@@ -6669,6 +6990,14 @@ class _Emitter:
                              "malformed authenticated Distortion sampler parameter")
             self.emitted_distortion_sampler_parameters.append(parameter)
             return "const Surface&"
+        landscape = self.authorized_landscape_samplers
+        if (landscape is not None
+                and any(function is owner and parameter is item
+                        for owner, item in landscape.parameters)):
+            if parameter.type.display() != "sampler2D":
+                raise _error(self.program, parameter,
+                             "malformed Landscape borrowed sampler")
+            return "const Surface&"
         inout_proof = self.authorized_inout_vec3_swap_proof
         if inout_proof is not None and any(parameter is item
                                            for item in inout_proof.parameters):
@@ -6731,42 +7060,39 @@ class _Emitter:
         # compatibly through Bindings::get_number().
         return "double" if value.display() == "float" else self.type(value)
 
-    def _classic_noisedeck_double_uniform_type(self, symbol: object) -> str | None:
+    def _uniform_carrier_type(self, symbol: object) -> str | None:
         """The double-precision-uniform ABI override for a program-level
         uniform, generalized from the original classicNoisedeck palette
         carrier list to the full JS authority rule.
 
-        Returns "glsl::DVec3"/"glsl::DVec4" whenever the uniform still
-        carries the authority's raw, un-rounded double at bind time --
-        which `_is_double_vector_uniform` establishes is every vec3/vec4
-        effect-parameter uniform in the corpus except `size`/`motion` (see
-        its docstring for the evidence) -- with two carve-outs kept exactly
-        as already proven:
+        Return the exact uniform carrier when the authority keeps more
+        precision than the GLSL declaration suggests. ClassicNoisedeck palette uniforms use the same
+        carrier in this emitter, the backend ABI, and the executor override.
+        Noise's runtime COLOR_MODE=4 reaches pal(), so it uses this carrier too.
 
-        - the five original `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS`
-          programs take this same "glsl::DVec3" unconditionally, so folding
-          them into the general rule below changes nothing for them;
-        - `classicNoisedeck/noise`'s own paletteAmp/paletteFreq/
-          paletteOffset/palettePhase are deliberately left OUT of the
-          general rule (`_CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION`): its
-          generated route bakes `colorMode` to a compile-time constant that
-          never reaches `pal()` (dead code in this port), so there is no
-          live code path to prove a widened ABI against, and
-          `apply_classic_noisedeck_palette_override` in executor.cpp
-          already, deliberately, keeps binding it `glsl::Vec3` -- changing
-          only this file without that one would make the kernel's declared
-          uniform type disagree with the bound ABI type and throw at
-          runtime.
-
-        Returns `None` for every other uniform, which then falls through to
-        the ordinary `glsl::Vec3`/`glsl::Vec4` (float lanes) uniform type.
+        The exact Noise3D seed stays a Number until the vector Float32 boundary.
+        Returns `None` for every other uniform.
         """
+        if (symbol.name == "cubeBasis" and symbol.type.display() == "mat3"
+                and self.source_hash == _DOUBLE_CUBEMAP_BASIS_SOURCES.get(self.program.key)):
+            return "glsl::DMat3"
         if (self.program.key, symbol.name) in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS:
             return "glsl::DVec3"
-        if (self.program.key, symbol.name) in _CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION:
-            return None
         if self._is_double_vector_uniform(symbol):
             return self._double_vector_type(symbol.type.display())
+        if (self.program.key == "synth3d/noise3d:precompute"
+                and self.source_hash == NOISE3D_NUMBER_SEED_SOURCE_SHA256
+                and self.authorized_hash_scalar_uint_xors
+                and CURRENT_AUTHORITY_HASH_UINT_BY_BODY
+                and symbol.name == "seed"
+                and symbol.type.display() == "int"):
+            # The authenticated CPU factory reads this shader's int-declared
+            # seed as a Number. Its float(seed) call does not narrow it.
+            return "double"
+        if (self.cell3d_hash3_proof is not None
+                and symbol.name == "seed"
+                and symbol.type.display() == "int"):
+            return "double"
         return None
 
     @staticmethod
@@ -7109,6 +7435,24 @@ class _Emitter:
             self.emitted_linear_srgb_lane_index_sites.append(value)
         return matched
 
+    def _proved_shapes3d_index(self, value: TypedExpression) -> bool:
+        matched = any(value is item for item in self.authorized_shapes3d_indices)
+        if matched:
+            if any(value is item for item in self.emitted_shapes3d_indices):
+                raise _error(self.program, value,
+                             "authenticated Shapes3d index emitted twice")
+            self.emitted_shapes3d_indices.append(value)
+        return matched
+
+    def _proved_feedback_index(self, value: TypedExpression) -> bool:
+        matched = any(value is item for item in self.authorized_feedback_indices)
+        if matched:
+            if any(value is item for item in self.emitted_feedback_indices):
+                raise _error(self.program, value,
+                             "authenticated Feedback index emitted twice")
+            self.emitted_feedback_indices.append(value)
+        return matched
+
     def _proved_fractal_index(self, value: TypedExpression) -> bool:
         matched = any(value is item
                       for item in self.authorized_fractal_frontend_indexes)
@@ -7245,6 +7589,47 @@ class _Emitter:
             self.emitted_emboss_materialization_divisions.append(value)
 
     def expression(self, value: TypedExpression) -> str:
+        local_proof = self.local_vec4_proof
+        if local_proof is not None and any(value is node for node in local_proof.conditional_stores):
+            if any(value is node for node in self.emitted_local_vec4_nodes):
+                raise _error(self.program, value, "local vec4 array conditional store emitted twice")
+            self.emitted_local_vec4_nodes.append(value)
+            target, conditional = value.children
+            condition, first, second = conditional.children
+            # CPU9f3 emits `condition ? cur : s.reduce(..., slots[n])`.
+            # Only the false branch writes the slot. The true branch leaves
+            # its initial zero value, even though the GLSL suggests a copy.
+            return ("(" + self.expression(condition) + " ? " + self.expression(first)
+                    + " : (" + self.expression(target) + " = glsl::Vec4("
+                    + self.expression(second) + ")))")
+        if local_proof is not None and any(value is node for node in local_proof.indexes):
+            if any(value is node for node in self.emitted_local_vec4_nodes):
+                raise _error(self.program, value, "local vec4 array node emitted twice")
+            self.emitted_local_vec4_nodes.append(value)
+            return (self.expression(value.children[0]) + "[static_cast<std::size_t>("
+                    + self.expression(value.children[1]) + ")]")
+        zoomblur = self.zoomblur_local_array_proof
+        if zoomblur is not None and any(value is node for node in zoomblur.indexes):
+            if any(value is node for node in self.emitted_zoomblur_local_nodes):
+                raise _error(self.program, value, "zoomBlur local array index emitted twice")
+            self.emitted_zoomblur_local_nodes.append(value)
+            return (self.expression(value.children[0]) + "[static_cast<std::size_t>("
+                    + self.expression(value.children[1]) + ")]")
+        proof = self.palette3d_proof
+        if proof is not None and any(value is item for item in (
+                *proof.constructors, *proof.members, *proof.indexes)):
+            if any(value is item for item in self.emitted_palette3d_nodes):
+                raise _error(self.program, value, "Palette3D node emitted twice")
+            self.emitted_palette3d_nodes.append(value)
+            if value.kind == "construct":
+                children = ", ".join(self.expression(child) for child in value.children)
+                if value is proof.table.initializer:
+                    return "std::array<PaletteEntry, 55>{{" + children + "}}"
+                return "PaletteEntry{" + children + "}"
+            if value.kind == "member":
+                return self.expression(value.children[0]) + "." + value.member
+            return (self.expression(value.children[0]) + "[static_cast<std::size_t>("
+                    + self.expression(value.children[1]) + ")]")
         self._consume_bitwise_number_expression(value)
         self._consume_edge_bvec_expression(value)
         self._consume_glitch_matrix_object(value)
@@ -7353,8 +7738,121 @@ class _Emitter:
                     + self.expression(round_value.children[0]) + "))")
         if value.kind == "construct":
             display = value.constructor_type.display()
+            if value is self.authorized_hatch_multiplier:
+                if (display != "vec2" or len(value.children) != 2
+                        or self.emitted_hatch_multipliers):
+                    raise _error(self.program, value,
+                                 "Hatch multiplier emission mismatch")
+                self.emitted_hatch_multipliers.append(value)
+                return ("glsl::Vec2(glsl::FloatExpr<2>("
+                        + ", ".join(self.expression(child)
+                                    for child in value.children) + "))")
+            frontier = self.authorized_struct_frontier
+            if (frontier is not None and frontier.constructors
+                    and any(value is item for item in frontier.constructors)):
+                struct = next((item for item in frontier.structs
+                               if item.name == display), None)
+                if (struct is None or value.type.display() != display
+                        or len(value.children) != len(struct.fields)
+                        or any(child.type.display() != field.type.display()
+                               for child, field in zip(value.children, struct.fields))
+                        or any(value is item for item in
+                               self.emitted_frontier_struct_constructors)):
+                    raise _error(self.program, value,
+                                 "malformed authenticated struct constructor")
+                self.emitted_frontier_struct_constructors.append(value)
+                arguments = tuple(
+                    (f"static_cast<float>({self.expression(child)})"
+                     if field.type.display() == "float"
+                     and not (self._cpu_iso_distance_double()
+                              and struct.name == "IsoHit"
+                              and field.name == ("distance" if self.program.key
+                                                 == "render/renderLandscape3d:landscape"
+                                                 else "dist"))
+                     else self.expression(child))
+                    for child, field in zip(value.children, struct.fields))
+                return display + "{" + ", ".join(arguments) + "}"
+            cell3d = self.cell3d_hash3_proof
+            if cell3d is not None and value is cell3d.seed_cast:
+                if any(value is item for item in self.emitted_cell3d_hash3_nodes):
+                    raise _error(self.program, value, "Cell3D seed cast emitted twice")
+                self.emitted_cell3d_hash3_nodes.append(value)
+                return self.expression(value.children[0])
+            if cell3d is not None and value is cell3d.q_constructor:
+                if any(value is item for item in self.emitted_cell3d_hash3_nodes):
+                    raise _error(self.program, value, "Cell3D q constructor emitted twice")
+                self.emitted_cell3d_hash3_nodes.append(value)
+                scaled = value.children[0].children[0].children[0]
+                return (
+                    "([](const glsl::Vec3& scaled) noexcept { "
+                    "return glsl::UVec3("
+                    "static_cast<std::uint32_t>(glsl::detail::js_to_int32(scaled[0])) + std::uint32_t{65536}, "
+                    "static_cast<std::uint32_t>(glsl::detail::js_to_int32(scaled[1])) + std::uint32_t{65536}, "
+                    "static_cast<std::uint32_t>(glsl::detail::js_to_int32(scaled[2])) + std::uint32_t{65536}); "
+                    "}(glsl::Vec3(" + self.expression(scaled) + ")))")
+            if (self.program.key == "synth/perlin:perlin"
+                    and self.authorized_perlin_scalar_uint_xors
+                    and CURRENT_AUTHORITY_HASH_UINT_BY_BODY
+                    and self.current_function_name == "hash3"
+                    and display == "ivec3"):
+                if len(value.children) != 1:
+                    raise _error(self.program, value, "malformed authenticated Perlin hash3 conversion")
+                scaled = value.children[0]
+                if (scaled.kind != "binary" or scaled.operator != "*"
+                        or scaled.type.display() != "vec3"
+                        or len(scaled.children) != 2
+                        or scaled.children[0].kind != "id"
+                        or scaled.children[0].symbol.name != "p"
+                        or scaled.children[1].kind != "literal"
+                        or scaled.children[1].literal_value != 1000.0):
+                    raise _error(self.program, value, "malformed authenticated Perlin hash3 scale")
+                # The CPU factory stores p * 1000 in Float32Array before
+                # integer conversion. Preserve that boundary for this tree.
+                return "glsl::IVec3(glsl::Vec3(" + self.expression(scaled) + "))"
             if (self.program.key == "synth3d/noise3d:precompute"
+                    and self.source_hash == NOISE3D_NUMBER_SEED_SOURCE_SHA256
                     and self.authorized_hash_scalar_uint_xors
+                    and CURRENT_AUTHORITY_HASH_UINT_BY_BODY
+                    and self.current_function_name == "hash4"
+                    and display == "uvec4" and len(value.children) == 1):
+                offset = value.children[0]
+                if (offset.kind != "binary" or offset.operator != "+"
+                        or offset.type.display() != "ivec4"
+                        or len(offset.children) != 2
+                        or offset.children[1].kind != "literal"
+                        or offset.children[1].literal_value != 65536
+                        or offset.children[0].kind != "construct"
+                        or offset.children[0].constructor_type.display() != "ivec4"
+                        or len(offset.children[0].children) != 1):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Noise3D hash4 constructor")
+                scaled = offset.children[0].children[0]
+                if (scaled.kind != "binary" or scaled.operator != "*"
+                        or scaled.type.display() != "vec4"
+                        or len(scaled.children) != 2
+                        or scaled.children[0].kind != "id"
+                        or scaled.children[0].symbol.name != "ps"
+                        or scaled.children[1].kind != "literal"
+                        or scaled.children[1].literal_value != 1000.0):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Noise3D hash4 scale")
+                # The CPU factory first narrows the scaled lanes to Float32,
+                # then ivec4 applies JavaScript ToInt32 to each lane. Large
+                # render seeds cross the signed range, so a saturating int
+                # conversion changes the volume. The following +65536 and
+                # uvec4 conversion both wrap modulo 2^32.
+                return ("([](const glsl::Vec4& scaled) noexcept { "
+                        "glsl::UVec4 result{}; "
+                        "for (std::size_t lane = 0; lane < 4; ++lane) "
+                        "result[lane] = static_cast<std::uint32_t>("
+                        "glsl::detail::js_to_int32(static_cast<double>(scaled[lane]))) "
+                        "+ std::uint32_t{65536}; "
+                        "return result; }(glsl::Vec4("
+                        + self.expression(scaled) + ")))")
+            if (self.program.key == "synth3d/noise3d:precompute"
+                    and self.source_hash == NOISE3D_NUMBER_SEED_SOURCE_SHA256
+                    and self.authorized_hash_scalar_uint_xors
+                    and not CURRENT_AUTHORITY_HASH_UINT_BY_BODY
                     and self.current_function_name == "main"
                     and display == "float" and len(value.children) == 1
                     and value.children[0].kind == "id"
@@ -7365,6 +7863,16 @@ class _Emitter:
                     raise _error(self.program, value,
                                  "malformed authenticated Noise3D z conversion")
                 return f"static_cast<double>({self.expression(value.children[0])})"
+            if (self.program.key == "synth3d/noise3d:precompute"
+                    and self.source_hash == NOISE3D_NUMBER_SEED_SOURCE_SHA256
+                    and self.authorized_hash_scalar_uint_xors
+                    and CURRENT_AUTHORITY_HASH_UINT_BY_BODY
+                    and self.current_function_name == "hash4"
+                    and display == "float" and len(value.children) == 1
+                    and value.children[0].kind == "id"
+                    and value.children[0].symbol.name == "seed"
+                    and value.children[0].type.display() == "int"):
+                return self.expression(value.children[0])
             testpattern = self.authorized_testpattern_proof
             glyph_initializer = (next(
                 (item for item in testpattern.consumed_objects
@@ -7580,6 +8088,36 @@ class _Emitter:
                         "malformed authenticated Texture hash conversion")
                 self.emitted_texture_frontend_hash_conversion.append(value)
                 return f"static_cast<double>({self.expression(value.children[0])})"
+            if any(value is item for item in self.authorized_texture_vector_scalar_conversions):
+                if (self.current_function_name != "material_sprinkles"
+                        or display != "ivec3" or value.type.display() != "ivec3"
+                        or len(value.children) != 2
+                        or value.children[0].type.display() != "ivec2"
+                        or value.children[0].symbol is None
+                        or value.children[0].symbol.name != "cell"
+                        or value.children[1].type.display() != "int"
+                        or value.children[1].literal_value not in (0, 1)):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Texture vector-scalar constructor")
+                # CPU9f3's integer vector constructor receives (cell, z).
+                # Its first scalar slot converts the vector to int zero;
+                # the second slot stores z; the missing third slot is zero.
+                self.emitted_texture_vector_scalar_conversions.append(value)
+                return f"glsl::IVec3(0, {value.children[1].literal_value}, 0)"
+            if any(value is item for item in self.authorized_texture_material_layer_conversions):
+                # CPU9f3's exact Texture factory lowers both uint(z0) and
+                # uint(z1) in material_noise to zero before the two gradient
+                # calls. Keep this exception on the authenticated call sites.
+                if (self.current_function_name != "material_noise"
+                        or display != "uint" or value.type.display() != "uint"
+                        or len(value.children) != 1
+                        or value.children[0].type.display() != "int"
+                        or value.children[0].symbol is None
+                        or value.children[0].symbol.name not in {"z0", "z1"}):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Texture material layer conversion")
+                self.emitted_texture_material_layer_conversions.append(value)
+                return "std::uint32_t{0}"
             if any(value is node for node in
                    self.authorized_scalar_uint_narrowing_skip_nodes):
                 # Grain's pinned canonical JS erases this exact
@@ -7678,13 +8216,19 @@ class _Emitter:
                     and value.children[0].type.display() == "bvec3"):
                 edge = self.authorized_edge_proof
                 nodes = () if edge is None else edge.swizzles
-                if not any(value is item for item in nodes):
+                landscape_swizzle = (
+                    self.program.key == "render/renderLandscape3d:landscape"
+                    and self.authorized_any_relational_proof is not None
+                    and any(value is item for item in
+                            self.authorized_any_relational_proof.swizzles))
+                if not landscape_swizzle and not any(value is item for item in nodes):
                     raise _error(self.program, value,
                                  "unsupported bvec3 swizzle")
-                if any(value is item for item in self.emitted_edge_swizzles):
+                if not landscape_swizzle and any(value is item for item in self.emitted_edge_swizzles):
                     raise _error(self.program, value,
                                  "authenticated Edge swizzle emitted twice")
-                self.emitted_edge_swizzles.append(value)
+                if not landscape_swizzle:
+                    self.emitted_edge_swizzles.append(value)
             if literal_lane := self._literal_lane_site(value):
                 _, lane, role = literal_lane
                 if role != "read":
@@ -7739,6 +8283,21 @@ class _Emitter:
             self.emitted_newton_members.append(value)
             return f"{self.expression(value.children[0])}.{value.member}"
         if value.kind == "index":
+            if (self.authorized_runtime_color_hash is not None
+                    and any(value is item for item
+                            in self.authorized_runtime_color_hash.lane_indexes)):
+                self.emitted_runtime_color_indexes.append(value)
+                return (f"{self.expression(value.children[0])}"
+                        f"[static_cast<std::size_t>({self.expression(value.children[1])})]")
+            if any(value is item for item in self.authorized_landscape_indexes):
+                if (len(value.children) != 2
+                        or value.children[0].type.display() not in {"vec3", "ivec3"}
+                        or value.children[1].kind != "id"
+                        or value.children[1].symbol_id not in {118, 126}):
+                    raise _error(self.program, value,
+                                 "malformed bounded Landscape axis index")
+                return (f"{self.expression(value.children[0])}["
+                        f"static_cast<std::size_t>({self.expression(value.children[1])})]")
             audio = self.audio_uniform_proof
             if audio is not None and any(value is n for n in audio.reads):
                 if any(value is n for n in self.emitted_audio_reads):
@@ -7827,6 +8386,8 @@ class _Emitter:
                         f"[static_cast<std::size_t>({self.expression(value.children[1])})]")
             if (not self._proved_index(value) and not self._proved_grade_index(value)
                     and not self._proved_linear_srgb_index(value)
+                    and not self._proved_shapes3d_index(value)
+                    and not self._proved_feedback_index(value)
                     and not self._proved_fractal_index(value)
                     and not self._proved_shape_mixer_index(value)
                     and not self._proved_const_global_table_index(value)):
@@ -8049,6 +8610,18 @@ class _Emitter:
                     return ("glsl::detail::js_shift_right("
                             f"{self.expression(value.children[0])}, "
                             f"{self.expression(value.children[1])})")
+                if any(value is item for item in self.authorized_texture_signed_gradient_shift):
+                    if (self.current_function_name != "material_gradient"
+                            or value.type.display() != "uint"
+                            or len(value.children) != 2
+                            or left_type != "uint" or right_type != "uint"
+                            or value.children[1].literal_value != 16):
+                        raise _error(self.program, value,
+                                     "malformed authenticated Texture gradient shift")
+                    self.emitted_texture_frontend_nodes.append(value)
+                    self.emitted_texture_signed_gradient_shift.append(value)
+                    return ("glsl::detail::js_shift_right("
+                            f"{self.expression(value.children[0])}, 16)")
                 if any(value is item for item in self.authorized_texture_frontend_nodes):
                     if (value.type.display() != "uint"
                             or len(value.children) != 2
@@ -8197,6 +8770,16 @@ class _Emitter:
                             self.program, value,
                             "malformed authenticated scalar uint XOR")
                     self.emitted_hash_scalar_uint_xors.append(value)
+                    return (f"({self.expression(value.children[0])} ^ "
+                            f"{self.expression(value.children[1])})")
+                elif (self.authorized_runtime_color_hash is not None
+                      and any(value is item for item
+                              in self.authorized_runtime_color_hash.scalar_xors)):
+                    if ((left_type, right_type, value.type.display())
+                            != ("uint", "uint", "uint")):
+                        raise _error(self.program, value,
+                                     "malformed runtime lattice XOR")
+                    self.emitted_runtime_color_xors.append(value)
                     return (f"({self.expression(value.children[0])} ^ "
                             f"{self.expression(value.children[1])})")
                 elif any(value is item for item in self.authorized_scalar_uint_xors):
@@ -8414,6 +8997,8 @@ class _Emitter:
                             self.program, value,
                             "malformed authenticated OSD hash remainder")
                     self.emitted_osd_hash_modulos.append(value)
+                    if CURRENT_AUTHORITY_HASH_UINT_BY_BODY:
+                        return f"({left} % {right})"
                     return (
                         "(glsl::detail::js_to_int32(static_cast<double>("
                         f"{left})) % glsl::detail::js_to_int32(static_cast<double>("
@@ -8498,7 +9083,8 @@ class _Emitter:
                         if item.kind == "post"))
             points_post = any(
                 value is item for item in self.authorized_points_post_nodes)
-            if (not (median_post or points_post)
+            ca_post = any(value is item for item in self.authorized_ca_posts)
+            if (not (median_post or points_post or ca_post)
                     or value.operator not in {"++", "--"}
                     or len(value.children) != 1
                     or value.type.display() != "int"
@@ -8511,6 +9097,11 @@ class _Emitter:
                     raise _error(self.program, value,
                                  "authenticated Points post expression emitted twice")
                 self.emitted_points_post_nodes.append(value)
+            if ca_post:
+                if any(value is item for item in self.emitted_ca_posts):
+                    raise _error(self.program, value,
+                                 "authenticated CA post expression emitted twice")
+                self.emitted_ca_posts.append(value)
             return f"({self.expression(value.children[0])}{value.operator})"
         if value.kind == "conditional":
             if len(value.children) != 3:
@@ -8537,10 +9128,11 @@ class _Emitter:
             arguments = [self.expression(x) for x in value.children]
             if (value.kind == "call" and value.callee == "hash4"
                     and self.program.key == "synth3d/noise3d:precompute"
-                    and self.authorized_hash_scalar_uint_xors):
-                # The pinned JS runtime allocates unsigned vectors as ordinary
-                # Number arrays. Only construction coerces to uint32; later
-                # component stores retain double values and signed XOR results.
+                    and self.authorized_hash_scalar_uint_xors
+                    and not CURRENT_AUTHORITY_HASH_UINT_BY_BODY):
+                # Historical compiler reconstructions used Number arrays for
+                # unsigned vectors. The current compiler keeps uint32 stores,
+                # so its hash4 calls must use the emitted unsigned function.
                 if (len(value.children) != 1
                         or value.children[0].type.display() != "vec4"
                         or value.type.display() != "float"):
@@ -8646,17 +9238,9 @@ class _Emitter:
                         "authenticated Test Pattern digit-extraction call "
                         "emitted twice")
                 self.emitted_testpattern_digit_extraction_call = value
-                # `digit` is the JS Number read back out of `digits[]`
-                # (see the field comment above `_testpattern_index`):
-                # non-integral exactly when the authority's own compiler's
-                # missed `int` resolution let a fractional remainder survive
-                # this many `temp /= 10` steps. JS then indexes `GLYPH` with
-                # that fractional Number, which is always a miss --
-                # `GLYPH[1.1]` is `undefined`, and every bitwise op on
-                # `undefined` coerces it to zero, so `sampleGlyph` can only
-                # ever return `false` for a non-integral digit. Reproduce
-                # that unconditionally at the call site instead of widening
-                # `sampleGlyph` itself to a JS-Number parameter.
+                # Keep the existing guarded Number-to-int conversion at this
+                # call. The current CPU digit division truncates, so admitted
+                # inputs reach this call with integral digit values.
                 digit_expr, gx_expr, gy_expr = arguments
                 return (
                     f"((std::trunc({digit_expr}) == ({digit_expr})) ? "
@@ -8746,6 +9330,32 @@ class _Emitter:
                     f"{arguments[0]}, {arguments[1]}, {arguments[2]}, "
                     "std::numeric_limits<double>::quiet_NaN())")
             if value.kind == "builtin":
+                glitch = self.authorized_glitch_proof
+                if (glitch is not None and value is glitch.dot
+                        and self.source_hash in
+                        _CURRENT_BICUBIC_NESTED_DOT_SOURCES.get(self.program.key, ())):
+                    vector = glitch.vector_products[0]
+                    if (self.current_function_name != glitch.host.name
+                            or value.callee != "dot"
+                            or value.type.display() != "float"
+                            or len(value.children) != 2
+                            or value.children[0] is not vector
+                            or vector.kind != "binary"
+                            or vector.operator != "*"
+                            or vector.children[1] is not glitch.matrix_ids[3]
+                            or tuple(child.type.display() for child in value.children)
+                            != ("vec4", "vec4")
+                            or len(self.emitted_glitch_nested_dots) != 0):
+                        raise _error(self.program, value,
+                                     "malformed authenticated bicubic column dot")
+                    tv = self.name(vector.children[0])
+                    matrix = self.name(vector.children[1])
+                    uv = self.name(value.children[1])
+                    self.emitted_glitch_nested_dots.append(value)
+                    columns = ", ".join(
+                        f"glsl::dot({tv}, {matrix}[{index}])"
+                        for index in range(4))
+                    return f"glsl::dot(glsl::Vec4({columns}), {uv})"
                 if value is self.authorized_texture_frontend_inverse_sqrt:
                     if (value.callee != "inversesqrt"
                             or value.type.display() != "float"
@@ -8834,6 +9444,23 @@ class _Emitter:
                                 if value.callee == "packHalf2x16"
                                 else arguments[0])
                     return f"glsl::{helper}({argument})"
+                if (value.callee == "pow"
+                        and self.authorized_fractal3d_pow_nan_nodes
+                        and any(value is item for item in
+                                self.authorized_fractal3d_pow_nan_nodes)):
+                    if (len(arguments) != 2
+                            or value.type.display() != "float"
+                            or any(child.type.display() != "float"
+                                   for child in value.children)
+                            or any(value is item for item in
+                                   self.emitted_fractal3d_pow_nan_nodes)):
+                        raise _error(self.program, value,
+                                     "authenticated Fractal3D pow site mismatch")
+                    self.emitted_fractal3d_pow_nan_nodes.append(value)
+                    base, exponent = arguments
+                    return (f"(std::isnan({base}) ? (({exponent}) == 0.0 ? "
+                            "1.0f : std::bit_cast<float>(0x7fc00000U)) : "
+                            f"glsl::pow({base}, {exponent}))")
                 if value.callee == "log" and self.authorized_fractal3d_logs:
                     if (not any(value is item
                                 for item in self.authorized_fractal3d_logs)
@@ -8938,6 +9565,30 @@ class _Emitter:
                         raise _error(self.program, value, "ceil arity")
                     return f"glsl::ceil({arguments[0]})"
                 if value.callee == "round":
+                    if (self.noise3d_dead_globals_proof is not None
+                            and any(value is item for item
+                                    in self.noise3d_dead_globals_proof.rounds)):
+                        if (len(arguments) != 1 or value.type.display() != "vec3"
+                                or value.children[0].type.display() != "vec3"):
+                            raise _error(self.program, value,
+                                         "malformed authenticated Noise3D round(vec3)")
+                        self.emitted_noise3d_rounds.append(value)
+                        return (
+                            "glsl::Vec3("
+                            f"noisemaker::f32(glsl::round(glsl::swizzle<0>({arguments[0]}))), "
+                            f"noisemaker::f32(glsl::round(glsl::swizzle<1>({arguments[0]}))), "
+                            f"noisemaker::f32(glsl::round(glsl::swizzle<2>({arguments[0]}))))")
+                    if any(value is item for item in self.authorized_shapes3d_rounds):
+                        if (len(arguments) != 1 or value.type.display() != "vec3"
+                                or value.children[0].type.display() != "vec3"):
+                            raise _error(self.program, value,
+                                         "malformed authenticated Shapes3d round(vec3)")
+                        self.emitted_shapes3d_rounds.append(value)
+                        return (
+                            "glsl::Vec3("
+                            f"noisemaker::f32(glsl::round(glsl::swizzle<0>({arguments[0]}))), "
+                            f"noisemaker::f32(glsl::round(glsl::swizzle<1>({arguments[0]}))), "
+                            f"noisemaker::f32(glsl::round(glsl::swizzle<2>({arguments[0]}))))")
                     testpattern = self.authorized_testpattern_proof
                     if testpattern is not None and value is testpattern.round_node:
                         if (len(value.children) != 1
@@ -9043,8 +9694,12 @@ class _Emitter:
                         # kaleido's one ingress, same shape, by object
                         # identity; no capability token.
                         self.emitted_kaleido_float_bits_ingress.append(value)
-                    elif any(value is item for item in
-                             self.authorized_noise_float_bits_ingresses):
+                    elif (self.authorized_runtime_color_hash is not None
+                          and any(value is item for item
+                                  in self.authorized_runtime_color_hash.float_bits)):
+                        self.emitted_runtime_color_bits.append(value)
+                    elif any(value is item
+                             for item in self.authorized_noise_float_bits_ingresses):
                         # Noise's prepared scalar-XOR carrier owns one
                         # floatBitsToUint ingress. Keep it on the same exact
                         # bit-reinterpretation helper as the landed ingress
@@ -9151,7 +9806,14 @@ class _Emitter:
                         and emboss is not None
                         and any(value is item
                                 for item in emboss.reductions))
+                    landscape_relational = (
+                        value.callee == "lessThanEqual"
+                        and self.program.key == "render/renderLandscape3d:landscape"
+                        and self.authorized_any_relational_proof is not None
+                        and any(value is item for item in
+                                self.authorized_any_relational_proof.relationals))
                     if (not emboss_reduction
+                            and not landscape_relational
                             and not any(value is item for item in nodes)):
                         raise _error(self.program, value,
                                      f"unsupported builtin {value.callee}")
@@ -9162,6 +9824,22 @@ class _Emitter:
                                 self.program, value,
                                 "authenticated Emboss reduction emitted twice")
                         self.emitted_emboss_reductions.append(value)
+                    elif landscape_relational:
+                        if (len(arguments) != 2
+                                or value.type.display() != "bvec3"
+                                or tuple(child.type.display() for child in value.children)
+                                != ("vec3", "vec3")
+                                or any(value is item for item in
+                                       self.emitted_any_relational_relationals)):
+                            raise _error(self.program, value,
+                                         "malformed Landscape relation")
+                        self.emitted_any_relational_relationals.append(value)
+                        left, right = arguments
+                        return ("([&] { const glsl::Vec3 lhs = glsl::Vec3("
+                                + left + "); const glsl::Vec3 rhs = glsl::Vec3("
+                                + right + "); return glsl::BVec3("
+                                "lhs[0] <= rhs[0], lhs[1] <= rhs[1], "
+                                "lhs[2] <= rhs[2]); }())")
                     else:
                         self.emitted_extrude_nodes.append(value)
                     if value.callee == "all":
@@ -9214,6 +9892,14 @@ class _Emitter:
                             "authenticated Edge relational emitted twice")
                     self.emitted_edge_relationals.append(value)
                     return f"glsl::{value.callee}({arguments[0]}, {arguments[1]})"
+                if (value.callee == "notEqual" and self.program.key == "filter/lowPoly:lowPoly"
+                        and self.authorized_any_relational_proof is not None
+                        and any(value is item for item in self.authorized_any_relational_proof.relationals)):
+                    if any(value is item for item in self.emitted_any_relational_relationals):
+                        raise _error(self.program, value, "LowPoly relation emitted twice")
+                    self.emitted_any_relational_relationals.append(value)
+                    return ("glsl::BVec2(" + arguments[0] + "[0] != " + arguments[1] + "[0], "
+                            + arguments[0] + "[1] != " + arguments[1] + "[1])")
                 if value.callee in {"any", "notEqual"}:
                     # Emitted only for the exact nodes this emitter itself
                     # authenticated (waves-any-notequal-admission-v1).
@@ -9242,15 +9928,38 @@ class _Emitter:
                         any_relational_proof is not None
                         and any(value is item
                                 for item in any_relational_proof.reductions))
+                    glyph_tile_sites = self.authorized_glyph_map_tile_sites
+                    glyph_tile_site = any(value is item for item in glyph_tile_sites)
                     if (not any(value is item for item in nodes)
                             and not attractor_reduction
-                            and not any_relational_reduction):
+                            and not any_relational_reduction
+                            and not glyph_tile_site):
                         raise _error(self.program, value,
                                      f"unsupported builtin {value.callee}")
+                    if glyph_tile_site:
+                        if value is glyph_tile_sites[0]:
+                            if (value.callee != "any" or len(arguments) != 1
+                                    or value.type.display() != "bool"
+                                    or value.children != (glyph_tile_sites[1],)):
+                                raise _error(self.program, value,
+                                             "malformed Glyph Map origin tile reduction")
+                        elif (value.callee != "notEqual" or len(arguments) != 2
+                                or value.type.display() != "bvec2"
+                                or tuple(child.type.display() for child in value.children)
+                                != ("vec2", "vec2")):
+                            raise _error(self.program, value,
+                                         "malformed Glyph Map origin tile relation")
+                        if any(value is item for item in self.emitted_glyph_map_tile_sites):
+                            raise _error(self.program, value,
+                                         "Glyph Map origin tile site emitted twice")
+                        self.emitted_glyph_map_tile_sites.append(value)
+                        if value.callee == "any":
+                            return f"glsl::any({arguments[0]})"
+                        return f"glsl::notEqual({arguments[0]}, {arguments[1]})"
                     if any_relational_reduction:
                         if (len(arguments) != 1
                                 or value.type.display() != "bool"
-                                or value.children[0].type.display() != "bvec3"):
+                                or value.children[0].type.display() != ("bvec2" if self.program.key == "filter/lowPoly:lowPoly" else "bvec3")):
                             raise _error(self.program, value,
                                          "malformed authenticated any-relational reduction")
                         if any(value is item
@@ -9356,6 +10065,20 @@ class _Emitter:
                                      "authenticated DLA bit-ingress site emitted twice")
                     self.emitted_dla_bit_ingress_sites.append(value)
                     return f"noisemaker::uint_bits_to_float({arguments[0]})"
+                if value.callee == "tan":
+                    from .frontend.landscape_volume_profile import tangent_node
+                    try:
+                        authorized = tangent_node(self.program, self.source_hash)
+                    except ValueError as error:
+                        raise _error(self.program, value, str(error)) from error
+                    if value is not authorized or len(arguments) != 1:
+                        raise _error(self.program, value,
+                                     "unauthenticated Landscape tangent site")
+                    if self.emitted_landscape_tan:
+                        raise _error(self.program, value,
+                                     "Landscape tangent site emitted twice")
+                    self.emitted_landscape_tan.append(value)
+                    return f"glsl::tan({arguments[0]})"
                 if value.callee not in _BUILTIN_NAMES:
                     raise _error(self.program, value, f"unsupported builtin {value.callee}")
                 if value.callee == "fract" and len(value.children) == 1:
@@ -9364,6 +10087,14 @@ class _Emitter:
                         returned=value is self.current_return_value)
                     if fenced is not None:
                         arguments = [fenced]
+                if value.callee == "degrees" and self.program.key in {"filter/hatch:hatch", "filter/strokes:stkSmear"}:
+                    from tools.glslcpp.frontend.hatch_degrees_profile import authenticate
+                    try:
+                        sites = authenticate(self.program, self.source_hash)
+                    except ValueError as error:
+                        raise _error(self.program, value, str(error)) from error
+                    if not any(value is site for site in sites):
+                        raise _error(self.program, value, "unowned authenticated degrees node")
                 return f"glsl::{_BUILTIN_NAMES[value.callee]}(" + ", ".join(arguments) + ")"
             if value.signature_id is None or value.signature_id not in self.function_names:
                 raise _error(self.program, value, "call has no stable user signature")
@@ -9376,6 +10107,10 @@ class _Emitter:
                 ["state", "context"]
                 + ([frame_contract_here.instance_name]
                    if frame_contract_here is not None else []))
+            if (self.program.key == "render/renderLandscape3d:landscape"
+                    and value.signature_id == 70
+                    and value is self.authorized_landscape_perspective_call):
+                prefix += ", fragColor, geoOut"
             prefix += ", " if arguments else ""
             return f"{self.function_names[value.signature_id]}(" + prefix + ", ".join(arguments) + ")"
         if value.kind == "assign" and any(
@@ -9683,6 +10418,12 @@ class _Emitter:
                     raise _error(self.program, value,
                                  "authenticated Remap loop emitted twice")
                 self.emitted_remap_loops.append(value)
+            if self.local_vec4_proof is not None:
+                update = value.expressions[1]
+                if (not any(update is node for node in self.local_vec4_proof.posts)
+                        or any(update is node for node in self.emitted_local_vec4_nodes)):
+                    raise _error(self.program, value, "local vec4 array loop update mismatch")
+                self.emitted_local_vec4_nodes.append(update)
             initializer, body = value.children
             assignment_form = False
             if (self.fractal_frontend_profile is not None
@@ -9773,6 +10514,37 @@ class _Emitter:
                 if declaration.children and references_outer_same_name(declaration.children[0]):
                     emitted_name = f"{emitted_name}_{declaration.symbol_id}"
                 self.locals[declaration.symbol_id] = emitted_name
+                if (self.program.key in RENDER_DYNAMIC_STRUCT_PROFILES
+                        and self.struct_frontier_profile
+                        == RENDER_DYNAMIC_STRUCT_PROFILES[self.program.key]
+                        and declaration.symbol.name == "voxelBounds"):
+                    # The authenticated CPU factory adds a scalar to the
+                    # vector-valued max() result before voxelToWorld. JS
+                    # coercion makes all three lanes NaN. This exact typed
+                    # declaration is the only numeric override.
+                    initializer = declaration.children[0] if len(declaration.children) == 1 else None
+                    vector_sum = initializer.children[0] if (initializer is not None
+                                                               and len(initializer.children) == 1) else None
+                    if (self.current_function_name != "voxelTrace"
+                            or declaration.type.display() != "vec3"
+                            or initializer is None or initializer.kind != "call"
+                            or initializer.callee != "voxelToWorld"
+                            or vector_sum is None or vector_sum.kind != "binary"
+                            or vector_sum.operator != "+"
+                            or vector_sum.type.display() != "ivec3"
+                            or len(vector_sum.children) != 2
+                            or vector_sum.children[0].kind != "id"
+                            or vector_sum.children[0].symbol is None
+                            or vector_sum.children[0].symbol.name != "voxel"
+                            or vector_sum.children[1].kind != "builtin"
+                            or vector_sum.children[1].callee != "max"
+                            or self.emitted_render3d_voxel_bounds):
+                        raise _error(self.program, declaration,
+                                     "render3d voxel-bound coercion identity mismatch")
+                    self.emitted_render3d_voxel_bounds.append(declaration)
+                    lines.append(f"{indent}[[maybe_unused]] glsl::Vec3 {emitted_name} = "
+                                 "glsl::Vec3(std::numeric_limits<float>::quiet_NaN());")
+                    continue
                 contract = self.runtime_loop_contract
                 if (contract is not None and contract.kind == "blur-radius"
                         and declaration is contract.radius_declaration):
@@ -9789,6 +10561,22 @@ class _Emitter:
                     self.runtime_radius_declaration_emitted = True
                     continue
                 if declaration.type.kind == "array":
+                    proof = self.local_vec4_proof
+                    if proof is not None and any(declaration is node for node in proof.declarations):
+                        if any(declaration is node for node in self.emitted_local_vec4_nodes):
+                            raise _error(self.program, declaration, "local vec4 array declared twice")
+                        self.emitted_local_vec4_nodes.append(declaration)
+                        extent = declaration.type.display().split("[")[1].rstrip("]")
+                        lines.append(f"{indent}[[maybe_unused]] std::array<glsl::Vec4, {extent}> {emitted_name}{{}};")
+                        continue
+                    zoomblur = self.zoomblur_local_array_proof
+                    if zoomblur is not None and declaration is zoomblur.declaration:
+                        if any(declaration is node for node in self.emitted_zoomblur_local_nodes):
+                            raise _error(self.program, declaration,
+                                         "zoomBlur local array declared twice")
+                        self.emitted_zoomblur_local_nodes.append(declaration)
+                        lines.append(f"{indent}[[maybe_unused]] std::array<glsl::Vec3, 41> {emitted_name}{{}};")
+                        continue
                     testpattern = self._testpattern_array(declaration)
                     if testpattern is not None:
                         proof = self.authorized_testpattern_proof
@@ -9799,12 +10587,8 @@ class _Emitter:
                                 raise _error(
                                     self.program, declaration,
                                     "malformed Test Pattern digits declaration")
-                            # `double`, not `std::int32_t`: see the digit-
-                            # extraction field comment. `temp % 10` and
-                            # `temp /= 10` both stay real (JS Number)
-                            # arithmetic here, so a store can carry a
-                            # fractional remainder forward exactly like the
-                            # authority does.
+                            # JS Number carrier; the authenticated division
+                            # truncates before the next remainder store.
                             lines.append(
                                 f"{indent}[[maybe_unused]] "
                                 f"std::array<double, 3> {emitted_name}{{}};")
@@ -9950,6 +10734,41 @@ class _Emitter:
                         f"{emitted_name} = {initializer};")
                     continue
                 initializer = self.expression(declaration.children[0]) if declaration.children else "{}"
+                noise3d = self.noise3d_dead_globals_proof
+                if (noise3d is not None
+                        and any(declaration is item for item in noise3d.cellular_oy)):
+                    if self.current_function_name != "cellular":
+                        raise _error(self.program, declaration,
+                                     "authenticated Noise3D oy owner mismatch")
+                    tree = declaration.children[0]
+                    modded = self.expression(tree.children[0].children[0])
+                    multiplier = self.expression(tree.children[0].children[1])
+                    offset = self.expression(tree.children[1])
+                    initializer = (
+                        "([&]() { const glsl::Vec3 values = " + modded
+                        + "; return glsl::DVec3(" + ", ".join(
+                            f"(static_cast<double>(values[{lane}]) * "
+                            f"static_cast<double>({multiplier}) - "
+                            f"static_cast<double>({offset}))"
+                            for lane in range(3)) + "); }())")
+                    self.emitted_noise3d_cellular_oy.append(declaration)
+                if (noise3d is not None
+                        and any(declaration is item
+                                for item in noise3d.cellular_distances)):
+                    if self.current_function_name != "cellular":
+                        raise _error(self.program, declaration,
+                                     "authenticated Noise3D distance owner mismatch")
+                    tree = declaration.children[0]
+                    dx = self.expression(tree.children[0].children[0].children[0])
+                    dy = self.expression(tree.children[0].children[1].children[0])
+                    dz = self.expression(tree.children[1].children[0])
+                    initializer = "glsl::Vec3(" + ", ".join(
+                        "noisemaker::f32(("
+                        f"static_cast<double>({dx}[{lane}]) * static_cast<double>({dx}[{lane}]) + "
+                        f"static_cast<double>({dy}[{lane}]) * static_cast<double>({dy}[{lane}]) + "
+                        f"static_cast<double>({dz}[{lane}]) * static_cast<double>({dz}[{lane}])))"
+                        for lane in range(3)) + ")"
+                    self.emitted_noise3d_cellular_distances.append(declaration)
                 edge = self.authorized_edge_proof
                 spooky = self.authorized_spooky_ticker_proof
                 if (spooky is not None
@@ -9974,6 +10793,9 @@ class _Emitter:
                     declaration_type = "glsl::BVec3"
                 else:
                     declaration_type = self.local_type(declaration.type)
+                    if (noise3d is not None
+                            and any(declaration is item for item in noise3d.cellular_oy)):
+                        declaration_type = "glsl::DVec3"
                     # A vec2/vec3/vec4 local whose initializer is itself a
                     # double-vector expression (e.g. gradient's four-corner
                     # `vec3 cTL = color1;`, or synth/media's `vec2 size =
@@ -9990,6 +10812,7 @@ class _Emitter:
                     declaration_type = "double"
                 if (self.program.key == "synth3d/noise3d:precompute"
                         and self.authorized_hash_scalar_uint_xors
+                        and not CURRENT_AUTHORITY_HASH_UINT_BY_BODY
                         and self.current_function_name == "main"
                         and declaration.symbol.name == "z"):
                     if (declaration.type.display() != "int"
@@ -10016,8 +10839,7 @@ class _Emitter:
                         initializer = (
                             f"(static_cast<double>({self.expression(left)}) / "
                             f"static_cast<double>({self.expression(right)}))")
-                        if (declaration.symbol.name == "glyph_idx"
-                                and OSD_GLYPH_INDEX_TRUNCATES):
+                        if OSD_GLYPH_INDEX_TRUNCATES:
                             initializer = f"std::trunc({initializer})"
                 out_abi = self.authorized_out_inout_argument_abis.get(
                     declaration.symbol_id)
@@ -10122,11 +10944,22 @@ class _Emitter:
                             if item.kind == "post"))
                 points_post = any(
                     value.expressions[0] is item for item in self.authorized_points_post_nodes)
-                if median_post or points_post:
+                ca_post = any(
+                    value.expressions[0] is item for item in self.authorized_ca_posts)
+                if median_post or points_post or ca_post:
                     return [f"{indent}{self.expression(value.expressions[0])};"]
+            if (self.program.key == "render/renderLandscape3d:landscape"
+                    and len(value.expressions) == 1
+                    and value.expressions[0].kind == "call"):
+                expected_call = self.authorized_landscape_perspective_call
+                if value.expressions[0] is expected_call:
+                    return [f"{indent}{self.expression(expected_call)};"]
             if len(value.expressions) != 1 or value.expressions[0].kind != "assign":
                 raise _error(self.program, value, "only typed assignments are admitted")
             assignment = value.expressions[0]
+            if (self.local_vec4_proof is not None
+                    and any(assignment is node for node in self.local_vec4_proof.conditional_stores)):
+                return [f"{indent}(void){self.expression(assignment)};"]
             self._consume_bitwise_number_expression(assignment)
             self._consume_emboss_expression(assignment)
             if assignment.operator not in _ASSIGNMENT_OPERATORS:
@@ -10239,9 +11072,10 @@ class _Emitter:
                 s = self.expression(matrix.children[2])
                 first = (f"({c} * glsl::swizzle<0>({source}) + "
                          f"{s} * glsl::swizzle<1>({source}))")
-                # The first store is intentionally visible through the alias;
-                # lane 1 reads the destination's lane 0, just as canonical JS.
-                second = (f"({neg_s} * glsl::swizzle<0>({target}) + "
+                # The current CPU factory copies centered before this assignment.
+                # The frozen factory aliases it, so preserve that lane dependency.
+                lane_one_source = source if CURRENT_AUTHORITY_VALUE_COPIES else target
+                second = (f"({neg_s} * glsl::swizzle<0>({lane_one_source}) + "
                           f"{c} * glsl::swizzle<1>({source}))")
                 self.emitted_cross_lane_assignments.append(assignment)
                 return [
@@ -10270,6 +11104,22 @@ class _Emitter:
                         self.program, assignment,
                         "authenticated scatter jitter cross-lane assignment emitted twice")
                 self.emitted_scatter_jitter_cross_lane_assignment.append(assignment)
+                return [
+                    f"{indent}glsl::set_swizzle<0>({target}, {first});",
+                    f"{indent}glsl::set_swizzle<1>({target}, {second});",
+                ]
+            navier = self.authorized_navier_hash22
+            if navier is not None and assignment is navier.assignment:
+                if self.current_function_name != "hash22" or assignment.operator != "=":
+                    raise _error(self.program, assignment,
+                                 "malformed authenticated Navier hash22 assignment")
+                if self.emitted_navier_hash22:
+                    raise _error(self.program, assignment,
+                                 "authenticated Navier hash22 emitted twice")
+                self.emitted_navier_hash22.append(assignment)
+                target = self.expression(navier.target)
+                first = self.expression(navier.first)
+                second = self.expression(navier.second)
                 return [
                     f"{indent}glsl::set_swizzle<0>({target}, {first});",
                     f"{indent}glsl::set_swizzle<1>({target}, {second});",
@@ -10417,6 +11267,18 @@ class _Emitter:
             target, swizzle = self.lvalue(assignment.children[0])
             right = self.expression(assignment.children[1])
             operation = assignment.operator
+            testpattern = self.authorized_testpattern_proof
+            if (testpattern is not None
+                    and assignment is testpattern.digit_division):
+                if (self.current_function_name != "renderNumber"
+                        or operation != "/=" or swizzle is not None
+                        or len(self.emitted_testpattern_digit_divisions) != 0):
+                    raise _error(self.program, assignment,
+                                 "malformed authenticated Test Pattern division")
+                self.emitted_testpattern_digit_divisions.append(assignment)
+                return [f"{indent}{target} = std::trunc("
+                        f"static_cast<double>({target}) / "
+                        f"static_cast<double>({right}));"]
             if operation == "^=":
                 target_type = assignment.children[0].type.display()
                 if any(assignment is item
@@ -10517,6 +11379,10 @@ class _Emitter:
         """
         parameters = ["[[maybe_unused]] const State& state",
                       "[[maybe_unused]] const glsl::PixelContext& context"]
+        if (self.program.key == "render/renderLandscape3d:landscape"
+                and function is not None and function.name == "renderPerspective"
+                and function.signature.id == 70):
+            parameters.extend(("glsl::Vec4& fragColor", "glsl::Vec4& geoOut"))
         contract = getattr(self, "authorized_frame_contract", None)
         if contract is not None:
             if contract.helper_parameter_ordinal != len(parameters):
@@ -10710,6 +11576,19 @@ class _Emitter:
         word_name = _safe_identifier(declarations[1].symbol.name,
                                      declarations[1].symbol_id)
         self.emitted_osd_bitwise.extend(proof.pcg_bitwise_nodes)
+        if CURRENT_AUTHORITY_HASH_UINT_BY_BODY:
+            return [
+                "[[nodiscard]] std::uint32_t pcg([[maybe_unused]] const State& state, "
+                "[[maybe_unused]] const glsl::PixelContext& context, "
+                "[[maybe_unused]] std::uint32_t v_in) noexcept {",
+                f"  const std::uint32_t {state_name} = "
+                "v_in * std::uint32_t(747796405) + std::uint32_t(2891336453);",
+                f"  const std::uint32_t {word_name} = "
+                f"(({state_name} >> (({state_name} >> 28U) + 4U)) ^ "
+                f"{state_name}) * std::uint32_t(277803737);",
+                f"  return ({word_name} >> 22U) ^ {word_name};",
+                "}",
+            ]
         return [
             "[[nodiscard]] std::uint32_t pcg([[maybe_unused]] const State& state, "
             "[[maybe_unused]] const glsl::PixelContext& context, "
@@ -11392,6 +12271,20 @@ class _Emitter:
         return lines
 
     def function(self, function) -> list[str]:
+        shape_positive = authenticate_shape_positive_modulo(
+            self.program, self.source_hash)
+        if shape_positive is not None and function is shape_positive:
+            # CPU9f3 canonicalFactory285 evaluates the integer-looking GLSL
+            # division as JavaScript Number. The post-call `xi|0`/`yi|0`
+            # converts its result to int32. Retain that final conversion, not
+            # C++ integer division or an early int32 intermediate.
+            return [
+                "[[nodiscard]] std::int32_t positiveModulo([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] std::int32_t a, [[maybe_unused]] std::int32_t b) noexcept {",
+                "  double result = static_cast<double>(a) - (static_cast<double>(a) / static_cast<double>(b)) * static_cast<double>(b);",
+                "  if (result < 0.0) result += static_cast<double>(b);",
+                "  return glsl::detail::glsl_int_cast(result);",
+                "}",
+            ]
         palette_adapter = self._palette_adapter_function(function)
         if palette_adapter is not None:
             return palette_adapter
@@ -11446,6 +12339,22 @@ class _Emitter:
         lines = [f"{nodiscard}{return_type} {emitted_name}({parameters}) noexcept {{"]
         lines.extend(self.source_global_locals(function.body))
         for statement in function.body: lines.extend(self.statement(statement))
+        if (self.program.key == "classicNoisedeck/kaleido:kaleido"
+                and function.name == "offset"):
+            from .frontend.dynamic_kernel9_profile import (
+                is_dynamic, authenticate_kaleido_offset_terminal)
+            if is_dynamic(self.program):
+                try:
+                    proved = authenticate_kaleido_offset_terminal(
+                        self.program, self.source_hash)
+                except ValueError as error:
+                    raise _error(self.program, function, str(error)) from error
+                if function is not proved:
+                    raise _error(self.program, function,
+                                 "dynamic Kaleido offset proof identity mismatch")
+                # CPU9f3 returns undefined when no LOOP_OFFSET arm matches.
+                # Number arithmetic consumes it as NaN; preserve that value.
+                lines.append("  return std::numeric_limits<double>::quiet_NaN();")
         if (self.fractal_frontend_profile is not None
                 and function.name in self.authorized_fractal_terminal_fallbacks):
             if function.return_type.display() != "float":
@@ -12381,6 +13290,24 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         self._consume_julia_body(body, proof)
         return body.splitlines()
 
+    def _frontier_member_type(self, item: object, field: object) -> str:
+        # The authenticated Shapes3D factory makes ShapeParams as an ordinary
+        # JavaScript object. Its Number members do not narrow at assignment.
+        # Keep this exception bound to its exact source and frozen field set.
+        if (self.program.key == "classicNoisedeck/shapes3d:shapes3d"
+                and self.source_hash == "818badfbadcf295d1863d208c0d0582a1349ff64f44dbf43f905a92fcfd4c5ad"
+                and self.authorized_struct_frontier is not None
+                and item.name == "ShapeParams"
+                and tuple((member.name, member.type.display()) for member in item.fields)
+                == (("scaleA", "float"), ("scaleB", "float"),
+                    ("thicknessA", "float"), ("thicknessB", "float"))):
+            return "double"
+        if (self._cpu_iso_distance_double()
+                and item.name == "IsoHit"
+                and field.name == ("distance" if self.program.key == "render/renderLandscape3d:landscape" else "dist")):
+            return "double"
+        return self.type(field.type)
+
     def render_body(self, namespace: str, factory: str) -> list[str]:
         if self.program.key == JULIA_FRONTEND_KEY:
             return self._render_julia_body(namespace, factory)
@@ -12388,6 +13315,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         uniforms = [
             item.symbol for item in self.program.declarations
             if item.symbol.storage == "uniform"
+            and item.symbol.name not in self.omitted_physical_samplers
             and not (remap is not None and item.symbol.name == "data"
                      and item.symbol.type.display() == "vec4[267]")
         ]
@@ -12469,7 +13397,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 self.emitted_frontier_struct_definitions.append(item.name)
                 lines.extend([
                     f"struct {item.name} final {{",
-                    *(f"  {self.type(field.type)} {field.name};"
+                    *(f"  {self._frontier_member_type(item, field)} {field.name};"
                       for field in item.fields),
                     "};",
                     "",
@@ -12602,10 +13530,15 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 "      ? value * 12.92",
                 "      : (1.055 * noisemaker::fdlibm::pow(value, 1.0 / 2.4)) - 0.055;",
                 "}", ""])
+        if self.palette3d_proof is not None:
+            lines.extend([
+                "struct PaletteEntry final {",
+                "  glsl::Vec4 amp{}, freq{}, offset{}, phase{};",
+                "};", ""])
         lines.append("struct State final : KernelState {")
         constructor_parts = [
             f"const Surface* {symbol.name}_value" if symbol.type.kind == "sampler" else
-            f"{self._classic_noisedeck_double_uniform_type(symbol) or self.uniform_type(symbol.type)} {symbol.name}_value"
+            f"{self._uniform_carrier_type(symbol) or self.uniform_type(symbol.type)} {symbol.name}_value"
             for symbol in uniforms]
         if remap is not None:
             constructor_parts.insert(0, "glsl::RemapUniformData data_value")
@@ -12630,7 +13563,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
             lines.append("  glsl::RemapUniformData data;")
         for symbol in uniforms:
             type_name = ("const Surface*" if symbol.type.kind == "sampler" else
-                        self._classic_noisedeck_double_uniform_type(symbol) or self.uniform_type(symbol.type))
+                        self._uniform_carrier_type(symbol) or self.uniform_type(symbol.type))
             lines.append(f"  {type_name} {symbol.name};")
         if (self.runtime_loop_contract is not None
                 and self.runtime_loop_contract.kind == "blur-radius"):
@@ -12647,9 +13580,26 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                       "  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));", "}"])
         if self.authorized_median_frontend_proof is not None:
             lines.append("// Median texelFetch lowering is bottom-left fetch_texel.")
+        omitted = None
+        if (self.program.key == MUTABLE_GLOBAL_ARRAY_EFFECTS_KEY
+                and not any(d.kind == "str" and d.canonical_value == "int"
+                            for d in self.program.preprocessor_defines)):
+            if self.mutable_global_array_profile != MUTABLE_GLOBAL_ARRAY_EFFECTS_PROFILE:
+                raise _error(self.program, self.program,
+                             "effects emission requires exact array profile")
+            try:
+                omitted = authenticated_effects_emission_omission(
+                    self.program, self.source_hash,
+                    self.mutable_global_array_profile)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         helpers = [
             function for function in self.program.functions
             if (function.name != "main"
+                and function is not omitted
+                and (self.noise3d_dead_globals_proof is None
+                     or not any(function is item for item in
+                                self.noise3d_dead_globals_proof.dead_functions))
                 and function.signature.definition_span is not None
                 and function.span == function.signature.definition_span)
         ]
@@ -12661,6 +13611,17 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         main = next((function for function in self.program.functions if function.name == "main"), None)
         if main is None: raise _error(self.program, self.program, "main function is missing")
         is_mrt = len(self.outputs) > 1
+        landscape_mrt = (
+            self.program.key == "render/renderLandscape3d:landscape"
+            and self.runtime_loop_contract is not None
+            and self.runtime_loop_contract.kind == "volume-atlas-size"
+            and len(self.outputs) == 2)
+        noise3d_mrt = (
+            self.program.key == "synth3d/noise3d:precompute"
+            and self.runtime_loop_contract is not None
+            and self.runtime_loop_contract.kind == "integer-range"
+            and self.runtime_loop_contract.uniform_name == "OCTAVES"
+            and len(self.outputs) == 2)
         if is_mrt and any(bool(value) for value in (
                 remap, contract, array_contract,
                 self.authorized_median_frontend_proof,
@@ -12671,7 +13632,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 self.authorized_struct_declaration,
                 self.authorized_struct_materialization,
                 self.authorized_testpattern_proof,
-                self.runtime_loop_contract,
+                None if landscape_mrt or noise3d_mrt else self.runtime_loop_contract,
                 self.program.fixed_affine_centers13_proof,
                 self.program.fixed_array_in_parameter_proof)):
             # None of these hand-authored single-output carrier constructs
@@ -12734,12 +13695,32 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                     f'    throw glsl::KernelBindingError("{contract.binding_error}");',
                     "  }",
                 ])
+                if noise3d_mrt:
+                    lines.extend([
+                        '  const auto COLOR_MODE = bindings.get<std::int32_t>("COLOR_MODE");',
+                        '  if (COLOR_MODE < 0 || COLOR_MODE > 1) {',
+                        '    throw glsl::KernelBindingError("synth3d/noise3d:precompute COLOR_MODE must be 0 or 1");',
+                        '  }',
+                    ])
             elif contract.kind == "positive-height-spread":
                 lines.extend([
                     '  const auto fullResolution = bindings.get<glsl::Vec2>("fullResolution");',
                     '  if (!std::isfinite(fullResolution[1]) || fullResolution[1] < 1.0F) {',
                     f'    throw glsl::KernelBindingError("{contract.binding_error}");',
                     "  }",
+                ])
+            elif contract.kind == "volume-atlas-size":
+                lines.extend([
+                    '  const auto volumeSize = bindings.get<std::int32_t>("volumeSize");',
+                    '  const auto& volumeCache = bindings.texture("volumeCache");',
+                    '  const auto& analyticalGeo = bindings.texture("analyticalGeo");',
+                    '  if (volumeSize < 1 || volumeSize > 256 ||',
+                    '      volumeCache.width() != static_cast<std::size_t>(volumeSize) ||',
+                    '      volumeCache.height() != static_cast<std::size_t>(volumeSize) * static_cast<std::size_t>(volumeSize) ||',
+                    '      analyticalGeo.width() != volumeCache.width() ||',
+                    '      analyticalGeo.height() != volumeCache.height()) {',
+                    f'    throw glsl::KernelBindingError("{contract.binding_error}");',
+                    '  }',
                 ])
             elif contract.kind == "float-ceil-radius":
                 # A float uniform whose int(ceil(...)) window radius the
@@ -12879,9 +13860,12 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
             elif (testpattern_preflight is not None
                   and symbol.name in {"gridSize", "pattern"}):
                 arguments.append(symbol.name)
-            elif symbol.type.display() == "float": arguments.append(f"bindings.get_number(\"{symbol.name}\")")
+            elif (symbol.type.display() == "float"
+                  or (symbol.name == "seed"
+                      and self._uniform_carrier_type(symbol) == "double")):
+                arguments.append(f"bindings.get_number(\"{symbol.name}\")")
             else:
-                cpp_type = self._classic_noisedeck_double_uniform_type(symbol) or self.type(symbol.type)
+                cpp_type = self._uniform_carrier_type(symbol) or self.type(symbol.type)
                 arguments.append(f"bindings.get<{cpp_type}>(\"{symbol.name}\")")
         if remap_data_argument is not None:
             arguments.insert(0, remap_data_argument)
@@ -13611,6 +14595,58 @@ def _render_dither_typed_cpp(program: TypedProgram, source_hash: str,
     return body
 
 
+def _halftone_alpha_carrier(program: TypedProgram, source_hash: str, body: str) -> str:
+    if (program.key != "filter/halftone:halftone"
+            or source_hash != "063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7"
+            or len(program.raw_source.encode("utf-8")) != 8440
+            or hashlib.sha256(program.raw_source.encode("utf-8")).hexdigest() != source_hash
+            or tuple((item.name, item.kind, item.canonical_value)
+                     for item in program.preprocessor_defines)
+            != (("MODE", "str", "int"), ("PATTERN", "str", "int"))):
+        raise _error(program, program, "Halftone alpha carrier source mismatch")
+    changes = (
+        ("glsl::DVec3 paperColor_value) : ",
+         "glsl::DVec3 paperColor_value, bool inkColorHasAlpha_value, double inkColorAlpha_value, "
+         "bool paperColorHasAlpha_value, double paperColorAlpha_value) : "),
+        ("paperColor(paperColor_value) {}",
+         "paperColor(paperColor_value), inkColorHasAlpha(inkColorHasAlpha_value), "
+         "inkColorAlpha(inkColorAlpha_value), paperColorHasAlpha(paperColorHasAlpha_value), "
+         "paperColorAlpha(paperColorAlpha_value) {}"),
+        ("  glsl::DVec3 paperColor;\n", "  glsl::DVec3 paperColor;\n"
+         "  bool inkColorHasAlpha;\n  double inkColorAlpha;\n"
+         "  bool paperColorHasAlpha;\n  double paperColorAlpha;\n"),
+        ('bindings.get<glsl::DVec3>("paperColor"));',
+         'bindings.get<glsl::DVec3>("paperColor"), '
+         'bindings.get_or<bool>("__cpuColorHasAlpha_inkColor", false), '
+         'bindings.get_or<double>("__cpuColorAlpha_inkColor", 0.0), '
+         'bindings.get_or<bool>("__cpuColorHasAlpha_paperColor", false), '
+         'bindings.get_or<double>("__cpuColorAlpha_paperColor", 0.0));'),
+    )
+    for old, new in changes:
+        if body.count(old) != 1:
+            raise _error(program, program, "Halftone alpha carrier shape mismatch")
+        body = body.replace(old, new, 1)
+    original = ("    output = glsl::Vec4(glsl::Vec4(tonemap2(state, context, "
+                "(static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(ink)), "
+                "glsl::Vec3(state.inkColor), glsl::Vec3(state.paperColor)), alpha));")
+    replacement = (
+        "    double cpuAlpha = alpha;\n"
+        "    if (state.inkColorHasAlpha) {\n"
+        "      if (state.paperColorHasAlpha) {\n"
+        "        const double t = glsl::clamp((static_cast<double>(static_cast<float>(1.0)) - "
+        "static_cast<double>(ink)), static_cast<float>(0.0), static_cast<float>(1.0));\n"
+        "        cpuAlpha = noisemaker::f32(noisemaker::f32(state.inkColorAlpha) * (1.0 - t) + "
+        "noisemaker::f32(state.paperColorAlpha) * t);\n"
+        "      } else {\n"
+        "        cpuAlpha = std::numeric_limits<float>::quiet_NaN();\n"
+        "      }\n"
+        "    }\n"
+        + original.replace(", alpha));", ", cpuAlpha));"))
+    if body.count(original) != 1:
+        raise _error(program, program, "Halftone mono output shape mismatch")
+    return body.replace(original, replacement, 1)
+
+
 def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      namespace: str = "typed_kernel", factory: str = "bind_typed",
                      *, numeric_literal_contract: str = "glsl-f32",
@@ -13806,6 +14842,32 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        scatter_jitter_cross_lane_assignment_profile=scatter_jitter_cross_lane_assignment_profile)
     lines = [f"// Typed IR program: {program_key}", f"// Source SHA-256: {source_hash}"]
     lines.extend(emitter.render_body(namespace, factory))
+    if (emitter.authorized_hatch_multiplier is not None
+            and (len(emitter.emitted_hatch_multipliers) != 1
+                 or emitter.emitted_hatch_multipliers[0]
+                 is not emitter.authorized_hatch_multiplier)):
+        raise _error(program, program,
+                     "authenticated Hatch multiplier emission mismatch")
+    if emitter.local_vec4_proof is not None:
+        proof = emitter.local_vec4_proof
+        expected = (*proof.declarations, *proof.indexes, *proof.posts, *proof.conditional_stores)
+        if ({id(node) for node in emitter.emitted_local_vec4_nodes} != {id(node) for node in expected}
+                or len(emitter.emitted_local_vec4_nodes) != len(expected)):
+            raise _error(program, program, "local vec4 array emission ledger mismatch")
+    if emitter.zoomblur_local_array_proof is not None:
+        proof = emitter.zoomblur_local_array_proof
+        expected = (proof.declaration, *proof.indexes)
+        if ({id(node) for node in emitter.emitted_zoomblur_local_nodes}
+                != {id(node) for node in expected}
+                or len(emitter.emitted_zoomblur_local_nodes) != len(expected)):
+            raise _error(program, program, "zoomBlur local array emission ledger mismatch")
+    if emitter.palette3d_proof is not None:
+        proof = emitter.palette3d_proof
+        expected = (*proof.constructors, *proof.members, *proof.indexes)
+        if ({id(node) for node in emitter.emitted_palette3d_nodes}
+                != {id(node) for node in expected}
+                or len(emitter.emitted_palette3d_nodes) != len(expected)):
+            raise _error(program, program, "Palette3D emission ledger mismatch")
     if emitter.program.key == JULIA_FRONTEND_KEY:
         return "\n".join(lines) + "\n"
     def walk_expression_nodes(value):
@@ -13901,6 +14963,18 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 or len(proof.palette_index_reads) != 1):
             raise _error(program, program,
                          "authenticated Palette emission mismatch")
+    if emitter.authorized_runtime_color_hash is not None:
+        for observed, expected in (
+                (emitter.emitted_runtime_color_indexes,
+                 emitter.authorized_runtime_color_hash.lane_indexes),
+                (emitter.emitted_runtime_color_bits,
+                 emitter.authorized_runtime_color_hash.float_bits),
+                (emitter.emitted_runtime_color_xors,
+                 emitter.authorized_runtime_color_hash.scalar_xors)):
+            if (len(observed) != len(expected)
+                    or {id(x) for x in observed} != {id(x) for x in expected}):
+                raise _error(program, program,
+                             "runtime color/hash site emission mismatch")
     if emitter.authorized_color_lab_frontend_proof is not None:
         expected_indexes = emitter.authorized_color_lab_frontend_proof.index_nodes
         emitted_ids = {id(item) for item in emitter.emitted_color_lab_indexes}
@@ -13938,7 +15012,9 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
         same_identity_set = lambda actual, expected: (
             len(actual) == len(expected)
             and {id(item) for item in actual} == {id(item) for item in expected})
-        if (not same_identity_set(emitter.emitted_testpattern_arrays,
+        if (emitter.emitted_testpattern_digit_divisions
+                != [proof.digit_division]
+                or not same_identity_set(emitter.emitted_testpattern_arrays,
                                       expected_arrays)
                 or not same_identity_set(
                     emitter.emitted_testpattern_constructors,
@@ -14008,6 +15084,18 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 != emitter.authorized_fractal3d_logs):
             raise _error(program, program,
                          "authenticated fractal3d log emission mismatch")
+    if emitter.authorized_fractal3d_pow_nan_nodes:
+        if (len(emitter.emitted_fractal3d_pow_nan_nodes)
+                != len(emitter.authorized_fractal3d_pow_nan_nodes)
+                or {id(item) for item in emitter.emitted_fractal3d_pow_nan_nodes}
+                != {id(item) for item in
+                    emitter.authorized_fractal3d_pow_nan_nodes}):
+            raise _error(program, program,
+                         "authenticated Fractal3D pow emission mismatch")
+    if emitter.authorized_navier_hash22 is not None:
+        if emitter.emitted_navier_hash22 != [emitter.authorized_navier_hash22.assignment]:
+            raise _error(program, program,
+                         "authenticated Navier hash22 emission mismatch")
     if emitter.authorized_mandelbrot_sequential_dz_assignment is not None:
         expected = emitter.authorized_mandelbrot_sequential_dz_assignment.assignment
         if emitter.emitted_mandelbrot_sequential_dz_assignment != [expected]:
@@ -14270,10 +15358,23 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             raise _error(
                 program, program,
                 "authenticated points post emission mismatch")
+    if emitter.authorized_ca_posts:
+        if (len(emitter.emitted_ca_posts) != len(emitter.authorized_ca_posts) - 3
+                or {id(item) for item in emitter.emitted_ca_posts}
+                != {id(item) for item in emitter.authorized_ca_posts[3:]}):
+            raise _error(program, program,
+                         "authenticated CA post emission mismatch")
     if (len(emitter.authorized_vector_value_copies) != len(emitter.emitted_vector_value_copies)
             or any(expected is not actual for expected, actual in zip(
                 emitter.authorized_vector_value_copies, emitter.emitted_vector_value_copies))):
         raise _error(program, program, "authenticated vector value-copy emission mismatch")
+    if emitter.cell3d_hash3_proof is not None and (
+            len(emitter.emitted_cell3d_hash3_nodes) != 2
+            or emitter.emitted_cell3d_hash3_nodes[0]
+            is not emitter.cell3d_hash3_proof.seed_cast
+            or emitter.emitted_cell3d_hash3_nodes[1]
+            is not emitter.cell3d_hash3_proof.q_constructor):
+        raise _error(program, program, "authenticated Cell3D hash3 emission mismatch")
     if emitter.authorized_cross_lane_assignment is not None:
         if emitter.emitted_cross_lane_assignments != [
                 emitter.authorized_cross_lane_assignment.assignment]:
@@ -14424,6 +15525,16 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             raise _error(
                 program, program,
                 "authenticated Texture hash conversion emission mismatch")
+    if (tuple(emitter.emitted_texture_signed_gradient_shift)
+            != emitter.authorized_texture_signed_gradient_shift
+            or tuple(emitter.emitted_texture_vector_scalar_conversions)
+            != emitter.authorized_texture_vector_scalar_conversions):
+        raise _error(program, program,
+                     "authenticated Texture CPU vector/shift emission mismatch")
+    if (tuple(emitter.emitted_texture_material_layer_conversions)
+            != emitter.authorized_texture_material_layer_conversions):
+        raise _error(program, program,
+                     "authenticated Texture material layer emission mismatch")
     if emitter.authorized_glyph_map_proof is not None:
         proof = emitter.authorized_glyph_map_proof
         if (len(emitter.emitted_glyph_map_sites) != 2
@@ -14431,6 +15542,9 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 or emitter.emitted_glyph_map_noops != [proof.self_assignment]):
             raise _error(program, program,
                          "authenticated Glyph Map emission mismatch")
+        if emitter.emitted_glyph_map_tile_sites != list(reversed(emitter.authorized_glyph_map_tile_sites)):
+            raise _error(program, program,
+                         "authenticated Glyph Map origin tile emission mismatch")
     if emitter.authorized_extrude_proof is not None:
         proof = emitter.authorized_extrude_proof
         # Every authenticated node must have been emitted exactly once, and
@@ -14463,6 +15577,13 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             != emitter.authorized_glitch_proof.consumed_objects):
         raise _error(program, program,
                      "authenticated Glitch matrix emission mismatch")
+    if (emitter.authorized_glitch_proof is not None
+            and emitter.source_hash in
+            _CURRENT_BICUBIC_NESTED_DOT_SOURCES.get(program.key, ())
+            and emitter.emitted_glitch_nested_dots
+            != [emitter.authorized_glitch_proof.dot]):
+        raise _error(program, program,
+                     "authenticated bicubic column dot emission mismatch")
     emboss = getattr(emitter, "authorized_emboss_proof", None)
     if emboss is not None:
         proof = emboss
@@ -14658,8 +15779,25 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 not any(value is item for item in emitted) for value in expected):
             raise _error(program, program,
                          "authenticated any-relational emission mismatch")
+    if program.key == "render/renderLandscape3d:landscape":
+        from .frontend.landscape_volume_profile import tangent_node
+        try:
+            expected_tan = tangent_node(program, source_hash)
+        except ValueError as error:
+            raise _error(program, program, str(error)) from error
+        if (len(emitter.emitted_landscape_tan) != 1
+                or emitter.emitted_landscape_tan[0] is not expected_tan):
+            raise _error(program, program,
+                         "authenticated Landscape tangent emission mismatch")
     if emitter.authorized_struct_frontier is not None:
         record = emitter.authorized_struct_frontier
+        if (len(emitter.emitted_frontier_struct_constructors)
+                != len(record.constructors)
+                or any(not any(value is item for item in
+                               emitter.emitted_frontier_struct_constructors)
+                       for value in record.constructors)):
+            raise _error(program, program,
+                         "authenticated struct-frontier constructor emission mismatch")
         if (len(emitter.emitted_frontier_struct_definitions)
                 != len({item.name for item in record.structs})
                 or any(name not in {item.name for item in record.structs}
@@ -14678,6 +15816,12 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        for value in expected_members)):
             raise _error(program, program,
                          "authenticated struct-frontier emission mismatch")
+    if (program.key in RENDER_DYNAMIC_STRUCT_PROFILES
+            and struct_frontier_profile
+            == RENDER_DYNAMIC_STRUCT_PROFILES[program.key]
+            and len(emitter.emitted_render3d_voxel_bounds) != 1):
+        raise _error(program, program,
+                     "render3d voxel-bound coercion emission mismatch")
     if emitter.authorized_inout_vec3_swap_proof is not None:
         expected = emitter.authorized_inout_vec3_swap_proof.calls
         emitted = emitter.emitted_inout_vec3_swap_calls
@@ -14737,4 +15881,105 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
     if program.key in POINTS_POST_KEYS and points_post_profile is None:
         raise _error(program, program,
                      "exact Points post admission profile carrier required")
-    return "\n".join(lines) + "\n"
+    if emitter.authorized_shapes3d_rounds and (
+            len(emitter.emitted_shapes3d_rounds) != 2
+            or any(actual is not expected for actual, expected in zip(
+                emitter.emitted_shapes3d_rounds,
+                emitter.authorized_shapes3d_rounds))):
+        raise _error(program, program,
+                     "authenticated Shapes3d round emission mismatch")
+    if (emitter.noise3d_dead_globals_proof is not None
+            and emitter.noise3d_dead_globals_proof.cellular_distances
+            and (len(emitter.emitted_noise3d_cellular_distances) != 9
+                 or any(actual is not expected for actual, expected in zip(
+                     emitter.emitted_noise3d_cellular_distances,
+                     emitter.noise3d_dead_globals_proof.cellular_distances)))):
+        raise _error(program, program,
+                     "authenticated Noise3D cellular distance emission mismatch")
+    if (emitter.noise3d_dead_globals_proof is not None
+            and emitter.noise3d_dead_globals_proof.cellular_oy
+            and (len(emitter.emitted_noise3d_cellular_oy) != 9
+                 or any(actual is not expected for actual, expected in zip(
+                     emitter.emitted_noise3d_cellular_oy,
+                     emitter.noise3d_dead_globals_proof.cellular_oy)))):
+        raise _error(program, program,
+                     "authenticated Noise3D cellular oy emission mismatch")
+    if (emitter.noise3d_dead_globals_proof is not None
+            and emitter.noise3d_dead_globals_proof.rounds
+            and (len(emitter.emitted_noise3d_rounds) != 2
+                 or {id(item) for item in emitter.emitted_noise3d_rounds}
+                 != {id(item) for item in emitter.noise3d_dead_globals_proof.rounds})):
+        raise _error(program, program,
+                     "authenticated Noise3D round emission mismatch")
+    if emitter.authorized_shapes3d_indices and (
+            len(emitter.emitted_shapes3d_indices) != 5
+            or any(actual is not expected for actual, expected in zip(
+                emitter.emitted_shapes3d_indices,
+                emitter.authorized_shapes3d_indices))):
+        raise _error(program, program,
+                     "authenticated Shapes3d index emission mismatch")
+    if emitter.authorized_feedback_indices and (
+            len(emitter.emitted_feedback_indices) != 2
+            or {id(item) for item in emitter.emitted_feedback_indices}
+            != {id(item) for item in emitter.authorized_feedback_indices}):
+        raise _error(program, program,
+                     "authenticated Feedback index emission mismatch")
+    body = "\n".join(lines) + "\n"
+    if program_key == MOODSCAPE_KEY:
+        from .frontend.moodscape_dynamic_profile import (
+            PROFILE as MOODSCAPE_RUNTIME_PROFILE)
+        if moodscape_frontend_profile == MOODSCAPE_RUNTIME_PROFILE:
+            from .frontend.moodscape_dynamic_profile import authenticate_hue_pairs
+            if (emitter.authorized_moodscape_projection is None
+                    or len(authenticate_hue_pairs(
+                        program, source_hash, moodscape_frontend_profile)) != 2):
+                raise _error(program, program,
+                             "authenticated Moodscape hue-pair proof missing")
+            rotation = (
+                "(static_cast<double>(static_cast<float>(1.0)) - "
+                "static_cast<double>((static_cast<double>(state.hueRotation) / "
+                "static_cast<double>(static_cast<float>(360.0)))))")
+            for spaces in (6, 8):
+                indent = " " * spaces
+                original = (
+                    f"{indent}glsl::set_swizzle<0>(color, "
+                    f"(glsl::swizzle<0>(color) + {rotation}));\n"
+                    f"{indent}glsl::set_swizzle<0>(color, "
+                    "glsl::fract(glsl::swizzle<0>(color)));")
+                combined = (
+                    f"{indent}glsl::set_swizzle<0>(color, glsl::fract("
+                    "(static_cast<double>(glsl::swizzle<0>(color)) + "
+                    f"static_cast<double>({rotation}))));")
+                if body.count(original) != 1:
+                    raise _error(program, program,
+                                 "authenticated Moodscape hue emission mismatch")
+                body = body.replace(original, combined, 1)
+    if (CURRENT_AUTHORITY_VALUE_COPIES
+            and program_key == FRACTAL3D_LOG_KEY):
+        if (fractal3d_log_profile != FRACTAL3D_LOG_PROFILE
+                or authenticate_fractal3d_log_admission(
+                    program, source_hash, fractal3d_log_profile) is None):
+            raise _error(program, program,
+                         "authenticated Fractal3D NaN payload proof missing")
+        # The exact CPU trap min and fragment clamp sites retain an incoming
+        # NaN payload. The four bulb pow sites are emitted by node identity.
+        for old, new, count in (
+            ("trap = glsl::component_min(trap, r);",
+             "trap = std::isnan(trap) ? trap : (std::isnan(r) ? r : glsl::component_min(trap, r));", 2),
+            ("trap = glsl::component_min(trap, glsl::length(z));",
+             "{ const double observed_r = glsl::length(z); trap = std::isnan(trap) ? trap : (std::isnan(observed_r) ? observed_r : glsl::component_min(trap, observed_r)); }", 2),
+            ("[[maybe_unused]] double trap = glsl::clamp((static_cast<double>(glsl::swizzle<1>(result)) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.0), static_cast<float>(1.0));",
+             "[[maybe_unused]] double trap_input = (static_cast<double>(glsl::swizzle<1>(result)) * static_cast<double>(static_cast<float>(0.5))); [[maybe_unused]] double trap = std::isnan(trap_input) ? trap_input : glsl::clamp(trap_input, static_cast<float>(0.0), static_cast<float>(1.0));", 1),
+            ("[[maybe_unused]] double normalizedDist = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::clamp((static_cast<double>((static_cast<double>(dist) * static_cast<double>(static_cast<float>(2.0)))) + static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.0), static_cast<float>(1.0))));",
+             "[[maybe_unused]] double distance_input = (static_cast<double>((static_cast<double>(dist) * static_cast<double>(static_cast<float>(2.0)))) + static_cast<double>(static_cast<float>(0.5))); [[maybe_unused]] double normalizedDist = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(std::isnan(distance_input) ? distance_input : glsl::clamp(distance_input, static_cast<float>(0.0), static_cast<float>(1.0))));", 1),
+        ):
+            if body.count(old) != count:
+                raise _error(program, program,
+                             "authenticated Fractal3D NaN emission mismatch")
+            body = body.replace(old, new)
+    if (program_key == "filter/halftone:halftone"
+            and tuple((item.name, item.kind, item.canonical_value)
+                      for item in program.preprocessor_defines)
+            == (("MODE", "str", "int"), ("PATTERN", "str", "int"))):
+        body = _halftone_alpha_carrier(program, source_hash, body)
+    return body

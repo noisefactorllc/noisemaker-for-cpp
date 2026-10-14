@@ -56,7 +56,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertNotIn("outputTex3d", first)
             self.assertEqual(
                 ["id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
-                 "description", "paramAliases", "params", "passes", "textures", "externalTexture"],
+                 "description", "params", "passes", "textures", "externalTexture"],
                 list(document["records"][0]),
             )
 
@@ -140,25 +140,13 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(210, provenance["counts"]["definitions"])
             self.assertEqual(348, provenance["counts"]["passes"])
             self.assertEqual(308, provenance["counts"]["reference_program_keys"])
-            # Current authority adds Roll, Scope, Spectrum, the exact
-            # Mesh Render whole-pass adapter, the fractal3d:precompute
-            # log admission, the attractor:agent any/isnan identity
-            # admission, the heightmap3d any-relational identity
-            # admission and the multi-pass fragment admissions
-            # (physarum:passthrough, loopEnd:copy,
-            # temporalAberration:delayShift) to the compatible program
-            # census.
-            self.assertEqual(289, provenance["counts"]["compatible_programs"])
-            self.assertEqual(1, provenance["counts"]["incompatible_programs"])
-            # Pending authority passes remain explicit in the compatibility
-            # census; attractor:agent's promotion drops one of the two
-            # missing agent passes for points/attractor, heightmap3d's
-            # promotion drops its missing precompute pass and the
-            # multi-pass fragment admissions drop their twelve bound
-            # passes (2 + 2 + 8).
-            self.assertEqual(44, provenance["counts"]["missing_passes"])
-            self.assertEqual(5, provenance["counts"]["scatter_passes"])
-            self.assertEqual("f8f99a758dad34cde8dbcd70e7f367f7a957a230385ef4a94037bebc3e3b5161", provenance["normalized_record_stream_sha256"])
+            self.assertEqual(301, provenance["counts"]["compatible_programs"])
+            self.assertEqual(0, provenance["counts"]["incompatible_programs"])
+            self.assertEqual(0, provenance["counts"]["missing_passes"])
+            self.assertEqual(16, provenance["counts"]["scatter_passes"])
+            self.assertEqual(210, provenance["counts"]["executable_definitions"])
+            self.assertEqual(0, provenance["counts"]["incomplete_definitions"])
+            self.assertEqual("03b0c42537995616cf4ff032900d82693c249d2a826fe1eb0317caefec28ab0b", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)
             payload_hash = provenance["generated_payload_sha256"]
             marker = f'c.provenance.generated_payload_sha256 = "{payload_hash}";'.encode()

@@ -1,6 +1,7 @@
 #include "noisemaker/graph/executor.hpp"
 
 #include "noisemaker/effects/cpu/worm_overlay.hpp"
+#include "noisemaker/effects/catalog.hpp"
 #include "noisemaker/effects/scatter/catalog.hpp"
 #include "noisemaker/effects/scatter/registry.hpp"
 #include "noisemaker/effects/mesh_render.hpp"
@@ -528,8 +529,21 @@ struct BindingAbiSections {
       break;
     case effects::DimensionKind::parameter: {
       const auto* bound = parameter(step, expression.parameter);
-      if (bound == nullptr) throw std::invalid_argument("dimension parameter is missing");
-      value = number(*bound, expression.parameter);
+      if (bound != nullptr && bound->kind != PlanValue::Kind::null_value) {
+        value = number(*bound, expression.parameter);
+      } else {
+        // This catalog kind has no paramDefault. The CPU uses `default ?? 64`
+        // even when the effect does not declare the named parameter.
+        value = 64.0;
+        if (expression.raw.kind == effects::ValueKind::object) {
+          for (const auto& field : expression.raw.object) {
+            if (field.first == "default" && field.second.kind != effects::ValueKind::null_value) {
+              value = catalog_number(field.second);
+              break;
+            }
+          }
+        }
+      }
       break;
     }
     case effects::DimensionKind::parameter_default:
@@ -591,6 +605,111 @@ struct BindingAbiSections {
   }
   (void)width;
   return rounded_dimension(value);
+}
+
+[[nodiscard]] const effects::Value* object_field(const effects::Value& value,
+                                                 std::string_view name) {
+  if (value.kind != effects::ValueKind::object) return nullptr;
+  for (const auto& entry : value.object) {
+    if (entry.first == name) return &entry.second;
+  }
+  return nullptr;
+}
+
+// canonicalDestination selects the viewport before the texture specification.
+// Resolve inputOverride in the pass's resource map, which includes volume routes.
+template <typename Lookup>
+[[nodiscard]] std::size_t destination_dimension(
+    const effects::PassDefinition& pass, const effects::TextureDefinition* texture,
+    const EffectStep& step, const ResourceArena& arena, std::size_t extent,
+    bool width, Lookup lookup) {
+  const effects::Value* spec = nullptr;
+  if (pass.viewport.has_value()) {
+    if (pass.viewport->kind != effects::ValueKind::object)
+      throw std::invalid_argument("viewport is not an object");
+    spec = object_field(*pass.viewport, width ? "w" : "h");
+    if (spec == nullptr || spec->kind == effects::ValueKind::null_value)
+      spec = object_field(*pass.viewport, width ? "width" : "height");
+  }
+  if (spec == nullptr || spec->kind == effects::ValueKind::null_value) {
+    return texture == nullptr ? extent : resolve_dimension(
+        width ? texture->width : texture->height, step, arena, extent, width);
+  }
+  if (spec->kind == effects::ValueKind::number) return rounded_dimension(spec->number);
+  if (spec->kind == effects::ValueKind::string) {
+    if (spec->string == "input" || spec->string == "screen" ||
+        spec->string == "auto" || spec->string == "resolution") return extent;
+    return rounded_dimension(static_cast<double>(extent) * parse_percentage(spec->string) / 100.0);
+  }
+  if (spec->kind != effects::ValueKind::object)
+    throw std::invalid_argument("unsupported viewport dimension");
+  if (const auto* input = object_field(*spec, "inputOverride"); input != nullptr &&
+      input->kind == effects::ValueKind::string && !input->string.empty()) {
+    if (const auto* surface = lookup(input->string); surface != nullptr)
+      return width ? surface->width() : surface->height();
+  }
+  const auto numeric = [&](std::string_view name, double fallback) {
+    const auto* field = object_field(*spec, name);
+    return field == nullptr || field->kind == effects::ValueKind::null_value
+               ? fallback : catalog_number(*field);
+  };
+  if (const auto* param = object_field(*spec, "param"); param != nullptr) {
+    if (param->kind != effects::ValueKind::string)
+      throw std::invalid_argument("viewport parameter name is invalid");
+    const auto* bound = parameter(step, param->string);
+    const bool has_bound = bound != nullptr && bound->kind != PlanValue::Kind::null_value;
+    double value = has_bound ? number(*bound, param->string)
+                            : numeric("paramDefault", numeric("default", 64.0));
+    const auto* multiply = object_field(*spec, "multiply");
+    const auto* power = object_field(*spec, "power");
+    if (multiply != nullptr) value *= catalog_number(*multiply);
+    if (power != nullptr) value = noisemaker::fdlibm::pow(value, catalog_number(*power));
+    if (!has_bound && (multiply != nullptr || power != nullptr) &&
+        object_field(*spec, "default") != nullptr) value = numeric("default", 64.0);
+    return rounded_dimension(value);
+  }
+  if (const auto* divide = object_field(*spec, "screenDivide"); divide != nullptr) {
+    if (divide->kind != effects::ValueKind::string)
+      throw std::invalid_argument("viewport divisor parameter is invalid");
+    const auto* bound = parameter(step, divide->string);
+    const double divisor = bound == nullptr || bound->kind == PlanValue::Kind::null_value
+        ? numeric("default", 1.0) : number(*bound, divide->string);
+    return rounded_dimension(std::ceil(static_cast<double>(extent) / std::max(1.0, divisor)));
+  }
+  if (object_field(*spec, "scale") != nullptr) {
+    double value = std::floor(static_cast<double>(extent) * numeric("scale", 1.0));
+    if (const auto* clamp = object_field(*spec, "clamp"); clamp != nullptr) {
+      if (const auto* minimum = object_field(*clamp, "min"); minimum != nullptr)
+        value = std::max(catalog_number(*minimum), value);
+      if (const auto* maximum = object_field(*clamp, "max"); maximum != nullptr)
+        value = std::min(catalog_number(*maximum), value);
+    }
+    return rounded_dimension(value);
+  }
+  throw std::invalid_argument("unsupported viewport dimension");
+}
+
+[[nodiscard]] bool same_catalog_value(const effects::Value& left, const effects::Value& right) {
+  if (left.kind != right.kind) return false;
+  switch (left.kind) {
+    case effects::ValueKind::null_value: return true;
+    case effects::ValueKind::boolean: return left.boolean == right.boolean;
+    case effects::ValueKind::number:
+      return std::bit_cast<std::uint64_t>(left.number) == std::bit_cast<std::uint64_t>(right.number);
+    case effects::ValueKind::string: return left.string == right.string;
+    case effects::ValueKind::array:
+      if (left.array.size() != right.array.size()) return false;
+      for (std::size_t i = 0; i < left.array.size(); ++i)
+        if (!same_catalog_value(left.array[i], right.array[i])) return false;
+      return true;
+    case effects::ValueKind::object:
+      if (left.object.size() != right.object.size()) return false;
+      for (std::size_t i = 0; i < left.object.size(); ++i)
+        if (left.object[i].first != right.object[i].first ||
+            !same_catalog_value(left.object[i].second, right.object[i].second)) return false;
+      return true;
+  }
+  return false;
 }
 
 [[nodiscard]] bool catalog_value_matches_plan(const effects::Value& catalog,
@@ -665,6 +784,35 @@ struct BindingAbiSections {
   return true;
 }
 
+[[nodiscard]] bool authority_defines_match(
+    const effects::PassDefinition& pass,
+    const AuthorityPassMetadata& authority) {
+  if (pass.defines.has_value() != authority.defines.has_value()) return false;
+  return !pass.defines.has_value() ||
+         same_catalog_value(*pass.defines, *authority.defines);
+}
+
+[[nodiscard]] bool authority_viewport_matches(
+    const effects::PassDefinition& pass, const AuthorityPassMetadata& authority) {
+  return pass.viewport.has_value() == authority.viewport.has_value() &&
+         (!pass.viewport.has_value() || same_catalog_value(*pass.viewport, *authority.viewport));
+}
+
+[[nodiscard]] bool viewport_matches_catalog(
+    const effects::EffectDefinition& definition, const effects::PassDefinition& pass,
+    std::size_t pass_index) {
+  for (const auto& canonical : effects::effect_catalog().definitions) {
+    if (canonical.id != definition.id) continue;
+    if (pass_index >= canonical.passes.size()) return !pass.viewport.has_value();
+    const auto& anchor = canonical.passes[pass_index];
+    if (anchor.viewport.has_value() != pass.viewport.has_value()) return false;
+    return !pass.viewport.has_value() ||
+        (anchor.name == pass.name && anchor.program == pass.program &&
+         same_catalog_value(*anchor.viewport, *pass.viewport));
+  }
+  return !pass.viewport.has_value();
+}
+
 [[nodiscard]] bool authority_blend_matches(
     const effects::PassDefinition& pass,
     const AuthorityPassMetadata& authority) {
@@ -706,24 +854,14 @@ void validate_ordinary_pass_metadata(const EffectStep& step,
     }
     return;
   }
-  // A dispatchable scatter pass legitimately declares `count` (JS's
-  // `count:"input"` -- the adapter itself iterates once per source pixel,
-  // never the ordinary ABI's ordinary-count/viewport machinery). Its own
-  // metadata is authenticated by validate_pass_output_abi's scatter branch
-  // instead. `viewport` stays refused even here: no registered adapter uses
-  // it today, so admitting it would be unproven.
+  // Scatter count is authenticated by its adapter contract. Viewport metadata
+  // is authenticated for every pass by validate_pass_identity_and_output.
   if (scatter_adapter_available(admission)) {
-    if (pass.viewport.has_value()) {
-      throw GraphError(GraphErrorCode::invalid_snapshot,
-                       "ordinary count or viewport is unsupported",
-                       step.effect.id, pass_index, pass.name,
-                       admission.identity.program_key);
-    }
     return;
   }
-  if (pass.count.has_value() || pass.viewport.has_value()) {
+  if (pass.count.has_value()) {
     throw GraphError(GraphErrorCode::invalid_snapshot,
-                     "ordinary count or viewport is unsupported",
+                       "ordinary count is unsupported",
                      step.effect.id, pass_index, pass.name,
                      admission.identity.program_key);
   }
@@ -756,9 +894,8 @@ void validate_pass_output_abi(const EffectStep& step,
     // that the ordinary branch below has no field for: `drawMode` must be
     // exactly the adapter's own registered draw mode, and `count` (JS's
     // `count:"input"` -- the adapter iterates once per source pixel itself)
-    // must be present and hold that literal string. `viewport` stays
-    // unconditionally refused (validate_ordinary_pass_metadata) since no
-    // registered adapter uses it.
+    // must be present and hold that literal string. Viewport dimensions use
+    // the same authenticated destination path as ordinary fragment passes.
     if (pass.outputs.size() != 1U || admission.scatter->outputs.size() != 1U) {
       throw GraphError(GraphErrorCode::unsupported_mrt,
                        "exactly one fragment output is supported",
@@ -782,8 +919,20 @@ void validate_pass_output_abi(const EffectStep& step,
                        step.effect.id, pass_index, pass.name,
                        std::string(program_key));
     }
-    if (!pass.count.has_value() || pass.count->kind != effects::ValueKind::string ||
-        pass.count->string != admission.scatter->count) {
+    bool count_matches = pass.count.has_value() &&
+        pass.count->kind == effects::ValueKind::string &&
+        pass.count->string == admission.scatter->count;
+    if (admission.scatter->count == "pass" && program_key == "filter3d/flow3d:deposit") {
+      for (const auto& definition : effects::effect_catalog().definitions) {
+        if (definition.id != step.effect.id || pass_index >= definition.passes.size()) continue;
+        const auto& anchor = definition.passes[pass_index];
+        count_matches = anchor.name == pass.name && anchor.program == pass.program &&
+            anchor.count.has_value() && pass.count.has_value() &&
+            same_catalog_value(*anchor.count, *pass.count);
+        break;
+      }
+    }
+    if (!count_matches) {
       throw GraphError(GraphErrorCode::invalid_snapshot,
                        "scatter pass count differs from the admitted contract",
                        step.effect.id, pass_index, pass.name,
@@ -833,12 +982,19 @@ void validate_pass_identity_and_output(
       admission.authority_pass.inputs != pass.inputs ||
       admission.authority_pass.outputs != pass.outputs ||
       !authority_uniforms_match(pass, admission.authority_pass) ||
+      !authority_defines_match(pass, admission.authority_pass) ||
+      !authority_viewport_matches(pass, admission.authority_pass) ||
       !authority_blend_matches(pass, admission.authority_pass) ||
       !authority_repeat_matches(pass, admission.authority_pass)) {
     throw GraphError(GraphErrorCode::invalid_snapshot,
                      "pass routing differs from admitted ABI",
                      definition.id, pass_index, pass.name,
                      expected_program_key);
+  }
+  if (!viewport_matches_catalog(definition, pass, pass_index)) {
+    throw GraphError(GraphErrorCode::invalid_snapshot,
+                     "viewport differs from the generated catalog anchor",
+                     definition.id, pass_index, pass.name, expected_program_key);
   }
   validate_pass_output_abi(step, pass, admission, pass_index);
 }
@@ -898,35 +1054,27 @@ void authenticate_palette_override(const EffectStep& step,
 //
 // The double-precision palette-uniform carrier list (see this file's
 // kTypes comment in validate_uniform_abi_shape and
-// tools/glslcpp/emit_typed_cpp.py's
-// _CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS, which this mirrors exactly):
-// the generated kernel for exactly these five classicNoisedeck effects
-// reads paletteAmp/paletteFreq/paletteOffset/palettePhase as
-// `glsl::DVec3`. classicNoisedeck/noise also has a palette parameter, but
-// its generated route bakes colorMode to a compile-time constant that never
-// reaches `pal()` (dead code in this port -- see the carrier-list comment
-// in emit_typed_cpp.py), so its uniforms are still bound `glsl::Vec3` and
-// must not be overridden with a `glsl::DVec3` here or its State
-// constructor's `bindings.get<glsl::Vec3>(...)` call would throw.
+// tools/glslcpp/emit_typed_cpp.py's classic palette and generic vector
+// uniform carriers):
+// These kernels read paletteAmp/paletteFreq/paletteOffset/palettePhase as
+// glsl::DVec3. Noise's runtime COLOR_MODE=4 reaches pal(), so its palette
+// override must preserve the same raw double values as the CPU renderer.
 bool classic_noisedeck_palette_uses_double_carrier(
     const effects::EffectDefinition& definition) {
-  static constexpr std::array<std::string_view, 5> kIds = {{
+  static constexpr std::array<std::string_view, 7> kIds = {{
       "classicNoisedeck/cellNoise",
       "classicNoisedeck/colorLab",
       "classicNoisedeck/fractal",
+      "classicNoisedeck/noise",
       "classicNoisedeck/shapeMixer",
       "classicNoisedeck/shapes",
+      "classicNoisedeck/shapes3d",
   }};
   return std::find(kIds.begin(), kIds.end(), definition.id) != kIds.end();
 }
 
-// The table stores full authority double precision. For the double
-// carrier's five effects it is bound completely unnarrowed, exactly as the
-// authority's own raw-JS-double uniform binding is, and the generated
-// kernel narrows to float32 only where the authority's own per-op
-// arithmetic narrows. classicNoisedeck/noise (palette-typed but not on the
-// carrier list) still narrows once here, at construction of the Vec3/int32
-// uniform its generated kernel actually reads.
+// The table stores full authority double precision. Double carriers narrow
+// only at the same arithmetic operations as the CPU implementation.
 void apply_classic_noisedeck_palette_override(
     glsl::Bindings& bindings, const EffectStep& step,
     const effects::EffectDefinition& definition) {
@@ -1159,6 +1307,8 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
   }
   for (const auto& chain : plan.chains) {
     bool have_current = false;
+    bool have_volume = false;
+    bool have_geometry = false;
     std::unordered_set<std::string> produced;
     // The dry run mirrors execution's own partition: a step inside an
     // iterated group (renderer.js runIteratedGroup) resolves its routes
@@ -1179,6 +1329,8 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           throw GraphError(GraphErrorCode::missing_resource, "named read surface is missing", {}, 0, {}, read->surface.name);
         }
         have_current = true;
+        have_volume = false;
+        have_geometry = false;
       } else if (const auto* write = std::get_if<WriteStep>(&variant)) {
         if (!have_current || write->surface.kind != SurfaceReference::Kind::named) {
           throw GraphError(GraphErrorCode::missing_resource, "write has no current image");
@@ -1194,6 +1346,33 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         const EffectStep effect = with_resolved_automation(raw_effect, snapshot.definition, inputs.time);
         const auto* group = group_of[step_index];
         const bool iterated = group != nullptr && group->iterated;
+        bool zero_iterations = false;
+        if (iterated) {
+          const auto* owner = std::get_if<EffectStep>(
+              &chain.steps[group->step_indices.front()]);
+          if (owner == nullptr) {
+            throw GraphError(GraphErrorCode::invalid_snapshot,
+                             "iterated group owner is not an effect step");
+          }
+          zero_iterations = iteration::resolve_iteration_count(
+              parameter(*owner, "iterationCount")).zero_iterations;
+        }
+        // Group execution seeds every declared typed parameter before it
+        // tests pass enablement or repeat count. Check all of those seeds,
+        // including parameters that no pass reads, before any allocation.
+        if (iterated && !zero_iterations) {
+          for (const auto& declared : snapshot.definition.parameters) {
+            if (declared.type != "volume" && declared.type != "geometry") continue;
+            const bool incoming = declared.type == "volume" ? have_volume : have_geometry;
+            const auto& output_name = declared.type == "volume"
+                ? snapshot.definition.output_tex3d : snapshot.definition.output_geo;
+            if (!incoming && (!output_name.has_value() ||
+                texture_for(snapshot.definition, *output_name) == nullptr)) {
+              throw GraphError(GraphErrorCode::read_before_write,
+                               "typed input has no seeded resource", effect.effect.id);
+            }
+          }
+        }
         // Declared textures with no producer, and consumed underscore-prefixed
         // feedback textures even when also produced (including `_rollFb`),
         // are initialized before execution. This includes `overlayTex` on the
@@ -1256,7 +1435,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                              effect.effect.id, pass_index, pass.name,
                              admission.identity.program_key);
           }
-          if (!enabled || repeats == 0U) continue;
+          if (!enabled || repeats == 0U || zero_iterations) continue;
           for (const auto& input : pass.inputs) {
             const auto require_named = [&](const std::string& route) {
               if (iterated) {
@@ -1312,8 +1491,34 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
               else throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced", effect.effect.id, pass_index, pass.name, admission.identity.program_key);
               continue;
             }
+            // Current typed volume/geometry parameters are iterated. The
+            // authority seeds their pass routes from the incoming bundle or
+            // a cleared surface sized by outputTex3d/outputGeo; the parameter
+            // value itself is not a named arena dependency.
+            const auto typed_parameter = std::find_if(
+                snapshot.definition.parameters.begin(),
+                snapshot.definition.parameters.end(),
+                [&](const effects::ParameterDefinition& declared) {
+                  return (declared.type == "volume" || declared.type == "geometry") &&
+                         declared.name == input.second;
+                });
+            if (typed_parameter != snapshot.definition.parameters.end()) {
+              if (!iterated) {
+                throw GraphError(GraphErrorCode::read_before_write,
+                                 "typed input has no seeded resource", effect.effect.id,
+                                 pass_index, pass.name, admission.identity.program_key);
+              }
+              continue;
+            }
             if (input.second == "inputTex") require_current();
-            else if (declared_textures.find(input.second) == declared_textures.end()) {
+            else if (input.second == "inputTex3d" || input.second == "inputGeo") {
+              const bool available = input.second == "inputTex3d" ? have_volume : have_geometry;
+              if (!available) {
+                throw GraphError(GraphErrorCode::read_before_write,
+                                 "input bundle resource is not produced", effect.effect.id,
+                                 pass_index, pass.name, admission.identity.program_key);
+              }
+            } else if (declared_textures.find(input.second) == declared_textures.end()) {
               require_named(input.second);
             }
           }
@@ -1357,11 +1562,67 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
               throw GraphError(GraphErrorCode::invalid_dimension, error.what(), effect.effect.id, pass_index, pass.name, admission.identity.program_key);
             }
           }
+          if (pass.viewport.has_value()) {
+            try {
+              const auto lookup = [&](std::string_view name) -> const noisemaker::Surface* {
+                for (const auto& input : inputs.seed_surfaces)
+                  if (input.name == name) return &input.surface;
+                for (const auto& input : inputs.external_textures)
+                  if (input.name == name) return &input.surface;
+                return nullptr;
+              };
+              for (const auto& output : pass.outputs) {
+                const auto* texture = texture_for(snapshot.definition, output.second);
+                const auto width = destination_dimension(pass, texture, effect, ResourceArena{},
+                                                          inputs.width, true, lookup);
+                const auto height = destination_dimension(pass, texture, effect, ResourceArena{},
+                                                           inputs.height, false, lookup);
+                if (height > noisemaker::kMaxSurfacePixels / width)
+                  throw GraphError(GraphErrorCode::allocation_limit,
+                                   "viewport dimensions exceed allocation limit",
+                                   effect.effect.id, pass_index, pass.name, admission.identity.program_key);
+              }
+            } catch (const GraphError&) {
+              throw;
+            } catch (const std::invalid_argument& error) {
+              throw GraphError(GraphErrorCode::invalid_dimension, error.what(),
+                               effect.effect.id, pass_index, pass.name, admission.identity.program_key);
+            }
+          }
           for (const auto& output : pass.outputs) {
             produced.insert(output.second);
             step_produced.insert(output.second);
             if (output.second == "outputTex") have_current = true;
           }
+        }
+        if (zero_iterations) {
+          // No pass reads or publishes a resource in a zero-iteration group.
+          // Its owner clones the input bundle, or creates a cleared output
+          // when the group starts without input (renderer.js:721-756).
+          if (step_index == group->step_indices.front() &&
+              !have_current && !have_volume && !have_geometry) {
+            if (snapshot.definition.domain == "volume-generator") {
+              have_volume = true;
+              have_geometry = snapshot.definition.output_geo.has_value() &&
+                  !bundle::is_passthrough_output_name(*snapshot.definition.output_geo);
+            } else {
+              have_current = true;
+            }
+          }
+          continue;
+        }
+        {
+          // Execution binds the incoming bundle once per effect and publishes
+          // its declared volume and geometry routes after all passes finish.
+          const auto bundle_available = [&](const std::optional<std::string>& name,
+                                            bool input_available) {
+            if (!name.has_value() || bundle::is_passthrough_output_name(*name))
+              return input_available;
+            return produced.contains(*name) || available_routes.contains(*name) ||
+                   declared_textures.contains(*name);
+          };
+          have_volume = bundle_available(snapshot.definition.output_tex3d, have_volume);
+          have_geometry = bundle_available(snapshot.definition.output_geo, have_geometry);
         }
       }
     }
@@ -1472,6 +1733,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
 
 [[nodiscard]] bool is_reserved_name(std::string_view name) noexcept {
   return name == "resolution" || name == "fullResolution" ||
+         name == "invFullResolution" || name == "aspectInv" ||
          name == "renderScale" || name == "tileOffset" || name == "time" ||
          name == "frame" || name == "seed" || name == "deltaTime" ||
          name == "audioWaveform" || name == "audioSpectrum" || name == "midiClockCount";
@@ -1559,6 +1821,47 @@ void validate_uniform_abi_shape(const EffectStep& step,
   }
   known = known || (abi.type == "ivec2" && abi.cpp_type == "glsl::IVec2") ||
           (abi.type == "vec4[275]" && abi.cpp_type == "vec4[275]");
+  const bool noise3d_number_seed =
+      admission.identity.program_key == "synth3d/noise3d:precompute" &&
+      admission.source_sha256 ==
+          "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727" &&
+      abi.name == "seed" && abi.type == "int" &&
+      abi.cpp_type == "double" && abi.source == "effect_parameter" &&
+      abi.source_name == "seed";
+  const bool cell3d_number_seed =
+      admission.identity.program_key == "synth3d/cell3d:precompute" &&
+      admission.source_sha256 ==
+          "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755" &&
+      abi.name == "seed" && abi.type == "int" &&
+      abi.cpp_type == "double" && abi.source == "effect_parameter" &&
+      abi.source_name == "seed";
+  const bool cubemap_double_basis =
+      ((admission.identity.program_key == "render/renderCubemap3d:renderCubemap3d" &&
+        admission.source_sha256 ==
+            "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26") ||
+       (admission.identity.program_key == "render/renderCubemapSurface:renderCubemapSurface" &&
+        admission.source_sha256 ==
+            "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc")) &&
+      abi.name == "cubeBasis" && abi.type == "mat3" &&
+      abi.cpp_type == "glsl::DMat3" && abi.source == "effect_parameter" &&
+      abi.source_name == "cubeBasis";
+  known = known || noise3d_number_seed || cell3d_number_seed || cubemap_double_basis;
+  if ((admission.identity.program_key == "render/renderCubemap3d:renderCubemap3d" ||
+       admission.identity.program_key == "render/renderCubemapSurface:renderCubemapSurface") &&
+      abi.name == "cubeBasis" && !cubemap_double_basis) {
+    throw binding_error(step, admission, GraphErrorCode::binding_type,
+                        "cubemap basis ABI is not authenticated");
+  }
+  if (admission.identity.program_key == "synth3d/noise3d:precompute" &&
+      abi.name == "seed" && !noise3d_number_seed) {
+    throw binding_error(step, admission, GraphErrorCode::binding_type,
+                        "Noise3D seed ABI is not authenticated");
+  }
+  if (admission.identity.program_key == "synth3d/cell3d:precompute" &&
+      abi.name == "seed" && !cell3d_number_seed) {
+    throw binding_error(step, admission, GraphErrorCode::binding_type,
+                        "Cell3D seed ABI is not authenticated");
+  }
   if (!known || abi.name.empty() || abi.source_name.empty()) {
     throw binding_error(step, admission, GraphErrorCode::binding_type,
                         "uniform ABI type or name is unsupported");
@@ -1765,6 +2068,20 @@ void validate_uniform_abi_shape(const EffectStep& step,
     }
     return result;
   }
+  if (cpp_type == "glsl::DMat3") {
+    if (value.kind != PlanValue::Kind::array || value.array.size() != 9U) {
+      return fail("mat3 has the wrong cardinality");
+    }
+    glsl::DMat3 result;
+    for (std::size_t col = 0; col < 3U; ++col) {
+      for (std::size_t row = 0; row < 3U; ++row) {
+        const auto& item = value.array[col * 3U + row];
+        if (!is_finite_plan_number(item)) return fail("mat3 has an invalid element");
+        result[col][row] = item.number;
+      }
+    }
+    return result;
+  }
   if (cpp_type == "vec4[275]") {
     if (value.kind != PlanValue::Kind::array || value.array.size() != 275U) {
       return fail("remap block has the wrong cardinality");
@@ -1808,6 +2125,29 @@ void validate_uniform_abi_shape(const EffectStep& step,
   }
   if (abi.source_name == "fullResolution") {
     return materialize_plan_value(PlanValue::array_value({PlanValue::number_value(static_cast<double>(inputs.width)), PlanValue::number_value(static_cast<double>(inputs.height))}), abi.cpp_type, step, admission, abi.name);
+  }
+  if (abi.source_name == "invFullResolution") {
+    if (inputs.width == 0U || inputs.height == 0U) {
+      throw binding_error(step, admission, GraphErrorCode::invalid_dimension,
+                          "full resolution must be positive");
+    }
+    const double full_width = static_cast<double>(noisemaker::f32(inputs.width));
+    const double full_height = static_cast<double>(noisemaker::f32(inputs.height));
+    return materialize_plan_value(PlanValue::array_value({
+        PlanValue::number_value(static_cast<double>(noisemaker::f32(1.0 / full_width))),
+        PlanValue::number_value(static_cast<double>(noisemaker::f32(1.0 / full_height)))}),
+        abi.cpp_type, step, admission, abi.name);
+  }
+  if (abi.source_name == "aspectInv") {
+    if (inputs.width == 0U || inputs.height == 0U) {
+      throw binding_error(step, admission, GraphErrorCode::invalid_dimension,
+                          "full resolution must be positive");
+    }
+    const double aspect = static_cast<double>(noisemaker::f32(inputs.width)) /
+                          static_cast<double>(noisemaker::f32(inputs.height));
+    return materialize_plan_value(PlanValue::number_value(
+        static_cast<double>(noisemaker::f32(1.0 / aspect))),
+        abi.cpp_type, step, admission, abi.name);
   }
   if (abi.source_name == "resolution") {
     return materialize_plan_value(PlanValue::array_value({PlanValue::number_value(static_cast<double>(context.destination_width)), PlanValue::number_value(static_cast<double>(context.destination_height))}), abi.cpp_type, step, admission, abi.name);
@@ -2483,7 +2823,6 @@ bool resolve_authenticated_pass_derived(
     const BindingMaterializationContext& binding_context,
     glsl::UniformValue& value) {
   (void)context;
-  (void)pass;
   // Every branch below is one authenticated `source_name` from the
   // compatibility document's pass_derived census. An unlisted source falls
   // through and is rejected before the factory is ever selected.
@@ -2529,8 +2868,8 @@ bool resolve_authenticated_pass_derived(
     value = false;
     return true;
   }
-  if (binding_context.definition == nullptr) return false;
   if (source_name == "typed_compile_define") {
+    if (binding_context.definition == nullptr) return false;
     const auto* abi = uniform_abi(admission, binding_name);
     PlanValue owned;
     const auto* bound =
@@ -2540,8 +2879,24 @@ bool resolve_authenticated_pass_derived(
                                    binding_name);
     return true;
   }
+  if (source_name == "typed_pass_define") {
+    if (admission.identity.program_key != "render/pointsBillboardRender:depthKeys" ||
+        binding_name != "VIEW_MODE" || !pass.defines.has_value() ||
+        pass.defines->kind != effects::ValueKind::object ||
+        pass.defines->object.size() != 1U ||
+        pass.defines->object[0].first != "VIEW_MODE" ||
+        pass.defines->object[0].second.kind != effects::ValueKind::number)
+      return false;
+    const double mode = pass.defines->object[0].second.number;
+    if ((pass.name == "depthKeys_1" && mode == 1.0) ||
+        (pass.name == "depthKeys_2" && mode == 2.0)) {
+      value = static_cast<std::int32_t>(mode);
+      return true;
+    }
+    return false;
+  }
   if (source_name == "remap_uniform_data") {
-    if (binding_context.inputs == nullptr) return false;
+    if (binding_context.inputs == nullptr || binding_context.definition == nullptr) return false;
     value = remap_uniform_block(*binding_context.definition, step, admission,
                                 binding_context.inputs->width,
                                 binding_context.inputs->height);
@@ -2590,6 +2945,54 @@ void materialize_compile_defines(glsl::Bindings& bindings, const EffectStep& ste
 // Every fact this proves is resolvability/shape, exactly like the ordinary
 // branch: the real values are read again, identically, when the dispatch
 // branch in `execute()` actually builds the adapter's `Bindings`.
+std::optional<double> scatter_pass_define_uniform(
+    const EffectStep& step, const PassAdmission& admission,
+    const effects::PassDefinition& pass, std::string_view uniform_name) {
+  const auto& key = admission.identity.program_key;
+  const bool points = key == "render/pointsRender:deposit";
+  const bool billboards = key == "render/pointsBillboardRender:deposit";
+  if (!points && !billboards) return std::nullopt;
+  double view_mode = -1.0;
+  double blend_mode = 0.0;
+  double blur_layer = 0.0;
+  if (pass.name == "deposit_0") view_mode = 0.0;
+  else if (pass.name == "deposit_1") view_mode = 1.0;
+  else if (pass.name == "deposit_2") view_mode = 2.0;
+  else if (billboards && pass.name == "depositDefocus_1") { view_mode = 1.0; blur_layer = 1.0; }
+  else if (billboards && pass.name == "depositDefocus_2") { view_mode = 2.0; blur_layer = 1.0; }
+  else if (billboards && pass.name == "deposit_alpha_0") { view_mode = 0.0; blend_mode = 1.0; }
+  else if (billboards && pass.name == "deposit_alpha_1") { view_mode = 1.0; blend_mode = 1.0; }
+  else if (billboards && pass.name == "deposit_alpha_2") { view_mode = 2.0; blend_mode = 1.0; }
+  if (!pass.defines.has_value() || pass.defines->kind != effects::ValueKind::object ||
+      pass.defines->object.size() != (points ? 1U : 3U) || view_mode < 0.0) {
+    throw binding_error(step, admission, GraphErrorCode::invalid_snapshot,
+                        "scatter pass defines differ from registered pass");
+  }
+  bool found_view = false;
+  bool found_blend = false;
+  bool found_blur = false;
+  for (const auto& [name, value] : pass.defines->object) {
+    if (name == "VIEW_MODE") { if (found_view) throw binding_error(step, admission, GraphErrorCode::invalid_snapshot, "duplicate scatter define"); found_view = true; }
+    if (name == "BLEND_MODE") { if (found_blend) throw binding_error(step, admission, GraphErrorCode::invalid_snapshot, "duplicate scatter define"); found_blend = true; }
+    if (name == "BLUR_LAYER") { if (found_blur) throw binding_error(step, admission, GraphErrorCode::invalid_snapshot, "duplicate scatter define"); found_blur = true; }
+    const double expected = name == "VIEW_MODE" ? view_mode :
+                            (billboards && name == "BLEND_MODE" ? blend_mode :
+                             (billboards && name == "BLUR_LAYER" ? blur_layer : -1.0));
+    if (expected < 0.0 || value.kind != effects::ValueKind::number || value.number != expected) {
+      throw binding_error(step, admission, GraphErrorCode::invalid_snapshot,
+                          "scatter pass defines differ from registered pass");
+    }
+  }
+  if (!found_view || (billboards && (!found_blend || !found_blur))) {
+    throw binding_error(step, admission, GraphErrorCode::invalid_snapshot,
+                        "scatter pass defines are incomplete");
+  }
+  if (uniform_name == "viewMode") return view_mode;
+  if (billboards && uniform_name == "blendMode") return blend_mode;
+  if (billboards && uniform_name == "blurLayer") return blur_layer;
+  return std::nullopt;
+}
+
 void preflight_scatter_pass_abi(const EffectStep& step, const PassAdmission& admission,
                                 const effects::PassDefinition& pass,
                                 const BindingMaterializationContext& context) {
@@ -2599,6 +3002,10 @@ void preflight_scatter_pass_abi(const EffectStep& step, const PassAdmission& adm
                         "output dimensions must be positive");
   }
   const auto& scatter = *admission.scatter;
+  if (admission.identity.program_key == "render/pointsRender:deposit" ||
+      admission.identity.program_key == "render/pointsBillboardRender:deposit") {
+    (void)scatter_pass_define_uniform(step, admission, pass, "viewMode");
+  }
   // JS's canonicalTextures (renderer.js) resolves EVERY declared pass input
   // under its own uniform name and hands the whole map to the adapter; the
   // adapter reads the subset its shader documents. The contract's
@@ -2652,6 +3059,7 @@ void preflight_scatter_pass_abi(const EffectStep& step, const PassAdmission& adm
       throw binding_error(step, admission, GraphErrorCode::binding_type,
                           "scatter uniform ABI is invalid");
     }
+    if (scatter_pass_define_uniform(step, admission, pass, uniform.name).has_value()) continue;
     if (context.definition == nullptr) {
       throw binding_error(step, admission, GraphErrorCode::missing_binding,
                           "scatter uniform value is missing");
@@ -2665,6 +3073,11 @@ void preflight_scatter_pass_abi(const EffectStep& step, const PassAdmission& adm
     }
   }
 }
+
+void materialize_optional_color_alpha(glsl::Bindings& bindings,
+                                      const EffectStep& step,
+                                      const PassAdmission& admission,
+                                      std::string_view name);
 
 void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
                         const effects::PassDefinition& pass,
@@ -2721,8 +3134,30 @@ void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
     }
     (void)resolve_uniform(uniform, step, admission, pass, context);
   }
+  if (admission.identity.program_key == "filter/halftone:halftone") {
+    glsl::Bindings color_alpha;
+    materialize_optional_color_alpha(color_alpha, step, admission, "inkColor");
+    materialize_optional_color_alpha(color_alpha, step, admission, "paperColor");
+  }
   glsl::Bindings defines;
   materialize_compile_defines(defines, step, admission, context);
+}
+
+void materialize_optional_color_alpha(glsl::Bindings& bindings,
+                                      const EffectStep& step,
+                                      const PassAdmission& admission,
+                                      std::string_view name) {
+  const PlanValue* value = parameter(step, name);
+  if (value == nullptr || value->kind != PlanValue::Kind::array ||
+      (value->array.size() != 3U && value->array.size() != 4U) ||
+      (value->array.size() == 4U && value->array[3].kind != PlanValue::Kind::number)) {
+    throw binding_error(step, admission, GraphErrorCode::binding_type,
+                        std::string(name) + ": color must have three or four numeric lanes");
+  }
+  const std::string suffix(name);
+  bindings.set_uniform("__cpuColorHasAlpha_" + suffix, value->array.size() == 4U);
+  bindings.set_uniform("__cpuColorAlpha_" + suffix,
+                       value->array.size() == 4U ? value->array[3].number : 0.0);
 }
 
 glsl::Bindings materialize_uniform_bindings(
@@ -2740,6 +3175,10 @@ glsl::Bindings materialize_uniform_bindings(
       throw binding_error(step, admission, GraphErrorCode::binding_type,
                           error.what());
     }
+  }
+  if (admission.identity.program_key == "filter/halftone:halftone") {
+    materialize_optional_color_alpha(bindings, step, admission, "inkColor");
+    materialize_optional_color_alpha(bindings, step, admission, "paperColor");
   }
   materialize_compile_defines(bindings, step, admission, context);
   return bindings;
@@ -2795,6 +3234,7 @@ void materialize_sampler_bindings(
 glsl::Bindings materialize_scatter_bindings(
     const EffectStep& step, const PassAdmission& admission,
     const effects::EffectDefinition& definition,
+    const effects::PassDefinition& pass,
     const std::vector<std::pair<std::string, const noisemaker::Surface*>>& inputs) {
   glsl::Bindings bindings;
   const auto& scatter = *admission.scatter;
@@ -2804,6 +3244,11 @@ glsl::Bindings materialize_scatter_bindings(
     throw binding_error(step, admission, GraphErrorCode::binding_type, error.what());
   }
   for (const auto& uniform : scatter.uniforms) {
+    const auto derived = scatter_pass_define_uniform(step, admission, pass, uniform.name);
+    if (derived.has_value()) {
+      bindings.set_uniform(uniform.name, *derived);
+      continue;
+    }
     // `source_name` is legitimately empty for every currently-generated
     // scatter uniform -- see the matching comment in
     // `preflight_scatter_pass_abi`. The binding name doubles as the
@@ -3111,14 +3556,51 @@ void ensure_group_particle_inputs(const effects::PassDefinition& pass,
 // buildBindings feeds them fresh every non-iterated call.
 void seed_group_step_bindings(GroupStepState& state,
                               const noisemaker::Surface* iteration_input,
-                              const ResourceArena& arena) {
+                              const noisemaker::Surface* iteration_volume,
+                              const noisemaker::Surface* iteration_geometry,
+                              const ResourceArena& arena,
+                              const ExecutionInputs& inputs) {
   if (iteration_input != nullptr) {
     store_step_resource(state.resources, "inputTex", iteration_input->clone());
   } else {
     state.resources.erase("inputTex");
   }
+  if (iteration_volume != nullptr)
+    store_step_resource(state.resources, "inputTex3d", iteration_volume->clone());
+  else
+    state.resources.erase("inputTex3d");
+  if (iteration_geometry != nullptr)
+    store_step_resource(state.resources, "inputGeo", iteration_geometry->clone());
+  else
+    state.resources.erase("inputGeo");
   const auto& definition = state.snapshot->definition;
   for (const auto& declared : definition.parameters) {
+    if (declared.type == "volume" || declared.type == "geometry") {
+      const noisemaker::Surface* incoming = declared.type == "volume"
+          ? iteration_volume : iteration_geometry;
+      if (incoming != nullptr) {
+        store_step_resource(state.resources, declared.name, incoming->clone());
+        continue;
+      }
+      if (state.resources.find(declared.name) != state.resources.end()) continue;
+      const auto& output_name = declared.type == "volume"
+          ? definition.output_tex3d : definition.output_geo;
+      const auto* texture = output_name.has_value()
+          ? texture_for(definition, *output_name) : nullptr;
+      if (texture == nullptr) {
+        throw GraphError(GraphErrorCode::missing_resource,
+                         "typed parameter requires a declared output texture",
+                         state.effective_step.effect.id);
+      }
+      noisemaker::Surface seed(
+          resolve_dimension(texture->width, state.effective_step, arena,
+                            inputs.width, true),
+          resolve_dimension(texture->height, state.effective_step, arena,
+                            inputs.height, false));
+      seed.clear();
+      store_step_resource(state.resources, declared.name, std::move(seed));
+      continue;
+    }
     if (declared.type != "surface") continue;
     const std::string route(bound_texture_name(declared));
     const auto* value = parameter(state.effective_step, declared.name);
@@ -3176,7 +3658,7 @@ void ensure_group_scratch_resources(GroupStepState& state, const ResourceArena& 
 // the CURRENT step's own declared texture (or the render extent/rgba16f
 // default when undeclared, matching the non-iterated path's own fallback).
 [[nodiscard]] noisemaker::Surface allocate_group_output_destination(
-    std::string_view name, const GroupStepState& state,
+    std::string_view name, const effects::PassDefinition& pass, const GroupStepState& state,
     const std::vector<GroupStepState>& step_states, const ResourceArena& arena,
     const ExecutionInputs& inputs, noisemaker::TextureFormat& format_out) {
   if (iteration::is_particle_state_name(name)) {
@@ -3186,12 +3668,16 @@ void ensure_group_scratch_resources(GroupStepState& state, const ResourceArena& 
     return noisemaker::Surface(resolution.width, resolution.height);
   }
   const auto* texture = texture_for(state.snapshot->definition, name);
-  std::size_t width = inputs.width;
-  std::size_t height = inputs.height;
+  const auto lookup = [&](std::string_view route) -> const noisemaker::Surface* {
+    const auto found = state.resources.find(std::string(route));
+    return found == state.resources.end() ? nullptr : &found->second;
+  };
+  const auto width = destination_dimension(pass, texture, state.effective_step, arena,
+                                            inputs.width, true, lookup);
+  const auto height = destination_dimension(pass, texture, state.effective_step, arena,
+                                             inputs.height, false, lookup);
   format_out = noisemaker::TextureFormat::rgba16f;
   if (texture != nullptr) {
-    width = resolve_dimension(texture->width, state.effective_step, arena, inputs.width, true);
-    height = resolve_dimension(texture->height, state.effective_step, arena, inputs.height, false);
     format_out = resolve_texture_format(texture->format);
   }
   return noisemaker::Surface(width, height);
@@ -3214,6 +3700,19 @@ struct GroupStepIterationResult {
   std::string output_route;
 };
 
+struct GroupIterationBundle {
+  std::optional<noisemaker::Surface> image;
+  std::optional<noisemaker::Surface> volume;
+  std::optional<noisemaker::Surface> geometry;
+  noisemaker::TextureFormat image_format = noisemaker::TextureFormat::rgba16f;
+  noisemaker::TextureFormat volume_format = noisemaker::TextureFormat::rgba16f;
+  noisemaker::TextureFormat geometry_format = noisemaker::TextureFormat::rgba16f;
+  std::string image_route;
+  std::string volume_route;
+  std::string geometry_route;
+  std::optional<double> volume_size;
+};
+
 // renderer.js:943-1074 -- runGroupStepIterationSync, plus groupMrtDestinations
 // (806-814) for the MRT shape. Structurally mirrors the non-iterated
 // EffectStep loop in GraphExecutor::execute() (the same three pass shapes it
@@ -3223,10 +3722,13 @@ struct GroupStepIterationResult {
 // authenticated materialization helper unchanged.
 [[nodiscard]] GroupStepIterationResult run_group_step_iteration(
     GroupStepState& state, const noisemaker::Surface* iteration_input,
+    const noisemaker::Surface* iteration_volume,
+    const noisemaker::Surface* iteration_geometry,
     const std::vector<GroupStepState>& step_states, iteration::GroupResourceMap& group_resources,
     ResourceArena& arena, const ExecutionInputs& iteration_inputs, std::size_t& pass_count,
     const noisemaker::Surface& empty_surface) {
-  seed_group_step_bindings(state, iteration_input, arena);
+  seed_group_step_bindings(state, iteration_input, iteration_volume,
+                           iteration_geometry, arena, iteration_inputs);
   ensure_group_scratch_resources(state, arena, iteration_inputs);
 
   const auto& definition = state.snapshot->definition;
@@ -3278,7 +3780,7 @@ struct GroupStepIterationResult {
         for (std::size_t slot = 0; slot < pass.outputs.size(); ++slot) {
           noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
           noisemaker::Surface probe = allocate_group_output_destination(
-              pass.outputs[slot].second, state, step_states, arena, iteration_inputs, format);
+              pass.outputs[slot].second, pass, state, step_states, arena, iteration_inputs, format);
           if (slot == 0U) {
             mrt_width = probe.width();
             mrt_height = probe.height();
@@ -3348,7 +3850,7 @@ struct GroupStepIterationResult {
 
       noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
       noisemaker::Surface destination = allocate_group_output_destination(
-          output_route, state, step_states, arena, iteration_inputs, format);
+          output_route, pass, state, step_states, arena, iteration_inputs, format);
       const std::size_t width = destination.width();
       const std::size_t height = destination.height();
 
@@ -3376,7 +3878,7 @@ struct GroupStepIterationResult {
             scatter_inputs.push_back({input.first, input_surface});
           }
           auto bindings =
-              materialize_scatter_bindings(state.effective_step, admission, definition, scatter_inputs);
+              materialize_scatter_bindings(state.effective_step, admission, definition, pass, scatter_inputs);
           const noisemaker::scatter::ScatterAdapter adapter =
               noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key);
           if (adapter == nullptr) {
@@ -3479,26 +3981,76 @@ struct GroupStepIterationResult {
 // this layer cannot call `arena.insert` directly).
 struct GroupPublishResult {
   noisemaker::Surface surface{1U, 1U};
+  bool has_image = false;
   noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
   std::string route;
+  std::optional<noisemaker::Surface> volume;
+  std::optional<noisemaker::Surface> geometry;
+  noisemaker::TextureFormat volume_format = noisemaker::TextureFormat::rgba16f;
+  noisemaker::TextureFormat geometry_format = noisemaker::TextureFormat::rgba16f;
+  std::string volume_route;
+  std::string geometry_route;
+  std::optional<double> volume_size;
 };
 
-// renderer.js:592-634 -- zeroIterationGroupOutput, restricted to the plain
-// Surface case (this executor never threads a volume/geometry bundle; every
-// admitted effect is image-domain). `iterationCount <= 0` clones the group's
-// input straight through, or clears a fresh render-extent surface when the
-// group opens the chain.
+// renderer.js:721-756 -- zeroIterationGroupOutput. An incoming bundle passes
+// through. A volume generator that opens a chain creates clear volume and
+// geometry atlases without running a shader pass.
 [[nodiscard]] GroupPublishResult zero_iteration_group_output(GraphResource* group_input,
+                                                              GraphResource* group_input_volume,
+                                                              GraphResource* group_input_geometry,
+                                                              const EffectStep& owner_step,
+                                                              const effects::EffectDefinition& definition,
+                                                              const ResourceArena& arena,
                                                               const ExecutionInputs& inputs) {
   GroupPublishResult result;
-  if (group_input != nullptr) {
-    result.surface = group_input->surface().clone();
-    result.format = group_input->format();
+  if (group_input != nullptr || group_input_volume != nullptr || group_input_geometry != nullptr) {
+    if (group_input != nullptr) {
+      result.surface = group_input->surface().clone();
+      result.has_image = true;
+      result.format = group_input->format();
+    }
+    if (group_input_volume != nullptr) {
+      result.volume = group_input_volume->surface().clone();
+      result.volume_format = group_input_volume->format();
+      result.volume_route = "inputTex3d";
+    }
+    if (group_input_geometry != nullptr) {
+      result.geometry = group_input_geometry->surface().clone();
+      result.geometry_format = group_input_geometry->format();
+      result.geometry_route = "inputGeo";
+    }
+  } else if (definition.domain == "volume-generator") {
+    const auto clear_destination = [&](std::string_view route) {
+      const auto* texture = texture_for(definition, route);
+      const auto width = texture == nullptr ? inputs.width :
+          resolve_dimension(texture->width, owner_step, arena, inputs.width, true);
+      const auto height = texture == nullptr ? inputs.height :
+          resolve_dimension(texture->height, owner_step, arena, inputs.height, false);
+      noisemaker::Surface surface(width, height);
+      surface.clear();
+      return surface;
+    };
+    if (!definition.output_tex3d.has_value()) {
+      throw GraphError(GraphErrorCode::invalid_snapshot,
+                       "volume generator has no outputTex3d", definition.id);
+    }
+    result.volume_route = *definition.output_tex3d;
+    result.volume = clear_destination(result.volume_route);
+    if (const auto* texture = texture_for(definition, result.volume_route))
+      result.volume_format = resolve_texture_format(texture->format);
+    if (definition.output_geo.has_value() && *definition.output_geo != "inputGeo") {
+      result.geometry_route = *definition.output_geo;
+      result.geometry = clear_destination(result.geometry_route);
+      if (const auto* texture = texture_for(definition, result.geometry_route))
+        result.geometry_format = resolve_texture_format(texture->format);
+    }
   } else {
     result.surface = noisemaker::Surface(inputs.width, inputs.height);
     result.surface.clear();
+    result.has_image = true;
   }
-  result.route = "outputTex";
+  result.route = group_input != nullptr ? "inputTex" : "outputTex";
   return result;
 }
 
@@ -3511,6 +4063,8 @@ struct GroupPublishResult {
                                                     const ExecutionChain& chain,
                                                     const iteration::IterationGroup& group,
                                                     GraphResource* group_input,
+                                                    GraphResource* group_input_volume,
+                                                    GraphResource* group_input_geometry,
                                                     ResourceArena& arena,
                                                     const ExecutionInputs& inputs,
                                                     std::size_t& pass_count) {
@@ -3544,7 +4098,9 @@ struct GroupPublishResult {
   }
   const auto resolved = iteration::resolve_iteration_count(requested);
   if (resolved.zero_iterations) {
-    return zero_iteration_group_output(group_input, inputs);
+    return zero_iteration_group_output(
+        group_input, group_input_volume, group_input_geometry, *owner_step,
+        plan.effects[owner_step->snapshot_index].definition, arena, inputs);
   }
   // A multi-output (drawBuffers >= 2) pass has an authenticated generated MRT
   // route and runs through run_group_step_iteration's ported MRT branch
@@ -3583,6 +4139,25 @@ struct GroupPublishResult {
                       parameter(*step, "stateSize") != nullptr)
                          ? apply_owner_state_size_override(*step, *owner_state_size)
                          : *step;
+    if (group_input_volume != nullptr && parameter(state.raw_step, "volumeSize") != nullptr) {
+      try {
+        const auto size = bundle::inherit_volume_size(
+            step->effect.id, snapshot.definition.domain, true,
+            group_input_volume->surface().width(), group_input_volume->surface().height());
+        if (size.has_value()) {
+          bool replaced = false;
+          for (auto& binding : state.raw_step.params) {
+            if (binding.name != "volumeSize") continue;
+            binding.value = PlanValue::number_value(*size);
+            replaced = true;
+            break;
+          }
+          if (!replaced) state.raw_step.params.push_back({"volumeSize", PlanValue::number_value(*size)});
+        }
+      } catch (const std::invalid_argument& error) {
+        throw GraphError(GraphErrorCode::invalid_dimension, error.what(), step->effect.id);
+      }
+    }
     state.effective_step = with_resolved_automation(state.raw_step, snapshot.definition, inputs.time);
     state.uses_self_tex = step_uses_self_tex(snapshot.definition);
     if (state.uses_self_tex) {
@@ -3603,10 +4178,7 @@ struct GroupPublishResult {
 
   const noisemaker::Surface empty_surface(1U, 1U);
   const double n = resolved.n;
-  noisemaker::Surface last_surface(1U, 1U);
-  noisemaker::TextureFormat last_format = noisemaker::TextureFormat::rgba16f;
-  std::string last_route;
-  bool have_output = false;
+  GroupIterationBundle last_bundle;
 
   for (std::size_t i = 0; static_cast<double>(i) < n; ++i) {
     ExecutionInputs iteration_inputs = inputs;
@@ -3615,10 +4187,23 @@ struct GroupPublishResult {
     iteration_inputs.time = iteration::wrap01(
         inputs.time - (n - 1.0 - static_cast<double>(i)) * iteration::kIterationDeltaTime);
 
-    const noisemaker::Surface* step_input =
-        group_input != nullptr ? &group_input->surface() : nullptr;
-    noisemaker::Surface carried(1U, 1U);
-    bool have_carried = false;
+    GroupIterationBundle carried;
+    if (group_input != nullptr) {
+      carried.image = group_input->surface().clone();
+      carried.image_format = group_input->format();
+      carried.image_route = "inputTex";
+    }
+    if (group_input_volume != nullptr) {
+      carried.volume = group_input_volume->surface().clone();
+      carried.volume_format = group_input_volume->format();
+      carried.volume_route = "inputTex3d";
+      carried.volume_size = static_cast<double>(carried.volume->width());
+    }
+    if (group_input_geometry != nullptr) {
+      carried.geometry = group_input_geometry->surface().clone();
+      carried.geometry_format = group_input_geometry->format();
+      carried.geometry_route = "inputGeo";
+    }
 
     for (auto& state : step_states) {
       // renderer.js refreshIterationParams: automation re-resolves against this
@@ -3627,29 +4212,102 @@ struct GroupPublishResult {
         state.effective_step = with_resolved_automation(state.raw_step, state.snapshot->definition,
                                                         iteration_inputs.time);
       }
-      auto step_result = run_group_step_iteration(state, step_input, step_states, group_resources,
+      const noisemaker::Surface* step_input = carried.image ? &*carried.image : nullptr;
+      const noisemaker::Surface* step_volume = carried.volume ? &*carried.volume : nullptr;
+      const noisemaker::Surface* step_geometry = carried.geometry ? &*carried.geometry : nullptr;
+      auto step_result = run_group_step_iteration(state, step_input, step_volume, step_geometry,
+                                                   step_states, group_resources,
                                                    arena, iteration_inputs, pass_count,
                                                    empty_surface);
-      carried = std::move(step_result.surface);
-      last_format = step_result.format;
-      last_route = std::move(step_result.output_route);
-      have_carried = true;
-      step_input = &carried;
+      const auto& definition = state.snapshot->definition;
+      GroupIterationBundle next;
+      const auto select_output = [&](const std::optional<std::string>& name,
+                                     std::optional<noisemaker::Surface>& incoming,
+                                     noisemaker::TextureFormat incoming_format,
+                                     const std::string& incoming_route,
+                                     std::optional<noisemaker::Surface>& output,
+                                     noisemaker::TextureFormat& output_format,
+                                     std::string& output_route) {
+        if (!name.has_value() || bundle::is_passthrough_output_name(*name)) {
+          output = std::move(incoming);
+          output_format = incoming_format;
+          output_route = incoming_route;
+          return;
+        }
+        const noisemaker::Surface* selected = group_resources.find(*name);
+        if (selected == nullptr) {
+          const auto found = state.resources.find(*name);
+          if (found != state.resources.end()) selected = &found->second;
+        }
+        if (selected == nullptr) return;
+        output = selected->clone();
+        if (const auto* texture = texture_for(definition, *name))
+          output_format = resolve_texture_format(texture->format);
+        output_route = *name;
+      };
+      if (const auto found = state.resources.find("outputTex");
+                 found != state.resources.end()) {
+        next.image = std::move(step_result.surface);
+        next.image_route = "outputTex";
+        if (const auto* texture = texture_for(definition, "outputTex"))
+          next.image_format = resolve_texture_format(texture->format);
+      } else if (bundle::is_volume_domain(definition.domain)) {
+        next.image = std::move(carried.image);
+        next.image_format = carried.image_format;
+        next.image_route = carried.image_route;
+      } else {
+        next.image = std::move(step_result.surface);
+        next.image_format = step_result.format;
+        next.image_route = std::move(step_result.output_route);
+      }
+      select_output(definition.output_tex3d, carried.volume, carried.volume_format,
+                    carried.volume_route, next.volume, next.volume_format, next.volume_route);
+      select_output(definition.output_geo, carried.geometry, carried.geometry_format,
+                    carried.geometry_route, next.geometry, next.geometry_format, next.geometry_route);
+      std::optional<double> step_volume_size;
+      if (const auto* bound = parameter(state.effective_step, "volumeSize");
+          bound != nullptr && bound->kind == PlanValue::Kind::number)
+        step_volume_size = bound->number;
+      next.volume_size = bundle::resolve_volume_size(
+          definition.domain, step_volume_size, carried.volume_size,
+          next.volume ? std::optional<std::size_t>(next.volume->width()) : std::nullopt);
+      try {
+        bundle::validate_volume_output_shape(
+            definition.id, definition.domain, next.volume.has_value(),
+            next.volume ? std::optional<std::size_t>(next.volume->width()) : std::nullopt,
+            next.volume ? std::optional<std::size_t>(next.volume->height()) : std::nullopt,
+            next.volume_size);
+      } catch (const std::invalid_argument& error) {
+        throw GraphError(GraphErrorCode::invalid_dimension, error.what(),
+                         state.effective_step.effect.id);
+      }
+      if (!next.image.has_value() && bundle::requires_output_image(definition.domain))
+        throw GraphError(GraphErrorCode::invalid_dimension,
+                         "iterated step did not produce outputTex",
+                         state.effective_step.effect.id);
+      carried = std::move(next);
     }
-    if (have_carried) {
-      last_surface = std::move(carried);
-      have_output = true;
-    }
+    last_bundle = std::move(carried);
   }
 
-  if (!have_output) {
+  if (!last_bundle.image && !last_bundle.volume && !last_bundle.geometry) {
     throw GraphError(GraphErrorCode::execution_failure, "iterated group produced no output",
                      owner_step->effect.id);
   }
   GroupPublishResult result;
-  result.surface = std::move(last_surface);
-  result.format = last_format;
-  result.route = std::move(last_route);
+  if (last_bundle.image.has_value()) {
+    result.surface = std::move(*last_bundle.image);
+    result.has_image = true;
+    result.format = last_bundle.image_format;
+    result.route = std::move(last_bundle.image_route);
+  }
+  result.volume = std::move(last_bundle.volume);
+  result.geometry = std::move(last_bundle.geometry);
+  result.volume_format = last_bundle.volume_format;
+  result.geometry_format = last_bundle.geometry_format;
+  result.volume_route = std::move(last_bundle.volume_route);
+  result.geometry_route = std::move(last_bundle.geometry_route);
+  result.volume_size = last_bundle.volume_size;
   return result;
 }
 
@@ -3735,37 +4393,59 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
     bind_mesh_texture("global_mesh0_normals", mesh.normal_data);
   }
 
-  GraphResource* current = nullptr;
-  // renderer.js:97-124 -- the chain-bundle threading Family D needs
-  // (docs/port-engineering/chain-bundle-volume-geometry-threading.md).
-  // `current` (the image) is untouched by this: every currently admitted
-  // effect is domain "image", so these three stay null/nullopt for the
-  // entire life of any admitted chain, exactly mirroring
-  // `chainBundle(null)`'s own `{volume: null, geometry: null, volumeSize:
-  // null}` -- there is no `isChainBundle` check in this port because these
-  // are always-present fields, never a dynamic either/or.
-  GraphResource* current_volume = nullptr;
-  GraphResource* current_geometry = nullptr;
-  std::optional<double> current_volume_size;
   std::size_t pass_count = 0;
   for (const auto& chain : plan.chains) {
-    // renderer.js:1616-1645 (render/renderAsync) -- computeIterationGroups
-    // partitions this chain into groups; a non-iterated group is always
-    // exactly one step (iteration.hpp's own invariant, ported from
-    // iteration.js) and takes the IDENTICAL path every step already took
-    // below -- this is the zero-overhead fast path required for every
-    // currently-admitted effect, none of which iteration::compute_iteration_
-    // groups can ever place into an iterated group (see
-    // docs/port-engineering/iteration-group-resource-lifetime.md's last
-    // section for why). An iterated group instead runs its whole pass graph
-    // N times via run_iterated_group, which is reachable only from a
-    // hand-built synthetic plan today.
+    // The authority starts each chain with an empty bundle. Named image
+    // surfaces remain in the arena, but unnamed bundle state is chain-local.
+    GraphResource* current = nullptr;
+    GraphResource* current_volume = nullptr;
+    GraphResource* current_geometry = nullptr;
+    std::optional<double> current_volume_size;
+    // The CPU authority partitions the chain into iteration groups. Each
+    // iterated group shares its scratch resources across the requested ticks.
     for (const auto& group : iteration::compute_iteration_groups(plan, chain)) {
       if (group.iterated) {
-        auto group_result = run_iterated_group(plan, chain, group, current, arena, inputs, pass_count);
-        auto& published = arena.insert(group_result.route, std::move(group_result.surface),
-                                       group_result.format, ResourceLifetime::transient);
-        current = &published;
+        const auto* owner = std::get_if<EffectStep>(&chain.steps[group.step_indices.front()]);
+        const auto& owner_definition = plan.effects[owner->snapshot_index].definition;
+        auto group_result = run_iterated_group(plan, chain, group, current, current_volume,
+                                               current_geometry, arena, inputs, pass_count);
+        if (group_result.has_image && group_result.route != "inputTex") {
+          current = &arena.insert(group_result.route, std::move(group_result.surface),
+                                  group_result.format, ResourceLifetime::transient);
+        } else if (!group_result.has_image) {
+          current = nullptr;
+        }
+        const auto publish_bundle_resource = [&](std::optional<noisemaker::Surface>& surface,
+                                                 const std::string& route,
+                                                 TextureFormat format) -> GraphResource* {
+          if (!surface.has_value()) return nullptr;
+          if (bundle::is_passthrough_output_name(route))
+            return route == "inputGeo" ? current_geometry : current_volume;
+          return &arena.insert(route, std::move(*surface), format, ResourceLifetime::transient);
+        };
+        GraphResource* const volume = publish_bundle_resource(
+            group_result.volume, group_result.volume_route, group_result.volume_format);
+        GraphResource* const geometry = publish_bundle_resource(
+            group_result.geometry, group_result.geometry_route, group_result.geometry_format);
+        const auto size = group_result.volume_size.has_value()
+            ? group_result.volume_size
+            : bundle::resolve_volume_size(
+                  owner_definition.domain, std::nullopt, current_volume_size,
+                  volume == nullptr ? std::nullopt
+                                    : std::optional<std::size_t>(volume->surface().width()));
+        try {
+          bundle::validate_volume_output_shape(
+              owner_definition.id, owner_definition.domain, volume != nullptr,
+              volume == nullptr ? std::nullopt
+                                : std::optional<std::size_t>(volume->surface().width()),
+              volume == nullptr ? std::nullopt
+                                : std::optional<std::size_t>(volume->surface().height()), size);
+        } catch (const std::invalid_argument& error) {
+          throw GraphError(GraphErrorCode::invalid_dimension, error.what(), owner_definition.id);
+        }
+        current_volume = volume;
+        current_geometry = geometry;
+        current_volume_size = volume == nullptr ? std::nullopt : size;
         continue;
       }
       const auto& variant = chain.steps[group.step_indices.front()];
@@ -3774,6 +4454,9 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
           throw GraphError(GraphErrorCode::missing_resource, "named read surface is missing", {}, 0, {}, read->surface.name);
         }
         current = arena.find(read->surface.name);
+        current_volume = nullptr;
+        current_geometry = nullptr;
+        current_volume_size.reset();
       } else if (const auto* write = std::get_if<WriteStep>(&variant)) {
         if (current == nullptr || write->surface.kind != SurfaceReference::Kind::named) {
           throw GraphError(GraphErrorCode::missing_resource, "write has no current image");
@@ -3820,6 +4503,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
         effective_step = with_resolved_automation(effective_step, snapshot.definition, inputs.time);
         const auto& step = effective_step;
         GraphResource* effect_output = current;
+        bool effect_wrote_output_tex = false;
         // The authority binds `inputTex` once per effect, before any pass of
         // that effect publishes an output; a later pass never re-reads its own
         // effect's result through the implicit input route.
@@ -4008,12 +4692,11 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
               for (std::size_t slot = 0; slot < pass.outputs.size(); ++slot) {
                 const std::string& route = pass.outputs[slot].second;
                 const auto* texture = texture_for(snapshot.definition, route);
-                std::size_t width = inputs.width;
-                std::size_t height = inputs.height;
+                const auto lookup = [&](std::string_view name) { return resolve_route(name).surface; };
+                const auto width = destination_dimension(pass, texture, step, arena, inputs.width, true, lookup);
+                const auto height = destination_dimension(pass, texture, step, arena, inputs.height, false, lookup);
                 TextureFormat format = TextureFormat::rgba16f;
                 if (texture != nullptr) {
-                  width = resolve_dimension(texture->width, step, arena, inputs.width, true);
-                  height = resolve_dimension(texture->height, step, arena, inputs.height, false);
                   try {
                     format = resolve_texture_format(texture->format);
                   } catch (const std::invalid_argument& error) {
@@ -4070,12 +4753,11 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
               ++pass_count;
             } else {
             const auto* texture = texture_for(snapshot.definition, output_route);
-            std::size_t width = inputs.width;
-            std::size_t height = inputs.height;
+            const auto lookup = [&](std::string_view name) { return resolve_route(name).surface; };
+            const auto width = destination_dimension(pass, texture, step, arena, inputs.width, true, lookup);
+            const auto height = destination_dimension(pass, texture, step, arena, inputs.height, false, lookup);
             TextureFormat format = TextureFormat::rgba16f;
             if (texture != nullptr) {
-              width = resolve_dimension(texture->width, step, arena, inputs.width, true);
-              height = resolve_dimension(texture->height, step, arena, inputs.height, false);
               try {
                 format = resolve_texture_format(texture->format);
               } catch (const std::invalid_argument& error) {
@@ -4138,7 +4820,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                 scatter_inputs.push_back({input.first, input_route.surface});
               }
               auto bindings = materialize_scatter_bindings(
-                  step, admission, snapshot.definition, scatter_inputs);
+                  step, admission, snapshot.definition, pass, scatter_inputs);
               const noisemaker::scatter::ScatterAdapter adapter =
                   noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key);
               if (adapter == nullptr) {
@@ -4223,7 +4905,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             throw GraphError(GraphErrorCode::execution_failure, "pass execution failed", step.effect.id, pass_index, pass.name, admission.identity.program_key);
           }
           release_borrowed();
-          if (wrote_output_tex) current = effect_output;
+          if (wrote_output_tex) effect_wrote_output_tex = true;
           }
         }
         // renderer.js:1317-1341 (identically at 1053-1067/1187-1201/1471-
@@ -4260,20 +4942,25 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
           bundle::validate_volume_output_shape(step.effect.id, snapshot.definition.domain,
                                                volume != nullptr, produced_volume_width,
                                                produced_volume_height, volume_size);
-          if (effect_output == nullptr && bundle::requires_output_image(snapshot.definition.domain)) {
+          if ((effect_wrote_output_tex ? arena.find("outputTex") :
+               bundle::is_volume_domain(snapshot.definition.domain) ? effect_input : effect_output)
+                  == nullptr && bundle::requires_output_image(snapshot.definition.domain)) {
             throw std::invalid_argument(std::string(step.effect.id) + " did not produce outputTex");
           }
         } catch (const std::invalid_argument& error) {
           throw GraphError(GraphErrorCode::invalid_dimension, error.what(), step.effect.id);
         }
-        current = effect_output;
+        // JS selects the named outputTex resource before the last MRT slot.
+        // A volume producer with no image output retains the input image.
+        current = effect_wrote_output_tex ? arena.find("outputTex") :
+            bundle::is_volume_domain(snapshot.definition.domain) ? effect_input : effect_output;
         current_volume = volume;
         current_geometry = geometry;
         current_volume_size = volume_size;
       }
     }
   }
-  if (current == nullptr || arena.find(plan.render_surface.name) == nullptr) {
+  if (arena.find(plan.render_surface.name) == nullptr) {
     throw GraphError(GraphErrorCode::missing_resource, "render surface was not published", {}, 0, {}, plan.render_surface.name);
   }
   const auto& final = arena.require(plan.render_surface.name);

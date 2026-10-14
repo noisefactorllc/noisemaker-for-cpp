@@ -1,22 +1,27 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'task-23-oracles.json')
 const reportPath = path.join(here, 'task-23-oracle-report.md')
-const cpuRoot = '../noisemaker-for-cpu'
-const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const cppRoot = path.resolve(here, '../..')
+const corpusRevision = EXPECTED.upstreamRevision
 const corpus = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision)
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
-const canonicalSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
+const canonicalSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
 const f = Math.fround
 const frame = 23
 const deltaTime = f(1 / 60)
@@ -39,7 +44,7 @@ const programs = Object.freeze([
   {
     key: 'filter/bloom:ntapGather', source: 'sources/filter/bloom/ntapGather.glsl', rawBytes: 2196,
     rawSha256: 'f11c983976cb8450d611e8d888bd151a4c2cfdda8d9d772f906608dedb99d237', normalizedSha256: '1d20c3bccadf30a1f6c3c6f8903ed805287933fcc1257d3ae6d4b98c5d0b9f81',
-    factoryName: 'canonicalFactory23', factorySha256: 'a737ac48f663f041f763677680ab5d5282482ab6d10143939de055b980c4207c',
+    factoryName: 'canonicalFactory22', factorySha256: '62e3851da92111ab9a6f6503eb392dc2eb781204f9b42c2dce69f33942600010',
     preFunctionsSha256: 'a000425b8ae57882a6877bf2c390f3d1fb3ce226d0181f0fa76d8851d7a79163', postFunctionsSha256: '66138a890082a6185afea09a5f9a169114193bf0134b6153737a663b27a86270',
     preWholeSha256: '915a83f7673ec52fd79e8ed7a0a02094f720fbaa575db63318227f14c3aa2f51', postWholeSha256: 'ff1fa1ba17abb3bdcd8daf7059b517609db49cfc62c10836b86ea86a1d4c696c', interfaceSha256: 'b1bbe45469447847e91fbb66b6ee1b0cfc5a5a07cdac53cb322a728e295b8fb8',
     defines: {}, global: { symbol: 'MAX_TAPS', symbol_id: 8, value: 64 }, loop: { count: 1, trip_caps: [64], max_depth: 1, max_product: 64, entry_charge: 64 },
@@ -59,7 +64,7 @@ const programs = Object.freeze([
   {
     key: 'filter/directionalBlur:directionalBlur', source: 'sources/filter/directionalBlur/directionalBlur.glsl', rawBytes: 1153,
     rawSha256: '1e4a9d6371683b75a1dbefa968e1536e0017e921fe02f80e600e8f1482e8691c', normalizedSha256: '587b19df3989bf8bb649a86265f4210561077ccadcec30f0a92077510bcbf668',
-    factoryName: 'canonicalFactory47', factorySha256: 'a3803238488c9bd2fe786b931a0a2ba81a057d02f984017d8e10073c68873344',
+    factoryName: 'canonicalFactory45', factorySha256: '42cf0c8dc56160100db43df0c150e36be06c512198752057373be1846f0e58d9',
     preFunctionsSha256: '8c0e81f16787bce2ab63a414b9774702ce3ceac9be71f7bad46c9bccde14ddfa', postFunctionsSha256: '6e57feabe450d500b7ac2ddf328e855d72e0eb2c764c89b94c6c6f9afa184f96',
     preWholeSha256: '30011a8fd6f15943857b5d978a5383cbf0408becbfcdd2a8e9fd08eddab11153', postWholeSha256: '21e4cc0784b7bbffa453e549776e3ed332df1219bf77d1c42bf32d650f8c1f7b', interfaceSha256: '3934c143ad58175d44458d78b2641badf31363c0f8438b1b5f656cbf6e269858',
     defines: {}, global: { symbol: 'N', symbol_id: 6, value: 32 }, loop: { count: 1, trip_caps: [32], max_depth: 1, max_product: 32, entry_charge: 32 },
@@ -77,11 +82,11 @@ const programs = Object.freeze([
     ],
   },
   {
-    key: 'filter/spinBlur:spinBlur', source: 'sources/filter/spinBlur/spinBlur.glsl', rawBytes: 3077,
-    rawSha256: 'a5ee242e189066b55d4d5c3140e957418bdff582b367d1f6d4cdfee4c333b405', normalizedSha256: 'b829271f6c58fccde0e5723cd2bc7d7d3f47acfeb4cf1ce157bc996fb04ff1ee',
-    factoryName: 'canonicalFactory145', factorySha256: 'c6b97d30339acd21fc01d2d2cd31073c62d2ba82dbb80e95d9457b0f59737547',
-    preFunctionsSha256: 'f9563d0e1e160ac48d4f6b0becdcb4ced10342039f0ef8c0a09f822e0c8cc8e8', postFunctionsSha256: '974b46a9db569acad639c8fd500c839f48f15b9bd42baac27374e204ca1d9e51',
-    preWholeSha256: '5d3e1a5f3907bc1678620013f2a5e6854c386d12af60a1e92bc196c06ee7e6bc', postWholeSha256: 'af920749f40d2f9eafcfa3bf9d1ffccf3164571475e1b9162053cba5b3e43bff', interfaceSha256: '4b4d07b3a0cd718e48c976ef202de9dff5e7c35d422c371f6243ff0fbf9fa723',
+    key: 'filter/spinBlur:spinBlur', source: 'sources/filter/spinBlur/spinBlur.glsl', rawBytes: 2304,
+    rawSha256: 'bd83ef6a8fb02370d51c333e63285c13406ad9ef4bafa64513b2018e61050a4e', normalizedSha256: '59b88206d89357582820fb6da5c4ee43c2a57ed9cbfba9676bb441fceb477f04',
+    factoryName: 'canonicalFactory142', factorySha256: 'bdb59a43bb7baa3ce8448e1d71ca9bc904601fa269ef903c10fb8fb8aa9618ed',
+    preFunctionsSha256: 'd99d37c65d0e13b943da42d43913c27e60e969c974729378ceb4f889ce01b3d4', postFunctionsSha256: '3739290914b415422318656c5809fe10566698f72cf4cb3a483cbed8233f1fa4',
+    preWholeSha256: '8499872620c60fd294292bbc4b4211b29d0a9389488d7bddf8e6b294e6fac160', postWholeSha256: '6a25de57261c5ffc5ece64e2060f34f751d9673399e513c04559a998dd0b340e', interfaceSha256: 'c37de59496abc0f87e9f304c31bcbd71695b720c40b3bbaeacbc9ccc4aa9d561',
     defines: {}, global: { symbol: 'N', symbol_id: 9, value: 32 }, loop: { count: 1, trip_caps: [32], max_depth: 1, max_product: 32, entry_charge: 32 },
     bindingTypes: { amount: 'float', centerX: 'float', centerY: 'float' },
     bindingSignature: ['inputTex:sampler2D@1/S1', 'resolution:vec2@2', 'tileOffset:vec2@3', 'fullResolution:vec2@4', 'amount:float@5', 'centerX:float@6', 'centerY:float@7', 'N:const int@9'], outputSignature: 'fragColor:vec4@8',
@@ -99,7 +104,7 @@ const programs = Object.freeze([
   {
     key: 'filter/strokes:stkSmear', source: 'sources/filter/strokes/stkSmear.glsl', rawBytes: 14787,
     rawSha256: 'dac057232a650f3c9eb56829aa12507b639d8632f6fc132cbd067a28996fa4db', normalizedSha256: '796bad6231e640aec7c6f471465f57112f77394d921bff9902833955e1e20f15',
-    factoryName: 'canonicalFactory155', factorySha256: '8f82fbdc740e4bf5448e53823c833e22f37db0aacadad01bc4983a4e58e72010',
+    factoryName: 'canonicalFactory152', factorySha256: 'b3447958e92d11fa674733bdc2e28a54a1124cb192a64a1b3db56795664d651f',
     preFunctionsSha256: '5e5e0bb5091f6d4221e5396f3ed5dc73854543281ef519fbaddb0fdcd5c3fbc9', postFunctionsSha256: '0ee608091d09aece9a1eba08224b1980be15e2c1eb288b206fe47f95c2cfb344',
     preWholeSha256: 'b7b6c65e3275843bd141f9b0c1fcf40daad671dcbeebef2db6a4684ec750790c', postWholeSha256: '5ac93407e6a52ef895a887b3817c781d58ac9b974afe30415f31c6b4a9e8cbbf', interfaceSha256: '8fe812a5bdfa275782969cb6146b0e8005e8dc521af9e5b10926bc49d2b89fef',
     defines: { MODE: 0 }, global: { symbol: 'MAX_TAPS', symbol_id: 8, value: 24 }, loop: { count: 3, trip_caps: [3, 3, 24], max_depth: 2, max_product: 24, entry_charge: 72 },
@@ -119,7 +124,7 @@ const programs = Object.freeze([
   {
     key: 'filter/vaseline:upsample', source: 'sources/filter/vaseline/upsample.glsl', rawBytes: 2524,
     rawSha256: '39055a214903d09a9b2dd8db9ec5b2023a920c22707ec424ae90d5fb90ebf461', normalizedSha256: '1785f58af7b191e5a4f1a55223476d12372c97f87c062d34ecefe07550b05c93',
-    factoryName: 'canonicalFactory170', factorySha256: '322ba53c3b001878f026c615998086ef7732277b5f2d2401064ea2497cb6113a',
+    factoryName: 'canonicalFactory167', factorySha256: '803c4001be3529b427f39c9283da61b9c382678905daaef38c7835522480f335',
     preFunctionsSha256: '9f2f11099585a38441157f4e4bb847808c4fd81df1c69cc79d1b651b0fe90374', postFunctionsSha256: '2e86ae95c587a74560e8cdd1d72bdf3f1d5cc9a14183ed136dc1950a590b2389',
     preWholeSha256: '5771c7b74d9e30e47f0b84438bc40e16d4c0da36346325862bef6516c5f0d60d', postWholeSha256: '831676d46152cd861a4f658fb6bfe75c06c3a8275d2b9acaae00ae8038cc39a6', interfaceSha256: 'fc9fd33b3e14a9808c66c17f3b358d79be3b97c11c6fd6ea281ce51118e0de9e',
     defines: {}, global: { symbol: 'TAP_COUNT', symbol_id: 8, value: 32 }, loop: { count: 1, trip_caps: [32], max_depth: 1, max_product: 32, entry_charge: 32 },
@@ -139,7 +144,7 @@ const programs = Object.freeze([
   {
     key: 'filter/wind:wind', source: 'sources/filter/wind/wind.glsl', rawBytes: 3520,
     rawSha256: '68eb0f4deca51ab5352307fa06509b153cf19a29cea4820d054adafa42655f22', normalizedSha256: '665e842850e766cbf988212669457fb9fd76dff59e52a2f7b2cedd242e490fa4',
-    factoryName: 'canonicalFactory177', factorySha256: '163a65997398acd140ec10572d9253914d1659fc240187c1eae5a9de354810dd',
+    factoryName: 'canonicalFactory174', factorySha256: '9945b073bcf0b65fb4986bd0b2ba846da739bc5df5648036dc1d5566cb3801bd',
     preFunctionsSha256: '214d03b9c58da73392e8b05200035b6e81244dbec06705302a237da23081ef6d', postFunctionsSha256: '70e4d4612ed144e0beb110e8fbbaf5d02b60e27e23fbf6961a30ac8d43bbb8e4',
     preWholeSha256: 'b08edc234c42aa039867a7c549eff408e7c3c51cfa28d0951a437a00043a2dc0', postWholeSha256: '6a5cb2724a9dfa61aaf5f7879a65fe9ec3cd353b7e815f20eb0915e4a103f9e0', interfaceSha256: '455e2e5350b3a027556adc181e5ce3099ca395f801add229956b750d31acdf85',
     defines: { METHOD: 1 }, global: { symbol: 'MAX_STEPS', symbol_id: 8, value: 128 }, loop: { count: 1, trip_caps: [128], max_depth: 1, max_product: 128, entry_charge: 128 },
@@ -281,9 +286,9 @@ function buildData() {
     mutations.push(...program.mutations.map(mutation => mutationResult(program, mutation, surfaces)))
   }
   return {
-    schema: 'noisemaker-for-cpp.task23-source-global-literal-int.public-canonical-oracles.v1', corpus_revision: corpusRevision,
+    schema: 'noisemaker-for-cpp.task23-source-global-literal-int.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
     provenance: { node: process.version, api: 'public kernelFactories identity with canonicalKernelFactories + bindCanonicalKernel + runPass + Surface', canonical_kernels_path: 'src/effects/generated/canonical-kernels.js', canonical_kernels_sha256: canonicalSha256, reference_only: 'all expected output comes from each pinned public factory after proving it is the identical canonical function object and has no adapter entry' },
-    contract: { capability: 'source-global-literal-int-v1', counted_bound_kind: 'source-global-const-literal', numeric_literal_contract: 'glsl-f32', compatibility_transforms: 'none', projected_counts: { typed: 122, public: 124, unported: 88, corpus: 212 }, excluded_adapter_key: 'filter/reindex:nmReindexStats' },
+    contract: { capability: 'source-global-literal-int-v1', counted_bound_kind: 'source-global-const-literal', numeric_literal_contract: 'glsl-f32', compatibility_transforms: 'none', historical_introduction_counts: { typed: 122, public: 124, unported: 88, corpus: 212 }, excluded_adapter_key: 'filter/reindex:nmReindexStats' },
     programs: programs.map(program => ({ key: program.key, source: program.source, raw_source_bytes: program.rawBytes, raw_source_sha256: program.rawSha256, normalized_source_sha256: program.normalizedSha256, defines: program.defines, canonical_factory_name: program.factoryName, canonical_factory_to_string_sha256: program.factorySha256, public_factory_is_canonical_identity: true, adapter_entry_absent: true, pre_function_tuple_sha256: program.preFunctionsSha256, post_function_tuple_sha256: program.postFunctionsSha256, pre_whole_program_sha256: program.preWholeSha256, post_whole_program_sha256: program.postWholeSha256, interface_sha256_pre_and_post: program.interfaceSha256, source_global_literal_int: program.global, counted_loop_proof: program.loop, binding_signature: program.bindingSignature, output_signature: program.outputSignature, resource_fetch_bounds: program.fetchBounds })),
     fixture: { input: 'top-down Float32Array: R=((17*x+31*y+13)%101)/100; G=((7*x+19*y+23)%97)/96; B=((29*x+11*y+5)%89)/88; A=(((5*x+7*y+3)%23)-5)/12', fragment_origin: 'bottom-left, runPass fragCoord=(x+0.5,height-y-0.5)', context: { frame, deltaTime: scalarRecord(deltaTime), runtime_seed: scalarRecord(runtimeSeed) }, verification: 'fresh double render; exact input/output F32 and output RGBA8 repeat; input immutable; every output lane finite; full hashes and probes' },
     cases, mutation_sensitivity: { mutation_count: mutations.length, purpose: 'each key has a literal-bound mutation and an independent semantic/control mutation; required identity cases cover early exits or inactive terms where available', mutations },
@@ -291,7 +296,7 @@ function buildData() {
 }
 
 function buildReport(data) {
-  const lines = ['# Task 23 six-key public-canonical oracle report', '', `Corpus revision: \`${data.corpus_revision}\`  `, `Cases: **${data.cases.length}**  `, `Mutations: **${data.mutation_sensitivity.mutation_count}**`, '', 'Every public factory was runtime-proved identical to its pinned canonical factory; no selected key has an adapter entry. All cases repeat byte-identically with immutable input and finite output.', '', '## Programs', '', '| Key | Factory | Global bound | Loop charge | Pre -> post function hash | Interface hash |', '| --- | --- | --- | ---: | --- | --- |']
+  const lines = ['# Task 23 six-key public-canonical oracle report', '', `Corpus revision: \`${data.corpus_revision}\``, `Cases: **${data.cases.length}**  `, `Mutations: **${data.mutation_sensitivity.mutation_count}**`, '', 'Every public factory was runtime-proved identical to its pinned canonical factory; no selected key has an adapter entry. All cases repeat byte-identically with immutable input and finite output.', '', '## Programs', '', '| Key | Factory | Global bound | Loop charge | Pre -> post function hash | Interface hash |', '| --- | --- | --- | ---: | --- | --- |']
   for (const p of data.programs) lines.push(`| \`${p.key}\` | \`${p.canonical_factory_name}\` | \`${p.source_global_literal_int.symbol}@${p.source_global_literal_int.symbol_id}=${p.source_global_literal_int.value}\` | ${p.counted_loop_proof.entry_charge} | \`${p.pre_function_tuple_sha256}\` -> \`${p.post_function_tuple_sha256}\` | \`${p.interface_sha256_pre_and_post}\` |`)
   lines.push('', '## Cases', '', '| Key / case | Size | Output F32 SHA-256 | RGBA8 SHA-256 | Changed lanes |', '| --- | --- | --- | --- | ---: |')
   for (const c of data.cases) lines.push(`| \`${c.key}\` / ${c.name} | ${c.dimensions.width}x${c.dimensions.height} | \`${c.output.f32_sha256}\` | \`${c.output.rgba8_sha256}\` | ${c.output.metrics.changed_f32_lanes_from_same_input_position} |`)
@@ -304,11 +309,11 @@ function buildReport(data) {
 const data = buildData()
 const json = `${JSON.stringify(data, null, 2)}\n`
 const report = buildReport(data)
-if (process.argv.length === 2) process.stdout.write(json)
-else if (process.argv.length === 3 && process.argv[2] === '--write') {
+if (!process.argv.includes('--write') && !process.argv.includes('--check')) process.stdout.write(json)
+else if (process.argv.includes('--write')) {
   fs.writeFileSync(jsonPath, json, 'utf8'); fs.writeFileSync(reportPath, report, 'utf8')
   process.stdout.write(`wrote ${path.basename(jsonPath)} and ${path.basename(reportPath)}\n`)
-} else if (process.argv.length === 3 && process.argv[2] === '--check') {
+} else if (process.argv.includes('--check')) {
   if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error(`${jsonPath} drift`)
   if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error(`${reportPath} drift`)
   process.stdout.write(`ok ${path.basename(jsonPath)} and ${path.basename(reportPath)}\n`)

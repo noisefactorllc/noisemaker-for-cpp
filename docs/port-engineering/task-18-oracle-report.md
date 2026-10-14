@@ -6,15 +6,15 @@ The Task 18 external oracle contract is frozen for exactly the proposed
 - `filter/celShading:celShadingEdges`
 - `filter/outline:outlineSobel`
 
-No repository file was changed and no Git command was used. The generator
+The generator
 binds the pinned `noisemaker-for-cpu` `canonicalKernelFactories` directly
 through `bindCanonicalKernel`, executes with `runPass`, and writes canonical
 `Surface` output. It does not reproduce either Sobel algorithm itself.
 
 Artifacts:
 
-- `task-18-oracle-generator.mjs` — SHA-256 `ef9ec7303f2e610af7384e3c681935be725bce8019498e3f2b49f9e6ec6489c8`
-- `task-18-oracles.json` — SHA-256 `6bfefcf7891f55896e1ff5be6cd67db94c21853f90073a851eacc8ff18da9c1b`
+- `task-18-oracle-generator.mjs` — SHA-256 `4071f68a6c8fc5385b3dea8e3af053dcc8c221ca517d0562c0c12905d265e30e`
+- `task-18-oracles.json` — SHA-256 `af468e52bd117ceefc5ebb47e9d056e62f37df606c27108df4b594107ab90d5f`
 
 The fixture is a top-down, non-square 7x5 `Float32Array` texture with
 distinct formula-generated RGBA lanes. It renders a non-square 9x7 output
@@ -34,8 +34,8 @@ top-down F32 lane-bit probes.
 
 | Case | F32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- |
-| `cel-width-2.3f-threshold-0.18f` | `d86694f5c5a05c094b1dc9d4302b0b98cbe3044e5ce22587fdf6dd80f77d27a7` | `966ca81461240fb6c35316537f631f3b74b6d0a33a7b538d05ddd12e241347e9` |
-| `cel-width-2.3f-threshold-0.6f` | `048acf6f8feb3be40c9be548bc64eaeadc6de78366a61b778c899eb463575ac0` | `8d0418a7e7b046d582cafcfbbe95b1bf2c05478929a57719ab52a345de1091e5` |
+| `cel-width-2.3f-threshold-0.18f` | `6c54f6fc55aecddb68b4c6d90ab5e6e871d2358bf28d319c5e5023fd2fcf7593` | `966ca81461240fb6c35316537f631f3b74b6d0a33a7b538d05ddd12e241347e9` |
+| `cel-width-2.3f-threshold-0.6f` | `bec7dfa0806d4cf153699f79427479ac1ade2bf10d1b4ab688be49d9eedae6b6` | `8d0418a7e7b046d582cafcfbbe95b1bf2c05478929a57719ab52a345de1091e5` |
 | `outline-metric-1-thickness-2.3f` | `2e62cf4918bb2da1def8b146c4e33ef009d6c6ef05f96bf2d0fd2be4e7679a7f` | `a877af8b8229c67295f3c17123cbaa5a540e59e81a3f95af9db601be5b2eca90` |
 | `outline-metric-2-thickness-2.3f` | `afac987ef587a22d89ed00f619edb97e29d321fb2cc57667ceea89c0d78744b0` | `e01ac082638be9679283946c758e093c5ea966bc79b8acdf14d8ee1213f084f8` |
 | `outline-metric-3-thickness-2.3f` | `33eb93deef5ea41a7f085c4d3e9d8f4d5c3b4353b8490f0b9e0bbd2466c1d1ff` | `8c3a62bd220bf6321d1127ab2cb1823522ffe38e9e07f985af9aceb9e64a253c` |
@@ -79,10 +79,11 @@ control-path test, not an absent source behavior.
   F32 hashes and lane words distinguish smoothstep/metric precision and the
   metric-4 divisor.
 
-Verification performed:
+With `CPU_ROOT` and `CPU_LEDGER` set to the authenticated CPU root and matching
+ledger, verification from the repository root is:
 
 ```text
-node docs/port-engineering/task-18-oracle-generator.mjs --check
+node docs/port-engineering/task-18-oracle-generator.mjs --cpu-root "$CPU_ROOT" --ledger "$CPU_LEDGER" --check
 ok task-18-oracles.json
 ```
 

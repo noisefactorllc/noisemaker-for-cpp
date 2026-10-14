@@ -319,6 +319,9 @@ def authenticate_shapes_rvalue_assign(
     profile for a non-carrier key is a hard failure that names Shapes as the
     sole program the widened emitter boundary exists for.
     """
+    if program.key == 'classicNoisedeck/shapes:shapes' and tuple((d.name,d.kind,d.canonical_value) for d in program.preprocessor_defines) == (('LOOP_A_OFFSET', 'str', 'int'), ('LOOP_B_OFFSET', 'str', 'int')):
+        from .shapes_rvalue_assign_runtime_profile import authenticate_shapes_rvalue_assign as runtime_auth
+        return runtime_auth(program,source_hash,profile)
     if program.key not in SHAPES_RVALUE_ASSIGN_KEYS:
         if profile is not None:
             raise _fail(

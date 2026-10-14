@@ -26,7 +26,7 @@ Total cases: **24** (4 early-exit / dead-code diagnostic).
 
 ## `filter/posterize:posterize` (round)
 
-Source: `posterize/posterize.glsl` (2630 bytes, `460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2`). Canonical factory `canonicalFactory116` (`317e38c428bda5e89258c3bc64cae3fbfb54ffa43e0b02f98b2329f542c546ed`). Public factory is canonical identity: true. Adapter override present: false.
+Source: `posterize/posterize.glsl` (2630 bytes, `460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2`). Canonical factory `canonicalFactory113` (`f7051166df1a4b7ab62675e250898e009b34f4f0e9f7f393dfba4198624d36f1`). Public factory is canonical identity: true. Adapter override present: false.
 
 **Reachability**: round(levels_raw) at line 65 executes unconditionally, every pixel, before the antialias branch -- always reachable. levels_raw = max(levels, 0.0), so this call site can NEVER receive a negative input: round-half-away-from-zero and Math.round agree on every non-negative real, so the away-from-zero mutation is a PROVABLE (and proven, below) no-op for every posterize case, regardless of whether levels lands on a tie.
 
@@ -62,7 +62,7 @@ Source: `posterize/posterize.glsl` (2630 bytes, `460910a8d1103eca5cc0b4df82f39fd
 
 ## `filter/waves:waves` (any)
 
-Source: `waves/waves.glsl` (2622 bytes, `f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa`). Canonical factory `canonicalFactory176` (`4a289d05076a7588ced250d307eeaf8d8d0b1628bd5fc907ea71481b02ed2ae5`). Public factory is canonical identity: true. Adapter override present: false.
+Source: `waves/waves.glsl` (2622 bytes, `f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa`). Canonical factory `canonicalFactory173` (`36330df619f8b6b6b9be94008bc3f59532e16b43487eb80cc128be2668c2d671`). Public factory is canonical identity: true. Adapter override present: false.
 
 **Reachability**: any(notEqual(tileOffset, vec2(0.0))) is called TWICE per pixel (lines 48 and 74), unconditionally -- always reachable regardless of tileOffset value.
 
@@ -93,7 +93,7 @@ Source: `waves/waves.glsl` (2622 bytes, `f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf
 
 ## `filter/lighting:lighting` (reflect)
 
-Source: `lighting/lighting.glsl` (6049 bytes, `a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f`). Canonical factory `canonicalFactory78` (`9c9b70f5738071d64edb39c331ebf39b0075dd215fdae61db23b381a0898f75f`). Public factory is canonical identity: true. Adapter override present: false.
+Source: `lighting/lighting.glsl` (6049 bytes, `a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f`). Canonical factory `canonicalFactory75` (`7e4c772f74b0c981a2006e5e28337d26af4f18f2e7a28739df3c3b9243ad2526`). Public factory is canonical identity: true. Adapter override present: false.
 
 **Reachability**: reflect(incident, normal) is called once inside applyReflection, itself called only when reflection>0.0 || aberration>0.0. `normal` is always normalize()'d (unit length) before it reaches reflect() in THIS program -- so the "defensive normalize" mutation is expected to be a full-render no-op here (proven, not assumed) even though it is a genuine hazard for the C++ port in general (see the direct rows for a non-unit-N discriminating case). When aberration>0 but reflection==0, applyReflection still executes and reflect() still fires (reachable, proven by call log), but its output is immediately multiplied by reflection==0, so BOTH reflect mutations are legitimately-zero-divergence for that case too -- documented with proof, not dropped.
 
@@ -101,10 +101,10 @@ Source: `lighting/lighting.glsl` (6049 bytes, `a0601f7012f385c14c1bdb9f462e5dcb3
 
 | Case | Size | Diagnostic | Reach | Call count | F32 SHA-256 |
 | --- | --- | --- | --- | ---: | --- |
-| reflection-strong-sign-matters | 6x5 | false | true | 30 | `35b9d0303cdbac02...` |
-| reflection-aberration-refraction-mixed-tiled | 5x6 | false | true | 30 | `901928e220c7e741...` |
-| aberration-only-zero-offset-diagnostic | 7x4 | true | true | 28 | `5951f12f620b5e0d...` |
-| all-off-diagnostic-no-reflect-call | 4x7 | true | false | 0 | `e72ea07339688d23...` |
+| reflection-strong-sign-matters | 6x5 | false | true | 30 | `438fded167ba4214...` |
+| reflection-aberration-refraction-mixed-tiled | 5x6 | false | true | 30 | `99ecd670653dc374...` |
+| aberration-only-zero-offset-diagnostic | 7x4 | true | true | 28 | `06bc3ba6db04322f...` |
+| all-off-diagnostic-no-reflect-call | 4x7 | true | false | 0 | `9616d5aa2b8c752b...` |
 
 ### Mutations
 
@@ -124,7 +124,7 @@ Source: `lighting/lighting.glsl` (6049 bytes, `a0601f7012f385c14c1bdb9f462e5dcb3
 
 ## `filter/fxaa:fxaa` (round)
 
-Source: `fxaa/fxaa.glsl` (4938 bytes, `088449aa1fd5855489d3ce0c6ed2986b9b128fa93ace5817dbeafeff92a7bdf0`). Canonical factory `canonicalFactory56` (`8c707f68d552fa852fa899d377616a0c772f0ebefce3026137af301f044bb3c0`). Public factory is canonical identity: true. Adapter override present: false.
+Source: `fxaa/fxaa.glsl` (4938 bytes, `088449aa1fd5855489d3ce0c6ed2986b9b128fa93ace5817dbeafeff92a7bdf0`). Canonical factory `canonicalFactory54` (`ef3d721dacdbaad31ef65b7d15a69a4bc3c4ac23dac96a2b826e6e372d56da66`). Public factory is canonical identity: true. Adapter override present: false.
 
 **Reachability**: as_u32(resolution.x) / as_u32(resolution.y) execute unconditionally at the top of main() -- reachable, and its result (width_u/height_u) genuinely gates an early-return (verified: shrinking it by 1 causes the last column/row to early-return to transparent black). But resolution.x/y are ALWAYS exact integers (Number.isInteger enforced by createCanonicalBindings), so round(integer) == integer under every rounding convention -- no full-render case can ever exercise a genuine tie here. sanitized_channelCount()'s round() (a second call site) is DEAD CODE: grepped, it is declared but never invoked from main().
 
@@ -132,10 +132,10 @@ Source: `fxaa/fxaa.glsl` (4938 bytes, `088449aa1fd5855489d3ce0c6ed2986b9b128fa93
 
 | Case | Size | Diagnostic | Reach | Call count | F32 SHA-256 |
 | --- | --- | --- | --- | ---: | --- |
-| small-canvas-round-reachable-integer-only | 6x5 | false | true | 60 | `42f5db5fe3503ec3...` |
-| tiled-canvas-round-reachable-integer-only | 5x6 | false | true | 60 | `1bbc998d30bfe2bf...` |
-| wide-canvas-round-reachable-integer-only | 7x4 | false | true | 56 | `c97c68a00e8affad...` |
-| tall-canvas-round-reachable-integer-only | 4x7 | false | true | 56 | `eb168d9bc4a55454...` |
+| small-canvas-round-reachable-integer-only | 6x5 | false | true | 60 | `4ee191ae93fe6f58...` |
+| tiled-canvas-round-reachable-integer-only | 5x6 | false | true | 60 | `a59ba3d01bb83c3e...` |
+| wide-canvas-round-reachable-integer-only | 7x4 | false | true | 56 | `338b2d69355d23c3...` |
+| tall-canvas-round-reachable-integer-only | 4x7 | false | true | 56 | `337acb97ca5b0653...` |
 
 ### Mutations
 
@@ -160,7 +160,7 @@ Source: `fxaa/fxaa.glsl` (4938 bytes, `088449aa1fd5855489d3ce0c6ed2986b9b128fa93
 
 ## `filter/grain:grain` (round)
 
-Source: `grain/grain.glsl` (8796 bytes, `6edf8deec35e2fa3a32fc150c2be8cb6d71a9356c1c7a3cff5bd3c6c7df764f0`). Canonical factory `canonicalFactory65` (`36a15bacaf42ebe94dc587fdc77cb56a5c714cae51fd40c7f7a6a187794ef44f`). Public factory is canonical identity: true. Adapter override present: false.
+Source: `grain/grain.glsl` (8796 bytes, `6edf8deec35e2fa3a32fc150c2be8cb6d71a9356c1c7a3cff5bd3c6c7df764f0`). Canonical factory `canonicalFactory63` (`f809a771b71039a89a89cf58568f6cb3068c73b529dfeb6573eed78828811ce3`). Public factory is canonical identity: true. Adapter override present: false.
 
 **Reachability**: as_u32(res.x) / as_u32(res.y) execute unconditionally at the top of main() -- reachable, same early-return-gate structure and same always-integer-input constraint as fxaa (both proven below).
 
@@ -196,7 +196,7 @@ Source: `grain/grain.glsl` (8796 bytes, `6edf8deec35e2fa3a32fc150c2be8cb6d71a935
 
 ## `filter/snow:snow` (round)
 
-Source: `snow/snow.glsl` (2982 bytes, `ae057787cc101755743c17b4cdf46b51d70ed8b9896fed9535a058c8b252f48a`). Canonical factory `canonicalFactory142` (`769bbb2ed7322417cb3334d9427a1037c8dd40fd55f5e003490cd0129ef109b1`). Public factory is canonical identity: false. Adapter override present: true.
+Source: `snow/snow.glsl` (2982 bytes, `ae057787cc101755743c17b4cdf46b51d70ed8b9896fed9535a058c8b252f48a`). Canonical factory `canonicalFactory139` (`d7824584022fad9119fbfcbf6636be7ec0098089ae4b0fb5463df11e17e13937`). Public factory is canonical identity: false. Adapter override present: true.
 
 **Reachability**: as_u32() -- the only function in this source that calls round() -- is DECLARED but NEVER CALLED anywhere in main() or any function main() transitively calls. Verified by grep against both the raw GLSL source (zero call sites besides the declaration) and the compiled JS factory text (same), and independently reconfirmed here at runtime: the InstrumentedRuntime call log for round() is empty for every snow case. round() is therefore fully dead code in this program -- the C++ port needs a node-identity admission for the call to type-check, but no case can or should assert non-trivial round() BEHAVIOR for snow; every mutation is expected (and proven) zero-divergence for every case.
 

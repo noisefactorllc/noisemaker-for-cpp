@@ -187,6 +187,39 @@ def without_expansion(spec: dict) -> dict:
     result["programs"] = [item for item in result["programs"]
                           if item["program_key"] in historical_keys]
     if spec["revision"] != HISTORICAL_REVISION:
+        # These runtime carriers were added after the frozen authority. Keep
+        # the older carriers and require the exact new rows before projecting.
+        later_runtime_keys = {
+            "classicNoisedeck/caustic:caustic",
+            "classicNoisedeck/cellRefract:cellRefract",
+            "classicNoisedeck/effects:effects",
+            "classicNoisedeck/kaleido:kaleido",
+            "classicNoisedeck/moodscape:moodscape",
+            "classicNoisedeck/noise:noise",
+            "classicNoisedeck/shapes:shapes",
+            "filter/emboss:emboss",
+            "filter/extrude:extrude",
+            "filter/halftone:halftone",
+            "filter/hatch:hatch",
+            "filter/lowPoly:lowPoly",
+            "filter/strokes:stkSmear",
+            "filter/texture:texture",
+            "synth/perlin:perlin",
+            "synth/shape:shape",
+        }
+        carried = {item["program_key"] for item in result["programs"]
+                   if item["program_key"] in later_runtime_keys
+                   and item.get("runtime_define_profile") == "runtime-defines-generic-v1"}
+        if carried != later_runtime_keys:
+            raise AssertionError("historical runtime carrier census drift")
+        for item in result["programs"]:
+            if item["program_key"] in later_runtime_keys:
+                if item.pop("runtime_define_profile") != "runtime-defines-generic-v1":
+                    raise AssertionError("historical runtime carrier identity drift")
+            if item["program_key"] == "classicNoisedeck/moodscape:moodscape":
+                if item.get("moodscape_frontend_profile") != "moodscape-runtime-frontend-v1":
+                    raise AssertionError("historical Moodscape frontend carrier identity drift")
+                item["moodscape_frontend_profile"] = "moodscape-frontend-admission-v1"
         present = {item["program_key"] for item in result["programs"]}
         result["programs"].extend(copy.deepcopy(item) for item in _RETIRED_ROWS
                                   if item["program_key"] not in present)

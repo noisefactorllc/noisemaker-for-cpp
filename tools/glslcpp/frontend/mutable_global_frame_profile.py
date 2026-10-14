@@ -1052,6 +1052,125 @@ _LOCKS = {
     },
 }
 
+# Dynamic LOOP_A_OFFSET/LOOP_B_OFFSET tree. The default _LOCKS row remains unchanged.
+_DYNAMIC_SHAPE_LOCK = dict(_LOCKS[SHAPE_KEY], **{'normalized_bytes': 15049,
+ 'normalized_sha256': '5c5ee9bb198e20ee0fd8586502b996b4cda524d22b3394a99b2ac19d868f672e',
+ 'functions_sha256': '46800fac40ae440ac62e348963dafa219de5dd47bb2545c1c52668659d7bcd48',
+ 'whole_sha256': 'ce26121154ee73ca20ea4ab0c0465e7e3ca0a98d3dc358ac49bcff88f3b8bf86',
+ 'interface_sha256': '5292effca0535492d7d7dbf069a72bd8b6717b92cecb032d8a32a8bef241372f',
+ 'defines': (('LOOP_A_OFFSET', 'str', 'int'), ('LOOP_B_OFFSET', 'str', 'int')),
+ 'declaration_count': 17,
+ 'resources': (('LOOP_A_OFFSET',
+                'LOOP_B_OFFSET',
+                'resolution',
+                'tileOffset',
+                'fullResolution',
+                'time',
+                'seed',
+                'wrap',
+                'loopAScale',
+                'loopBScale',
+                'speedA',
+                'speedB'),
+               (),
+               ('fragColor',),
+               False,
+               False),
+ 'call_graph_sha256': '5f3834b011c1afe44cf9e7822eb8434e1178c926a8c4ffd3aeb0c4ba2b1d8912',
+ 'reachable': (97,
+               98,
+               99,
+               100,
+               101,
+               102,
+               103,
+               104,
+               105,
+               106,
+               107,
+               108,
+               109,
+               110,
+               111,
+               112,
+               113,
+               114,
+               115,
+               116,
+               117,
+               118,
+               119,
+               120,
+               121,
+               122,
+               123,
+               124),
+ 'declaration_inventory': ((1, 'LOOP_A_OFFSET', 'int', 'uniform', False, False, '1:1-1:27'),
+                           (2, 'LOOP_B_OFFSET', 'int', 'uniform', False, False, '2:1-2:27'),
+                           (3, 'resolution', 'vec2', 'uniform', False, False, '17:1-17:25'),
+                           (4, 'tileOffset', 'vec2', 'uniform', False, False, '18:1-18:25'),
+                           (5, 'fullResolution', 'vec2', 'uniform', False, False, '19:1-19:29'),
+                           (6, 'time', 'float', 'uniform', False, False, '20:1-20:20'),
+                           (7, 'seed', 'int', 'uniform', False, False, '21:1-21:18'),
+                           (8, 'wrap', 'bool', 'uniform', False, False, '22:1-22:19'),
+                           (9, 'loopAScale', 'float', 'uniform', False, False, '23:1-23:26'),
+                           (10, 'loopBScale', 'float', 'uniform', False, False, '24:1-24:26'),
+                           (11, 'speedA', 'float', 'uniform', False, False, '25:1-25:22'),
+                           (12, 'speedB', 'float', 'uniform', False, False, '26:1-26:22'),
+                           (13, 'fragColor', 'vec4', 'output', True, False, '28:1-28:16'),
+                           (14, 'PI', 'float', 'const', False, True, '30:1-30:32'),
+                           (15, 'TAU', 'float', 'const', False, True, '31:1-31:33'),
+                           (16, 'aspectRatio', 'float', 'global', True, False, '33:1-33:19'),
+                           (17, 'globalCoord', 'vec2', 'global', True, False, '34:1-34:18')),
+ 'initializer_census': ((14,
+                         'PI',
+                         (('literal', '30:18-30:31', '3.14159265359', '3.14159265359', 'float'),)),
+                        (15,
+                         'TAU',
+                         (('literal', '31:19-31:32', '6.28318530718', '6.28318530718', 'float'),))),
+ 'preceding': (14, 15),
+ 'total_nodes': 2027,
+ 'total_assigns': 43,
+ 'admitted': (_Admitted(ordinal=15, symbol_id=16, name='aspectRatio', glsl_type='float', storage='global', writable=True, declaration_span='33:1-33:19', symbol_span='33:1-33:19', declaration_sha256='6469ff4b4ec3c01d6772c1fe7009eb6b905184da58207d1c316722c9cc99d818', symbol_sha256='4c7678447ca2ed32952e7dbb8ba4325657435a09fd23ccce178cb10026323193', field=FrameField(symbol_id=16, name='aspectRatio', glsl_type='float', native_type='double', lane_count=1, narrowing='none', js_initializer='0', js_number_kind='double')),
+              _Admitted(ordinal=16, symbol_id=17, name='globalCoord', glsl_type='vec2', storage='global', writable=True, declaration_span='34:1-34:18', symbol_span='34:1-34:18', declaration_sha256='28c48f4c1704b328600d499e27bc960949a2a6f6e1be3979cfc93ea66ebee00d', symbol_sha256='ebbe48adceae5bdbf96127ea5e9461dbf8ca7fb1a4ac188c9cdb921bf8dd1827', field=FrameField(symbol_id=17, name='globalCoord', glsl_type='vec2', native_type='glsl::Vec2', lane_count=2, narrowing='per-lane-f32', js_initializer='new Float32Array([0, 0])', js_number_kind='float32-array'))),
+ 'frame': FrameContract(struct_name='Frame', instance_name='frame', instance_scope='pixel', value_initialized=True, helper_parameter='const Frame& frame', helper_parameter_qualifier='const Frame&', helper_parameter_ordinal=2, writer_function='main', fields=(FrameField(symbol_id=16, name='aspectRatio', glsl_type='float', native_type='double', lane_count=1, narrowing='none', js_initializer='0', js_number_kind='double'), FrameField(symbol_id=17, name='globalCoord', glsl_type='vec2', native_type='glsl::Vec2', lane_count=2, narrowing='per-lane-f32', js_initializer='new Float32Array([0, 0])', js_number_kind='float32-array'))),
+ 'main': (107, 'main', 19, '459:1-504:2'),
+ 'main_body': (('decl', '460:5-460:43'),
+               ('expr', '461:5-461:48'),
+               ('decl', '462:5-462:46'),
+               ('expr', '463:5-463:55'),
+               ('decl', '465:5-465:55'),
+               ('if', '466:5-471:6'),
+               ('decl', '472:5-472:57'),
+               ('decl', '473:5-473:20'),
+               ('if', '474:5-478:6'),
+               ('decl', '480:5-480:55'),
+               ('if', '481:5-486:6'),
+               ('decl', '487:5-487:57'),
+               ('decl', '488:5-488:20'),
+               ('if', '489:5-493:6'),
+               ('decl', '495:5-495:43'),
+               ('decl', '496:5-496:43'),
+               ('decl', '498:5-498:34'),
+               ('expr', '501:5-501:25'),
+               ('expr', '503:5-503:23')),
+ 'writes': (_WriteRecord(symbol_id=17, name='globalCoord', owner_id=107, owner_name='main', operator='=', assign_span='461:5-461:47', assign_type='vec2', assign_sha256='85f7f416c64cd2c9b2e4c7aaf5cbc1ccbf95880463f4597b06dcf0ed0473c8cd', target_span='461:5-461:16', target_sha256='272f42af9230ae7dcd570540355309c2ac474ef18018969439e5077db9f49c09', statement_index=1, statement_kind='expr', statement_span='461:5-461:48'),
+            _WriteRecord(symbol_id=16, name='aspectRatio', owner_id=107, owner_name='main', operator='=', assign_span='463:5-463:54', assign_type='float', assign_sha256='15c17bdff07ce26c8c59479efb0adc04940c90b89d3ba5374cb44be08e84df5f', target_span='463:5-463:16', target_sha256='f9358d8e5d55cd4bb00ff6d089f17937ae588f2fb03a2e921461d257b1d49db5', statement_index=3, statement_kind='expr', statement_span='463:5-463:55')),
+ 'reads': (_ReadRecord(symbol_id=16, name='aspectRatio', owner_id=104, owner_name='circles', span='409:41-409:52', node_type='float', node_sha256='9b0ce70d83c8a890b731a11e4c3474942bc1c6229fcf08c67d7b19b77263898a', parent=('binary', '*', None, '409:35-409:52'), statement_index=0, path=(0, 'e0', 0, 0, 1, 0, 1), chain=(('decl', '409:5-409:60'),)),
+           _ReadRecord(symbol_id=17, name='globalCoord', owner_id=106, owner_name='diamonds', span='419:20-419:31', node_type='vec2', node_sha256='16d879b68834989ce991407202653cd2d88189c38a9e39814fac7c6ba4a5a1ce', parent=('binary', '/', None, '419:20-419:50'), statement_index=0, path=(0, 'e0', 0, 0), chain=(('decl', '419:5-419:51'),)),
+           _ReadRecord(symbol_id=16, name='aspectRatio', owner_id=106, owner_name='diamonds', span='420:27-420:38', node_type='float', node_sha256='645f6c6fe6411dd083833e0566c758ce94563e840aa5400fd8f485f35ab615d4', parent=('binary', '*', None, '420:21-420:38'), statement_index=1, path=(1, 'e0', 1, 0, 1), chain=(('expr', '420:5-420:45'),)),
+           _ReadRecord(symbol_id=17, name='globalCoord', owner_id=107, owner_name='main', span='462:15-462:26', node_type='vec2', node_sha256='cd8c9832c5b89e390caa8a89154b1b4be9b056879dc3537c1bfe9545367b5068', parent=('binary', '/', None, '462:15-462:45'), statement_index=2, path=(2, 'e0', 0, 0), chain=(('decl', '462:5-462:46'),)),
+           _ReadRecord(symbol_id=16, name='aspectRatio', owner_id=111, owner_name='offset', span='441:34-441:45', node_type='float', node_sha256='91d5ce74bd93ca3485a33fced40cab0a53e9b1f163ad3032919041d0b69c4834', parent=('binary', '*', None, '441:28-441:45'), statement_index=0, path=(0, 's1', 's1', 's1', 's0', 's0', 'e0', 0, 0, 0, 0, 1, 1), chain=(('if', '433:5-455:6'), ('if', '435:12-455:6'), ('if', '437:12-455:6'), ('if', '440:12-455:6'), ('block', '440:34-442:6'), ('return', '441:9-441:79'))),
+           _ReadRecord(symbol_id=16, name='aspectRatio', owner_id=120, owner_name='rings', span='414:41-414:52', node_type='float', node_sha256='34399288ebb58a7fb384a1994949554c432b37964dbbffc1dd4e51afe1a69ace', parent=('binary', '*', None, '414:35-414:52'), statement_index=0, path=(0, 'e0', 0, 0, 1, 0, 1), chain=(('decl', '414:5-414:60'),)),
+           _ReadRecord(symbol_id=16, name='aspectRatio', owner_id=121, owner_name='shape', span='426:26-426:37', node_type='float', node_sha256='037be1b83c1d3c7fc1776420b4fb75f896703f91d1d6393b135869e7ce9b1a62', parent=('construct', None, None, '426:21-426:43'), statement_index=0, path=(0, 'e0', 1, 1, 0), chain=(('expr', '426:5-426:44'),)))})
+
+def _dynamic_shape(program: TypedProgram) -> bool:
+    return (program.key == SHAPE_KEY and
+            tuple((d.name, d.kind, d.canonical_value)
+                  for d in program.preprocessor_defines) ==
+            (("LOOP_A_OFFSET", "str", "int"),
+             ("LOOP_B_OFFSET", "str", "int")))
+
 def _admitted_symbols(lock: dict) -> dict[int, str]:
     """The `{symbol id: name}` map of one key's admitted globals.
 
@@ -1065,9 +1184,12 @@ def _admitted_symbols(lock: dict) -> dict[int, str]:
     return {item.symbol_id: item.name for item in lock["admitted"]}
 
 
-def frame_contract(key: str) -> FrameContract:
-    """The frozen emission contract both authorities must honour for ``key``."""
-    lock = _LOCKS.get(key)
+def frame_contract(key: str | TypedProgram) -> FrameContract:
+    """Return the default or exact runtime frame contract."""
+    if isinstance(key, TypedProgram):
+        lock = _DYNAMIC_SHAPE_LOCK if _dynamic_shape(key) else _LOCKS.get(key.key)
+    else:
+        lock = _LOCKS.get(key)
     if lock is None:
         raise _fail(f"{key} is not an admitted mutable-global frame carrier")
     return lock["frame"]
@@ -1113,7 +1235,8 @@ def authenticate_mutable_global_frame(
                 f"{SHAPE_KEY} 31:1 float aspectRatio and 32:1 vec2 "
                 "globalCoord are the sole admitted declarations")
         return ()
-    lock = _LOCKS[program.key]
+    lock = (_DYNAMIC_SHAPE_LOCK if _dynamic_shape(program)
+            else _LOCKS[program.key])
     if profile != lock["profile"]:
         raise _fail("exact profile carrier required")
 

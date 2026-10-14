@@ -112,23 +112,21 @@ _PROFILES: dict[str, dict] = {
     # code (`uv.x -= ceil(...)`, `uv.y += ceil(...)` -- statements 10/11),
     # this program's one new reachable grammar element (the module census is
     # otherwise unreachable-only for the first two carriers).
-    "classicNoisedeck/effects:effects": {
-        "raw_bytes": 21279,
-        "raw_sha256": "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457",
-        "normalized_bytes": 15821,
-        "normalized_sha256": "ed61aa21c55782d5325c514cb29c3d19992fe93669e9391aa28b19963046b150",
-        "functions_sha256": "4165298021dd882ccab94042267c209fa4fd34c3c414aa81e1946d93c8500f58",
-        "whole_program_sha256": "53ce4d08011b9f09e2072723facf7ecece0e203326698d2a748cc445b9ce9197",
-        "interface_sha256": "8cbdb73990c43f4739fadaeb20a06d5cc7adcb891fd50bfc7588abf3acdfee5b",
-        "ceil_sites": (
-            ("main", "574:13-574:99",
-             "9488348ce2980bab1c5be11dac127781b69d6488d47f84ca2a8f3b3017456515",
-             "3994a58d07695919f941c9789dc5d87aacb133accb38881dfc77f2c681e6d2af"),
-            ("main", "575:13-575:109",
-             "ce174d6c09e96aafd65bacc991d196542a3e80e24dc1535b309b62746540bbd2",
-             "20f5804ab223dc336e806573d7a1bb1b222b48c687a1b917ff21a785eb44cedc"),
-        ),
-    },
+    'classicNoisedeck/effects:effects': {'raw_bytes': 26106,
+     'raw_sha256': '1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90',
+     'normalized_bytes': 17038,
+     'normalized_sha256': '9e2f853168720c5923440e2f835bcbf4f85e50e15c8cc5b739c15a5ecd150207',
+     'functions_sha256': '4c2ebe270f45b8ee86f230c1a48254b62b668943c2f10b481fa04b5f2e75698e',
+     'whole_program_sha256': '7c7211aff83abb13c370f0983b4e1adc31371385bcd5ee8943ee015edcd15fb3',
+     'interface_sha256': '3cdb27b87bfe71e7e6e9d46460faafdf6116c0746d5d1f25888e4bddaa109317',
+     'ceil_sites': (('main',
+                     '650:13-650:70',
+                     '0644c6ecc90b9127465923990a0c9b24fde34a4ec43703ae9f801d35e2b01c7f',
+                     '4e248de53820f047e854ff81d8d6b3a1a1e6e2c0612eacfa9cc778f407b8c74a'),
+                    ('main',
+                     '651:13-651:80',
+                     '87f2478ac4060d645662f0980dd09b356f4588cd9a9dda2dc3e1cb6dff3af5cd',
+                     '8cb9af58fad7e7d41add519bfe07a628bcfa479325677937020ff686964d539e'))},
     # points/lenia:convolve -- one ceil site in main, the operand of the
     # `int(ceil(searchRadius))` window-radius cast (44:23). Composes with the
     # program's runtime-loop-bound record exactly like synth/curl composes
@@ -207,6 +205,12 @@ def authenticate_ceil_admission(
     Returns an empty tuple when ``program.key`` is not a carrier, so callers can
     treat the result as a membership set unconditionally.
     """
+    if program.key == "classicNoisedeck/effects:effects":
+        from . import dynamic_kernel9_profile, dynamic_kernel9_companions
+        if dynamic_kernel9_profile.is_dynamic(program):
+            if profile != PROFILE:
+                raise _fail("exact profile carrier required")
+            return dynamic_kernel9_companions.effects_ceil(program, source_hash)
     expected = _PROFILES.get(program.key)
     if expected is None:
         if profile is not None:

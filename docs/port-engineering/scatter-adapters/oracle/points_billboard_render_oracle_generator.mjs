@@ -14,12 +14,22 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { CaseWriter, loadAuthority, makeSurfaceData, mulberry32, randomInt, randomUniform } from './common.mjs'
+import { CaseWriter, makeSurfaceData, mulberry32, randomInt, randomUniform } from './common.mjs'
+import { authenticateCpuRoot } from '../../../../tools/dsl/corpus_authority.mjs'
 
-const { pointsBillboardRenderDepositAdapter } = await loadAuthority('src/effects/cpu/billboard-deposit.js')
-const { Surface } = await loadAuthority('src/runtime/surface.js')
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] ||
+    (ledgerIndex >= 0 && !process.argv[ledgerIndex + 1])) {
+  throw new Error('usage: points_billboard_render_oracle_generator.mjs --cpu-root ROOT [--ledger FILE] [--fuzz-count=N]')
+}
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1],
+  ledgerIndex < 0 ? null : process.argv[ledgerIndex + 1])
+const load = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { pointsBillboardRenderDepositAdapter } = await load('src/effects/cpu/billboard-deposit.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'points_billboard_render-oracles.json')

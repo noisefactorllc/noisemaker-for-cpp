@@ -25,6 +25,7 @@ from __future__ import annotations
 import hashlib
 import pathlib
 import unittest
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 MODULE = "tools.glslcpp.frontend.any_relational_profile"
 
@@ -34,7 +35,6 @@ HEIGHTMAP_KEY = "synth3d/heightmap3d:precompute"
 RENDERLIT_KEY = "render/renderLit3d:renderLit3d"
 PROFILE = "any-relational-admission-v1"
 
-CORPUS_REVISION = "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d"
 
 
 def _source_path(key: str) -> pathlib.Path:
@@ -110,7 +110,7 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertEqual(record.raw_sha256, _source_hash(_source_text(RENDERLIT_KEY)))
         self.assertEqual(
             (record.normalized_bytes, record.normalized_sha256),
-            (9504, "cc72ea7149272c38ff05fb6842a4f7f720ea05c4065b2e6900edb7f1885ec980"))
+            (9486, "436cdf22da60272b948b145b0dabc113d65bc1b9006659517e07dcd80ba48b62"))
 
 
 class AdmissionGreenTests(unittest.TestCase):

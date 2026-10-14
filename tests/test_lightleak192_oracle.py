@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.historical_cpu import current_cpu_root, current_run
 from tests.simulated_links import simulate_symlink
 
 import json
@@ -18,8 +18,8 @@ from tests.gate import full_run_only
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "docs/port-engineering/counted-for-parity/lightleak192-oracle"
 GENERATOR = PACKAGE / "lightleak192_oracle_generator.mjs"
-CPU_ROOT = (pathlib.Path(historical_cpu_root())
-            if historical_cpu_root() else None)
+CPU_ROOT = (pathlib.Path(current_cpu_root())
+            if current_cpu_root() else None)
 WORKER = pathlib.Path(os.environ.get("LIGHTLEAK192_TEST_TMP", tempfile.gettempdir()))
 
 
@@ -42,14 +42,14 @@ def _explicit_temp_root() -> pathlib.Path:
 class LightLeak192OracleTests(unittest.TestCase):
     def _authority(self) -> pathlib.Path:
         if CPU_ROOT is None or not CPU_ROOT.is_dir():
-            self.skipTest("set NOISEMAKER_HISTORICAL_CPU_ROOT to an immutable CPU snapshot")
+            self.skipTest("set NOISEMAKER_CPU_ROOT to the current immutable CPU snapshot")
         return CPU_ROOT
 
     def _node(self, *args, cpu_root: pathlib.Path | None = CPU_ROOT,
               env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         environment = os.environ.copy()
         environment.update(env or {})
-        return historical_run(
+        return current_run(
             ("node", str(GENERATOR), *args, "--cpu-root", str(cpu_root)),
             cwd=ROOT, env=environment, text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
@@ -60,14 +60,14 @@ class LightLeak192OracleTests(unittest.TestCase):
         self.assertEqual(0, checked.returncode, checked.stderr)
         self.assertIn("11 cases, 11 behavioral mutations, 2 structural-only",
                       checked.stdout)
-        materializer = historical_run(
+        materializer = current_run(
             ("python3", "-B", "tools/glslcpp/generate_lightleak192_native_oracle_include.py", "--check"),
             cwd=ROOT, env=os.environ.copy(), text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         self.assertEqual(0, materializer.returncode, materializer.stderr)
 
     def test_materializer_self_test(self):
-        completed = historical_run(
+        completed = current_run(
             ("python3", "-B", "tools/glslcpp/generate_lightleak192_native_oracle_include.py", "--self-test"),
             cwd=ROOT, env=os.environ.copy(), text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
@@ -80,7 +80,7 @@ class LightLeak192OracleTests(unittest.TestCase):
         self.assertEqual("noisemaker-for-cpp.lightleak192.pixel-parity.v1",
                          oracle["schema"])
         self.assertEqual("filter/lightLeak:lightLeak", oracle["program_key"])
-        self.assertEqual(23, len(oracle["provenance"]["import_closure"]))
+        self.assertEqual(24, len(oracle["provenance"]["import_closure"]))
         self.assertEqual(11, len(oracle["render_cases"]))
         self.assertEqual({
             "schema", "source_function", "source_function_sha256",
@@ -267,7 +267,7 @@ class LightLeak192OracleTests(unittest.TestCase):
                 'kBindingAbi[0].runtime_abi == "sampler2D" && '
                 'kSourceBindingAbi[0].source_abi == "sampler2D" && '
                 'kCases[1].resolution.values[0] == 7.0f ? 0 : 1;\n}\n')
-            result = historical_run(
+            result = current_run(
                 [compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -359,7 +359,7 @@ class LightLeak192OracleTests(unittest.TestCase):
             dynamic.write_text(dynamic.read_text() + "\nvoid import('./literal-dynamic.js')\n")
             traversed = self._node("--check", cpu_root=clone)
             self.assertNotEqual(0, traversed.returncode)
-            self.assertIn("CPU import closure mismatch: expected 23, found 24",
+            self.assertIn("CPU import closure mismatch: expected 24, found 25",
                           traversed.stderr)
             dynamic.write_text(dynamic.read_text() + "\nvoid import(runtimeSpecifier)\n")
             rejected = self._node("--check", cpu_root=clone)

@@ -1552,15 +1552,10 @@ double acos(double x) noexcept { return fd_acos(x); }
 double atan(double x) noexcept { return fd_atan(x); }
 double atan2(double y, double x) noexcept { return fd_atan2(y, x); }
 
-// V8 does NOT canonicalize NaNs on the paths that feed a render surface:
-// a Math.pow/Math.sqrt result stays a raw machine double in a register,
-// Math.fround preserves its bits, and typed-array stores write those bits
-// verbatim. Empirically on the pinned lane (V8 26.0.0, Linux x86-64):
-// Math.pow(-0.1, 0.5) -> 0xFFF8000000000000 and the meshRender
-// `negative-color-nan` capture carries the f32 raw pattern 0xFFC00000 in
-// destination.words. C++-resident call chains must therefore return the
-// same raw std::pow/std::sqrt NaN the linked libm produces on this
-// platform, not a canonicalized one.
+// V8 returns the linked math library's raw NaN on the Math.pow/Math.sqrt
+// paths used by render surfaces. Keep that result unchanged: the exact
+// invalid-power NaN bits differ between authenticated Node 26 host profiles.
+// Mesh captures in tests/fixtures/mesh_render check each measured profile.
 // ============================================================
 // pow(x, y): V8's LIVE Math.pow (v8::internal::math::pow,
 // src/numbers/ieee754.cc, active whenever `use_std_math_pow` is true --
@@ -1575,12 +1570,6 @@ double atan2(double y, double x) noexcept { return fd_atan2(y, x); }
 // same OS on the same machine), no algorithm needs porting for that
 // branch -- calling std::pow here IS calling exactly what V8 calls.
 // ============================================================
-[[nodiscard]] double pin_lane_nan(double value) noexcept {
-  return std::isnan(value)
-             ? std::copysign(std::numeric_limits<double>::quiet_NaN(), -1.0)
-             : value;
-}
-
 double pow(double x, double y) noexcept {
   if (std::isnan(y)) {
     return std::numeric_limits<double>::quiet_NaN();
@@ -1588,28 +1577,16 @@ double pow(double x, double y) noexcept {
   if (std::isinf(y) && (x == 1.0 || x == -1.0)) {
     return std::numeric_limits<double>::quiet_NaN();
   }
-  // The pinned lane's JS surface path preserves the raw NaN bits of the
-  // linked libm (V8 26.0.0, Linux x86-64: Math.pow(-0.1, 0.5) -> the raw
-  // double 0xFFF8000000000000, whose f32 narrowing is 0xFFC00000 in the
-  // meshRender `negative-color-nan` capture). Raw libm bits are host
-  // specific, so an invalid-operation NaN is pinned to exactly that bit
-  // pattern (copysign is bit-exact on every IEEE-754 host: the quiet NaN
-  // with the sign bit set, 0xFFF8000000000000) deterministically on macOS
-  // and Linux alike, byte-identical to the frozen captures. A NaN that
-  // propagates from an input is NOT rewritten: the captures carry the
-  // propagated payload unmodified (missing-normal-tail keeps +NaN through
-  // pow), matching V8's operand propagation. The two explicit quiet_NaN
-  // guards above keep the +NaN the JS special cases return (observed
-  // Math.pow(-1, Infinity) -> 0x7FF8000000000000).
+  // Preserve the linked math library's result for invalid finite inputs.
+  // A NaN input also keeps its payload through std::pow. The explicit
+  // guards above retain the JS special-case results.
   if (y == 2.0) {
     return x * x;
   } else if (y == 0.5) {
     if (std::isinf(x)) return std::numeric_limits<double>::infinity();
-    if (std::isnan(x)) return std::sqrt(x + 0.0);
-    return pin_lane_nan(std::sqrt(x + 0.0));
+    return std::sqrt(x + 0.0);
   }
-  if (std::isnan(x)) return std::pow(x, y);
-  return pin_lane_nan(std::pow(x, y));
+  return std::pow(x, y);
 }
 
 // hypot() (2/3/N-arg) lives in src/fdlibm_off.cpp -- Math.hypot is a

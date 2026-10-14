@@ -30,7 +30,7 @@ else:
 
 
 SCHEMA = 1
-REVISION = "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d"
+REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 _ROOT = pathlib.Path(__file__).resolve().parents[2]
 _CORPUS_RELATIVE = pathlib.PurePosixPath("tools/glslcpp/corpus") / REVISION
 _ADAPTERS = frozenset({
@@ -41,6 +41,8 @@ _ADAPTERS = frozenset({
     "points/dla:depositGrid",
     "points/lenia:deposit",
     "points/physarum:deposit",
+    "render/pointsBillboardRender:deposit",
+    "render/pointsRender:deposit",
     "synth/julia:julia",
     "synth/remap:remap",
 })
@@ -251,10 +253,11 @@ def _validate_metadata(metadata: dict[str, Any], programs: list[dict[str, Any]],
     wormhole = effects.get("filter/wormhole", {}).get("passes", [])
     if len(wormhole) < 2 or wormhole[1].get("program") != "deposit" or wormhole[1].get("key") is not None or wormhole[1].get("drawMode") != "points":
         raise CorpusError("filter/wormhole:deposit: expected points draw-op override")
-    runtime_keys = sum(entry["runtime_key"] is not None for entry in programs)
     fragment_bindings = sum(len(_entry_bindings(entry)) for entry in programs if entry["runtime_key"] is not None)
-    if (pass_count, keyed, overrides) != (fragment_bindings + len(programs) - runtime_keys,
-                                          fragment_bindings, len(programs) - runtime_keys):
+    scatter_bindings = sum(len(_entry_bindings(entry)) for entry in programs
+                           if entry["runtime_key"] is None)
+    if (pass_count, keyed, overrides) != (fragment_bindings + scatter_bindings,
+                                          fragment_bindings, scatter_bindings):
         raise CorpusError("metadata: pass/key/override gate drift")
 
 
@@ -264,15 +267,18 @@ def validate_corpus(repository: pathlib.Path | None = None) -> dict[str, Any]:
     root = _corpus_root(repository)
     if root.is_symlink() or not root.is_dir():
         raise CorpusError("corpus root is missing or is a symlink")
-    expected_top_level = {"manifest.json", "metadata.json", "sources", "pending.json", "pending-sources"}
+    required_top_level = {"manifest.json", "metadata.json", "sources", "pending.json"}
     actual_top_level = {entry.name for entry in root.iterdir()}
-    if actual_top_level != expected_top_level:
-        raise CorpusError(f"corpus top-level file set drift: expected {sorted(expected_top_level)}, got {sorted(actual_top_level)}")
-    for name in expected_top_level:
+    if actual_top_level not in (required_top_level,
+                                required_top_level | {"pending-sources"}):
+        raise CorpusError(f"corpus top-level file set drift: expected {sorted(required_top_level)} with optional empty pending-sources, got {sorted(actual_top_level)}")
+    for name in actual_top_level:
         if (root / name).is_symlink():
             raise CorpusError(f"corpus top-level {name} must not be a symlink")
     if (not (root / "manifest.json").is_file() or not (root / "metadata.json").is_file() or not (root / "sources").is_dir()
-            or not (root / "pending.json").is_file() or not (root / "pending-sources").is_dir()):
+            or not (root / "pending.json").is_file()
+            or ("pending-sources" in actual_top_level
+                and not (root / "pending-sources").is_dir())):
         raise CorpusError("corpus top-level entry type drift")
     manifest = _load_json(root / "manifest.json", "manifest")
     metadata = _load_json(root / "metadata.json", "metadata")
@@ -281,6 +287,8 @@ def validate_corpus(repository: pathlib.Path | None = None) -> dict[str, Any]:
         raise CorpusError("metadata: hash mismatch")
     ratchet = _ratchet()
     pending = ratchet.load_pending(root)
+    if pending["pending"] and "pending-sources" not in actual_top_level:
+        raise CorpusError("pending-sources is required for nonempty pending programs")
     pending_keys = frozenset(item["program_key"] for item in pending["pending"])
     _validate_metadata(metadata, programs, pending_keys)
     expected_sources: set[str] = set()

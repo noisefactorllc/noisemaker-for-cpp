@@ -30,7 +30,7 @@ halftone (MODE, PATTERN), pondRipples (STYLE, WRAP), and stipple (MODE) pin comp
 
 ## `filter/bulge:bulge` (bulge)
 
-Source: `bulge/bulge.glsl` (2352 bytes, `87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170`). Canonical factory `canonicalFactory26` (`48eb3ed665bd4d3f27d5bac68e9474ccc38a75168f46ddb61dadf611fc7903ef`). Authorized defines: `{}`.
+Source: `bulge/bulge.glsl` (2352 bytes, `87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170`). Canonical factory `canonicalFactory25` (`0915a49efe3abce961e815de418a0e21aa7a200088b7e77902f1d92e59b5a83f`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -50,14 +50,14 @@ Source: `bulge/bulge.glsl` (2352 bytes, `87f26ffa13ffe946d94d92a00bd45ca3a9787b9
 
 ## `filter/celShading:celShadingColor` (celShadingColor)
 
-Source: `celShading/celShadingColor.glsl` (2780 bytes, `90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4`). Canonical factory `canonicalFactory28` (`5c10f42ac05d71a35295b6d2e42adbb3c137da8eb1a6b2d5fbfe277f2f5488c9`). Authorized defines: `{}`.
+Source: `celShading/celShadingColor.glsl` (2780 bytes, `90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4`). Canonical factory `canonicalFactory27` (`0ff2c4c917b1dd0136c48788aa792e29f783a8e9be167bc50cd6390978b579c4`). Authorized defines: `{}`.
 
 ### Cases
 
 | Case | Size | Diagnostic | Reach | Ordinals observed | F32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- | --- | ---: | --- | --- |
-| sharp-levels-warm-light | 6x5 | false | true | 1 | `b5ad5619e43ba66b...` | `0bd57f2632857441...` |
-| soft-levels-cool-light | 5x6 | false | true | 1 | `1ce63f4d9d8a65dd...` | `852a2ac8a2293d34...` |
+| sharp-levels-warm-light | 6x5 | false | true | 1 | `23410eafb8a4eedd...` | `0bd57f2632857441...` |
+| soft-levels-cool-light | 5x6 | false | true | 1 | `89b27cb65b628992...` | `852a2ac8a2293d34...` |
 | tiled-extreme-levels | 7x4 | false | true | 1 | `97bb51e512857026...` | `ba24cfa77eca196b...` |
 | antialias-off-diagnostic | 4x7 | true | false | 0 | `cc3fc89ea953ca0e...` | `51933064c67af747...` |
 
@@ -70,15 +70,15 @@ Source: `celShading/celShadingColor.glsl` (2780 bytes, `90fa87484d3549bdaa2ddca4
 
 ## `filter/halftone:halftone` (halftone)
 
-Source: `halftone/halftone.glsl` (8440 bytes, `063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7`). Canonical factory `canonicalFactory67` (`7ddd550b40cc5484a4cac387c2560fe0cbf8d5eb7b30b28a123605d84995b58d`). Authorized defines: `{"MODE":0,"PATTERN":0}`.
+Source: `halftone/halftone.glsl` (8440 bytes, `063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7`). Canonical factory `canonicalFactory65` (`bd871eab3baf361602c23965acf45f463ef9cb9b230bbb4ec5dd70496cd87626`). Authorized defines: `{"MODE":0,"PATTERN":0}`.
 
 ### Cases
 
 | Case | Size | Diagnostic | Reach | Ordinals observed | F32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- | --- | ---: | --- | --- |
-| classic-screen-angles | 6x5 | false | true | 4 | `25487c0a06d8a246...` | `d7755d2c29c8ad78...` |
-| coarse-soft-screen | 5x6 | false | true | 4 | `6f55e86da3a112ad...` | `af86936d44bb597e...` |
-| tiled-fine-crisp-screen | 7x4 | false | true | 4 | `b073c98d9bb77308...` | `4ff575f9f5d075bd...` |
+| classic-screen-angles | 6x5 | false | true | 4 | `a1375400a114b717...` | `d7755d2c29c8ad78...` |
+| coarse-soft-screen | 5x6 | false | true | 4 | `13bda3b1ec2b2af5...` | `af86936d44bb597e...` |
+| tiled-fine-crisp-screen | 7x4 | false | true | 4 | `a460399d7e7ad78f...` | `4ff575f9f5d075bd...` |
 
 ### Mutations
 
@@ -89,7 +89,7 @@ Source: `halftone/halftone.glsl` (8440 bytes, `063ddb13f5fffc6f957d4be0a60b0408f
 
 ## `filter/lens:lens` (lens)
 
-Source: `lens/lens.glsl` (2909 bytes, `6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5`). Canonical factory `canonicalFactory74` (`bbee3c76d338b5a7d7013761be6b925f29e8699cc9f8dca06d3d3aa0bef51e41`). Authorized defines: `{}`.
+Source: `lens/lens.glsl` (2909 bytes, `6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5`). Canonical factory `canonicalFactory71` (`34b7d733404af7dbeca09a83530e773f8c0cff1abf50ce8ffc65df51d6ab45ff`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -109,7 +109,7 @@ Source: `lens/lens.glsl` (2909 bytes, `6633d8c7b1ab23600cb25bb87f3f67c5d1d148b06
 
 ## `filter/lensWarp:lensWarp` (lensWarp)
 
-Source: `lensWarp/lensWarp.glsl` (4033 bytes, `543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480`). Canonical factory `canonicalFactory76` (`c4d5f24a54342ff9599a85fd2bdf556badce8cf6da7d8397b33518dc321cc4a9`). Authorized defines: `{}`.
+Source: `lensWarp/lensWarp.glsl` (4033 bytes, `543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480`). Canonical factory `canonicalFactory73` (`abd3e31cb7da4d67d87c9b00b86fb74a5c9b433c7e6d9ab95e63191469795d77`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -129,7 +129,7 @@ Source: `lensWarp/lensWarp.glsl` (4033 bytes, `543b53a26b14dfdcf979e2601eaad32d6
 
 ## `filter/octaveWarp:octaveWarp` (octaveWarp)
 
-Source: `octaveWarp/octaveWarp.glsl` (4902 bytes, `ced7dca971a24fb3d8a48641c7bb66c4af637a57984d45ddc9e51f0492a59bea`). Canonical factory `canonicalFactory91` (`122e909b90228a9e22184d3601611091ee5493029d03392966e82591846ccf30`). Authorized defines: `{}`.
+Source: `octaveWarp/octaveWarp.glsl` (4889 bytes, `193ed3406281cde12a460560438c9ce839f07e9f7a96f11aac50c23d3a31039f`). Canonical factory `canonicalFactory88` (`180c70dd5605e464aea56920b4c8ec7eec3245db5e40194c8146a64beebf43aa`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -149,7 +149,7 @@ Source: `octaveWarp/octaveWarp.glsl` (4902 bytes, `ced7dca971a24fb3d8a48641c7bb6
 
 ## `filter/pinch:pinch` (pinch)
 
-Source: `pinch/pinch.glsl` (2296 bytes, `031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c`). Canonical factory `canonicalFactory103` (`9061ee4b7cd062fc06723cd9366777949bcba7c50a7cd6f1fc1c74b9e1d3a355`). Authorized defines: `{}`.
+Source: `pinch/pinch.glsl` (2296 bytes, `031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c`). Canonical factory `canonicalFactory100` (`7b53ce4a42fce3b2b90e4b2e84f69d33d385833e30f38a2b8bec900c28b36d32`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -169,7 +169,7 @@ Source: `pinch/pinch.glsl` (2296 bytes, `031405e087822fd10b07d972e53f2f6d2da95f6
 
 ## `filter/polar:polar` (polar)
 
-Source: `polar/polar.glsl` (2027 bytes, `391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d`). Canonical factory `canonicalFactory114` (`782461118d560ca22e7a5f4e945a1b3619c5fa381f07a032f5c305c08149aa96`). Authorized defines: `{}`.
+Source: `polar/polar.glsl` (2027 bytes, `391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d`). Canonical factory `canonicalFactory111` (`6cf35ee99e5ab1746648a23353317055420233b45f860e6ab7d2068beace0748`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -189,7 +189,7 @@ Source: `polar/polar.glsl` (2027 bytes, `391b82e45bc2ea9799de1a200afbd735af96ad1
 
 ## `filter/pondRipples:pondRipples` (pondRipples)
 
-Source: `pondRipples/pondRipples.glsl` (5187 bytes, `2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d`). Canonical factory `canonicalFactory115` (`acd9474e33c243581c29858426ad1ffb107698c42176735c1f7c1b0d03c329b5`). Authorized defines: `{"STYLE":2,"WRAP":0}`.
+Source: `pondRipples/pondRipples.glsl` (5187 bytes, `2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d`). Canonical factory `canonicalFactory112` (`02203f5598dd7338d1901521a2741ce9987bf014e5544c6598316494f34a1fb6`). Authorized defines: `{"STYLE":2,"WRAP":0}`.
 
 ### Cases
 
@@ -209,7 +209,7 @@ Source: `pondRipples/pondRipples.glsl` (5187 bytes, `2958de77f0cdf2a21a00d1505ea
 
 ## `filter/spiral:spiral` (spiral)
 
-Source: `spiral/spiral.glsl` (2869 bytes, `3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a`). Canonical factory `canonicalFactory146` (`69f34db1db7515a72c87f0d67dea8cc0e08fd067a398b1655b4e5b3fa8541684`). Authorized defines: `{}`.
+Source: `spiral/spiral.glsl` (2869 bytes, `3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a`). Canonical factory `canonicalFactory143` (`a7f7bb7a38e6e81d0d5e3346252b8f722da22bbc9e72407d77ede091136e252b`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -229,15 +229,15 @@ Source: `spiral/spiral.glsl` (2869 bytes, `3d609c5028c859d82c060af21b0675dd0dd0e
 
 ## `filter/stamp:stThreshold` (stThreshold)
 
-Source: `stamp/stThreshold.glsl` (3467 bytes, `d93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94`). Canonical factory `canonicalFactory150` (`3c6a795c3782cf5c3b32b48c5828696df87ed687e585e56c97971604a680aa79`). Authorized defines: `{}`.
+Source: `stamp/stThreshold.glsl` (3467 bytes, `d93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94`). Canonical factory `canonicalFactory147` (`66a9f063457ec317b557c9a5c6fde25f1d30d1b8c9e5433de269826e1d4c4c8e`). Authorized defines: `{}`.
 
 ### Cases
 
 | Case | Size | Diagnostic | Reach | Ordinals observed | F32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- | --- | ---: | --- | --- |
-| ragged-torn-edges | 6x5 | false | true | 1 | `a713acec58187054...` | `6becee4b4ad80257...` |
-| clean-iso-line | 5x6 | false | true | 1 | `422d4bf0ab1bcbd4...` | `fc4159352266a3ab...` |
-| tiled-high-balance | 7x4 | false | true | 1 | `4768703cd00b1179...` | `12f034215220c32e...` |
+| ragged-torn-edges | 6x5 | false | true | 1 | `3915f7bc1de212e6...` | `6becee4b4ad80257...` |
+| clean-iso-line | 5x6 | false | true | 1 | `5d27231ea8cd2a51...` | `fc4159352266a3ab...` |
+| tiled-high-balance | 7x4 | false | true | 1 | `d66c600813bb458d...` | `12f034215220c32e...` |
 
 ### Mutations
 
@@ -248,7 +248,7 @@ Source: `stamp/stThreshold.glsl` (3467 bytes, `d93168982b13907e32e1264c021c39f9d
 
 ## `filter/step:step` (step)
 
-Source: `step/step.glsl` (709 bytes, `4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf`). Canonical factory `canonicalFactory151` (`a2e3ae28362d275bacdda15b53d62fe97e36c9df45b60075ee65db116a053aba`). Authorized defines: `{}`.
+Source: `step/step.glsl` (709 bytes, `4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf`). Canonical factory `canonicalFactory148` (`29448cafeecb2459fa5a3f9d87d35504130d27a35e8aa3e4d5d4fde8a50a92d5`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -268,14 +268,14 @@ Source: `step/step.glsl` (709 bytes, `4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390
 
 ## `filter/stipple:stipple` (stipple)
 
-Source: `stipple/stipple.glsl` (8490 bytes, `69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609`). Canonical factory `canonicalFactory152` (`50e732c0b6904d2397bf28ac9da6184550c06c4dd416ac2d115846feae51694f`). Authorized defines: `{"MODE":0}`.
+Source: `stipple/stipple.glsl` (8490 bytes, `69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609`). Canonical factory `canonicalFactory149` (`ac82012ece03dfd1aafbae2fe6ccfeb9b71775033c2a47b6b0b18a78baa99c91`). Authorized defines: `{"MODE":0}`.
 
 ### Cases
 
 | Case | Size | Diagnostic | Reach | Ordinals observed | F32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- | --- | ---: | --- | --- |
-| small-cells-jitter | 6x5 | false | true | 1 | `558d41dbe6da042f...` | `a6272d86f087781c...` |
-| large-cells | 5x6 | false | true | 1 | `6f8596943639a281...` | `8d1173c5862d82d8...` |
+| small-cells-jitter | 6x5 | false | true | 1 | `d88029c56c5fc0e4...` | `9f9b464da96f3bf3...` |
+| large-cells | 5x6 | false | true | 1 | `3bfa80eaee357ac9...` | `503338d9f0778dbe...` |
 | tiled-fine-cells | 7x4 | false | true | 1 | `7acb7f7648d59004...` | `900b705aeee20643...` |
 
 ### Mutations
@@ -287,7 +287,7 @@ Source: `stipple/stipple.glsl` (8490 bytes, `69d75b6fab4281fe0a0997eaf6b7b81e5ab
 
 ## `filter/tunnel:tunnel` (tunnel)
 
-Source: `tunnel/tunnel.glsl` (3062 bytes, `c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193`). Canonical factory `canonicalFactory166` (`c214607fae06b63d8e77f7b6aadee2b5d5b633f193cc8ee4fa7928d1ab97bf26`). Authorized defines: `{}`.
+Source: `tunnel/tunnel.glsl` (3062 bytes, `c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193`). Canonical factory `canonicalFactory163` (`ddf2adbde6aac7eb3d8bf123dbaa32bf39a04b5005e561306a5b68075777ed7a`). Authorized defines: `{}`.
 
 ### Cases
 
@@ -307,7 +307,7 @@ Source: `tunnel/tunnel.glsl` (3062 bytes, `c0ebe43eead7a1c040dd4a37162d634fe4b1a
 
 ## `filter/warp:warp` (warp)
 
-Source: `warp/warp.glsl` (3095 bytes, `f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee`). Canonical factory `canonicalFactory172` (`960469b2bbc57d943e2c7c489860967c2e263eb3fbaa99199154e0e1e750fc68`). Authorized defines: `{}`.
+Source: `warp/warp.glsl` (3095 bytes, `f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee`). Canonical factory `canonicalFactory169` (`c87b88745cdd30f4dbad852171c9ad6282112b82ad73f69471e064b9e5d4c20f`). Authorized defines: `{}`.
 
 ### Cases
 

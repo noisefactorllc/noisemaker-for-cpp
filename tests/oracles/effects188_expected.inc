@@ -31,36 +31,36 @@ inline constexpr std::array<std::uint32_t, 140> kCase0InputWords{{
 }};
 
 inline constexpr std::array<std::uint32_t, 140> kCase0ExpectedWords{{
-    0x3e000000U, 0x3e800000U, 0x3d800000U, 0x3f800000U, 0x3ea00000U, 0x3ec00000U, 0x3e600000U, 0x3f800000U,
-    0x3f000000U, 0x3f000000U, 0x3ec00000U, 0x3f800000U, 0x3f300000U, 0x3f200000U, 0x3f080000U, 0x3f800000U,
-    0x3f600000U, 0x3f400000U, 0x3f300000U, 0x3f800000U, 0x3d800000U, 0x3f600000U, 0x3f580000U, 0x3f800000U,
-    0x3e800000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x3ee00000U, 0x3f000000U, 0x3dc00000U, 0x3f800000U,
-    0x3f200000U, 0x3f200000U, 0x3e800000U, 0x3f800000U, 0x3f500000U, 0x3f400000U, 0x3ed00000U, 0x3f800000U,
-    0x00000000U, 0x3f600000U, 0x3f100000U, 0x3f800000U, 0x3e400000U, 0x00000000U, 0x3f380000U, 0x3f800000U,
-    0x3ec00000U, 0x3e000000U, 0x3f600000U, 0x3f800000U, 0x3f100000U, 0x3e800000U, 0x3d000000U, 0x3f800000U,
-    0x3f400000U, 0x3f400000U, 0x3e000000U, 0x3f800000U, 0x3f700000U, 0x3f600000U, 0x3e900000U, 0x3f800000U,
-    0x3e000000U, 0x00000000U, 0x3ee00000U, 0x3f800000U, 0x3ea00000U, 0x3e000000U, 0x3f180000U, 0x3f800000U,
-    0x3f000000U, 0x3e800000U, 0x3f400000U, 0x3f800000U, 0x3f300000U, 0x3ec00000U, 0x3f680000U, 0x3f800000U,
-    0x3f600000U, 0x3f000000U, 0x3d800000U, 0x3f800000U, 0x3d800000U, 0x00000000U, 0x3e200000U, 0x3f800000U,
-    0x3e800000U, 0x3e000000U, 0x3ea00000U, 0x3f800000U, 0x3ee00000U, 0x3e800000U, 0x3ef00000U, 0x3f800000U,
-    0x3f200000U, 0x3ec00000U, 0x3f200000U, 0x3f800000U, 0x3f500000U, 0x3f000000U, 0x3f480000U, 0x3f800000U,
-    0x00000000U, 0x3f200000U, 0x3f700000U, 0x3f800000U, 0x3e400000U, 0x3f400000U, 0x3dc00000U, 0x3f800000U,
-    0x3ec00000U, 0x3e800000U, 0x3e400000U, 0x3f800000U, 0x3f100000U, 0x3ec00000U, 0x3eb00000U, 0x3f800000U,
-    0x3f400000U, 0x3f000000U, 0x3f000000U, 0x3f800000U, 0x3f700000U, 0x3f200000U, 0x3f280000U, 0x3f800000U,
-    0x3e000000U, 0x3f400000U, 0x3f500000U, 0x3f800000U, 0x3ea00000U, 0x3f600000U, 0x3f780000U, 0x3f800000U,
-    0x3f000000U, 0x00000000U, 0x3e000000U, 0x3f800000U,
+    0x3e000000U, 0x00000000U, 0x3ee00000U, 0x3f800000U, 0x3f200000U, 0x3ec00000U, 0x3f200000U, 0x3f800000U,
+    0x3e000000U, 0x3f400000U, 0x3f500000U, 0x3f800000U, 0x3d800000U, 0x3f600000U, 0x3f580000U, 0x3f800000U,
+    0x3f100000U, 0x3e800000U, 0x3d000000U, 0x3f800000U, 0x3f400000U, 0x3f400000U, 0x3e000000U, 0x3f800000U,
+    0x3e800000U, 0x3e000000U, 0x3ea00000U, 0x3f800000U, 0x3e800000U, 0x3e000000U, 0x3ea00000U, 0x3f800000U,
+    0x3f400000U, 0x3f000000U, 0x3f000000U, 0x3f800000U, 0x3f300000U, 0x3f200000U, 0x3f080000U, 0x3f800000U,
+    0x3e400000U, 0x00000000U, 0x3f380000U, 0x3f800000U, 0x3f300000U, 0x3ec00000U, 0x3f680000U, 0x3f800000U,
+    0x3e400000U, 0x3f400000U, 0x3dc00000U, 0x3f800000U, 0x3ec00000U, 0x3e800000U, 0x3e400000U, 0x3f800000U,
+    0x3ec00000U, 0x3e800000U, 0x3e400000U, 0x3f800000U, 0x3ea00000U, 0x3ec00000U, 0x3e600000U, 0x3f800000U,
+    0x3f500000U, 0x3f400000U, 0x3ed00000U, 0x3f800000U, 0x3ea00000U, 0x3e000000U, 0x3f180000U, 0x3f800000U,
+    0x3f500000U, 0x3f000000U, 0x3f480000U, 0x3f800000U, 0x3ea00000U, 0x3f600000U, 0x3f780000U, 0x3f800000U,
+    0x3e800000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x3e800000U, 0x00000000U, 0x00000000U, 0x3f800000U,
+    0x3ee00000U, 0x3f000000U, 0x3dc00000U, 0x3f800000U, 0x3f700000U, 0x3f600000U, 0x3e900000U, 0x3f800000U,
+    0x3ee00000U, 0x3e800000U, 0x3ef00000U, 0x3f800000U, 0x3f700000U, 0x3f200000U, 0x3f280000U, 0x3f800000U,
+    0x3f600000U, 0x3f400000U, 0x3f300000U, 0x3f800000U, 0x3ec00000U, 0x3e000000U, 0x3f600000U, 0x3f800000U,
+    0x3ec00000U, 0x3e000000U, 0x3f600000U, 0x3f800000U, 0x3f600000U, 0x3f000000U, 0x3d800000U, 0x3f800000U,
+    0x3d800000U, 0x00000000U, 0x3e200000U, 0x3f800000U, 0x3f100000U, 0x3ec00000U, 0x3eb00000U, 0x3f800000U,
+    0x3f000000U, 0x3f000000U, 0x3ec00000U, 0x3f800000U, 0x00000000U, 0x3f600000U, 0x3f100000U, 0x3f800000U,
+    0x3f000000U, 0x3e800000U, 0x3f400000U, 0x3f800000U,
 }};
 
 inline constexpr std::array<std::uint8_t, 140> kCase0ExpectedRgba8{{
-    32U, 64U, 16U, 255U, 80U, 96U, 56U, 255U, 128U, 128U, 96U, 255U, 175U, 159U, 135U, 255U,
-    223U, 191U, 175U, 255U, 16U, 223U, 215U, 255U, 64U, 0U, 0U, 255U, 112U, 128U, 24U, 255U,
-    159U, 159U, 64U, 255U, 207U, 191U, 104U, 255U, 0U, 223U, 143U, 255U, 48U, 0U, 183U, 255U,
-    96U, 32U, 223U, 255U, 143U, 64U, 8U, 255U, 191U, 191U, 32U, 255U, 239U, 223U, 72U, 255U,
-    32U, 0U, 112U, 255U, 80U, 32U, 151U, 255U, 128U, 64U, 191U, 255U, 175U, 96U, 231U, 255U,
-    223U, 128U, 16U, 255U, 16U, 0U, 40U, 255U, 64U, 32U, 80U, 255U, 112U, 64U, 120U, 255U,
-    159U, 96U, 159U, 255U, 207U, 128U, 199U, 255U, 0U, 159U, 239U, 255U, 48U, 191U, 24U, 255U,
-    96U, 64U, 48U, 255U, 143U, 96U, 88U, 255U, 191U, 128U, 128U, 255U, 239U, 159U, 167U, 255U,
-    32U, 191U, 207U, 255U, 80U, 223U, 247U, 255U, 128U, 0U, 32U, 255U,
+    32U, 0U, 112U, 255U, 159U, 96U, 159U, 255U, 32U, 191U, 207U, 255U, 16U, 223U, 215U, 255U,
+    143U, 64U, 8U, 255U, 191U, 191U, 32U, 255U, 64U, 32U, 80U, 255U, 64U, 32U, 80U, 255U,
+    191U, 128U, 128U, 255U, 175U, 159U, 135U, 255U, 48U, 0U, 183U, 255U, 175U, 96U, 231U, 255U,
+    48U, 191U, 24U, 255U, 96U, 64U, 48U, 255U, 96U, 64U, 48U, 255U, 80U, 96U, 56U, 255U,
+    207U, 191U, 104U, 255U, 80U, 32U, 151U, 255U, 207U, 128U, 199U, 255U, 80U, 223U, 247U, 255U,
+    64U, 0U, 0U, 255U, 64U, 0U, 0U, 255U, 112U, 128U, 24U, 255U, 239U, 223U, 72U, 255U,
+    112U, 64U, 120U, 255U, 239U, 159U, 167U, 255U, 223U, 191U, 175U, 255U, 96U, 32U, 223U, 255U,
+    96U, 32U, 223U, 255U, 223U, 128U, 16U, 255U, 16U, 0U, 40U, 255U, 143U, 96U, 88U, 255U,
+    128U, 128U, 96U, 255U, 0U, 223U, 143U, 255U, 128U, 64U, 191U, 255U,
 }};
 
 inline constexpr std::array<std::uint32_t, 144> kCase1InputWords{{
@@ -85,36 +85,36 @@ inline constexpr std::array<std::uint32_t, 144> kCase1InputWords{{
 }};
 
 inline constexpr std::array<std::uint32_t, 144> kCase1ExpectedWords{{
-    0x3e400000U, 0x3ec00000U, 0x3dc00000U, 0x3f800000U, 0x3ec00000U, 0x3f000000U, 0x3e800000U, 0x3f800000U,
-    0x3f100000U, 0x3f200000U, 0x3ed00000U, 0x3f800000U, 0x3f400000U, 0x3f400000U, 0x3f100000U, 0x3f800000U,
-    0x3f700000U, 0x3f600000U, 0x3f380000U, 0x3f800000U, 0x3e000000U, 0x00000000U, 0x3f600000U, 0x3f800000U,
-    0x3f000000U, 0x3f200000U, 0x3e000000U, 0x3f800000U, 0x3f300000U, 0x3f400000U, 0x3e900000U, 0x3f800000U,
-    0x3f600000U, 0x3f600000U, 0x3ee00000U, 0x3f800000U, 0x3d800000U, 0x00000000U, 0x3f180000U, 0x3f800000U,
-    0x3e800000U, 0x3e000000U, 0x3f400000U, 0x3f800000U, 0x3ee00000U, 0x3e800000U, 0x3f680000U, 0x3f800000U,
-    0x3f500000U, 0x3f600000U, 0x3e200000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x3ea00000U, 0x3f800000U,
-    0x3e400000U, 0x3e000000U, 0x3ef00000U, 0x3f800000U, 0x3ec00000U, 0x3e800000U, 0x3f200000U, 0x3f800000U,
-    0x3f100000U, 0x3ec00000U, 0x3f480000U, 0x3f800000U, 0x3f400000U, 0x3f000000U, 0x3f700000U, 0x3f800000U,
-    0x3e000000U, 0x3e000000U, 0x3e400000U, 0x3f800000U, 0x3ea00000U, 0x3e800000U, 0x3eb00000U, 0x3f800000U,
     0x3f000000U, 0x3ec00000U, 0x3f000000U, 0x3f800000U, 0x3f300000U, 0x3f000000U, 0x3f280000U, 0x3f800000U,
     0x3f600000U, 0x3f200000U, 0x3f500000U, 0x3f800000U, 0x3d800000U, 0x3f400000U, 0x3f780000U, 0x3f800000U,
-    0x3ee00000U, 0x3ec00000U, 0x3e600000U, 0x3f800000U, 0x3f200000U, 0x3f000000U, 0x3ec00000U, 0x3f800000U,
+    0x3e000000U, 0x3e000000U, 0x3e400000U, 0x3f800000U, 0x3ea00000U, 0x3e800000U, 0x3eb00000U, 0x3f800000U,
     0x3f500000U, 0x3f200000U, 0x3f080000U, 0x3f800000U, 0x00000000U, 0x3f400000U, 0x3f300000U, 0x3f800000U,
     0x3e400000U, 0x3f600000U, 0x3f580000U, 0x3f800000U, 0x3ec00000U, 0x00000000U, 0x00000000U, 0x3f800000U,
-    0x3f400000U, 0x3f200000U, 0x3e800000U, 0x3f800000U, 0x3f700000U, 0x3f400000U, 0x3ed00000U, 0x3f800000U,
+    0x3ee00000U, 0x3ec00000U, 0x3e600000U, 0x3f800000U, 0x3f200000U, 0x3f000000U, 0x3ec00000U, 0x3f800000U,
     0x3e000000U, 0x3f600000U, 0x3f100000U, 0x3f800000U, 0x3ea00000U, 0x00000000U, 0x3f380000U, 0x3f800000U,
     0x3f000000U, 0x3e000000U, 0x3f600000U, 0x3f800000U, 0x3f300000U, 0x3e800000U, 0x3d000000U, 0x3f800000U,
+    0x3f400000U, 0x3f200000U, 0x3e800000U, 0x3f800000U, 0x3f700000U, 0x3f400000U, 0x3ed00000U, 0x3f800000U,
+    0x3f100000U, 0x3f200000U, 0x3ed00000U, 0x3f800000U, 0x3f400000U, 0x3f400000U, 0x3f100000U, 0x3f800000U,
+    0x3f700000U, 0x3f600000U, 0x3f380000U, 0x3f800000U, 0x3e000000U, 0x00000000U, 0x3f600000U, 0x3f800000U,
+    0x3e400000U, 0x3ec00000U, 0x3dc00000U, 0x3f800000U, 0x3ec00000U, 0x3f000000U, 0x3e800000U, 0x3f800000U,
+    0x3f600000U, 0x3f600000U, 0x3ee00000U, 0x3f800000U, 0x3d800000U, 0x00000000U, 0x3f180000U, 0x3f800000U,
+    0x3e800000U, 0x3e000000U, 0x3f400000U, 0x3f800000U, 0x3ee00000U, 0x3e800000U, 0x3f680000U, 0x3f800000U,
+    0x3f000000U, 0x3f200000U, 0x3e000000U, 0x3f800000U, 0x3f300000U, 0x3f400000U, 0x3e900000U, 0x3f800000U,
+    0x3e400000U, 0x3e000000U, 0x3ef00000U, 0x3f800000U, 0x3ec00000U, 0x3e800000U, 0x3f200000U, 0x3f800000U,
+    0x3f100000U, 0x3ec00000U, 0x3f480000U, 0x3f800000U, 0x3f400000U, 0x3f000000U, 0x3f700000U, 0x3f800000U,
+    0x3f500000U, 0x3f600000U, 0x3e200000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x3ea00000U, 0x3f800000U,
 }};
 
 inline constexpr std::array<std::uint8_t, 144> kCase1ExpectedRgba8{{
-    48U, 96U, 24U, 255U, 96U, 128U, 64U, 255U, 143U, 159U, 104U, 255U, 191U, 191U, 143U, 255U,
-    239U, 223U, 183U, 255U, 32U, 0U, 223U, 255U, 128U, 159U, 32U, 255U, 175U, 191U, 72U, 255U,
-    223U, 223U, 112U, 255U, 16U, 0U, 151U, 255U, 64U, 32U, 191U, 255U, 112U, 64U, 231U, 255U,
-    207U, 223U, 40U, 255U, 0U, 0U, 80U, 255U, 48U, 32U, 120U, 255U, 96U, 64U, 159U, 255U,
-    143U, 96U, 199U, 255U, 191U, 128U, 239U, 255U, 32U, 32U, 48U, 255U, 80U, 64U, 88U, 255U,
     128U, 96U, 128U, 255U, 175U, 128U, 167U, 255U, 223U, 159U, 207U, 255U, 16U, 191U, 247U, 255U,
-    112U, 96U, 56U, 255U, 159U, 128U, 96U, 255U, 207U, 159U, 135U, 255U, 0U, 191U, 175U, 255U,
-    48U, 223U, 215U, 255U, 96U, 0U, 0U, 255U, 191U, 159U, 64U, 255U, 239U, 191U, 104U, 255U,
+    32U, 32U, 48U, 255U, 80U, 64U, 88U, 255U, 207U, 159U, 135U, 255U, 0U, 191U, 175U, 255U,
+    48U, 223U, 215U, 255U, 96U, 0U, 0U, 255U, 112U, 96U, 56U, 255U, 159U, 128U, 96U, 255U,
     32U, 223U, 143U, 255U, 80U, 0U, 183U, 255U, 128U, 32U, 223U, 255U, 175U, 64U, 8U, 255U,
+    191U, 159U, 64U, 255U, 239U, 191U, 104U, 255U, 143U, 159U, 104U, 255U, 191U, 191U, 143U, 255U,
+    239U, 223U, 183U, 255U, 32U, 0U, 223U, 255U, 48U, 96U, 24U, 255U, 96U, 128U, 64U, 255U,
+    223U, 223U, 112U, 255U, 16U, 0U, 151U, 255U, 64U, 32U, 191U, 255U, 112U, 64U, 231U, 255U,
+    128U, 159U, 32U, 255U, 175U, 191U, 72U, 255U, 48U, 32U, 120U, 255U, 96U, 64U, 159U, 255U,
+    143U, 96U, 199U, 255U, 191U, 128U, 239U, 255U, 207U, 223U, 40U, 255U, 0U, 0U, 80U, 255U,
 }};
 
 inline constexpr std::array<std::uint32_t, 96> kCase2InputWords{{
@@ -322,11 +322,13 @@ enum class NativeBindingCategory { Sampler2D, Vec2, Number };
 struct NativeWrongValue { NativeBindingCategory category; float number; std::array<float, 2> vec2; };
 struct BindingPreflightView { std::string_view binding; NativeBindingCategory expected_category; NativeBindingCategory wrong_category; NativeWrongValue wrong_value; std::string_view missing_strategy; std::string_view wrong_strategy; std::string_view missing_status; std::string_view wrong_status; };
 inline constexpr std::string_view kNativeKernelBindingErrorExecution = "pending_shared_native_integration";
-inline constexpr std::array<BindingPreflightView, 13> kBindingPreflight{{
+inline constexpr std::array<BindingPreflightView, 15> kBindingPreflight{{
   BindingPreflightView{"inputTex", NativeBindingCategory::Sampler2D, NativeBindingCategory::Number, NativeWrongValue{NativeBindingCategory::Number, 1.0f, {0.0f, 0.0f}}, "omit texture/uniform binding", "set_uniform_same_name_and_omit_texture", "pending_shared_native_integration", "pending_shared_native_integration"},
   BindingPreflightView{"resolution", NativeBindingCategory::Vec2, NativeBindingCategory::Number, NativeWrongValue{NativeBindingCategory::Number, 1.0f, {0.0f, 0.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
   BindingPreflightView{"tileOffset", NativeBindingCategory::Vec2, NativeBindingCategory::Number, NativeWrongValue{NativeBindingCategory::Number, 1.0f, {0.0f, 0.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
   BindingPreflightView{"fullResolution", NativeBindingCategory::Vec2, NativeBindingCategory::Number, NativeWrongValue{NativeBindingCategory::Number, 1.0f, {0.0f, 0.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
+  BindingPreflightView{"invFullResolution", NativeBindingCategory::Vec2, NativeBindingCategory::Number, NativeWrongValue{NativeBindingCategory::Number, 1.0f, {0.0f, 0.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
+  BindingPreflightView{"aspectInv", NativeBindingCategory::Number, NativeBindingCategory::Vec2, NativeWrongValue{NativeBindingCategory::Vec2, 0.0f, {1.0f, 1.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
   BindingPreflightView{"renderScale", NativeBindingCategory::Number, NativeBindingCategory::Vec2, NativeWrongValue{NativeBindingCategory::Vec2, 0.0f, {1.0f, 1.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
   BindingPreflightView{"time", NativeBindingCategory::Number, NativeBindingCategory::Vec2, NativeWrongValue{NativeBindingCategory::Vec2, 0.0f, {1.0f, 1.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
   BindingPreflightView{"effectAmt", NativeBindingCategory::Number, NativeBindingCategory::Vec2, NativeWrongValue{NativeBindingCategory::Vec2, 0.0f, {1.0f, 1.0f}}, "omit texture/uniform binding", "set_uniform_same_name", "pending_shared_native_integration", "pending_shared_native_integration"},
@@ -349,33 +351,33 @@ constexpr bool native_binding_preflight_complete() {
   for (const auto& row : kBindingPreflight) if (!native_wrong_value_supported(row)) return false;
   return true;
 }
-static_assert(kBindingPreflight.size() == 13U);
+static_assert(kBindingPreflight.size() == 15U);
 static_assert(native_binding_preflight_complete());
 
 struct NativeSamplerBindingView { std::size_t width; std::size_t height; std::string_view f32_sha256; std::span<const std::uint32_t> words; };
 struct NativeVec2BindingView { std::array<float, 2> values; std::array<std::uint32_t, 2> words; };
 struct NativeScalarBindingView { float value; std::uint32_t word; };
-struct NativeCaseBindingView { std::string_view name; NativeSamplerBindingView inputTex; NativeVec2BindingView resolution; NativeVec2BindingView tileOffset; NativeVec2BindingView fullResolution; NativeScalarBindingView renderScale; NativeScalarBindingView time; NativeScalarBindingView effectAmt; NativeScalarBindingView scaleAmt; NativeScalarBindingView rotation; NativeScalarBindingView offsetX; NativeScalarBindingView offsetY; NativeScalarBindingView intensity; NativeScalarBindingView saturation; };
+struct NativeCaseBindingView { std::string_view name; NativeSamplerBindingView inputTex; NativeVec2BindingView resolution; NativeVec2BindingView tileOffset; NativeVec2BindingView fullResolution; NativeVec2BindingView invFullResolution; NativeScalarBindingView aspectInv; NativeScalarBindingView renderScale; NativeScalarBindingView time; NativeScalarBindingView effectAmt; NativeScalarBindingView scaleAmt; NativeScalarBindingView rotation; NativeScalarBindingView offsetX; NativeScalarBindingView offsetY; NativeScalarBindingView intensity; NativeScalarBindingView saturation; };
 inline constexpr std::array<NativeCaseBindingView, 6> kCaseBindings{{
-  NativeCaseBindingView{"rotation-scale", NativeSamplerBindingView{7U, 5U, "862274e98a2b319fba1cb18ecaba26f5a521ae8cc537557c4ed24fd0182cbd96", kCase0InputWords}, NativeVec2BindingView{{7.0f, 5.0f}, {0x40e00000U, 0x40a00000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{7.0f, 5.0f}, {0x40e00000U, 0x40a00000U}}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{75.0f, 0x42960000U}, NativeScalarBindingView{45.0f, 0x42340000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
-  NativeCaseBindingView{"offset-arms", NativeSamplerBindingView{6U, 6U, "94f49cbd8f40354e97f072e69e31bafaec69637ad14d66b41ad7f26851d7dd33", kCase1InputWords}, NativeVec2BindingView{{6.0f, 6.0f}, {0x40c00000U, 0x40c00000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{6.0f, 6.0f}, {0x40c00000U, 0x40c00000U}}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{40.0f, 0x42200000U}, NativeScalarBindingView{-30.0f, 0xc1f00000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
-  NativeCaseBindingView{"intensity-negative", NativeSamplerBindingView{6U, 4U, "b8101b77176fd2670bca1cf43bdd40b106afaf57c6f0cfb9b0a88321c7d9e02f", kCase2InputWords}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{-60.0f, 0xc2700000U}, NativeScalarBindingView{-40.0f, 0xc2200000U}},
-  NativeCaseBindingView{"intensity-positive", NativeSamplerBindingView{6U, 4U, "c26ac5b7a5999f3d3734ee4954e5bd2b7ff07efcc9b0c073cd7256c2ba8a04b7", kCase3InputWords}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{60.0f, 0x42700000U}, NativeScalarBindingView{40.0f, 0x42200000U}},
-  NativeCaseBindingView{"time-witness", NativeSamplerBindingView{8U, 5U, "870702f3af9f9c14e323efdacf518a254675c7605f00d36d7495c3f3b0cd9bd5", kCase4InputWords}, NativeVec2BindingView{{8.0f, 5.0f}, {0x41000000U, 0x40a00000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{8.0f, 5.0f}, {0x41000000U, 0x40a00000U}}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{1.25f, 0x3fa00000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
-  NativeCaseBindingView{"tile-route", NativeSamplerBindingView{9U, 8U, "7c9a1000d930d53bc77027780a67532d9ac8a51f9f7095b86a0638395bbd01e3", kCase5InputWords}, NativeVec2BindingView{{4.0f, 3.0f}, {0x40800000U, 0x40400000U}}, NativeVec2BindingView{{2.0f, 3.0f}, {0x40000000U, 0x40400000U}}, NativeVec2BindingView{{9.0f, 8.0f}, {0x41100000U, 0x41000000U}}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
+  NativeCaseBindingView{"rotation-scale", NativeSamplerBindingView{7U, 5U, "862274e98a2b319fba1cb18ecaba26f5a521ae8cc537557c4ed24fd0182cbd96", kCase0InputWords}, NativeVec2BindingView{{7.0f, 5.0f}, {0x40e00000U, 0x40a00000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{7.0f, 5.0f}, {0x40e00000U, 0x40a00000U}}, NativeVec2BindingView{{0.1428571492433548f, 0.20000000298023224f}, {0x3e124925U, 0x3e4ccccdU}}, NativeScalarBindingView{0.7142857313156128f, 0x3f36db6eU}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{75.0f, 0x42960000U}, NativeScalarBindingView{45.0f, 0x42340000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
+  NativeCaseBindingView{"offset-arms", NativeSamplerBindingView{6U, 6U, "94f49cbd8f40354e97f072e69e31bafaec69637ad14d66b41ad7f26851d7dd33", kCase1InputWords}, NativeVec2BindingView{{6.0f, 6.0f}, {0x40c00000U, 0x40c00000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{6.0f, 6.0f}, {0x40c00000U, 0x40c00000U}}, NativeVec2BindingView{{0.1666666716337204f, 0.1666666716337204f}, {0x3e2aaaabU, 0x3e2aaaabU}}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{40.0f, 0x42200000U}, NativeScalarBindingView{-30.0f, 0xc1f00000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
+  NativeCaseBindingView{"intensity-negative", NativeSamplerBindingView{6U, 4U, "b8101b77176fd2670bca1cf43bdd40b106afaf57c6f0cfb9b0a88321c7d9e02f", kCase2InputWords}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeVec2BindingView{{0.1666666716337204f, 0.25f}, {0x3e2aaaabU, 0x3e800000U}}, NativeScalarBindingView{0.6666666865348816f, 0x3f2aaaabU}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{-60.0f, 0xc2700000U}, NativeScalarBindingView{-40.0f, 0xc2200000U}},
+  NativeCaseBindingView{"intensity-positive", NativeSamplerBindingView{6U, 4U, "c26ac5b7a5999f3d3734ee4954e5bd2b7ff07efcc9b0c073cd7256c2ba8a04b7", kCase3InputWords}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{6.0f, 4.0f}, {0x40c00000U, 0x40800000U}}, NativeVec2BindingView{{0.1666666716337204f, 0.25f}, {0x3e2aaaabU, 0x3e800000U}}, NativeScalarBindingView{0.6666666865348816f, 0x3f2aaaabU}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{60.0f, 0x42700000U}, NativeScalarBindingView{40.0f, 0x42200000U}},
+  NativeCaseBindingView{"time-witness", NativeSamplerBindingView{8U, 5U, "870702f3af9f9c14e323efdacf518a254675c7605f00d36d7495c3f3b0cd9bd5", kCase4InputWords}, NativeVec2BindingView{{8.0f, 5.0f}, {0x41000000U, 0x40a00000U}}, NativeVec2BindingView{{0.0f, 0.0f}, {0x00000000U, 0x00000000U}}, NativeVec2BindingView{{8.0f, 5.0f}, {0x41000000U, 0x40a00000U}}, NativeVec2BindingView{{0.125f, 0.20000000298023224f}, {0x3e000000U, 0x3e4ccccdU}}, NativeScalarBindingView{0.625f, 0x3f200000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{1.25f, 0x3fa00000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
+  NativeCaseBindingView{"tile-route", NativeSamplerBindingView{9U, 8U, "7c9a1000d930d53bc77027780a67532d9ac8a51f9f7095b86a0638395bbd01e3", kCase5InputWords}, NativeVec2BindingView{{4.0f, 3.0f}, {0x40800000U, 0x40400000U}}, NativeVec2BindingView{{2.0f, 3.0f}, {0x40000000U, 0x40400000U}}, NativeVec2BindingView{{9.0f, 8.0f}, {0x41100000U, 0x41000000U}}, NativeVec2BindingView{{0.1111111119389534f, 0.125f}, {0x3de38e39U, 0x3e000000U}}, NativeScalarBindingView{0.8888888955116272f, 0x3f638e39U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{1.0f, 0x3f800000U}, NativeScalarBindingView{100.0f, 0x42c80000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}, NativeScalarBindingView{0.0f, 0x00000000U}},
 }};
 static_assert(kCaseBindings.size() == 6U);
 static_assert(kCaseBindings.size() == kCaseCount);
 
 struct MutantWitnessView { std::string_view mutant; std::string_view case_name; bool witnesses; std::size_t changed_lane_count; };
 inline constexpr std::array<MutantWitnessView, 30> kMutantWitnesses{{
-  MutantWitnessView{"ceil-dropped", "rotation-scale", false, 0U},
-  MutantWitnessView{"ceil-dropped", "offset-arms", false, 0U},
-  MutantWitnessView{"ceil-dropped", "intensity-negative", false, 0U},
-  MutantWitnessView{"ceil-dropped", "intensity-positive", false, 0U},
-  MutantWitnessView{"ceil-dropped", "time-witness", false, 0U},
-  MutantWitnessView{"ceil-dropped", "tile-route", false, 0U},
-  MutantWitnessView{"rotate-angle-map-perturbed", "rotation-scale", false, 0U},
+  MutantWitnessView{"ceil-dropped", "rotation-scale", true, 105U},
+  MutantWitnessView{"ceil-dropped", "offset-arms", true, 108U},
+  MutantWitnessView{"ceil-dropped", "intensity-negative", true, 72U},
+  MutantWitnessView{"ceil-dropped", "intensity-positive", true, 72U},
+  MutantWitnessView{"ceil-dropped", "time-witness", true, 120U},
+  MutantWitnessView{"ceil-dropped", "tile-route", true, 27U},
+  MutantWitnessView{"rotate-angle-map-perturbed", "rotation-scale", true, 88U},
   MutantWitnessView{"rotate-angle-map-perturbed", "offset-arms", false, 0U},
   MutantWitnessView{"rotate-angle-map-perturbed", "intensity-negative", false, 0U},
   MutantWitnessView{"rotate-angle-map-perturbed", "intensity-positive", false, 0U},
@@ -393,12 +395,12 @@ inline constexpr std::array<MutantWitnessView, 30> kMutantWitnesses{{
   MutantWitnessView{"saturation-map-perturbed", "intensity-positive", true, 64U},
   MutantWitnessView{"saturation-map-perturbed", "time-witness", true, 119U},
   MutantWitnessView{"saturation-map-perturbed", "tile-route", true, 36U},
-  MutantWitnessView{"aspect-ratio-inverted", "rotation-scale", false, 0U},
+  MutantWitnessView{"aspect-ratio-inverted", "rotation-scale", true, 84U},
   MutantWitnessView{"aspect-ratio-inverted", "offset-arms", false, 0U},
-  MutantWitnessView{"aspect-ratio-inverted", "intensity-negative", false, 0U},
-  MutantWitnessView{"aspect-ratio-inverted", "intensity-positive", false, 0U},
-  MutantWitnessView{"aspect-ratio-inverted", "time-witness", false, 0U},
-  MutantWitnessView{"aspect-ratio-inverted", "tile-route", false, 0U},
+  MutantWitnessView{"aspect-ratio-inverted", "intensity-negative", true, 60U},
+  MutantWitnessView{"aspect-ratio-inverted", "intensity-positive", true, 60U},
+  MutantWitnessView{"aspect-ratio-inverted", "time-witness", true, 105U},
+  MutantWitnessView{"aspect-ratio-inverted", "tile-route", true, 27U},
 }};
 
 }  // namespace effects188_oracle

@@ -205,6 +205,15 @@ class TestPatternFrontendProfileTests(unittest.TestCase):
         self.assertEqual(proof.dynamic_loop_owner, (29, "renderNumber"))
         self.assertEqual(proof.dynamic_loop_bound_symbol_id, 65)
         self.assertEqual(proof.dynamic_loop_bound_range, (1, 3))
+        self.assertEqual(proof.digit_division.operator, "/=")
+        self.assertEqual(proof.digit_division.children[1].literal_value, 10)
+
+    def test_digit_division_change_rejects_even_with_coarse_hashes_relocked(self):
+        module = _module()
+        changed = _program(raw=SOURCE.read_text(encoding="utf-8").replace(
+            "temp /= 10;", "temp /= 11;"))
+        with self.assertRaisesRegex(ValueError, "digit division identity"):
+            _authenticate_relocked(module, changed)
 
     def test_wrong_profile_key_hash_and_foreign_source_fail_closed(self):
         module = _module()

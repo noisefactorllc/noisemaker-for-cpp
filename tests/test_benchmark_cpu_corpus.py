@@ -29,7 +29,6 @@ from tools.benchmark.corpus_lane import (
     admitted_records,
     contains_declared_tail,
     load_corpus,
-    load_exclusions,
     record_flags,
     relation_field_diff,
     relation_sha256,
@@ -284,42 +283,61 @@ class BenchmarkDriverExecutionTest(unittest.TestCase):
         self.assertEqual(len((self.scratch / "filter__median.rgba8").read_bytes()),
                          record["options"]["width"] * record["options"]["height"] * 4)
 
-    def test_refusals_are_structured_and_leave_no_partial_output(self) -> None:
-        # Refusals are execute-time, never compile-time: both of these compile
-        # cleanly and throw out of GraphExecutor::execute. Without the untimed
-        # correctness execution the throw would land inside the timed region.
-        exclusions = load_exclusions()
+    def test_perlin_three_dimensions_renders_with_runtime_define(self) -> None:
         perlin = find_record("synth/perlin")
         self.assertEqual(1, perlin["source"].count("dimensions: 2"))
         source = perlin["source"].replace("dimensions: 2", "dimensions: 3")
-        unbaked = dict(perlin, source=source,
-                       sourceSha256=hashlib.sha256(source.encode("utf-8")).hexdigest(),
-                       id="synth/perlin#unbaked-dimensions", variant="unbaked-dimensions",
-                       parameters={**perlin["parameters"], "dimensions": 3})
-        # This schema-valid request reaches the executor's define guard, as
-        # independently exercised by the native graph feature test.
-        cases = (
-            (unbaked, "7", "synth/perlin:perlin",
-             "parameter dimensions requests compile define DIMENSIONS=3 but "
-             "the generated route bakes DIMENSIONS=2"),
-            (find_record("filter/lighting"), "5", "filter/lighting:lighting",
-             "input resource is not produced"),
-        )
-        for record, expected_code, expected_key, expected_detail in cases:
-            effect_id = record["effectId"]
-            name = effect_id.replace("/", "__")
-            result = self.invoke(record)
-            self.assertEqual(result.returncode, 4, result.stdout)
-            refusal = json.loads(result.stdout)
-            self.assertEqual(refusal["status"], "refused")
-            self.assertEqual(refusal["code"], expected_code)
-            self.assertEqual(refusal["programKey"], expected_key)
-            self.assertEqual(refusal["detail"], expected_detail)
-            if effect_id in exclusions["executorRefused"]:
-                self.assertEqual(refusal["detail"], exclusions["executorRefused"][effect_id])
-            self.assertFalse((self.scratch / f"{name}.rgba8").exists())
-            self.assertFalse((self.scratch / f"{name}.benchmark.json").exists())
-            self.assertNotIn("sampleNs", result.stdout)
+        three_dimensions = dict(
+            perlin, source=source,
+            sourceSha256=hashlib.sha256(source.encode("utf-8")).hexdigest(),
+            id="synth/perlin#three-dimensions", variant="three-dimensions",
+            parameters={**perlin["parameters"], "dimensions": 3})
+        result = self.invoke(three_dimensions)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        document = json.loads((self.scratch / "synth__perlin.benchmark.json").read_text())
+        self.assertEqual(document["correctness"]["status"], "rendered")
+        self.assertEqual(len(document["sampleNs"]), BENCHMARK_SAMPLES)
+        self.assertEqual(document["planIdentity"]["provenanceSourceSha256"],
+                         three_dimensions["sourceSha256"])
+        self.assertEqual(len((self.scratch / "synth__perlin.rgba8").read_bytes()),
+                         perlin["options"]["width"] * perlin["options"]["height"] * 4)
+
+    def test_current_lighting_record_renders_three_passes(self) -> None:
+        record = find_record("filter/lighting")
+        result = self.invoke(record)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        document = json.loads((self.scratch / "filter__lighting.benchmark.json").read_text())
+        self.assertEqual(document["correctness"], {
+            "status": "rendered", "finalRoute": "o0", "passCount": 3})
+        self.assertEqual(document["planRelation"]["passKeys"], [
+            "synth/solid:solid", "synth/solid:solid",
+            "filter/lighting:lighting"])
+        self.assertEqual(len(document["sampleNs"]), BENCHMARK_SAMPLES)
+        self.assertEqual(len((self.scratch / "filter__lighting.rgba8").read_bytes()),
+                         record["options"]["width"] * record["options"]["height"] * 4)
+
+    def test_refusals_are_structured_and_leave_no_partial_output(self) -> None:
+        # Remove only the producer of heightMap:o1. The DSL still compiles;
+        # correctness execution must refuse its missing input before timing.
+        admitted = find_record("filter/lighting")
+        producer = "solid(color: #3a7).write(o1)\n"
+        self.assertEqual(admitted["source"].count(producer), 1)
+        source = admitted["source"].replace(producer, "", 1)
+        record = dict(
+            admitted, source=source,
+            sourceSha256=hashlib.sha256(source.encode("utf-8")).hexdigest(),
+            id="filter/lighting#missing-producer", variant="missing-producer")
+        name = record["effectId"].replace("/", "__")
+        result = self.invoke(record)
+        self.assertEqual(result.returncode, 4, result.stdout)
+        refusal = json.loads(result.stdout)
+        self.assertEqual(refusal["status"], "refused")
+        self.assertEqual(refusal["code"], "5")
+        self.assertEqual(refusal["programKey"], "filter/lighting:lighting")
+        self.assertEqual(refusal["detail"], "input resource is not produced")
+        self.assertFalse((self.scratch / f"{name}.rgba8").exists())
+        self.assertFalse((self.scratch / f"{name}.benchmark.json").exists())
+        self.assertNotIn("sampleNs", result.stdout)
 
 
 class CrossLaneRelationTest(unittest.TestCase):

@@ -8,12 +8,17 @@
 #include "noisemaker/renderer.hpp"
 
 #include <algorithm>
+#include <array>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <new>
+#include <limits>
+#include <optional>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 // Global allocation accounting. The executor must complete its plan, input,
@@ -517,14 +522,14 @@ TEST(graph_executor_materializes_every_ordered_sampler_route) {
 }
 
 TEST(graph_executor_renders_cellular_automata_with_unused_authority_inputs) {
-  // Independent RGBA8 hashes from pinned JS authority 61aa869, captured with
-  // tools/benchmark/run_cpu_case.mjs for these exact programs and options.
+  // Independent RGBA8 hashes from pinned JS authority 9f3bd6ad. The
+  // authenticated CpuRenderer rendered these exact programs and options.
   // The render pass declares four input routes but its shader samples two.
   Renderer renderer;
   for (const auto& [iterations, expected] :
        std::vector<std::pair<int, std::string_view>>{
-           {3, "ab760f07c8246a291db1990b8d53c400f9741e781a147c7275eb2dbadb1c06f3"},
-           {7, "bd6911244eb8ae041c71c00af444ce0e25671e6042266695150ba951a7eeb5ae"}}) {
+           {3, "01e38f2e1fa62415128c6d2508b4fb02095c22dd772eb21d218668dfa91a830d"},
+           {7, "986a0fed202c801b92b7f2a5ce3c1d01b8df71ed05e265363779629233ceb473"}}) {
     const auto source = "search synth\ncellularAutomata(zoom: 1, iterationCount: " +
                         std::to_string(iterations) + ").write(o0)\nrender(o0)\n";
     const auto result = renderer.render(source, options(9U, 6U));
@@ -540,8 +545,8 @@ TEST(graph_executor_renders_mnca_with_unused_authority_inputs) {
   Renderer renderer;
   for (const auto& [iterations, expected] :
        std::vector<std::pair<int, std::string_view>>{
-           {3, "6cba7a9c3214a787ad5ecfa64a49c2ae4417c0af51634a7f7afd80cda8f24e6e"},
-           {7, "70462ce5895186da74430805d8f815a0cd28cfd0a342abb06bd51ef0f2bb8498"}}) {
+           {3, "ee6326a670cd14c024a3d97d33a6c0787544595fee454a9eb8614c8704b49332"},
+           {7, "6a9ef5194229a0aa8a9a828a188d8c4f43efc1b7cee08d7d87fad344efd06e49"}}) {
     const auto source = "search synth\nmnca(zoom: 1, iterationCount: " +
                         std::to_string(iterations) + ").write(o0)\nrender(o0)\n";
     const auto result = renderer.render(source, options(9U, 6U));
@@ -608,10 +613,10 @@ TEST(graph_iterated_surface_parameters_resolve_prior_named_outputs) {
                         ".write(o0)\nrender(o0)\n";
     const auto result = renderer.render(source, options(9U, 6U));
     REQUIRE(result.pass_count() == 7U);
-    // Pinned JS authority 61aa869, captured with run_cpu_case.mjs. Weight
+    // Pinned JS authority 9f3bd6ad, captured with its CpuRenderer. Weight
     // 100 makes the named source change the image; an empty fallback fails.
     REQUIRE(rgba8_sha256(result) ==
-            "7c2679a92f0f84075ef9ee08513c227b97bc236d05273a392ed9b7c718a540ac");
+            "151bdd9587ee3224e7b2027b9ea26a7b127583004ec898b900dde9ccdbb5757f");
   }
 }
 
@@ -1183,6 +1188,485 @@ TEST(graph_executor_resolves_an_absent_texture_dimension_as_the_render_extent) {
           "a00aa40f8749301bc115f5b3ab96bb1ea7110bdb4a0f2947d82af672d29d1a43");
 }
 
+TEST(graph_executor_uses_the_declared_dimension_default_without_a_parameter) {
+  // CPU 9f3bd6ad: pointsBillboardRender has no stateSize parameter. Its
+  // depthOrderA/B textures still resolve `{param: stateSize, default: 256}`.
+  Renderer renderer;
+  const auto source =
+      "search points, render, synth\n"
+      "solid().pointsEmit(stateSize: x64).pointsBillboardRender("
+      "shapeMode: 1, tex: none, blendMode: 0, depositOpacity: 20, "
+      "pointSize: 8, sizeVariation: 0, rotationVar: 0, seed: 42, "
+      "density: 50, intensity: 75, inputIntensity: 10.15, viewMode: 0, "
+      "rotateX: 0.3, rotateY: 0, rotateZ: 0, viewScale: 0.8, "
+      "posX: 0, posY: 0, posZ: 0, fieldOfView: 60, sizeDistance: 0, "
+      "brightnessDistance: 0, aperture: 0, focalDistance: 80, "
+      "iterationCount: 60).write(o0)\n"
+      "render(o0)\n";
+  auto inputs = options(17U, 11U);
+  inputs.seed = 3696838460.0;
+  const auto result = renderer.render(source, inputs);
+  REQUIRE(rgba8_sha256(result) ==
+          "557f6ae7d848327edca5df66c4642f7a4d3a13535c790ac46f1e315e0e71b76f");
+  const auto data = result.surface().data();
+  REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                          data.size_bytes())) ==
+          "dd82a5e4c154c59e95519a4941f44f324c75c42e3db643665e26ad7ecf06493e");
+}
+
+TEST(graph_dimension_catalog_keeps_param_default_distinct_from_default) {
+  Renderer renderer;
+  auto plan = renderer.compile(
+      "search points, render, synth\n"
+      "solid().pointsEmit(stateSize: x64).buddhabrot(iterationCount: 0).write(o0)\n"
+      "render(o0)\n");
+  const auto& definition = snapshot_for(plan, "points/buddhabrot").definition;
+  const auto texture = std::find_if(
+      definition.textures.begin(), definition.textures.end(),
+      [](const auto& item) { return item.name == "global_zState"; });
+  REQUIRE(texture != definition.textures.end());
+  REQUIRE(texture->width.kind == effects::DimensionKind::parameter_default);
+  REQUIRE(texture->height.kind == effects::DimensionKind::parameter_default);
+  REQUIRE(texture->width.default_value == 512.0);
+  REQUIRE(texture->height.default_value == 512.0);
+  REQUIRE(std::any_of(texture->width.raw.object.begin(),
+                      texture->width.raw.object.end(),
+                      [](const auto& field) {
+                        return field.first == "paramDefault" &&
+                               field.second.kind == effects::ValueKind::number &&
+                               field.second.number == 512.0;
+                      }));
+}
+
+TEST(graph_executor_renders_authenticated_volume_viewports) {
+  // CPU 9f3bd6ad: the precompute MRT has a 4x16 viewport, while the image is
+  // 7x5. Palette inherits the input volume size before its pass runs, then
+  // render3d projects the 4x16 atlas into the final image.
+  struct Case { const char* source; const char* rgba; const char* floats; };
+  const Case cases[] = {
+      {"search synth3d, render\nshape3d(volumeSize: 4).render3d().write(o0)\nrender(o0)\n",
+       "27a0f6ab7ea6dfff9099d2ce508baae7c5d55c265457d6a122fdb78020ef3675",
+       "c869cd037f7c578caa15939c5631aff1bcf6587002533558d5365bd0d8c04ccd"},
+      {"search synth3d, filter3d, render\nshape3d(volumeSize: 4).palette3d(volumeSize: 8).render3d().write(o0)\nrender(o0)\n",
+       "6c6f1c863baaa7d73fae9604b1f6306dfa4f08393348b5e47f8f49746b7be89d",
+       "3b0d2babb4623c4edad5284c124cc4eb408423a7495d6275a5f88de6ec29996f"},
+      {"search synth3d, filter3d, render\nshape3d(volumeSize: 4).flow3d(iterationCount: 1, density: 1).render3d().write(o0)\nrender(o0)\n",
+       "c749db6f8e235e0d5945474a7a4ab70e395c9072aeedc9f8fa4fbac2b3b699b7",
+       "ae14df9704171b72f7fa0977ad75ba72c736bd1670a2b8a5af2cc440f5d9a483"},
+  };
+  Renderer renderer;
+  for (const auto& item : cases) {
+    const auto result = renderer.render(item.source, options(7U, 5U));
+    REQUIRE(rgba8_sha256(result) == item.rgba);
+    const auto data = result.surface().data();
+    REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                            data.size_bytes())) == item.floats);
+  }
+}
+
+TEST(graph_executor_preserves_double_cubemap_basis_uniforms) {
+  // CPU4307 retains the nine parameter values until the completed ray is
+  // stored as float32. Rounding the matrix first changes one rgba16f step.
+  constexpr const char* source =
+      "search synth3d, filter3d, render\n"
+      "noise3d(volumeSize: 64).renderCubemapSurface(volumeSize: 32, "
+      "density: 20, absorption: 4, emission: 4, "
+      "cubeBasis: [-1.5097436419112655, 0.8338904725453848, "
+      "0.8030976313762073, 0.5783815168611464, 1.2226387625875654, "
+      "0.8235589957020275, 0.4221211688745119, 0.8229414908629156, "
+      "3.9163901307685807], bgColor: #b9fb5e9f, bgAlpha: 1).write(o0)\n"
+      "render(o0)\n";
+  auto render_options = options(128U, 37U);
+  render_options.time = 0.0;
+  render_options.seed = 3897427244.0;
+  Renderer renderer;
+  const auto result = renderer.render(source, render_options);
+  const auto data = result.surface().data();
+  REQUIRE(data[(18U * 128U + 27U) * 4U + 2U] == 1.984375F);
+  REQUIRE(detail::sha256(std::string_view(
+              reinterpret_cast<const char*>(data.data()), data.size_bytes())) ==
+          "c1edc08ca35217bc2557599be579c1b7f4ca5a0bdd96e18eb5b11ea0776884bb");
+  REQUIRE(rgba8_sha256(result) ==
+          "71858b577b21077619b27468b917f7b565ef9506221ca2444db74cceffeb5fa9");
+}
+
+TEST(graph_executor_preserves_hatch_stroke_scale_float32_boundary) {
+  // CPU4307 stores the reciprocal stroke scale in a Float32Array before
+  // multiplication. These two captures differ only in float32, not RGBA8.
+  struct Case {
+    unsigned width;
+    unsigned height;
+    double seed;
+    const char* rgba;
+    const char* floats;
+  };
+  const Case cases[] = {
+      {64U, 64U, 722341297.0,
+       "8a0aad0d586a53893bfc9e8fe003ebf1992205ac9c976a155502a95137978128",
+       "713b504f89da8082a0cd0dff314d4297997a6f9ae590e3f0a48b33fc5f683260"},
+      {97U, 61U, 654448771.0,
+       "93d9d856f36516902cbd796839ab2c4a61e73136a4b9cc239e6d479f07a2155e",
+       "55484798ec831b2dc40cc78dfd16baf768f0bd5c0b99adb48c6550d7daa9baf4"},
+  };
+  Renderer renderer;
+  for (const auto& item : cases) {
+    auto render_options = options(item.width, item.height);
+    render_options.time = 0.999;
+    render_options.seed = item.seed;
+    const auto result = renderer.render(
+        "search filter, synth\n"
+        "noise(seed: 7).hatch(mode: 4, strokeLength: 50, direction: 0, "
+        "balance: 50, pressure: 50, inkColor: #1a1a1a, paperColor: #f5f0e0)"
+        ".write(o0)\nrender(o0)\n", render_options);
+    REQUIRE(rgba8_sha256(result) == item.rgba);
+    const auto data = result.surface().data();
+    REQUIRE(detail::sha256(std::string_view(
+                reinterpret_cast<const char*>(data.data()), data.size_bytes())) == item.floats);
+  }
+}
+
+TEST(graph_executor_preserves_gradient_rotation_value_copy) {
+  // CPU4307 copies centered before the two rotation stores. These captures
+  // cover a float32-only mismatch, a spiral mismatch, and a downstream chain.
+  struct Case {
+    const char* source;
+    unsigned width;
+    unsigned height;
+    double time;
+    double seed;
+    const char* rgba;
+    const char* floats;
+  };
+  const Case cases[] = {
+      {"search synth\n"
+       "gradient(type: 4, rotation: -180, repeat: 1, speed: -5, seed: 0, "
+       "color1: #7102eb54, color2: #634ae781, color3: #44e0f68d, "
+       "color4: #823b8ffe, colorCount: 2).write(o0)\nrender(o0)\n",
+       128U, 37U, 0.25, 1577027250.0,
+       "365c0f10a46ab79cb969c461dc27f6a5e0b81b7a4824326a5c47a795681d44e9",
+       "90fbf0009700b37a97c10c9171e0ec98cf74c813873ad370a2df550d1f1ba636"},
+      {"search synth\n"
+       "gradient(type: 6, rotation: -93.20992920816589, repeat: 1, speed: -5, "
+       "seed: 74, color1: #c82b5ff6, color2: #c8c3dcf7, color3: #4f42c03b, "
+       "color4: #011860e2, colorCount: 4).write(o0)\nrender(o0)\n",
+       17U, 11U, 0.0, 4277095002.0,
+       "20dc4b476cd5b34891f7a1fb28a3a966a7bb96d44ad55b1487d3d8721e7eaeae",
+       "071d1306b97eb8d7599689e862ff7b7a13f1fd35b7c67fbfbcac5e784c5382f3"},
+      {"search synth, filter\n"
+       "gradient(type: 0, rotation: -180, repeat: 1, speed: -5, seed: 0, "
+       "color1: #c6420c80, color2: #599d3b80, color3: #259af780, "
+       "color4: #a6fc2b80, colorCount: 2).lightLeak(alpha: 1, color: #ffcc4c, "
+       "speed: 0.5, seed: 1).scratches(density: 0.3, alpha: 0.75, seed: 1)"
+       ".write(o0)\nrender(o0)\n",
+       97U, 61U, 0.999, 2082350962.0,
+       "bea9955db4056623773e1bfcbeaa6a2b0706e845fde6efdc248de43a59641a93",
+       "455aa078b1f000b46107c0e285ec7d80e8078ae805b45fc1aad10f57a2532561"},
+  };
+  Renderer renderer;
+  for (const auto& item : cases) {
+    auto render_options = options(item.width, item.height);
+    render_options.time = item.time;
+    render_options.seed = item.seed;
+    const auto result = renderer.render(item.source, render_options);
+    REQUIRE(rgba8_sha256(result) == item.rgba);
+    const auto data = result.surface().data();
+    REQUIRE(detail::sha256(std::string_view(
+                reinterpret_cast<const char*>(data.data()), data.size_bytes())) == item.floats);
+  }
+}
+
+TEST(graph_executor_preserves_iterated_image_volume_and_geometry_bundle) {
+  // CPU4307 carries each bundle component through every step in a loop.
+  // The second palette pass reads the volume after an image renderer.
+  struct Case {
+    const char* middle;
+    const char* rgba;
+    const char* floats;
+    std::array<std::size_t, 2> pass_counts;
+  };
+  const Case cases[] = {
+      {"palette3d(volumeSize: 4).render3d().palette3d(volumeSize: 4).render3d()",
+       "036080b5744697b71018f1b98f11c47bf83f1cb6fd255f1a36d0962a778d9a72",
+       "639f94a948d2c2638445cc30fba54006025a874fd471c0d9457904690b562ce0",
+       {9U, 16U}},
+      {"palette3d(volumeSize: 4).render3d().renderLit3d()",
+       "b9bbf0365eba2e2d2d0db4e51a8a341968dd32a7297a6fe44665ad6e2b43e5f5",
+       "9c85fe78121718c668cf78bcf3e83d694be6817a4a77fa09e08c259deba3adb4",
+       {8U, 14U}},
+  };
+  Renderer renderer;
+  for (const auto& item : cases) {
+    for (const unsigned count : {1U, 2U}) {
+      const std::string source =
+          "search synth3d, filter3d, render\n"
+          "shape3d(volumeSize: 4).render3d().loopBegin(iterationCount: " +
+          std::to_string(count) + ")." + item.middle +
+          ".loopEnd().write(o0)\nrender(o0)\n";
+      auto render_options = options(8U, 8U);
+      render_options.time = 0.2;
+      render_options.seed = 1.0;
+      const auto result = renderer.render(source, render_options);
+      REQUIRE(result.pass_count() == item.pass_counts[count - 1U]);
+      REQUIRE(rgba8_sha256(result) == item.rgba);
+      const auto data = result.surface().data();
+      REQUIRE(detail::sha256(std::string_view(
+                  reinterpret_cast<const char*>(data.data()), data.size_bytes())) ==
+              item.floats);
+    }
+  }
+}
+
+TEST(graph_executor_zero_iteration_volume_group_preserves_input_bundle) {
+  Renderer renderer;
+  const auto base = renderer.render(
+      "search synth3d, render\nshape3d(volumeSize: 4).render3d().write(o0)\nrender(o0)\n",
+      options(7U, 5U));
+  const auto skipped = renderer.render(
+      "search synth3d, filter3d, render\n"
+      "shape3d(volumeSize: 4).flow3d(iterationCount: 0).render3d().write(o0)\n"
+      "render(o0)\n", options(7U, 5U));
+  REQUIRE(rgba8_sha256(skipped) == rgba8_sha256(base));
+  const auto left = base.surface().data();
+  const auto right = skipped.surface().data();
+  REQUIRE(left.size() == right.size());
+  REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(left.data()),
+                                          left.size_bytes())) ==
+          detail::sha256(std::string_view(reinterpret_cast<const char*>(right.data()),
+                                          right.size_bytes())));
+}
+
+TEST(graph_executor_zero_iteration_volume_generator_creates_cleared_bundle) {
+  // CPU 9f3bd6ad zeroIterationGroupOutput creates a clear volume and geometry
+  // atlas when a volume generator opens the chain and its count is zero.
+  Renderer renderer;
+  const auto result = renderer.render(
+      "search synth3d, render\n"
+      "reactionDiffusion3d(volumeSize: 4, iterationCount: 0).render3d().write(o0)\n"
+      "render(o0)\n", options(7U, 5U));
+  REQUIRE(rgba8_sha256(result) ==
+          "fb9ae3e76f54906621ab2db14e1c374a9657257ffcf0eadfd274b00133dfc7f5");
+  const auto data = result.surface().data();
+  REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                          data.size_bytes())) ==
+          "d594ae252c2273b1eccbcb14f5c0e50770cfdf9795220b54637ee0251ecbc046");
+}
+
+TEST(graph_executor_seeds_typed_volume_and_geometry_parameters) {
+  // CPU9f3 renderer.js seedTypedChainResources binds an incoming bundle or
+  // clears outputTex3d/outputGeo-sized surfaces.  `vol0` and `geo0` are
+  // parameter metadata, not named arena dependencies.
+  struct Case { const char* effect; bool incoming; const char* rgba; const char* floats; };
+  const std::array<Case, 4> cases{{
+      {"cellularAutomata3d", false,
+       "23f4d15b5cb703a983c2e98031a395cc5704fb39197e815ef61352605ccc0409",
+       "83e559adef6088bcbea5e5ca3eb8f9abf034fb8d5d3521502fb30e925237524d"},
+      {"reactionDiffusion3d", false,
+       "0e0a054c6eb854f9dada108c81bf59bfc294be51bc7fb2a6bca851de40cf9151",
+       "11d2ffc713fc9923fb1ea43160e1c15e63a0945e667374248f1559ac7e200e08"},
+      {"cellularAutomata3d", true,
+       "8338daf7f3a8b05f11fbdbd33cbf61a5c1e84f636e85bf5902687a18a56d170a",
+       "3e8aff2f05fd066ef5309f40028dab4be871c9fbd6a032bb8beb434af111c2cc"},
+      {"reactionDiffusion3d", true,
+       "8338daf7f3a8b05f11fbdbd33cbf61a5c1e84f636e85bf5902687a18a56d170a",
+       "76ca10250b1e05ac90ad5fa3134c4b30317e907dd3566d8a57bc455a1cb30121"},
+  }};
+  Renderer renderer;
+  for (const auto& item : cases) {
+    const std::string source = "search synth3d, render\n" +
+        std::string(item.incoming ? "shape3d(volumeSize: 4)." : "") + item.effect +
+        "(volumeSize: 4, source: vol0, geoSource: geo0, iterationCount: 1)"
+        ".render3d().write(o0)\nrender(o0)\n";
+    const auto result = renderer.render(source, options(5U, 3U));
+    REQUIRE(rgba8_sha256(result) == item.rgba);
+    const auto data = result.surface().data();
+    REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                            data.size_bytes())) == item.floats);
+  }
+}
+
+TEST(graph_executor_rejects_unseedable_typed_route_and_unknown_route) {
+  Renderer renderer;
+  constexpr std::string_view source =
+      "search synth3d, render\n"
+      "cellularAutomata3d(volumeSize: 4, source: vol0, geoSource: geo0, "
+      "iterationCount: 1).render3d().write(o0)\nrender(o0)\n";
+  enum class Mutation { missing_volume, missing_geometry, unknown_route };
+  for (const Mutation mutation : {Mutation::missing_volume,
+                                  Mutation::missing_geometry,
+                                  Mutation::unknown_route}) {
+    auto plan = renderer.compile(source);
+    auto& snapshot = snapshot_for(plan, "synth3d/cellularAutomata3d");
+    if (mutation != Mutation::unknown_route) {
+      // No incoming bundle and no declared output texture can seed `source`
+      // or `geoSource`. The latter is not read by this effect's pass.
+      const auto& output_name = mutation == Mutation::missing_volume
+          ? snapshot.definition.output_tex3d : snapshot.definition.output_geo;
+      snapshot.definition.textures.erase(
+          std::remove_if(snapshot.definition.textures.begin(),
+                         snapshot.definition.textures.end(),
+                         [&](const auto& texture) {
+                           return output_name.has_value() &&
+                                  texture.name == *output_name;
+                         }), snapshot.definition.textures.end());
+    } else {
+      // An undeclared route must not inherit the typed-parameter exemption.
+      snapshot.definition.passes.front().inputs.back().second = "unknownTypedRoute";
+    }
+    reauthenticate(plan);
+    ExecutionInputs inputs = options(5U, 3U);
+    inputs.seed_surfaces.push_back({"o0", patterned_seed(512U, 512U)});
+    constexpr std::size_t kSeedCopyBytes = 512U * 512U * 4U * sizeof(float);
+    GraphExecutor executor;
+    g_allocated_bytes = 0;
+    g_counting_allocations = true;
+    bool refused = false;
+    try {
+      static_cast<void>(executor.execute(plan, inputs));
+    } catch (const GraphError& error) {
+      // Both removed textures reach the all-parameter seed preflight.
+      // The forged pass route must fail the admitted pass identity first.
+      refused = mutation != Mutation::unknown_route
+          ? error.code() == GraphErrorCode::read_before_write &&
+            error.detail() == "typed input has no seeded resource"
+          : error.code() == GraphErrorCode::invalid_snapshot &&
+            error.detail() == "pass routing differs from admitted ABI";
+    }
+    g_counting_allocations = false;
+    REQUIRE(refused);
+#if NOISEMAKER_TEST_COUNTS_ALLOCATIONS
+    REQUIRE(g_allocated_bytes < kSeedCopyBytes);
+#endif
+  }
+}
+
+TEST(graph_executor_navier_stokes_default_matches_cpu9f3_hash_order) {
+  // CPU9f3 canonicalFactory271 stores hash22 lane 0 before it reads the
+  // vector for lane 1. This full effect witnesses the seeded state.
+  Renderer renderer;
+  const auto result = renderer.render(
+      "search synth\n"
+      "navierStokes(tex: none, zoom: 1, iterations: 30, smoothing: 1, "
+      "speed: 100, dyeDecay: 98, velocityDecay: 99, inputForce: 0.5, "
+      "inputDye: 0.9, inputIntensity: 10, resetState: false, seed: 1, "
+      "iterationCount: 60).write(o0)\nrender(o0)\n",
+      options(17U, 11U));
+  REQUIRE(rgba8_sha256(result) ==
+          "49b3a57cc0fda9e451bca86153feed47c4b8d3d6ff7e646c67a00a4e174b4f0c");
+  const auto data = result.surface().data();
+  REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                          data.size_bytes())) ==
+          "c3dda248ad13fdc9e8497d20a4722fd454c8e7210ab8e89aa0926c34254e0174");
+}
+
+TEST(graph_executor_rejects_volume_from_an_earlier_chain) {
+  Renderer renderer;
+  auto plan = renderer.compile(
+      "search synth3d, render\n"
+      "shape3d(volumeSize: 4).render3d().write(o0)\n"
+      "shape3d(volumeSize: 4).render3d().write(o1)\n"
+      "render(o1)\n");
+  REQUIRE(plan.chains.size() == 2U);
+  REQUIRE(plan.chains[1].steps.size() == 3U);
+  const auto* producer = std::get_if<EffectStep>(&plan.chains[1].steps.front());
+  REQUIRE(producer != nullptr);
+  REQUIRE(producer->effect.id == "synth3d/shape3d");
+  plan.chains[1].steps.erase(plan.chains[1].steps.begin());
+  reauthenticate(plan);
+  try {
+    static_cast<void>(renderer.render(plan, options(7U, 5U)));
+    REQUIRE(false);
+  } catch (const GraphError& error) {
+    REQUIRE(error.code() == GraphErrorCode::read_before_write);
+    REQUIRE(error.detail() == "input bundle resource is not produced");
+  }
+}
+
+TEST(graph_executor_rejects_removed_or_forged_admitted_viewport) {
+  for (const bool omit : {false, true}) {
+    Renderer renderer;
+    auto plan = renderer.compile(
+        "search synth3d, render\nshape3d(volumeSize: 4).render3d().write(o0)\nrender(o0)\n");
+    auto& snapshot = snapshot_for(plan, "synth3d/shape3d");
+    REQUIRE(snapshot.admissions.front().authority_pass.viewport.has_value());
+    const auto mutate = [&](auto& admission) {
+      if (omit) admission.authority_pass.viewport.reset();
+      else admission.authority_pass.viewport = effects::Value::object_value({
+          {"width", effects::Value::number_value(7.0)},
+          {"height", effects::Value::number_value(5.0)}});
+    };
+    mutate(snapshot.admissions.front());
+    mutate(effect_step(plan, "synth3d/shape3d").passes.front());
+    reauthenticate(plan);
+    try {
+      static_cast<void>(renderer.render(plan, options(7U, 5U)));
+      REQUIRE(false);
+    } catch (const GraphError& error) {
+      REQUIRE(error.code() == GraphErrorCode::invalid_snapshot);
+      REQUIRE(error.detail() == "pass routing differs from admitted ABI");
+    }
+  }
+}
+
+TEST(graph_executor_rejects_paired_viewport_forgery_before_allocation) {
+  for (const bool iterated : {false, true}) {
+    Renderer renderer;
+    auto plan = renderer.compile(kSolidSource, "forged-paired-viewport.dsl");
+    auto& snapshot = snapshot_for(plan, "synth/solid");
+    snapshot.definition.iterated = iterated;
+    const auto viewport = effects::Value::object_value({
+        {"width", effects::Value::number_value(3.0)},
+        {"height", effects::Value::number_value(2.0)}});
+    snapshot.definition.passes.front().viewport = viewport;
+    snapshot.admissions.front().authority_pass.viewport = viewport;
+    effect_step(plan, "synth/solid").passes.front().authority_pass.viewport = viewport;
+    reauthenticate(plan);
+    try {
+      static_cast<void>(renderer.render(plan, options(7U, 5U)));
+      REQUIRE(false);
+    } catch (const GraphError& error) {
+      REQUIRE(error.code() == GraphErrorCode::invalid_snapshot);
+      REQUIRE(error.detail() == "viewport differs from the generated catalog anchor");
+    }
+  }
+  // Removing an authentic viewport from both copies must also fail closed.
+  Renderer renderer;
+  auto plan = renderer.compile(
+      "search synth3d, render\nshape3d(volumeSize: 4).render3d().write(o0)\nrender(o0)\n");
+  auto& snapshot = snapshot_for(plan, "synth3d/shape3d");
+  snapshot.definition.passes.front().viewport.reset();
+  snapshot.admissions.front().authority_pass.viewport.reset();
+  effect_step(plan, "synth3d/shape3d").passes.front().authority_pass.viewport.reset();
+  reauthenticate(plan);
+  try {
+    static_cast<void>(renderer.render(plan, options(7U, 5U)));
+    REQUIRE(false);
+  } catch (const GraphError& error) {
+    REQUIRE(error.code() == GraphErrorCode::invalid_snapshot);
+    REQUIRE(error.detail() == "viewport differs from the generated catalog anchor");
+  }
+}
+
+TEST(graph_executor_rejects_forged_flow3d_draw_count) {
+  Renderer renderer;
+  auto plan = renderer.compile(
+      "search synth3d, filter3d, render\nshape3d(volumeSize: 4).flow3d(iterationCount: 1, density: 1).render3d().write(o0)\nrender(o0)\n");
+  auto& snapshot = snapshot_for(plan, "filter3d/flow3d");
+  const auto pass = std::find_if(snapshot.definition.passes.begin(), snapshot.definition.passes.end(),
+                                [](const auto& item) { return item.name == "deposit"; });
+  REQUIRE(pass != snapshot.definition.passes.end());
+  REQUIRE(pass->count.has_value());
+  REQUIRE(pass->count->kind == effects::ValueKind::number);
+  pass->count = effects::Value::number_value(1.0);
+  reauthenticate(plan);
+  try {
+    static_cast<void>(renderer.render(plan, options(7U, 5U)));
+    REQUIRE(false);
+  } catch (const GraphError& error) {
+    REQUIRE(error.code() == GraphErrorCode::invalid_snapshot);
+    REQUIRE(error.detail() == "scatter pass count differs from the admitted contract");
+  }
+}
+
 TEST(graph_executor_renders_the_canonical_worm_overlay_effects_byte_exact) {
   // `overlayTex` on these three effects is fed by a dedicated CPU adapter
   // (noisemaker::effects::cpu::render_canonical_worm_overlay, ported from
@@ -1226,34 +1710,23 @@ TEST(graph_executor_worm_overlay_explicit_seed_bypasses_the_render_seed_substitu
 }
 
 
-TEST(graph_executor_fails_closed_when_a_parameter_requests_an_unbaked_compile_define) {
-  // The authority publishes a define-backed parameter under its define name,
-  // which changes the compiled program. A `default-only` typed emitter was
-  // compiled around one value, so any other request must fail closed naming
-  // the parameter, the requested value, and the baked value -- never render
-  // the baked program and drop the request.
+TEST(graph_executor_runtime_perlin_and_emboss_defines_match_cpu) {
+  // Captured by tests/fixtures/runtime_define_graph_reference.mjs against CPU9f3.
+  struct Case { const char* source; const char* floats; const char* rgba; };
+  const std::array<Case, 4> cases{{
+      {"search synth\nperlin(dimensions: 2).write(o0)\nrender(o0)\n", "f96c3fdde5e7da28fe616c0f668e03caeac7ca4b07a10c8c6e218353e897efd7", "63e9783ccd4685694267d430306c5ed00cc9c61b2906037c91d5246a682e6f57"},
+      {"search synth\nperlin(dimensions: 3).write(o0)\nrender(o0)\n", "224403f8a5f28a9f31ce0b7965473766e971300f9ed2fb00a6e3c87e0b96d569", "ce83abe48ce9b86de40aa2e9c361e0b884c8d01cd2fcc75bd54674625126d364"},
+      {"search synth, filter\nsolid(color: #3a7).emboss(style: 0).write(o0)\nrender(o0)\n", "bbab47259fa6a1340de8b4d202619b0552481b96b09418e3afd33e0c62c4161e", "a00aa40f8749301bc115f5b3ab96bb1ea7110bdb4a0f2947d82af672d29d1a43"},
+      {"search synth, filter\nsolid(color: #3a7).emboss(style: 1).write(o0)\nrender(o0)\n", "843226302196ad6439a199a7fc8f1f258f4f082db30c43ba593483eecdd3be72", "eec68212ac4794baa76cf2d4520d0401aeb7156ee1ee28dabbc0bf0fdec54cb7"},
+  }};
   Renderer renderer;
-  const auto refuse = [&](std::string_view source, std::string_view detail) {
-    try {
-      static_cast<void>(renderer.render(source, options(8U, 8U), "define.dsl"));
-      REQUIRE(false);
-    } catch (const GraphError& error) {
-      REQUIRE(error.code() == GraphErrorCode::unavailable_pass);
-      REQUIRE(error.detail() == detail);
-    }
-  };
-  refuse("search synth\nperlin(dimensions: 3).write(o0)\nrender(o0)\n",
-         "parameter dimensions requests compile define DIMENSIONS=3 but the "
-         "generated route bakes DIMENSIONS=2");
-  refuse("search synth, filter\nsolid(color: #3a7).emboss(style: 1).write(o0)\nrender(o0)\n",
-         "parameter style requests compile define STYLE=1 but the generated "
-         "route bakes STYLE=0");
-
-  // The baked value itself still dispatches, whether it is defaulted or named.
-  REQUIRE(renderer.render("search synth\nperlin().write(o0)\nrender(o0)\n",
-                          options(8U, 8U), "define.dsl").width() == 8U);
-  REQUIRE(renderer.render("search synth\nperlin(dimensions: 2).write(o0)\nrender(o0)\n",
-                          options(8U, 8U), "define.dsl").width() == 8U);
+  for (const auto& item : cases) {
+    const auto result = renderer.render(item.source, options(8U, 8U), "define.dsl");
+    REQUIRE(rgba8_sha256(result) == item.rgba);
+    const auto data = result.surface().data();
+    REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                            data.size_bytes())) == item.floats);
+  }
 }
 
 TEST(graph_executor_honors_runtime_and_adapter_compile_defines_exactly) {
@@ -1301,6 +1774,123 @@ TEST(graph_executor_applies_the_ported_classic_noisedeck_palette_override) {
   REQUIRE(renderer.render(
               "search classicNoisedeck\nshapes(palette: 0).write(o0)\nrender(o0)\n",
               options(8U, 8U), "palette.dsl").width() == 8U);
+}
+
+TEST(graph_executor_classic_shapes3d_palette_override_preserves_binding_carriers) {
+  // CPU 9f3bd6ad, 8x8, time 0.25, seed 17. Palette zero retains the
+  // caller's vectors; palette 40 replaces them with the canonical table.
+  struct Case { const char* source; const char* rgba; const char* floats; };
+  const Case cases[] = {
+      {"search classicNoisedeck, synth\nsolid(color: #3a7).shapes3d(palette: 0).write(o0)\nrender(o0)\n",
+       "83d905af352efe5c4002df073f8261af7e69a5db534e9344c3c08370c36e9663",
+       "c295dfd4ef6c8ce513dc68cbd448b1495d0e93f83d4fd47f9fa570054f5e5f73"},
+      {"search classicNoisedeck, synth\nsolid(color: #3a7).shapes3d(palette: 40).write(o0)\nrender(o0)\n",
+       "2f3a19dc693eba6c025b5aaeda4fbd4b320b4fa6ef27f9f67a5ccd6a7259837d",
+       "e3004ea82718aabd624c2b2b52eea832d71dae15ba5bd293f708d8fa26cb470e"},
+  };
+  Renderer renderer;
+  for (const auto& item : cases) {
+    auto plan = renderer.compile(item.source, "shapes3d-palette.dsl");
+    const auto& admission = snapshot_for(plan, "classicNoisedeck/shapes3d").admissions[0];
+    for (const char* name : {"paletteOffset", "paletteAmp", "paletteFreq", "palettePhase"}) {
+      const auto uniform = std::find_if(admission.uniforms.begin(), admission.uniforms.end(),
+          [name](const auto& binding) { return binding.name == name; });
+      REQUIRE(uniform != admission.uniforms.end());
+      REQUIRE(uniform->cpp_type == "glsl::DVec3");
+    }
+    const auto result = renderer.render(plan, options(8U, 8U));
+    REQUIRE(rgba8_sha256(result) == item.rgba);
+    const auto data = result.surface().data();
+    REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                           data.size_bytes())) == item.floats);
+  }
+}
+
+TEST(graph_executor_classic_noise_palette_runtime_preserves_raw_uniforms) {
+  // CPU 9f3bd6ad renders the same DSL twice with palette entry 2 and the
+  // default 8x8, time 0.25, seed 17 inputs. COLOR_MODE=4 reaches pal();
+  // COLOR_MODE=6 keeps the historical HSV path.
+  struct Case { const char* source; const char* rgba; const char* floats; };
+  const Case cases[] = {
+      {"search classicNoisedeck\nnoise(colorMode: palette, palette: 2).write(o0)\nrender(o0)\n",
+       "01edf5301fb956cf3da32fe8570b17479da92d5412dd4f12dea8c383782dd123",
+       "984801325e1ca56ea03be67baa86b1b78de3b4aae6b6d2bd9541542d4405d0ad"},
+      {"search classicNoisedeck\nnoise(colorMode: hsv, palette: 2).write(o0)\nrender(o0)\n",
+       "f5b1fd5a140541a8a9291f652e781b7b1e2ff240c42a765754fc2e5d7c1b0e34",
+       "9a152ef97fbd7436a9a60017c23c04e42b938f177eb3c339d4b7ae88ce7b5b48"},
+  };
+  Renderer renderer;
+  for (const auto& item : cases) {
+    auto plan = renderer.compile(item.source, "classic-noise-palette.dsl");
+    const auto& admission = snapshot_for(plan, "classicNoisedeck/noise").admissions[0];
+    for (const char* name : {"paletteOffset", "paletteAmp", "paletteFreq", "palettePhase"}) {
+      const auto uniform = std::find_if(
+          admission.uniforms.begin(), admission.uniforms.end(),
+          [name](const auto& binding) { return binding.name == name; });
+      REQUIRE(uniform != admission.uniforms.end());
+      REQUIRE(uniform->cpp_type == "glsl::DVec3");
+    }
+    const auto result = renderer.render(plan, options(8U, 8U));
+    REQUIRE(rgba8_sha256(result) == item.rgba);
+    const auto data = result.surface().data();
+    REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                            data.size_bytes())) == item.floats);
+  }
+  auto forged = renderer.compile(cases[0].source, "forged-classic-noise-palette.dsl");
+  const auto narrow_palette = [](PassAdmission& admission) {
+    const auto uniform = std::find_if(
+        admission.uniforms.begin(), admission.uniforms.end(),
+        [](const auto& binding) { return binding.name == "paletteAmp"; });
+    REQUIRE(uniform != admission.uniforms.end());
+    uniform->cpp_type = "glsl::Vec3";
+  };
+  narrow_palette(snapshot_for(forged, "classicNoisedeck/noise").admissions[0]);
+  narrow_palette(effect_step(forged, "classicNoisedeck/noise").passes[0]);
+  reauthenticate(forged);
+  try {
+    static_cast<void>(renderer.render(forged, options(8U, 8U)));
+    REQUIRE(false);
+  } catch (const GraphError& error) {
+    REQUIRE(error.code() == GraphErrorCode::binding_type);
+    REQUIRE(error.detail() == "ordered uniform ABI differs from the generated route anchor");
+  }
+}
+
+TEST(graph_executor_rejects_forged_synth3d_number_seed_abi) {
+  Renderer renderer;
+  const std::array<std::pair<const char*, const char*>, 2> cases{{
+      {"synth3d/noise3d",
+       "search synth3d, filter3d, render\n"
+       "noise3d(volumeSize: 32).render3d().write(o0)\nrender(o0)\n"},
+      {"synth3d/cell3d",
+       "search synth3d, filter3d, render\n"
+       "cell3d(volumeSize: 64, metric: 0, scale: 10, variation: 100, seed: 1, colorMode: 1).render3d().write(o0)\nrender(o0)\n"},
+  }};
+  for (const auto& [effect, source] : cases) {
+    auto plan = renderer.compile(source, "forged-synth3d-seed.dsl");
+    const auto forge = [](PassAdmission& admission) {
+      const auto seed = std::find_if(
+          admission.uniforms.begin(), admission.uniforms.end(),
+          [](const auto& binding) { return binding.name == "seed"; });
+      REQUIRE(seed != admission.uniforms.end());
+      REQUIRE(seed->type == "int");
+      REQUIRE(seed->cpp_type == "double");
+      REQUIRE(seed->source == "effect_parameter");
+      seed->cpp_type = "std::int32_t";
+    };
+    forge(snapshot_for(plan, effect).admissions[0]);
+    forge(effect_step(plan, effect).passes[0]);
+    reauthenticate(plan);
+    try {
+      static_cast<void>(renderer.render(plan, options(8U, 8U)));
+      REQUIRE(false);
+    } catch (const GraphError& error) {
+      REQUIRE(error.code() == GraphErrorCode::binding_type);
+      REQUIRE(error.detail() == (std::string_view(effect) == "synth3d/noise3d"
+              ? "Noise3D seed ABI is not authenticated"
+              : "Cell3D seed ABI is not authenticated"));
+    }
+  }
 }
 
 TEST(graph_executor_fails_closed_on_a_measured_parity_exclusion) {
@@ -1408,6 +1998,49 @@ TEST(graph_executor_refuses_a_step_that_omits_a_guarded_parameter) {
       REQUIRE(error.detail() ==
               "parameter palette selects the palette but the step carries no value "
               "for it");
+    }
+  }
+}
+
+TEST(graph_halftone_color_alpha_carrier_preserves_presence_and_value) {
+  const auto color = [](double r, double g, double b, std::optional<double> alpha) {
+    std::vector<PlanValue> lanes = {PlanValue::number_value(r),
+                                    PlanValue::number_value(g),
+                                    PlanValue::number_value(b)};
+    if (alpha.has_value()) lanes.push_back(PlanValue::number_value(*alpha));
+    return PlanValue::array_value(std::move(lanes));
+  };
+  PassAdmission admission;
+  admission.identity.program_key = "filter/halftone:halftone";
+  admission.uniforms = {
+      {"inkColor", "vec3", "effect_parameter", "inkColor", {}, "glsl::DVec3"},
+      {"paperColor", "vec3", "effect_parameter", "paperColor", {}, "glsl::DVec3"},
+  };
+  EffectStep step;
+  step.effect = {"filter/halftone", "image", "filter"};
+  effects::PassDefinition pass;
+  const auto inputs = options(8U, 8U);
+  const BindingMaterializationContext context{&inputs, nullptr, 8U, 8U};
+  for (const auto& [ink_alpha, paper_alpha] :
+       std::array<std::pair<std::optional<double>, std::optional<double>>, 4>{
+           std::pair{std::optional<double>{}, std::optional<double>{}},
+           std::pair{std::optional<double>{}, std::optional<double>{0.75}},
+           std::pair{std::optional<double>{0.25}, std::optional<double>{}},
+           std::pair{std::optional<double>{std::numeric_limits<double>::quiet_NaN()},
+                     std::optional<double>{0.75}},
+       }) {
+    step.params = {{"inkColor", color(0.1, 0.2, 0.3, ink_alpha)},
+                   {"paperColor", color(0.8, 0.7, 0.6, paper_alpha)}};
+    const auto bindings = materialize_uniform_bindings(step, admission, pass, context);
+    REQUIRE(bindings.get<bool>("__cpuColorHasAlpha_inkColor") == ink_alpha.has_value());
+    REQUIRE(bindings.get<bool>("__cpuColorHasAlpha_paperColor") == paper_alpha.has_value());
+    if (ink_alpha.has_value()) {
+      REQUIRE((std::isnan(*ink_alpha) &&
+               std::isnan(bindings.get<double>("__cpuColorAlpha_inkColor"))) ||
+              bindings.get<double>("__cpuColorAlpha_inkColor") == *ink_alpha);
+    }
+    if (paper_alpha.has_value()) {
+      REQUIRE(bindings.get<double>("__cpuColorAlpha_paperColor") == *paper_alpha);
     }
   }
 }

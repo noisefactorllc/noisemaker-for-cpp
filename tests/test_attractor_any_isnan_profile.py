@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import pathlib
 import unittest
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 MODULE = "tools.glslcpp.frontend.attractor_any_isnan_profile"
 
@@ -30,7 +31,6 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "points/attractor:agent"
 PROFILE = "attractor-isnan-any-admission-v1"
 
-CORPUS_REVISION = "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d"
 SOURCE_PATH = (ROOT / "tools/glslcpp/corpus" / CORPUS_REVISION /
                "sources/points/attractor/agent.glsl")
 

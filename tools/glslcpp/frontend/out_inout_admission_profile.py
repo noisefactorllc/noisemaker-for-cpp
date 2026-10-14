@@ -222,18 +222,22 @@ LIGHTLEAK_SOURCE_PATH = "filter/lightLeak/lightLeak.glsl"
 MANDELBROT_KEY = "synth/mandelbrot:mandelbrot"
 MANDELBROT_PROFILE = "out-inout-admission-mandelbrot-v1"
 MANDELBROT_SOURCE_PATH = "synth/mandelbrot/mandelbrot.glsl"
+FLYTHROUGH_KEY = "synth3d/flythrough3d:precompute"
+FLYTHROUGH_PROFILE = "out-inout-admission-flythrough3d-v1"
 JULIA_KEY = "synth/julia:julia"
 JULIA_PROFILE = "out-inout-admission-julia-v1"
 JULIA_SOURCE_PATH = "synth/julia/julia.glsl"
 
 # The landed carrier registry. Newton's row and its struct companion land
 # together; Mandelbrot's out/inout record lands with its log companion.
-KEYS: tuple[str, ...] = (LIGHTLEAK_KEY, JULIA_KEY, MANDELBROT_KEY, NEWTON_KEY)
+KEYS: tuple[str, ...] = (LIGHTLEAK_KEY, JULIA_KEY, MANDELBROT_KEY, NEWTON_KEY,
+                         FLYTHROUGH_KEY)
 PROFILES: dict[str, str] = {
     JULIA_KEY: JULIA_PROFILE,
     LIGHTLEAK_KEY: LIGHTLEAK_PROFILE,
     NEWTON_KEY: NEWTON_PROFILE,
     MANDELBROT_KEY: MANDELBROT_PROFILE,
+    FLYTHROUGH_KEY: FLYTHROUGH_PROFILE,
 }
 OUT_INOUT_ADMISSION_KEYS = frozenset(PROFILES)
 
@@ -272,6 +276,8 @@ ALLOWED_ROW_FIELDS: dict[str, frozenset[str]] = {
         "log_admission_profile",
         "out_inout_admission_profile",
     }),
+    FLYTHROUGH_KEY: frozenset({"defines", "program_key", "out_inout_admission_profile",
+                               "fractal3d_log_profile"}),
 }
 PREPARED_ROW_FIELDS: dict[str, frozenset[str]] = {}
 
@@ -410,6 +416,7 @@ __all__ = (
     "LIGHTLEAK_JS_VEC3_STORE", "LIGHTLEAK_JS_FLOAT_STORE",
     "LIGHTLEAK_JS_OUT_ALLOCATION",
     "MANDELBROT_KEY", "MANDELBROT_PROFILE", "MANDELBROT_SOURCE_PATH",
+    "FLYTHROUGH_KEY", "FLYTHROUGH_PROFILE",
     "MANDELBROT_JS_FACTORY", "MANDELBROT_JS_REGISTRATION_LINE",
     "MANDELBROT_JS_CANONICAL_KERNELS_SHA256",
     "MANDELBROT_JS_FACTORY_TOSTRING_BYTES",
@@ -427,6 +434,7 @@ __all__ = (
     "JuliaOutArgumentRecord", "JuliaOutCallRecord",
     "CountedForSeedContract", "counted_for_seed_contract",
     "authenticate_out_inout_admission", "apply_out_inout_admission",
+    "authenticate_flythrough_value_copies",
 )
 
 
@@ -1903,6 +1911,99 @@ _JULIA_DIRECTION_CONTRACT = DirectionContract(
      ("transformCoords.imDF", "glsl::Vec2&")),
 )
 
+_FLYTHROUGH_DIRECTION_CONTRACT = DirectionContract(
+    native_abi="glsl::Vec3&",
+    pass_mechanism="reference",
+    by_value_emission="forbidden",
+    emitter_direction_gate_required=True,
+    out_argument_native_shape="three caller-local glsl::Vec3 values",
+    js_body_tail="getCameraState.__out__ = [pos, dir, up]",
+    js_out_stash="getCameraState.__out__ = [pos, dir, up]",
+    js_call_shape="getCameraState(time, camPos, camDir, camUp)",
+    js_out_allocation="three PooledFloat32Array([0, 0, 0]) values",
+    parameter_abis=(("pos", "glsl::Vec3&"), ("dir", "glsl::Vec3&"),
+                    ("up", "glsl::Vec3&")),
+)
+
+
+def _authenticate_flythrough_out(program, source_hash, profile):
+    def fail(message):
+        return _profile_fail(FLYTHROUGH_PROFILE, message)
+
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    if profile != FLYTHROUGH_PROFILE:
+        raise fail("exact profile carrier required")
+    if (source_hash != "e4288dfc3384f76e63eda968ad4ce3219a9b96989d8e6ff38755dbcf44f788f3"
+            or len(raw) != 11404
+            or hashlib.sha256(raw).hexdigest() != source_hash
+            or len(normalized) != 7766
+            or hashlib.sha256(normalized).hexdigest()
+            != "b8ae9dac1d40943d7bd023fbd6bc26494c686fe62fecd2e26551367ea82eaa58"
+            or _whole(program)
+            != "0408c95a2a47cc03302de544b4f68cf50b6b607d2e77291d0c53c3f906424717"
+            or _mechanism_census(program) != (3, 1, 0, 0)):
+        raise fail("source or typed identity lock mismatch")
+    owners = tuple(function for function in program.functions
+                   if any(parameter.direction != "in" for parameter in function.parameters))
+    if len(owners) != 1 or owners[0].name != "getCameraState":
+        raise fail("out parameter owner mismatch")
+    owner = owners[0]
+    parameters = tuple(parameter for parameter in owner.parameters
+                       if parameter.direction != "in")
+    if tuple((parameter.id, parameter.name, parameter.type.display(), parameter.direction)
+             for parameter in parameters) != (
+                 (30, "pos", "vec3", "out"), (31, "dir", "vec3", "out"),
+                 (32, "up", "vec3", "out")):
+        raise fail("out parameter identity mismatch")
+    references = tuple((node.symbol_id, node.span.start_line,
+                        node.span.start_column, is_store)
+                       for function, node, _, _, _, is_store in
+                       _out_reference_census(program) if function is owner)
+    if references != (
+            (30, 152, 5, True), (31, 155, 5, True),
+            (31, 159, 43, False), (32, 160, 5, True),
+            (31, 160, 26, False), (32, 164, 42, False),
+            (32, 165, 5, True), (31, 165, 37, False)):
+        raise fail("out parameter store or read order mismatch")
+    calls = tuple(_out_call_census(program, frozenset({owner.name})))
+    if len(calls) != 1:
+        raise fail("out call census mismatch")
+    caller, call, chain, _ = calls[0]
+    if (caller.name != "main" or call.callee != owner.name
+            or call.signature_id != owner.signature.id
+            or call.type.display() != "void"
+            or tuple((argument.kind, argument.symbol_id,
+                      argument.type.display()) for argument in call.children)
+            != (("id", 4, "float"), ("id", 106, "vec3"),
+                ("id", 107, "vec3"), ("id", 108, "vec3"))
+            or chain[-1].kind != "expr"):
+        raise fail("out call argument or statement mismatch")
+    return parameters, (call,)
+
+
+def authenticate_flythrough_value_copies(program, source_hash):
+    """Keep the two fractal z locals separate from their source parameters."""
+    if program.key != FLYTHROUGH_KEY:
+        return ()
+    _authenticate_flythrough_out(program, source_hash, FLYTHROUGH_PROFILE)
+    copies = []
+    for function in program.functions:
+        if function.name not in {"mandelbox", "mandelbulb"}:
+            continue
+        for statement in function.body:
+            for declaration in statement.expressions:
+                if declaration.kind == "declaration" and declaration.symbol.name == "z":
+                    copies.append((function.name, declaration))
+    if tuple((name, node.symbol_id, node.span.start_line,
+              node.type.display(), node.children[0].kind,
+              node.children[0].symbol_id)
+             for name, node in copies) != (
+                 ("mandelbox", 123, 227, "vec3", "id", 42),
+                 ("mandelbulb", 137, 180, "vec3", "id", 36)):
+        raise _profile_fail(FLYTHROUGH_PROFILE, "fractal vector value-copy mismatch")
+    return tuple(node for _, node in copies)
+
 
 def _julia_walk_expressions(value):
     for expression in value.expressions:
@@ -2329,6 +2430,8 @@ def direction_contract(key: str) -> DirectionContract:
     """The frozen emission contract for ``key``'s out parameters."""
     if key == JULIA_KEY:
         return _JULIA_DIRECTION_CONTRACT
+    if key == FLYTHROUGH_KEY:
+        return _FLYTHROUGH_DIRECTION_CONTRACT
     lock = _LOCKS.get(key)
     if lock is None:
         raise _profile_fail(
@@ -2378,6 +2481,8 @@ def authenticate_out_inout_admission(
     """
     if program.key == JULIA_KEY:
         return _authenticate_julia_out(program, source_hash, profile)
+    if program.key == FLYTHROUGH_KEY:
+        return _authenticate_flythrough_out(program, source_hash, profile)
     if program.key not in _LOCKS:
         if profile is not None:
             raise _profile_fail(

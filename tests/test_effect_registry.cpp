@@ -56,14 +56,16 @@ TEST(effect_registry_resolves_in_search_order_and_normalizes_defaults) {
   REQUIRE(normalized.values[1].name == "color");
 }
 
-TEST(effect_registry_applies_aliases_and_rejects_ranges) {
+TEST(effect_registry_rejects_legacy_aliases_and_out_of_range_values) {
   auto effect = source_effect();
   effect.parameter_aliases.push_back({"strength", "amount"});
   EffectRegistry registry({effect});
   const auto* found = registry.get("fixture", "source");
   REQUIRE(found != nullptr);
-  const auto normalized = registry.normalize(*found, {{"strength", PlanValue::number_value(4.0)}});
+  REQUIRE_THROWS_AS(registry.normalize(*found, {{"strength", PlanValue::number_value(4.0)}}), std::invalid_argument);
+  const auto normalized = registry.normalize(*found, {{"amount", PlanValue::number_value(4.0)}});
   REQUIRE(normalized.values[0].name == "amount");
+  REQUIRE(normalized.values[0].value.number == 4.0);
   REQUIRE_THROWS_AS(registry.normalize(*found, {{"amount", PlanValue::number_value(5.0)}}), std::invalid_argument);
 }
 
@@ -158,8 +160,16 @@ TEST(effect_registry_joins_repeated_reference_keys_by_structural_identity) {
   REQUIRE(billboard != nullptr);
   REQUIRE(registry.admission(*billboard, 31).identity.program_key == "render/pointsBillboardRender:deposit");
   REQUIRE(registry.admission(*billboard, 34).identity.program_key == "render/pointsBillboardRender:deposit");
+  const auto defocus = registry.admission(*billboard, 27);
   const auto additive = registry.admission(*billboard, 31);
   const auto alpha = registry.admission(*billboard, 34);
+  REQUIRE(defocus.status == noisemaker::graph::AvailabilityStatus::scatter);
+  REQUIRE(defocus.scatter.has_value());
+  REQUIRE(defocus.scatter->outputs[0].logical_route == "defocus");
+  REQUIRE(additive.scatter.has_value());
+  REQUIRE(additive.scatter->outputs[0].logical_route == "global_billboard_trail");
+  REQUIRE(alpha.scatter.has_value());
+  REQUIRE(alpha.scatter->outputs[0].logical_route == "global_billboard_trail");
   REQUIRE(additive.authority_pass.blend_kind == "boolean");
   REQUIRE(additive.authority_pass.blend);
   REQUIRE(alpha.authority_pass.blend_kind == "factors");
@@ -174,7 +184,7 @@ TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contra
   const auto& provenance = registry.provenance();
   REQUIRE(registry.manifest_backed());
   REQUIRE(provenance.backend_schema == "noisemaker-cpp.backend-compatibility.v1");
-  REQUIRE(provenance.corpus_revision == "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d");
+  REQUIRE(provenance.corpus_revision == "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
   REQUIRE(provenance.cpu_package_sha256.size() == 64);
   REQUIRE(provenance.upstream_package_lock_sha256.size() == 64);
   const auto* wormhole = registry.get("filter", "wormhole");
@@ -196,6 +206,8 @@ TEST(effect_registry_binds_each_particle_family_scatter_contract_to_its_own_row)
       {"points", "dla", "depositGrid", "noisemaker::scatter::dla::adapter", "global_dla_grid"},
       {"points", "lenia", "deposit", "noisemaker::scatter::lenia::adapter", "global_lenia_density"},
       {"filter3d", "flow3d", "deposit", "noisemaker::scatter::flow3d::adapter", "global_flow3d_trail"},
+      {"render", "pointsRender", "deposit", "noisemaker::scatter::points_render::adapter", "global_points_trail"},
+      {"render", "pointsBillboardRender", "deposit", "noisemaker::scatter::points_billboard_render::adapter", "defocus"},
   };
   for (const auto& [name_space, function, program, adapter, route] : expected) {
     const auto* effect = registry.get(name_space, function);
@@ -211,7 +223,9 @@ TEST(effect_registry_binds_each_particle_family_scatter_contract_to_its_own_row)
       REQUIRE(admission.scatter->adapter == adapter);
       REQUIRE(admission.scatter->outputs.size() == 1);
       REQUIRE(admission.scatter->outputs[0].physical_name == "fragColor");
-      REQUIRE(admission.scatter->outputs[0].logical_route == route);
+      REQUIRE(admission.scatter->outputs[0].logical_route ==
+              (std::string(name_space) == "render" && std::string(function) == "pointsBillboardRender"
+                   ? effect->passes[index].outputs[0].second : route));
       REQUIRE(admission.scatter->outputs[0].cpp_type == "glsl::Vec4");
     }
     REQUIRE(found);
@@ -235,7 +249,7 @@ TEST(effect_registry_preserves_complete_alias_census) {
   std::size_t aliases = 0;
   for (const auto& effect : catalog.definitions) aliases += effect.parameter_aliases.size();
   REQUIRE(catalog.definitions.size() == 210);
-  REQUIRE(aliases == 84);
+  REQUIRE(aliases == 0);
 }
 
 TEST(effect_registry_rejects_duplicate_reference_triple_and_order_mutation) {
@@ -277,6 +291,91 @@ TEST(effect_registry_rejects_copied_catalog_pass_and_texture_mutation) {
   REQUIRE(texture_effect != texture.definitions.end());
   texture_effect->textures.front().name = "forged_texture";
   REQUIRE_THROWS_AS(EffectRegistry(texture), std::invalid_argument);
+}
+
+TEST(effect_registry_binds_depth_keys_from_each_authenticated_pass_define) {
+  EffectRegistry registry(noisemaker::effects::effect_catalog());
+  const auto* effect = registry.get("render", "pointsBillboardRender");
+  REQUIRE(effect != nullptr);
+  for (std::size_t index = 0; index < 2U; ++index) {
+    const auto& pass = effect->passes[index];
+    const auto admission = registry.admission(*effect, index);
+    REQUIRE(admission.identity.program_key == "render/pointsBillboardRender:depthKeys");
+    REQUIRE(admission.authority_pass.defines.has_value());
+    const auto binding = std::find_if(admission.uniforms.begin(), admission.uniforms.end(),
+        [](const auto& item) { return item.name == "VIEW_MODE"; });
+    REQUIRE(binding != admission.uniforms.end());
+    REQUIRE(binding->source == "pass_derived");
+    REQUIRE(binding->source_name == "typed_pass_define");
+    noisemaker::glsl::UniformValue value;
+    const noisemaker::graph::EffectStep step;
+    const noisemaker::graph::BindingMaterializationContext context;
+    REQUIRE(noisemaker::graph::resolve_authenticated_pass_derived(
+        nullptr, "typed_pass_define", "VIEW_MODE", step, admission, pass, context, value));
+    REQUIRE(std::get<std::int32_t>(value) == static_cast<std::int32_t>(index + 1U));
+    auto forged = pass;
+    forged.defines = Value::object_value({{"VIEW_MODE", Value::number_value(3.0)}});
+    REQUIRE(!noisemaker::graph::resolve_authenticated_pass_derived(
+        nullptr, "typed_pass_define", "VIEW_MODE", step, admission, forged, context, value));
+    forged = pass;
+    forged.defines.reset();
+    REQUIRE(!noisemaker::graph::resolve_authenticated_pass_derived(
+        nullptr, "typed_pass_define", "VIEW_MODE", step, admission, forged, context, value));
+    auto foreign = admission;
+    foreign.identity.program_key = "foreign:depthKeys";
+    REQUIRE(!noisemaker::graph::resolve_authenticated_pass_derived(
+        nullptr, "typed_pass_define", "VIEW_MODE", step, foreign, pass, context, value));
+  }
+}
+
+TEST(effect_registry_rejects_missing_scatter_pass_defines) {
+  auto catalog = noisemaker::effects::effect_catalog();
+  const auto row = std::find_if(catalog.reference_passes.begin(), catalog.reference_passes.end(),
+      [](const auto& item) {
+        return item.effect_id == "render/pointsRender" && item.pass_name == "deposit_0";
+      });
+  REQUIRE(row != catalog.reference_passes.end());
+  REQUIRE(row->authority_pass.defines.has_value());
+  row->authority_pass.defines.reset();
+  REQUIRE_THROWS_AS(EffectRegistry(catalog), std::invalid_argument);
+}
+
+TEST(effect_registry_authenticates_viewport_presence_and_value) {
+  const auto reference = [](auto& catalog) {
+    return std::find_if(catalog.reference_passes.begin(), catalog.reference_passes.end(),
+        [](const auto& row) { return row.effect_id == "synth3d/noise3d" && row.pass_name == "precompute"; });
+  };
+  const auto& catalog = noisemaker::effects::effect_catalog();
+  const auto row = reference(catalog);
+  REQUIRE(row != catalog.reference_passes.end());
+  REQUIRE(row->authority_pass.viewport.has_value());
+  EffectRegistry registry(catalog);
+  const auto* effect = registry.get("synth3d", "noise3d");
+  REQUIRE(effect != nullptr);
+  const auto admission = registry.admission(*effect, 0U);
+  REQUIRE(admission.authority_pass.viewport.has_value());
+  REQUIRE(admission.authority_pass.viewport->kind == noisemaker::effects::ValueKind::object);
+  REQUIRE(admission.authority_pass.viewport->object.size() == 2U);
+
+  auto omitted = noisemaker::effects::effect_catalog();
+  reference(omitted)->authority_pass.viewport.reset();
+  REQUIRE_THROWS_AS(EffectRegistry(omitted), std::invalid_argument);
+  auto forged = noisemaker::effects::effect_catalog();
+  reference(forged)->authority_pass.viewport = Value::object_value({{"width", Value::string_value("screen")}});
+  REQUIRE_THROWS_AS(EffectRegistry(forged), std::invalid_argument);
+
+  auto omitted_canonical = noisemaker::effects::effect_catalog();
+  const auto canonical = std::find_if(omitted_canonical.canonical_programs.begin(),
+      omitted_canonical.canonical_programs.end(), [](const auto& item) {
+        return item.program_key == "synth3d/noise3d:precompute";
+      });
+  REQUIRE(canonical != omitted_canonical.canonical_programs.end());
+  for (auto& field : canonical->raw) {
+    if (field.first != "authority_pass") continue;
+    field.second.object.erase(std::remove_if(field.second.object.begin(), field.second.object.end(),
+        [](const auto& item) { return item.first == "viewport"; }), field.second.object.end());
+  }
+  REQUIRE_THROWS_AS(EffectRegistry(omitted_canonical), std::invalid_argument);
 }
 
 TEST(effect_registry_default_catalog_moves_remain_custom) {

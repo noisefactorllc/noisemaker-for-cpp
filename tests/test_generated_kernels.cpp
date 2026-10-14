@@ -4,6 +4,7 @@
 #include "fixtures/historical/authority_26d6f42_kernels.hpp"
 #include "fixtures/historical/osd_kernel.hpp"
 #include "fixtures/historical/parallax_kernel.hpp"
+#include "fixtures/historical/gradient_kernel.hpp"
 
 #include <algorithm>
 #include <array>
@@ -39,6 +40,9 @@
 #include "oracles/shape_expected.inc"
 #include "oracles/shape_mixer182_expected.inc"
 #include "oracles/shapes183_expected.inc"
+#include "oracles/classic_shapes_runtime_expected.inc"
+#include "oracles/array_runtime_expected.inc"
+#include "oracles/effects_runtime_expected.inc"
 #include "oracles/wobble_expected.inc"
 #include "oracles/parallax190_expected.inc"
 #include "oracles/kaleido187_expected.inc"
@@ -88,7 +92,7 @@ void require_rgba8(const noisemaker::Surface& surface,
   throw std::runtime_error(detail.str());
 }
 
-TEST(typed_gradient_cross_lane_public_path_matches_authority_float32_and_rgba8) {
+TEST(historical_gradient_cross_lane_public_path_matches_frozen_authority_float32_and_rgba8) {
   noisemaker::glsl::Bindings bindings;
   bindings.set_uniform("resolution", noisemaker::glsl::Vec2(6.0f, 5.0f));
   bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
@@ -109,7 +113,7 @@ TEST(typed_gradient_cross_lane_public_path_matches_authority_float32_and_rgba8) 
   bindings.set_uniform("color3", noisemaker::glsl::DVec3(0.5, 0.5, 0.5));
   bindings.set_uniform("color4", noisemaker::glsl::DVec3(0.2, 0.2, 0.2));
   const noisemaker::Surface image = noisemaker::run_pass(
-      noisemaker::generated::bind_synth_gradient_gradient(bindings), 6U, 5U,
+      noisemaker::historical_generated::bind_synth_gradient_gradient(bindings), 6U, 5U,
       0.25f, 7.0f);
   REQUIRE(image.data().size() == gradient_oracle::kWords.size());
   for (std::size_t lane = 0; lane < image.data().size(); ++lane)
@@ -153,6 +157,7 @@ void noise_native_integration_require_binding_abi();
 void noise_native_integration_require_oracle_metadata();
 void testpattern_native_integration_require_comparer_self_tests();
 void testpattern_native_integration_require_parity();
+void testpattern_native_integration_require_cpu9f3_glyph();
 void testpattern_native_integration_require_binding_abi();
 void testpattern_native_integration_require_oracle_metadata();
 void remap_native_integration_require_comparer_self_tests();
@@ -291,6 +296,10 @@ TEST(typed_testpattern_comparer_self_tests) {
 
 TEST(typed_testpattern_public_direct_repeat_exact_parity) {
   testpattern_native_integration_require_parity();
+}
+
+TEST(typed_testpattern_cpu9f3_numbered_glyph) {
+  testpattern_native_integration_require_cpu9f3_glyph();
 }
 
 TEST(typed_testpattern_binding_abi_rejects_missing_and_wrong_categories) {
@@ -1435,209 +1444,152 @@ constexpr std::array<Task23CanonicalCase, 19> kTask23CanonicalCases{{
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "d8bad1a2b5985a0aca4b2f38784960af56d3086b632c1102e0e44aa9dd700cc6", "33dc54a5807ab8f07dfe1c28e07ae47810b6bb9d68e35f5495ed22cfdaeddf38",
    {0U, 0U, 0x3e051eb8U, 0x3e755555U, 0x3d68ba2fU, 0x3f800000U, 10U, 0U, 0x3f51eb85U, 0x3f780000U, 0x3ea2e8baU, 0x3f800000U, 0U, 6U, 0x3f7ae148U, 0x3ed55555U, 0x3f4e8ba3U, 0x3f800000U, 10U, 6U, 0x3f28f5c3U, 0x3e0aaaabU, 0x3d68ba2fU, 0x3f800000U, 5U, 3U, 0x3f666666U, 0x3e400000U, 0x3d68ba2fU, 0x3f800000U},
-   77U, 308U, 0U,
-   74U, 3U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 74U, 3U,
+   true, true, true, true, false},
   {"bloom-seven-taps-tiled", "filter/bloom:ntapGather", Task23Program::bloom, 11U, 7U,
    {0x40a00000U, 0x40400000U}, {0x41e80000U, 0x41980000U},
    {{"radius", Task23UniformKind::f32, 0x40e80000U}, {"renderScale", Task23UniformKind::f32, 0x3fc00000U}, {"taps", Task23UniformKind::i32, 7U}}, 3U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "3a78a002b48288114cae835018bc89df13c80d4fae6631f5816d1670ebe11939", "4954e6734cd197c8f205e0eb230daa676db0886e1e5ff5525e382884b7970ff6",
    {0U, 0U, 0x3e5a8080U, 0x3eaf2f29U, 0x3deae431U, 0x3f800000U, 10U, 0U, 0x3f23401dU, 0x3f41b4d5U, 0x3eaf35ddU, 0x3f800000U, 0U, 6U, 0x3f0f956aU, 0x3f0f02ebU, 0x3f083619U, 0x3f800000U, 10U, 6U, 0x3f0a7eeeU, 0x3e9dcfccU, 0x3e8c4049U, 0x3f800000U, 5U, 3U, 0x3f3b0bd2U, 0x3ecd0305U, 0x3eee9c1bU, 0x3f800000U},
-   77U, 308U, 0U,
-   305U, 3U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 305U, 3U,
+   true, true, true, true, false},
   {"bloom-max-taps", "filter/bloom:ntapGather", Task23Program::bloom, 11U, 7U,
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U},
    {{"radius", Task23UniformKind::f32, 0x41580000U}, {"renderScale", Task23UniformKind::f32, 0x40000000U}, {"taps", Task23UniformKind::i32, 64U}}, 3U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "fca0a971b81cbf542f1083bcde6cc970b09f04f367888f4a7412ce327547d2e4", "55bc0f334ac3b8313a5a01900769d309fdecf70b43636b91384d1e2470780e49",
    {0U, 0U, 0x3f0b5429U, 0x3ede62ffU, 0x3eb753c5U, 0x3f800000U, 10U, 0U, 0x3f223926U, 0x3f24cd2bU, 0x3ed1c885U, 0x3f800000U, 0U, 6U, 0x3f269d23U, 0x3ee76579U, 0x3eed81a8U, 0x3f800000U, 10U, 6U, 0x3f2604dcU, 0x3ef6f70aU, 0x3ebb680eU, 0x3f800000U, 5U, 3U, 0x3f1ea13fU, 0x3eeaa093U, 0x3eb17660U, 0x3f800000U},
-   77U, 308U, 0U,
-   305U, 3U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 305U, 3U,
+   true, true, true, true, false},
   {"directional-zero-distance", "filter/directionalBlur:directionalBlur", Task23Program::directional, 11U, 7U,
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U},
    {{"angle", Task23UniformKind::f32, 0x00000000U}, {"blurDistance", Task23UniformKind::f32, 0x00000000U}, {"", Task23UniformKind::f32, 0U}}, 2U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "e326961f52b1f78facce16e21f4a2c4d03ea712811be91f38404bb755ae0910a", "447bfb78702aca0f4967c3f998e3a91688f3dd650b51a4e1d2fe0c8e6476d5e0",
    {0U, 0U, 0x3e051ebcU, 0x3e755559U, 0x3d68ba28U, 0xbe2aaaa9U, 10U, 0U, 0x3f51eb82U, 0x3f780000U, 0x3ea2e8bdU, 0x3e2aaaa9U, 0U, 6U, 0x3f7ae142U, 0x3ed55558U, 0x3f4e8ba1U, 0x3fb55557U, 10U, 6U, 0x3f28f5c1U, 0x3e0aaaacU, 0x3d68ba28U, 0xbe2aaaa9U, 5U, 3U, 0x3f666662U, 0x3e400000U, 0x3d68ba28U, 0xbe2aaaa9U},
-   77U, 308U, 0U,
-   234U, 30U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 234U, 30U,
+   true, true, true, true, false},
   {"directional-positive-angle", "filter/directionalBlur:directionalBlur", Task23Program::directional, 11U, 7U,
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U},
    {{"angle", Task23UniformKind::f32, 0x42150000U}, {"blurDistance", Task23UniformKind::f32, 0x41180000U}, {"", Task23UniformKind::f32, 0U}}, 2U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "9c653e16170894e23b1e58d77d63270e952bbd6b27982b0297b67d4f3b33bc54", "27c5bfd69d6cb1377a3255322d8b07c36c082f64cb498c4c193be9ec9a438333",
    {0U, 0U, 0x3edfae19U, 0x3eecd554U, 0x3e9c5d17U, 0x3ee15554U, 10U, 0U, 0x3f39c28dU, 0x3f21d556U, 0x3ee4ba32U, 0x3e47fffcU, 0U, 6U, 0x3f551eb8U, 0x3eb1d553U, 0x3f1aa2e5U, 0x3f7eaaacU, 10U, 6U, 0x3ec7ae15U, 0x3f241558U, 0x3f13ba2fU, 0x3f2d5556U, 5U, 3U, 0x3f048f5cU, 0x3eae0001U, 0x3f05ba30U, 0x3d9aaaaaU},
-   77U, 308U, 0U,
-   308U, 0U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 308U, 0U,
+   true, true, true, true, false},
   {"directional-negative-angle-wide", "filter/directionalBlur:directionalBlur", Task23Program::directional, 9U, 13U,
    {0x00000000U, 0x00000000U}, {0x41100000U, 0x41500000U},
    {{"angle", Task23UniformKind::f32, 0xc2bb0000U}, {"blurDistance", Task23UniformKind::f32, 0x418a0000U}, {"", Task23UniformKind::f32, 0U}}, 2U,
    "7ea6ac4f0ccd3f585245fab99613afd1a39cdeff0a484320f7dd1e4dabd83396", "d553b7ab55a780eb5bbc32c77103af6bf3660fc4046e6b3eeba8dbf45a2e9880",
-   "b07c7d0b6be5cfce0cc26d4654ad7842a1280a34caac5305e2c058514faf9b99", "6ef88dd589a2cba9277457f4ee68decf5b2e13ff9e390521be4206bc27d0f9c3",
+   "a6f637d11c5f594beafce91b71ddee9bc3386e22b45a9435607f139a8d15ad05", "f7b981084e886fb04195c1ee3d5bb13a48f56524ad9055f6b95768a9dfb7b19f",
    {0U, 0U, 0x3ea7d70bU, 0x3eae0000U, 0x3e81d174U, 0x3e4d5554U, 8U, 0U, 0x3ef4a3d5U, 0x3f2a8001U, 0x3f0fe8bcU, 0x3f500000U, 0U, 12U, 0x3f3228f4U, 0x3eff0000U, 0x3f070003U, 0x3f5caaadU, 8U, 12U, 0x3ebfae13U, 0x3ecf2ab1U, 0x3eabd174U, 0x3ee95554U, 4U, 6U, 0x3f04147bU, 0x3f111556U, 0x3f13e8bdU, 0x3ebd5554U},
-   117U, 468U, 0U,
-   468U, 0U,
-   true, true,
-   true, true,
-   false},
+   117U, 468U, 0U, 468U, 0U,
+   true, true, true, true, false},
   {"spin-zero-amount-centered", "filter/spinBlur:spinBlur", Task23Program::spin, 11U, 7U,
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U},
    {{"amount", Task23UniformKind::f32, 0x00000000U}, {"centerX", Task23UniformKind::f32, 0x3f000000U}, {"centerY", Task23UniformKind::f32, 0x3f000000U}}, 3U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "e326961f52b1f78facce16e21f4a2c4d03ea712811be91f38404bb755ae0910a", "447bfb78702aca0f4967c3f998e3a91688f3dd650b51a4e1d2fe0c8e6476d5e0",
    {0U, 0U, 0x3e051ebcU, 0x3e755559U, 0x3d68ba28U, 0xbe2aaaa9U, 10U, 0U, 0x3f51eb82U, 0x3f780000U, 0x3ea2e8bdU, 0x3e2aaaa9U, 0U, 6U, 0x3f7ae142U, 0x3ed55558U, 0x3f4e8ba1U, 0x3fb55557U, 10U, 6U, 0x3f28f5c1U, 0x3e0aaaacU, 0x3d68ba28U, 0xbe2aaaa9U, 5U, 3U, 0x3f666662U, 0x3e400000U, 0x3d68ba28U, 0xbe2aaaa9U},
-   77U, 308U, 0U,
-   234U, 30U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 234U, 30U,
+   true, true, true, true, false},
   {"spin-positive-tiled-offcenter", "filter/spinBlur:spinBlur", Task23Program::spin, 11U, 7U,
    {0x40a00000U, 0x40400000U}, {0x41e80000U, 0x41980000U},
    {{"amount", Task23UniformKind::f32, 0x429b0000U}, {"centerX", Task23UniformKind::f32, 0x3e8a3d71U}, {"centerY", Task23UniformKind::f32, 0x3f2e147bU}}, 3U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "2d757900af1b181228524ce588fe22bcf6ffa133b3375a56cac667f9f70ce124", "c1804d12be653ffee800c7790e5cf1291cb122f960dcab4e3bf6b7a952fada30",
    {0U, 0U, 0x3ead47b0U, 0x3eb2d551U, 0x3e8fa2e4U, 0x3e6aaaa1U, 10U, 0U, 0x3f25851eU, 0x3f301557U, 0x3ead745fU, 0x3ef15555U, 0U, 6U, 0x3f12e147U, 0x3efad554U, 0x3f0d745cU, 0x3f0eaaa9U, 10U, 6U, 0x3eff332eU, 0x3f20aaacU, 0x3eff1745U, 0x3f0b5556U, 5U, 3U, 0x3f1eb851U, 0x3eaf2aabU, 0x3ef22e89U, 0x3ed6aaabU},
-   77U, 308U, 0U,
-   307U, 0U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 307U, 0U,
+   true, true, true, true, false},
   {"spin-negative-portrait", "filter/spinBlur:spinBlur", Task23Program::spin, 9U, 13U,
    {0x40000000U, 0x40800000U}, {0x41a80000U, 0x41f80000U},
    {{"amount", Task23UniformKind::f32, 0xc30e4000U}, {"centerX", Task23UniformKind::f32, 0x3f3ae148U}, {"centerY", Task23UniformKind::f32, 0x3e9eb852U}}, 3U,
    "7ea6ac4f0ccd3f585245fab99613afd1a39cdeff0a484320f7dd1e4dabd83396", "d553b7ab55a780eb5bbc32c77103af6bf3660fc4046e6b3eeba8dbf45a2e9880",
    "f1288bf89e80f24a7fe72b00d6d8978163d884fae36f63639aa88cbc0bbe1ef1", "50bb149de75acd1994ecd68a692b423791a455ad8ab4defdacfa4c9e8a27f85e",
    {0U, 0U, 0x3f0a3d70U, 0x3f102aa9U, 0x3ef31748U, 0x3f1eaaacU, 8U, 0U, 0x3f0dc28fU, 0x3f2c6aacU, 0x3f05e8bcU, 0x3f74aaa9U, 0U, 12U, 0x3f019999U, 0x3ed62aacU, 0x3ecc2e8aU, 0x3ef6aaa9U, 8U, 12U, 0x3eb8f5bfU, 0x3ead555bU, 0x3ea3a2e5U, 0x3f0aaaa9U, 4U, 6U, 0x3f040000U, 0x3f022aaaU, 0x3eeba2e9U, 0x3f1d5556U},
-   117U, 468U, 0U,
-   468U, 0U,
-   true, true,
-   true, true,
-   false},
+   117U, 468U, 0U, 468U, 0U,
+   true, true, true, true, false},
   {"strokes-short-low-balance", "filter/strokes:stkSmear", Task23Program::strokes, 17U, 13U,
    {0x00000000U, 0x00000000U}, {0x41880000U, 0x41500000U},
    {{"strokeLength", Task23UniformKind::f32, 0x00000000U}, {"balance", Task23UniformKind::f32, 0x41a00000U}, {"intensity", Task23UniformKind::f32, 0x00000000U}}, 3U,
    "ef310a09c67cfd2413c9ed5bd1f6b3b25476532bcb9f70e1bba6461fe8e94262", "b7cc7b803d153d7470b0c9f1a6eb7f8a6d83c6b0f494f589d7ff842c79148847",
-   "ff124225064ed241b397649ca6624e57b3c66a871c6128ede19a0354e1443d08", "e2480b24cb15b066368e55a2955840c685ba21761f4502d393c028858862b47a",
-   {0U, 0U, 0x3e952f2eU, 0x3ed4e982U, 0x3ebd6886U, 0xbe2aaaabU, 16U, 0U, 0x3f4403c5U, 0x3ed68921U, 0x3eabd5a7U, 0x3f400000U, 0U, 12U, 0x3f0153f5U, 0x3ee3e43aU, 0x3ee77c9dU, 0x3f8aaaabU, 16U, 12U, 0x3ebac646U, 0x3f2c928dU, 0x3f042c7eU, 0x3daaaaabU, 8U, 6U, 0x3eb61966U, 0x3f4e2c91U, 0x3ef531ebU, 0x3f6aaaabU},
-   221U, 884U, 0U,
-   663U, 221U,
-   true, true,
-   true, true,
-   false},
+   "9de17b56ee236c2b808c4f6ecc81c618a30c704b82b9cc31369acd361511d39e", "f533dbcb847d0ebc47cfc374f910760c7681524192b69675f017efa12d67b1e7",
+   {0U, 0U, 0x3e952dfaU, 0x3ed4e372U, 0x3ebd619eU, 0xbe2aaaabU, 16U, 0U, 0x3f440247U, 0x3ed6940dU, 0x3eabde76U, 0x3f400000U, 0U, 12U, 0x3f014474U, 0x3ee45db7U, 0x3ee7a114U, 0x3f8aaaabU, 16U, 12U, 0x3ebadf50U, 0x3f2c9906U, 0x3f0441d1U, 0x3daaaaabU, 8U, 6U, 0x3eb60d4fU, 0x3f4e1b60U, 0x3ef530ddU, 0x3f6aaaabU},
+   221U, 884U, 0U, 663U, 221U,
+   true, true, true, true, false},
   {"strokes-long-high-balance-tiled", "filter/strokes:stkSmear", Task23Program::strokes, 17U, 13U,
    {0x40a00000U, 0x40400000U}, {0x42240000U, 0x41e80000U},
    {{"strokeLength", Task23UniformKind::f32, 0x42c80000U}, {"balance", Task23UniformKind::f32, 0x42a00000U}, {"intensity", Task23UniformKind::f32, 0x42920000U}}, 3U,
    "ef310a09c67cfd2413c9ed5bd1f6b3b25476532bcb9f70e1bba6461fe8e94262", "b7cc7b803d153d7470b0c9f1a6eb7f8a6d83c6b0f494f589d7ff842c79148847",
-   "583c5be9cd435f813f503ef05ae11d6c4d1b2ad14b59d5568ec6344c090bd784", "aacc2091593c4135b919b1075a754d9ec5d23cfac42ebf6054bef9920e5e014b",
-   {0U, 0U, 0x3e9b8d07U, 0x3f09dcb2U, 0x3e8c2cf1U, 0xbe2aaaabU, 16U, 0U, 0x3f3e1189U, 0x3f07e8c7U, 0x3efbfac1U, 0x3f400000U, 0U, 12U, 0x3f19baf0U, 0x3ededab5U, 0x3f2d87c8U, 0x3f8aaaabU, 16U, 12U, 0x3f375a2aU, 0x3ef46589U, 0x3f089c2bU, 0x3daaaaabU, 8U, 6U, 0x3ea652d3U, 0x3ebb9b8eU, 0x3f02d6b2U, 0x3f6aaaabU},
-   221U, 884U, 0U,
-   663U, 221U,
-   true, true,
-   true, true,
-   false},
+   "24000eef8b51dd4f528eba4b16b58418187723ca4c0468cd7dedd31cd98fe927", "2961ab4382160479a4fcc6471b2aeb950560df7b7d8fcbb638dcd14664dd05a3",
+   {0U, 0U, 0x3e9b8d07U, 0x3f09dcb2U, 0x3e8c2cf1U, 0xbe2aaaabU, 16U, 0U, 0x3f3e07c3U, 0x3f07dd69U, 0x3efc01ccU, 0x3f400000U, 0U, 12U, 0x3f192bf4U, 0x3ede0c37U, 0x3f2dde08U, 0x3f8aaaabU, 16U, 12U, 0x3f3752bbU, 0x3ef477daU, 0x3f08a34aU, 0x3daaaaabU, 8U, 6U, 0x3ea65108U, 0x3ebb7f7eU, 0x3f02dc57U, 0x3f6aaaabU},
+   221U, 884U, 0U, 663U, 221U,
+   true, true, true, true, false},
   {"strokes-long-low-balance", "filter/strokes:stkSmear", Task23Program::strokes, 17U, 13U,
    {0x00000000U, 0x00000000U}, {0x41880000U, 0x41500000U},
    {{"strokeLength", Task23UniformKind::f32, 0x42af0000U}, {"balance", Task23UniformKind::f32, 0x41000000U}, {"intensity", Task23UniformKind::f32, 0x41f80000U}}, 3U,
    "ef310a09c67cfd2413c9ed5bd1f6b3b25476532bcb9f70e1bba6461fe8e94262", "b7cc7b803d153d7470b0c9f1a6eb7f8a6d83c6b0f494f589d7ff842c79148847",
-   "fa624645ccad58eef5b5cd262e13cddb3c8e3914266ae8f8b842f8110811b5a4", "e35243670cfa194abd1a0f9c746850f8e56a40f8e34fefc0e0a569328a4ef6a1",
-   {0U, 0U, 0x3e56b60bU, 0x3e920228U, 0x3e4a2d2aU, 0xbe2aaaabU, 16U, 0U, 0x3f393f0cU, 0x3eda7057U, 0x3ef27d72U, 0x3f400000U, 0U, 12U, 0x3f51eb85U, 0x3f180000U, 0x3f0ba2e9U, 0x3f8aaaabU, 16U, 12U, 0x3effb6edU, 0x3f394543U, 0x3f3ac5f8U, 0x3daaaaabU, 8U, 6U, 0x3eab7928U, 0x3f003fb3U, 0x3ecb9af3U, 0x3f6aaaabU},
-   221U, 884U, 0U,
-   642U, 221U,
-   true, true,
-   true, true,
-   false},
+   "525ea125b28ef809a2ae14c5037c1572a564076ae56f728beb9d6c8a4ab22f43", "d402486896fd76c8a5e83bc569836d08a6d2e30a51ed7497bfcd10edc77eb794",
+   {0U, 0U, 0x3e56b646U, 0x3e920236U, 0x3e4a2da2U, 0xbe2aaaabU, 16U, 0U, 0x3f393062U, 0x3eda81ddU, 0x3ef289e2U, 0x3f400000U, 0U, 12U, 0x3f51eb85U, 0x3f180000U, 0x3f0ba2e9U, 0x3f8aaaabU, 16U, 12U, 0x3effb6edU, 0x3f394544U, 0x3f3ac5f9U, 0x3daaaaabU, 8U, 6U, 0x3eab7422U, 0x3f003c53U, 0x3ecb91a4U, 0x3f6aaaabU},
+   221U, 884U, 0U, 648U, 221U,
+   true, true, true, true, false},
   {"vaseline-alpha-zero-copy", "filter/vaseline:upsample", Task23Program::vaseline, 11U, 7U,
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U},
    {{"renderScale", Task23UniformKind::f32, 0x3f800000U}, {"alpha", Task23UniformKind::f32, 0x00000000U}, {"", Task23UniformKind::f32, 0U}}, 2U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    {0U, 0U, 0x3e051eb8U, 0x3e755555U, 0x3d68ba2fU, 0xbe2aaaabU, 10U, 0U, 0x3f51eb85U, 0x3f780000U, 0x3ea2e8baU, 0x3e2aaaabU, 0U, 6U, 0x3f7ae148U, 0x3ed55555U, 0x3f4e8ba3U, 0x3fb55555U, 10U, 6U, 0x3f28f5c3U, 0x3e0aaaabU, 0x3d68ba2fU, 0xbe2aaaabU, 5U, 3U, 0x3f666666U, 0x3e400000U, 0x3d68ba2fU, 0xbe2aaaabU},
-   77U, 308U, 0U,
-   0U, 77U,
-   true, true,
-   true, true,
-   true},
+   77U, 308U, 0U, 0U, 77U,
+   true, true, true, true, true},
   {"vaseline-mid-alpha-tiled", "filter/vaseline:upsample", Task23Program::vaseline, 11U, 7U,
    {0x40a00000U, 0x40400000U}, {0x41e80000U, 0x41980000U},
    {{"renderScale", Task23UniformKind::f32, 0x3fc00000U}, {"alpha", Task23UniformKind::f32, 0x3f200000U}, {"", Task23UniformKind::f32, 0U}}, 2U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "50b1c88e9553fd64eb1e1046451b2baa073e646ec04f8d2f91bbe6ce39d22e08", "ca62da554643982645425e88764c4b0f2c523f22c5fa878967e78347f0b3ce61",
    {0U, 0U, 0x3e8a3815U, 0x3ea63680U, 0x3e1fd5b7U, 0xbe2aaaabU, 10U, 0U, 0x3f51d4fbU, 0x3f7768b5U, 0x3ea369b9U, 0x3e2aaaabU, 0U, 6U, 0x3f6c1bb4U, 0x3eee0a74U, 0x3f3a3711U, 0x3fb55555U, 10U, 6U, 0x3f32ad4eU, 0x3e813c4dU, 0x3e2ed06aU, 0xbe2aaaabU, 5U, 3U, 0x3f6279c9U, 0x3e6e5422U, 0x3dc46b4fU, 0xbe2aaaabU},
-   77U, 308U, 0U,
-   228U, 77U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 228U, 77U,
+   true, true, true, true, false},
   {"vaseline-alpha-clamped-high", "filter/vaseline:upsample", Task23Program::vaseline, 9U, 13U,
    {0x40000000U, 0x40800000U}, {0x41a80000U, 0x41f80000U},
    {{"renderScale", Task23UniformKind::f32, 0x40000000U}, {"alpha", Task23UniformKind::f32, 0x3fc00000U}, {"", Task23UniformKind::f32, 0U}}, 2U,
    "7ea6ac4f0ccd3f585245fab99613afd1a39cdeff0a484320f7dd1e4dabd83396", "d553b7ab55a780eb5bbc32c77103af6bf3660fc4046e6b3eeba8dbf45a2e9880",
    "30a1cd6db1a99acad1d136a95026b5925234620d1585ffc55436d814d39b868d", "d4a73bf8d550e0af758813c2445e7a1b39fdb070a81a9990011315e5b6d3251f",
    {0U, 0U, 0x3ea12000U, 0x3ed41a48U, 0x3e8580ddU, 0xbe2aaaabU, 8U, 0U, 0x3ef616d1U, 0x3f52287aU, 0x3f2b4fd8U, 0x3fa00000U, 0U, 12U, 0x3f355526U, 0x3f1e3a55U, 0x3f07a2abU, 0x3f8aaaabU, 8U, 12U, 0x3eb0eae5U, 0x3eb6ad2aU, 0x3e9e04ccU, 0x3f155555U, 4U, 6U, 0x3f2346eaU, 0x3f2f142bU, 0x3e452a39U, 0x3f955555U},
-   117U, 468U, 0U,
-   348U, 117U,
-   true, true,
-   true, true,
-   false},
+   117U, 468U, 0U, 348U, 117U,
+   true, true, true, true, false},
   {"wind-strength-zero-copy", "filter/wind:wind", Task23Program::wind, 11U, 7U,
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U},
    {{"direction", Task23UniformKind::i32, 0U}, {"strength", Task23UniformKind::f32, 0x00000000U}, {"threshold", Task23UniformKind::f32, 0x42480000U}}, 3U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    {0U, 0U, 0x3e051eb8U, 0x3e755555U, 0x3d68ba2fU, 0xbe2aaaabU, 10U, 0U, 0x3f51eb85U, 0x3f780000U, 0x3ea2e8baU, 0x3e2aaaabU, 0U, 6U, 0x3f7ae148U, 0x3ed55555U, 0x3f4e8ba3U, 0x3fb55555U, 10U, 6U, 0x3f28f5c3U, 0x3e0aaaabU, 0x3d68ba2fU, 0xbe2aaaabU, 5U, 3U, 0x3f666666U, 0x3e400000U, 0x3d68ba2fU, 0xbe2aaaabU},
-   77U, 308U, 0U,
-   0U, 77U,
-   true, true,
-   true, true,
-   true},
+   77U, 308U, 0U, 0U, 77U,
+   true, true, true, true, true},
   {"wind-tiny-positive-no-march", "filter/wind:wind", Task23Program::wind, 11U, 7U,
    {0x40400000U, 0x40000000U}, {0x41b80000U, 0x41880000U},
    {{"direction", Task23UniformKind::i32, 0U}, {"strength", Task23UniformKind::f32, 0x3f000000U}, {"threshold", Task23UniformKind::f32, 0x42480000U}}, 3U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
    {0U, 0U, 0x3e051eb8U, 0x3e755555U, 0x3d68ba2fU, 0xbe2aaaabU, 10U, 0U, 0x3f51eb85U, 0x3f780000U, 0x3ea2e8baU, 0x3e2aaaabU, 0U, 6U, 0x3f7ae148U, 0x3ed55555U, 0x3f4e8ba3U, 0x3fb55555U, 10U, 6U, 0x3f28f5c3U, 0x3e0aaaabU, 0x3d68ba2fU, 0xbe2aaaabU, 5U, 3U, 0x3f666666U, 0x3e400000U, 0x3d68ba2fU, 0xbe2aaaabU},
-   77U, 308U, 0U,
-   0U, 77U,
-   true, true,
-   true, true,
-   true},
+   77U, 308U, 0U, 0U, 77U,
+   true, true, true, true, true},
   {"wind-left-medium-tiled", "filter/wind:wind", Task23Program::wind, 11U, 7U,
    {0x40a00000U, 0x40400000U}, {0x41e80000U, 0x41980000U},
    {{"direction", Task23UniformKind::i32, 0U}, {"strength", Task23UniformKind::f32, 0x42200000U}, {"threshold", Task23UniformKind::f32, 0x40a00000U}}, 3U,
    "3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43", "a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2",
-   "790daf758cea1a795359037e8dd8269944c679f3d6adc4f89efcdd1358778a5f", "55fd1cca149dd565901d7adbba336dc7ba215c65b1f2159c2b0a93823b569888",
+   "524d7f4ef225d9e3a5dcb586cb9743fa28d0c2e4b8cf9ad1528f66d4e6ba486c", "55fd1cca149dd565901d7adbba336dc7ba215c65b1f2159c2b0a93823b569888",
    {0U, 0U, 0x3e051eb8U, 0x3e755555U, 0x3d68ba2fU, 0xbe2aaaabU, 10U, 0U, 0x3f51eb85U, 0x3f780000U, 0x3ea2e8baU, 0x3e2aaaabU, 0U, 6U, 0x3f7ae148U, 0x3ed55555U, 0x3f4e8ba3U, 0x3fb55555U, 10U, 6U, 0x3f3d754dU, 0x3e8d2ee0U, 0x3ea000d9U, 0xbe2aaaabU, 5U, 3U, 0x3f666666U, 0x3ee244a3U, 0x3e4f8b06U, 0xbe2aaaabU},
-   77U, 308U, 0U,
-   60U, 77U,
-   true, true,
-   true, true,
-   false},
+   77U, 308U, 0U, 60U, 77U,
+   true, true, true, true, false},
   {"wind-right-full-strength", "filter/wind:wind", Task23Program::wind, 13U, 9U,
    {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U},
    {{"direction", Task23UniformKind::i32, 1U}, {"strength", Task23UniformKind::f32, 0x42c80000U}, {"threshold", Task23UniformKind::f32, 0x00000000U}}, 3U,
    "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3",
-   "c7fa5be06406852310e48ae0679414b1b04cc2baa22fec3d8c6d2719d949f968", "54a6bd0f5988b108bcc825a0dacbe922e86de45e06586a23c3953a8b8930d028",
+   "96d7b19fb9eba8c3edddbeaecddc3e8c0b2fe8498eba3476b868508a16816f9d", "54a6bd0f5988b108bcc825a0dacbe922e86de45e06586a23c3953a8b8930d028",
    {0U, 0U, 0x3eee8b93U, 0x3ef9754aU, 0x3eb50ea6U, 0xbe2aaaabU, 12U, 0U, 0x3e19999aU, 0x3dd55555U, 0x3f7a2e8cU, 0x3f800000U, 0U, 8U, 0x3f24d6e7U, 0x3f55eb3cU, 0x3e198bf6U, 0x3f2aaaabU, 12U, 8U, 0x3f1c28f6U, 0x3f2d5555U, 0x3f7745d1U, 0xbdaaaaabU, 6U, 4U, 0x3ec58b6aU, 0x3f61f876U, 0x3f02e8baU, 0x3f555555U},
-   117U, 468U, 0U,
-   202U, 117U,
-   true, true,
-   true, true,
-   false},
+   117U, 468U, 0U, 202U, 117U,
+   true, true, true, true, false},
 }};
 // TASK23_CANONICAL_FIXTURES_END
 
@@ -1825,8 +1777,12 @@ constexpr std::array<Task23CanonicalCase, 19> kTask23CanonicalCases{{
                            noisemaker::uint_bits_to_float(uniform.bits));
     }
   }
+  if (fixture.program == Task23Program::strokes && skipped != "MODE") {
+    if (wrong == "MODE") bindings.set_uniform("MODE", noisemaker::glsl::Vec4(99.0f));
+    else bindings.set_uniform("MODE", std::int32_t{0});
+  }
   if (poison_compile_time_define && fixture.program == Task23Program::strokes)
-    bindings.set_uniform("MODE", noisemaker::glsl::Vec4(99.0f));
+    bindings.set_uniform("unrelatedMode", noisemaker::glsl::Vec4(99.0f));
   // filter/wind carries the runtime-int define contract: METHOD is a real
   // int uniform, no longer baked into the kernel. Every frozen Task 23 wind
   // oracle was generated at the catalog default METHOD=1.
@@ -1906,7 +1862,7 @@ constexpr std::array<Task23CanonicalCase, 19> kTask23CanonicalCases{{
               "amount", "centerX", "centerY"};
     case Task23Program::strokes:
       return {"inputTex", "resolution", "tileOffset", "strokeLength",
-              "balance", "intensity"};
+              "balance", "intensity", "MODE"};
     case Task23Program::vaseline:
       return {"inputTex", "resolution", "tileOffset", "fullResolution",
               "renderScale", "alpha"};
@@ -2007,7 +1963,7 @@ TEST(typed_task23_public_canonical_oracles_are_exact_repeatable_finite_and_nonmu
   }
 }
 
-TEST(typed_task23_binding_abis_are_exact_strokes_excludes_mode_and_wind_binds_method) {
+TEST(typed_task23_binding_abis_are_exact_strokes_binds_mode_and_wind_binds_method) {
   const std::array representative_names{
       std::string_view{"bloom-one-tap-zero-radius"},
       std::string_view{"directional-zero-distance"},
@@ -2034,8 +1990,7 @@ TEST(typed_task23_binding_abis_are_exact_strokes_excludes_mode_and_wind_binds_me
   }
 
   {
-    // strokes:stkSmear stays default-only: MODE is compiled in, so a bogus
-    // extra MODE binding cannot reach the kernel.
+    // An unrelated extra binding does not change the strokes output.
     const Task23CanonicalCase& fixture = task23_case("strokes-short-low-balance");
     const noisemaker::Surface input = task23_input(fixture.width, fixture.height);
     const noisemaker::Surface exact = task23_render(fixture, input);
@@ -2466,15 +2421,26 @@ namespace {
 constexpr std::string_view kTask25OracleTableJson = R"TASK25(
 {
   "schema": "noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "cpu_revision": "4307ca9f26fc415e4fc5e75227d429d35cc741cd",
+  "authority": {
+    "ledgerEntries": 784,
+    "packageSha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
+    "packageLockSha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
+    "sourceLockSha256": "594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c",
+    "behavioralLockSha256": "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801",
+    "behavioralFileCount": 95,
+    "upstreamRevision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+    "upstreamSourceDigest": "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf"
+  },
   "provenance": {
-    "node": "v24.7.0",
+    "node": "v26.0.0",
     "public_api": "kernelFactories.get(key)",
     "canonical_identity": true,
     "adapter_entries_absent": true,
-    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "canonical_kernels_sha256": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
     "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
-    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+    "adapter_index_sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
   },
   "profile": {
     "name": "literal-vec3-lane-index-v1",
@@ -2502,7 +2468,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
       "normalized_source_sha256": "6586c49b079a3b0f4aa3538c8e735e70db088ff2e5d2ea1037e9e9c5486fdf52",
       "defines": {},
       "canonical_factory_name": "canonicalFactory10",
-      "canonical_factory_to_string_sha256": "151b1e868c7d2f9a446a8778d170260e5003fec540afb2623088bbf34ca8adcf",
+      "canonical_factory_to_string_sha256": "d71a3cee0afc687ea4802da7dc4e9b47de7afab05bfffc887064bede8b328785",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "bindings": [
@@ -2548,8 +2514,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
       "normalized_source_bytes": 3907,
       "normalized_source_sha256": "1c157e7f3dc7c9c122cc185812cd2988a98a52024055a482265bded7561a0860",
       "defines": {},
-      "canonical_factory_name": "canonicalFactory117",
-      "canonical_factory_to_string_sha256": "2eab8943387658c1c28f4e089edd9b248bf441b2b77145ea137c7f979c5def02",
+      "canonical_factory_name": "canonicalFactory114",
+      "canonical_factory_to_string_sha256": "a3f5dbe69fe147663be1db8df4f3cd3a18e76e433051479541da4083437c48fb",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "bindings": [
@@ -2725,8 +2691,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
-        "rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8",
+        "f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+        "rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802",
         "probes": [
           {
             "at_top_down_xy": [
@@ -2736,13 +2702,13 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
             "values": [
               0.8320554494857788,
               0.8320554494857788,
-              0.16248103976249695,
+              0.26953527331352234,
               0.7419354915618896
             ],
             "f32_bits_le": [
               "0x3f550196",
               "0x3f550196",
-              "0x3e26616e",
+              "0x3e8a0087",
               "0x3f3def7c"
             ]
           },
@@ -2753,14 +2719,14 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
             ],
             "values": [
               0.8320554494857788,
-              -0.05248836427927017,
-              0.5830449461936951,
+              -0.03533375635743141,
+              0.6403173804283142,
               0.32258063554763794
             ],
             "f32_bits_le": [
               "0x3f550196",
-              "0xbd56fe0a",
-              "0x3f15426f",
+              "0xbd10ba21",
+              "0x3f23ebd7",
               "0x3ea5294a"
             ]
           },
@@ -2770,15 +2736,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               6
             ],
             "values": [
-              0.28877007961273193,
-              0.2732049822807312,
-              0.3171488344669342,
+              0.19596055150032043,
+              0.240923672914505,
+              0.4355773627758026,
               0.6451612710952759
             ],
             "f32_bits_le": [
-              "0x3e93d9ac",
-              "0x3e8be186",
-              "0x3ea26155",
+              "0x3e48a9e2",
+              "0x3e76b4b2",
+              "0x3edf03ff",
               "0x3f25294a"
             ]
           },
@@ -2788,15 +2754,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               6
             ],
             "values": [
-              0.38877734541893005,
-              0.671288251876831,
-              0.6630877256393433,
+              0.27572640776634216,
+              0.7082647085189819,
+              0.7019503116607666,
               0.9677419066429138
             ],
             "f32_bits_le": [
-              "0x3ec70dd3",
-              "0x3f2bd98c",
-              "0x3f29c01e",
+              "0x3e8d2c03",
+              "0x3f3550d6",
+              "0x3f33b304",
               "0x3f77bdef"
             ]
           },
@@ -2806,14 +2772,14 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               3
             ],
             "values": [
-              -0.013757060281932354,
-              0.2797195315361023,
+              -0.004036138765513897,
+              0.26906174421310425,
               1,
               0.4838709533214569
             ],
             "f32_bits_le": [
-              "0xbc61654b",
-              "0x3e8f3766",
+              "0xbb844196",
+              "0x3e89c276",
               "0x3f800000",
               "0x3ef7bdef"
             ]
@@ -2965,8 +2931,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
-        "rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada",
+        "f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+        "rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44",
         "probes": [
           {
             "at_top_down_xy": [
@@ -2974,15 +2940,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               0
             ],
             "values": [
-              0.843034565448761,
-              0.8739583492279053,
-              0.6953988671302795,
+              1.0490130186080933,
+              0.5214622020721436,
+              0.5688357949256897,
               0.9354838728904724
             ],
             "f32_bits_le": [
-              "0x3f57d11d",
-              "0x3f5fbbbc",
-              "0x3f3205a9",
+              "0x3f86460f",
+              "0x3f057e8c",
+              "0x3f119f39",
               "0x3f6f7bdf"
             ]
           },
@@ -2992,15 +2958,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               0
             ],
             "values": [
-              0.44709473848342896,
-              0.5393437743186951,
-              0.6030564308166504,
+              0.7784993052482605,
+              0.36291053891181946,
+              0.5055868029594421,
               0.5699999928474426
             ],
             "f32_bits_le": [
-              "0x3ee4e99a",
-              "0x3f0a126f",
-              "0x3f1a61e8",
+              "0x3f474bbb",
+              "0x3eb9cf69",
+              "0x3f016e23",
               "0x3f11eb85"
             ]
           },
@@ -3010,15 +2976,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               7
             ],
             "values": [
-              0.7769222855567932,
-              0.6697337031364441,
-              0.5933254361152649,
+              1.0205848217010498,
+              0.42251056432724,
+              0.4993360638618469,
               0.5806451439857483
             ],
             "f32_bits_le": [
-              "0x3f46e461",
-              "0x3f2b73ab",
-              "0x3f17e42d",
+              "0x3f82a286",
+              "0x3ed8534e",
+              "0x3effa8fa",
               "0x3f14a529"
             ]
           },
@@ -3028,15 +2994,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               7
             ],
             "values": [
-              0.3809824585914612,
-              0.3351191580295563,
-              0.500982940196991,
+              0.7123555541038513,
+              0.2716910243034363,
+              0.4428650438785553,
               0.774193525314331
             ],
             "f32_bits_le": [
-              "0x3ec31022",
-              "0x3eab94bd",
-              "0x3f00406b",
+              "0x3f365cef",
+              "0x3e8b1b16",
+              "0x3ee2bf35",
               "0x3f46318c"
             ]
           },
@@ -3046,15 +3012,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               4
             ],
             "values": [
-              0.2556973397731781,
-              0.5362053513526917,
-              0.3471768796443939,
+              0.5876662135124207,
+              0.25308531522750854,
+              0.2701069116592407,
               0.6774193644523621
             ],
             "f32_bits_le": [
-              "0x3e82eac3",
-              "0x3f0944c1",
-              "0x3eb1c12b",
+              "0x3f16714b",
+              "0x3e819466",
+              "0x3e8a4b74",
               "0x3f2d6b5b"
             ]
           }
@@ -3205,8 +3171,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
-        "rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e",
+        "f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+        "rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e",
         "probes": [
           {
             "at_top_down_xy": [
@@ -3215,13 +3181,13 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
             ],
             "values": [
               0.6850000619888306,
-              -0.13702590763568878,
+              0.002858077874407172,
               0.6850000619888306,
               0.8064516186714172
             ],
             "f32_bits_le": [
               "0x3f2f5c2a",
-              "0xbe0c5085",
+              "0x3b3b4e97",
               "0x3f2f5c2a",
               "0x3f4e739d"
             ]
@@ -3233,14 +3199,14 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
             ],
             "values": [
               0.6850000619888306,
-              0.1299610435962677,
-              -0.14079171419143677,
+              0.2682092487812042,
+              -0.20142285525798798,
               0.6774193644523621
             ],
             "f32_bits_le": [
               "0x3f2f5c2a",
-              "0x3e051482",
-              "0xbe102bb4",
+              "0x3e8952b9",
+              "0xbe4e41cb",
               "0x3f2d6b5b"
             ]
           },
@@ -3251,14 +3217,14 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
             ],
             "values": [
               0.684999942779541,
-              0.44768044352531433,
-              0.4802410304546356,
+              0.5378618240356445,
+              0.2005050927400589,
               0.3959798216819763
             ],
             "f32_bits_le": [
               "0x3f2f5c28",
-              "0x3ee5365f",
-              "0x3ef5e227",
+              "0x3f09b150",
+              "0x3e4d5135",
               "0x3ecabdde"
             ]
           },
@@ -3268,14 +3234,14 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               8
             ],
             "values": [
-              0.1443541944026947,
-              0.507386326789856,
+              0.037344757467508316,
+              0.57487952709198,
               0.6850000619888306,
               0.9032257795333862
             ],
             "f32_bits_le": [
-              "0x3e13d196",
-              "0x3f01e412",
+              "0x3d18f6d1",
+              "0x3f132b4e",
               "0x3f2f5c2a",
               "0x3f6739ce"
             ]
@@ -3286,15 +3252,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               4
             ],
             "values": [
-              0.24608932435512543,
+              0.2010134905576706,
               1,
-              0.17542466521263123,
+              0.11433950066566467,
               0.4838709533214569
             ],
             "f32_bits_le": [
-              "0x3e7bfed7",
+              "0x3e4dd67b",
               "0x3f800000",
-              "0x3e33a286",
+              "0x3dea2ad4",
               "0x3ef7bdef"
             ]
           }
@@ -3445,8 +3411,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
-        "rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b",
+        "f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+        "rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128",
         "probes": [
           {
             "at_top_down_xy": [
@@ -3454,15 +3420,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               0
             ],
             "values": [
-              0.49598056077957153,
-              0.9223830103874207,
-              0.2816455364227295,
+              0.39454811811447144,
+              1.1702741384506226,
+              0.4754665493965149,
               0.6899999976158142
             ],
             "f32_bits_le": [
-              "0x3efdf12a",
-              "0x3f6c214b",
-              "0x3e9033d8",
+              "0x3eca0236",
+              "0x3f95cb8b",
+              "0x3ef3705a",
               "0x3f30a3d7"
             ]
           },
@@ -3472,15 +3438,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               0
             ],
             "values": [
-              0.8809272050857544,
-              0.5250471830368042,
-              0.6377710103988647,
+              0.5585117936134338,
+              1.0470999479293823,
+              0.6930673122406006,
               0.7096773982048035
             ],
             "f32_bits_le": [
-              "0x3f618472",
-              "0x3f06697e",
-              "0x3f2344f6",
+              "0x3f0efaa1",
+              "0x3f86075f",
+              "0x3f316cdc",
               "0x3f35ad6b"
             ]
           },
@@ -3490,15 +3456,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               5
             ],
             "values": [
-              0.7143320441246033,
-              0.6534891128540039,
-              0.3064758777618408,
+              0.48011842370033264,
+              1.0869170427322388,
+              0.488099068403244,
               0.6899999976158142
             ],
             "f32_bits_le": [
-              "0x3f36de77",
-              "0x3f274b10",
-              "0x3e9cea68",
+              "0x3ef5d215",
+              "0x3f8b2019",
+              "0x3ef9e81f",
               "0x3f30a3d7"
             ]
           },
@@ -3508,15 +3474,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               5
             ],
             "values": [
-              0.3456997573375702,
-              0.7899476289749146,
-              0.8391125202178955,
+              0.3405013680458069,
+              1.1292191743850708,
+              0.8924411535263062,
               0.774193525314331
             ],
             "f32_bits_le": [
-              "0x3eb0ff8f",
-              "0x3f4a3a02",
-              "0x3f56d014",
+              "0x3eae5632",
+              "0x3f908a41",
+              "0x3f647706",
               "0x3f46318c"
             ]
           },
@@ -3526,15 +3492,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               3
             ],
             "values": [
-              0.3377828001976013,
-              0.17772382497787476,
-              0.32109910249710083,
+              0.16370345652103424,
+              0.7190580368041992,
+              0.38677507638931274,
               0.8064516186714172
             ],
             "f32_bits_le": [
-              "0x3eacf1de",
-              "0x3e35fd3c",
-              "0x3ea4671a",
+              "0x3e27a1e1",
+              "0x3f381430",
+              "0x3ec60762",
               "0x3f4e739d"
             ]
           }
@@ -4015,20 +3981,20 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 53,
           "different_f32_lanes": 15,
           "different_rgba8_bytes": 15,
-          "max_absolute_f32_difference": 0.4173913300037384,
-          "candidate_f32_sha256": "05ac1e8acd714a111640479a9909aedb5a0cca468dcf11a6df87f933bd22507e",
-          "candidate_rgba8_sha256": "7cb34e95dc4c3d6ec86f6ceaf429409d1e150c9449e73e28d217c2e340c0f516"
+          "max_absolute_f32_difference": 0.4094259738922119,
+          "candidate_f32_sha256": "b8dc08c248c9d85f8f7348e655bfd4396d42bf9245da9123fca4c3f5e6cbd14e",
+          "candidate_rgba8_sha256": "6038e09b7ff3f89555a8dc83541e3285bffdd379382d0ba3dd34ec67e7615ae9"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 77,
+          "different_f32_bytes": 67,
           "different_f32_lanes": 20,
           "different_rgba8_bytes": 20,
-          "max_absolute_f32_difference": 0.38191302865743637,
-          "candidate_f32_sha256": "5afe6289685f904a7fef980e04be3ff70024df5ce79ac2bf8e5623db40f9c4f7",
-          "candidate_rgba8_sha256": "cbd23fe36e0212d0176728c7e6fbc69b323be8d1c057fc02e6156149db611917"
+          "max_absolute_f32_difference": 0.3784855604171753,
+          "candidate_f32_sha256": "e7d16ef9b36e49ff96dba624090a46e5e613e236c15d5f2f1aec210391d3b470",
+          "candidate_rgba8_sha256": "e73ccb6a497e02de8120a6fc35e79f27ae4e66e7875fa261cf3aabf1cc0588fb"
         },
         {
           "case": "lens-prismatic-add-static",
@@ -4038,8 +4004,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
-          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
@@ -4049,8 +4015,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
-          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
     },
@@ -4067,23 +4033,23 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "case": "lens-chromatic-add-static",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 33,
+          "different_f32_bytes": 35,
           "different_f32_lanes": 10,
           "different_rgba8_bytes": 10,
-          "max_absolute_f32_difference": 0.4173913151025772,
-          "candidate_f32_sha256": "0927c46f4f02c20e210439a010aa841834c316ff66984d33c0906e7aa77961cc",
-          "candidate_rgba8_sha256": "199b3d1ce092760754c0b37230de8d74e07b024687a1cb78a73809ad9420735d"
+          "max_absolute_f32_difference": 0.3377598524093628,
+          "candidate_f32_sha256": "b2f457a927bf262d292b9910bd234da07ae81f2fb4a3b444edced126c7d8331d",
+          "candidate_rgba8_sha256": "947b41e56a4a8490d301ee8d3fbbe47fc16652d68aeffcfd7fc39468b1009954"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 89,
+          "different_f32_bytes": 79,
           "different_f32_lanes": 24,
           "different_rgba8_bytes": 24,
-          "max_absolute_f32_difference": 0.4173913449048996,
-          "candidate_f32_sha256": "e0d1c61a4b68a83c1d0faadaa6e873b5a51076595594d14cb73c0c50e3392a3d",
-          "candidate_rgba8_sha256": "74c2bebd36bb32a911b0f5c14c869df77c4c19a30444a044c6c64ec0642e0fd4"
+          "max_absolute_f32_difference": 0.2353825569152832,
+          "candidate_f32_sha256": "e148528abd49f01fadaf813be80894e954fd32f90c86469491c898bfc00ac902",
+          "candidate_rgba8_sha256": "19c6a11cd0b474a171de0b8b39f79e70991cb0b13a191eb2efa12169092c283b"
         },
         {
           "case": "lens-prismatic-add-static",
@@ -4093,8 +4059,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
-          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
@@ -4104,8 +4070,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
-          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
     },
@@ -4122,23 +4088,23 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "case": "lens-chromatic-add-static",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 46,
+          "different_f32_bytes": 44,
           "different_f32_lanes": 13,
           "different_rgba8_bytes": 13,
-          "max_absolute_f32_difference": 0.29414596408605576,
-          "candidate_f32_sha256": "3a5d15af27599ce5f587de954b6505e8c32e91452a11c3d1e2cc3a30686c2ddb",
-          "candidate_rgba8_sha256": "e47d0da24b67b9f1ecba341a8f8a5311a6bd51bf15dd265e41e536a1e087fe74"
+          "max_absolute_f32_difference": 0.2998542785644531,
+          "candidate_f32_sha256": "c213a8e001d21dfac231aefcbc31ac478131cf4b717bc90472b77852b1310f35",
+          "candidate_rgba8_sha256": "bebf8ef1ea23e3cbfe7bf2cecd59a778d3759e63b39930506dfc5c9fca07850e"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 69,
+          "different_f32_bytes": 64,
           "different_f32_lanes": 20,
           "different_rgba8_bytes": 20,
-          "max_absolute_f32_difference": 0.28716519474983215,
-          "candidate_f32_sha256": "366e240c8d3925273a0ccadfc2738d7eec34baa5545df499640817fb65bdb30f",
-          "candidate_rgba8_sha256": "57f832960d08d4ddd021b4264836aa758253e9eb98a4c67fd0177a0519657daf"
+          "max_absolute_f32_difference": 0.3005109429359436,
+          "candidate_f32_sha256": "22b551495c6eb6b1bd509113b270932a5301e04fc0031c20bccb5e5e5a12528b",
+          "candidate_rgba8_sha256": "32e26a4718ed730897e0616774f07738ccaeabf02024c309ef5b018748171e48"
         },
         {
           "case": "lens-prismatic-add-static",
@@ -4148,8 +4114,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
-          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
@@ -4159,8 +4125,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
-          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
     },
@@ -4177,23 +4143,23 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "case": "lens-chromatic-add-static",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 621,
+          "different_f32_bytes": 628,
           "different_f32_lanes": 175,
           "different_rgba8_bytes": 173,
-          "max_absolute_f32_difference": 1.0000000484287739,
-          "candidate_f32_sha256": "c593e78a3b77638976d5436ba849c04e66a98cf3859e66641364405f623af8bf",
-          "candidate_rgba8_sha256": "6f3aaa0875a67cb205b72afad4bfe6d1fa44782fc96ad988655eca55f57e6629"
+          "max_absolute_f32_difference": 0.9934459589421749,
+          "candidate_f32_sha256": "65575b5cb9c26246d26970d69832cee7e9cddb8d05e2631f15bbdabb6365c168",
+          "candidate_rgba8_sha256": "1d31c32e1c1398d2f3324289cede7567f8188aa666a07ad0b379549efe94ff9d"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 820,
+          "different_f32_bytes": 823,
           "different_f32_lanes": 231,
-          "different_rgba8_bytes": 231,
-          "max_absolute_f32_difference": 0.9499182403087616,
-          "candidate_f32_sha256": "2bfb6e35d02401fa6b1a09a7db80c86103752b017fa3d10de090faf33910f88c",
-          "candidate_rgba8_sha256": "cfae734f797e0db432fd7f90d85f2ed96d99d29449caa690534b88148f33ad04"
+          "different_rgba8_bytes": 228,
+          "max_absolute_f32_difference": 0.9683239832520485,
+          "candidate_f32_sha256": "3318651867258d9a5b152b02ac24251e786cfb635f2215f0d5d1bb9031936ecb",
+          "candidate_rgba8_sha256": "524ff99287d315fe0978587dd1b480470eaed253ed8cd51873bf77abd721c91d"
         },
         {
           "case": "lens-prismatic-add-static",
@@ -4203,8 +4169,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
-          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
@@ -4214,8 +4180,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
-          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
     },
@@ -4236,8 +4202,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
-          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
@@ -4247,30 +4213,30 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
-          "candidate_rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada"
+          "candidate_f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+          "candidate_rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44"
         },
         {
           "case": "lens-prismatic-add-static",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 372,
+          "different_f32_bytes": 373,
           "different_f32_lanes": 110,
           "different_rgba8_bytes": 100,
-          "max_absolute_f32_difference": 0.7240171954035759,
-          "candidate_f32_sha256": "314caaa13af6d0d59d792fcf06dcfabb244d421e1ea57df54986fa6324d39867",
-          "candidate_rgba8_sha256": "ed6995c6a32ba53dde57bacaf36f560778a34080bf05ef82013b1dffa69b224c"
+          "max_absolute_f32_difference": 0.5970435291528702,
+          "candidate_f32_sha256": "8a7f58305e39f946d452dbbec243aa33765a2cdfe9186901e1713f8ebe15c213",
+          "candidate_rgba8_sha256": "0f11a48f51dc06948a5fd7159ca8b8a815f8a2d9af4ee85e487ccbf03fd768d0"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 639,
+          "different_f32_bytes": 578,
           "different_f32_lanes": 180,
-          "different_rgba8_bytes": 179,
-          "max_absolute_f32_difference": 0.8516627699136734,
-          "candidate_f32_sha256": "432b1c46e7a8ee78b32066e57c48b9a2ce0dd711d8ca2ebfbc809819609daaaa",
-          "candidate_rgba8_sha256": "58657d9cc96f358f04ca6527f5c29125c36aaba1023caacfeccf14935a07d564"
+          "different_rgba8_bytes": 172,
+          "max_absolute_f32_difference": 0.6858431994915009,
+          "candidate_f32_sha256": "a76de770fee982a4d6af76ffc4cb64fced6997c1610bb59b0bd444b34fa9ab94",
+          "candidate_rgba8_sha256": "76f4a0208995835d9c6b038d9af23e9dd9369af3c1ce8359aabb846a574860f4"
         }
       ]
     },
@@ -4291,8 +4257,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
-          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
@@ -4302,30 +4268,30 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
-          "candidate_rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada"
+          "candidate_f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+          "candidate_rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44"
         },
         {
           "case": "lens-prismatic-add-static",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 381,
+          "different_f32_bytes": 379,
           "different_f32_lanes": 112,
-          "different_rgba8_bytes": 101,
-          "max_absolute_f32_difference": 0.709000937640667,
-          "candidate_f32_sha256": "674756b348423fde13105798a276b464ffc5a779b261b9840b267733460f27b1",
-          "candidate_rgba8_sha256": "c36e46dd8e92ac7f76e1fe3d0e211fc3e978bd4db363a6380c76c7692ff3826c"
+          "different_rgba8_bytes": 100,
+          "max_absolute_f32_difference": 0.5789856761693954,
+          "candidate_f32_sha256": "beb92c261f3b21f444525b3c5401744488f86a23b9048dffe405c66a9097de58",
+          "candidate_rgba8_sha256": "04e202307d5698882e042431abd73b79d7b583ee693c09c980a0ecad7fd7c8b1"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 615,
+          "different_f32_bytes": 562,
           "different_f32_lanes": 175,
-          "different_rgba8_bytes": 172,
-          "max_absolute_f32_difference": 0.7421361617743969,
-          "candidate_f32_sha256": "a99d44fcf6161275129c7750664b6fbf723359028f6767085971d734e276ad01",
-          "candidate_rgba8_sha256": "12fb6b68810315576b4d4b0573c5601f7a118673dd9c79de15fdfa968bf56ca5"
+          "different_rgba8_bytes": 164,
+          "max_absolute_f32_difference": 0.6856675744056702,
+          "candidate_f32_sha256": "cebfdd310306cfbfdd51f8d58023886e08a6aff41df57b0427c7b0b6b0c7d0e8",
+          "candidate_rgba8_sha256": "7ea4c94a41e694c626952509fbe2a290d809a5cadf6fbde74392511cafc48d83"
         }
       ]
     },
@@ -4346,8 +4312,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
-          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
@@ -4357,30 +4323,30 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
-          "candidate_rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada"
+          "candidate_f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+          "candidate_rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44"
         },
         {
           "case": "lens-prismatic-add-static",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 456,
+          "different_f32_bytes": 467,
           "different_f32_lanes": 128,
           "different_rgba8_bytes": 125,
-          "max_absolute_f32_difference": 0.9691444933414459,
-          "candidate_f32_sha256": "403d9d818a5636394e5be1b73b4f7e83661b8d6da3a0d713454c2a3396de1c33",
-          "candidate_rgba8_sha256": "2164e488a3f5633be6e65b3fd3805bb44ce896c744b281d2db02694dd05c0c17"
+          "max_absolute_f32_difference": 0.8812537640333176,
+          "candidate_f32_sha256": "eb4ae7d80dea4967944a77f2263ca463016dd27c9febddeffb0232d2606c547c",
+          "candidate_rgba8_sha256": "9e2f2f8a5e56da4e823f0a8cd6ef330283727ede882c2cc8728ec6f259878cea"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 743,
+          "different_f32_bytes": 717,
           "different_f32_lanes": 216,
-          "different_rgba8_bytes": 215,
-          "max_absolute_f32_difference": 0.9863568246364594,
-          "candidate_f32_sha256": "f8b9fbc2baf3fcbedc160044887563820c2cc11aabf8bc924a6e3fe571b1cd6f",
-          "candidate_rgba8_sha256": "913f73d5d54729129ba5f024f3e3ee6e47706d070931b9ddb231a94ff999197f"
+          "different_rgba8_bytes": 198,
+          "max_absolute_f32_difference": 0.8997443616390228,
+          "candidate_f32_sha256": "d6a642cea1bafbc9c1e5c1823c7025157cb22bad7a41b21911f704e12d1312ba",
+          "candidate_rgba8_sha256": "4c41c8cae31d6298bb8aceb98495de7f182842ac100dd18519165017893c9d50"
         }
       ]
     },
@@ -4401,19 +4367,19 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
-          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
           "case": "lens-chromatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 796,
+          "different_f32_bytes": 750,
           "different_f32_lanes": 206,
           "different_rgba8_bytes": 206,
-          "max_absolute_f32_difference": 0.6808039213065058,
-          "candidate_f32_sha256": "d4739b67bb0b628eb7b6d1aa6d32cac44e1c126ffa16ee3e4f51e5632dda5c03",
-          "candidate_rgba8_sha256": "b7c0998b4bb54ccbc3539ee19fbb438df4f90cb1b81de7e4198d55d8169bc3a1"
+          "max_absolute_f32_difference": 0.5070086717605591,
+          "candidate_f32_sha256": "11349b2c956369c92680e8aa811c6a6878aa0f1a0033b13faee1c1ac39f50f59",
+          "candidate_rgba8_sha256": "a86d421409ad45d79eb2e97d668939e8e6f95dc39a852b76b3f3d1bcf2230fd3"
         },
         {
           "case": "lens-prismatic-add-static",
@@ -4423,19 +4389,19 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
-          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
           "case": "lens-prismatic-alpha-modulated",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 474,
+          "different_f32_bytes": 439,
           "different_f32_lanes": 139,
-          "different_rgba8_bytes": 137,
-          "max_absolute_f32_difference": 0.7073024213314056,
-          "candidate_f32_sha256": "fb7750f50b9c7581b64b401c3794ed7273e20db23602b4d5a15521694ca15609",
-          "candidate_rgba8_sha256": "b382133de5fa9f886067f982953f85ae82ca0c4b294b509c6ab4743be0b49799"
+          "different_rgba8_bytes": 132,
+          "max_absolute_f32_difference": 0.6768161654472351,
+          "candidate_f32_sha256": "2ff0a3acc938ce3b71339667db11005bfb775cb3ad600ddb4ae7ad7e0cd69cbe",
+          "candidate_rgba8_sha256": "2fb40c27458368e19171153601d745bf1f462c039ed9ba712adb104dc5ba13d6"
         }
       ]
     },
@@ -4571,32 +4537,32 @@ constexpr std::array<Task25NativeCase, 6> kTask25NativeCases{{
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U}, 0x3e400000U,
    {0x3e2e147bU, 0x3ed1eb85U, 0x3f3ae148U, 0x41b80000U, 0xc2080000U, 0xc23c0000U, 0x41f80000U, 0x42860000U, 0x42900000U, 0x423c0000U, 0x42a60000U, 0x41980000U, 0x42740000U}, {3U, 0U, 0U}, {false, false},
    "210954ec361387bc3773ff94559c99bef7ff3fb355cfe5203971e15d19e27d27", {0, 0, 0x3e46731aU, 0x3e8c08c1U, 0x3ea4bafeU, 0x3eb5ad6bU, 10, 0, 0x3dde4379U, 0x3f6e7ee8U, 0x3f630f95U, 0x3ec6318cU, 0, 6, 0x3f7c07f0U, 0x3f0c08c1U, 0x3f630f95U, 0x3f14a529U, 10, 6, 0x3f663399U, 0x3e750f51U, 0x3f011cf0U, 0x3f1ce73aU, 5, 3, 0x3d5e4379U, 0x3e834835U, 0x3f630f95U, 0x3ef7bdefU},
-   "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948", "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8", {0, 0, 0x3f550196U, 0x3f550196U, 0x3e26616eU, 0x3f3def7cU, 10, 0, 0x3f550196U, 0xbd56fe0aU, 0x3f15426fU, 0x3ea5294aU, 0, 6, 0x3e93d9acU, 0x3e8be186U, 0x3ea26155U, 0x3f25294aU, 10, 6, 0x3ec70dd3U, 0x3f2bd98cU, 0x3f29c01eU, 0x3f77bdefU, 5, 3, 0xbc61654bU, 0x3e8f3766U, 0x3f800000U, 0x3ef7bdefU}, 308U, 0U},
+   "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0", "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802", {0U, 0U, 0x3f550196U, 0x3f550196U, 0x3e8a0087U, 0x3f3def7cU, 10U, 0U, 0x3f550196U, 0xbd10ba21U, 0x3f23ebd7U, 0x3ea5294aU, 0U, 6U, 0x3e48a9e2U, 0x3e76b4b2U, 0x3edf03ffU, 0x3f25294aU, 10U, 6U, 0x3e8d2c03U, 0x3f3550d6U, 0x3f33b304U, 0x3f77bdefU, 5U, 3U, 0xbb844196U, 0x3e89c276U, 0x3f800000U, 0x3ef7bdefU}, 308U, 0U},
   {1U, "lens-chromatic-alpha-modulated", "classicNoisedeck/lensDistortion:lensDistortion", true, 10U, 8U, 2U,
    {0x00000000U, 0x00000000U}, {0x41200000U, 0x41000000U}, 0x3ee00000U,
    {0x3f4a3d71U, 0x3e051eb8U, 0x3ebd70a4U, 0x42640000U, 0x42240000U, 0x42800000U, 0xc1e00000U, 0x422c0000U, 0x42b60000U, 0x43550000U, 0x42380000U, 0xc1d80000U, 0x42100000U}, {7U, 0U, 1U}, {true, true},
    "91e2a51cb2076cbfcafab4a722dbc82e35f0e218a8d8ee214c1f288f20fced5a", {0, 0, 0x3e96d25bU, 0x3ef0af0bU, 0x3f175fb9U, 0x3ec6318cU, 9, 0, 0x3f682fa1U, 0x3f773f74U, 0x3f20473cU, 0x3f6f7bdfU, 0, 7, 0x3e6e23b9U, 0x3e14c94dU, 0x3eebf718U, 0x3f46318cU, 9, 7, 0x3f584f61U, 0x3f241a42U, 0x3efdc61fU, 0x3f14a529U, 5, 4, 0x3e92da4bU, 0x3f520d21U, 0x3eebf718U, 0x3f2d6b5bU},
-   "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61", "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada", {0, 0, 0x3f57d11dU, 0x3f5fbbbcU, 0x3f3205a9U, 0x3f6f7bdfU, 9, 0, 0x3ee4e99aU, 0x3f0a126fU, 0x3f1a61e8U, 0x3f11eb85U, 0, 7, 0x3f46e461U, 0x3f2b73abU, 0x3f17e42dU, 0x3f14a529U, 9, 7, 0x3ec31022U, 0x3eab94bdU, 0x3f00406bU, 0x3f46318cU, 5, 4, 0x3e82eac3U, 0x3f0944c1U, 0x3eb1c12bU, 0x3f2d6b5bU}, 320U, 0U},
+   "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334", "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44", {0U, 0U, 0x3f86460fU, 0x3f057e8cU, 0x3f119f39U, 0x3f6f7bdfU, 9U, 0U, 0x3f474bbbU, 0x3eb9cf69U, 0x3f016e23U, 0x3f11eb85U, 0U, 7U, 0x3f82a286U, 0x3ed8534eU, 0x3effa8faU, 0x3f14a529U, 9U, 7U, 0x3f365cefU, 0x3e8b1b16U, 0x3ee2bf35U, 0x3f46318cU, 5U, 4U, 0x3f16714bU, 0x3e819466U, 0x3e8a4b74U, 0x3f2d6b5bU}, 320U, 0U},
   {2U, "lens-prismatic-add-static", "classicNoisedeck/lensDistortion:lensDistortion", true, 9U, 9U, 3U,
    {0x00000000U, 0x00000000U}, {0x41100000U, 0x41100000U}, 0x3e900000U,
    {0x3e9eb852U, 0x3f2b851fU, 0x3de147aeU, 0x42180000U, 0xc27c0000U, 0xc2a20000U, 0x42580000U, 0x429e0000U, 0x427c0000U, 0x43010000U, 0x428e0000U, 0x42300000U, 0x42940000U}, {1U, 1U, 0U}, {true, false},
    "017988560354955a89ae63fe2318a5506ea89daf34d68c6d28556fe038a1da49", {0, 0, 0x3eca6b2aU, 0x3f2aaaabU, 0x3f5c61f3U, 0x3ed6b5adU, 8, 0, 0x3f388ee2U, 0x3d0c08c1U, 0x3ebafdc6U, 0x3f3def7cU, 0, 8, 0x3eee23b9U, 0x3f359b5aU, 0x3d0e7835U, 0x3f77bdefU, 8, 8, 0x3f4a6b2aU, 0x3d9d89d9U, 0x3ef9525dU, 0x3f0c6319U, 4, 4, 0x3dce633aU, 0x3f5acdadU, 0x3e4ccccdU, 0x3ef7bdefU},
-   "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688", "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e", {0, 0, 0x3f2f5c2aU, 0xbe0c5085U, 0x3f2f5c2aU, 0x3f4e739dU, 8, 0, 0x3f2f5c2aU, 0x3e051482U, 0xbe102bb4U, 0x3f2d6b5bU, 0, 8, 0x3f2f5c28U, 0x3ee5365fU, 0x3ef5e227U, 0x3ecabddeU, 8, 8, 0x3e13d196U, 0x3f01e412U, 0x3f2f5c2aU, 0x3f6739ceU, 4, 4, 0x3e7bfed7U, 0x3f800000U, 0x3e33a286U, 0x3ef7bdefU}, 324U, 0U},
+   "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf", "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e", {0U, 0U, 0x3f2f5c2aU, 0x3b3b4e97U, 0x3f2f5c2aU, 0x3f4e739dU, 8U, 0U, 0x3f2f5c2aU, 0x3e8952b9U, 0xbe4e41cbU, 0x3f2d6b5bU, 0U, 8U, 0x3f2f5c28U, 0x3f09b150U, 0x3e4d5135U, 0x3ecabddeU, 8U, 8U, 0x3d18f6d1U, 0x3f132b4eU, 0x3f2f5c2aU, 0x3f6739ceU, 4U, 4U, 0x3e4dd67bU, 0x3f800000U, 0x3dea2ad4U, 0x3ef7bdefU}, 324U, 0U},
   {3U, "lens-prismatic-alpha-modulated", "classicNoisedeck/lensDistortion:lensDistortion", true, 12U, 6U, 4U,
    {0x00000000U, 0x00000000U}, {0x41400000U, 0x40c00000U}, 0x3f180000U,
    {0x3e6b851fU, 0x3f63d70aU, 0x3f07ae14U, 0x428a0000U, 0x42680000U, 0x42980000U, 0xc2740000U, 0x41e00000U, 0x42a80000U, 0x43968000U, 0x42680000U, 0xc2500000U, 0x423c0000U}, {9U, 1U, 1U}, {false, true},
    "1d2ba8321e80ef094bc02fab7732adee51ef23d079aa2f6a086a8634b6aa9a3a", {0, 0, 0x3efe03f8U, 0x3f5cfdd0U, 0x3e3afdc6U, 0x3ee739ceU, 11, 0, 0x3f329acaU, 0x3f37cb7dU, 0x3ea92ebfU, 0x3f35ad6bU, 0, 5, 0x3e2ea2bbU, 0x3f44ec4fU, 0x3efdc61fU, 0x3f042108U, 11, 5, 0x3ebe82faU, 0x3f1fb9fcU, 0x3f24bafeU, 0x3f46318cU, 6, 3, 0x3f24b693U, 0x3d2f0af1U, 0x3ea92ebfU, 0x3f4e739dU},
-   "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76", "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b", {0, 0, 0x3efdf12aU, 0x3f6c214bU, 0x3e9033d8U, 0x3f30a3d7U, 11, 0, 0x3f618472U, 0x3f06697eU, 0x3f2344f6U, 0x3f35ad6bU, 0, 5, 0x3f36de77U, 0x3f274b10U, 0x3e9cea68U, 0x3f30a3d7U, 11, 5, 0x3eb0ff8fU, 0x3f4a3a02U, 0x3f56d014U, 0x3f46318cU, 6, 3, 0x3eacf1deU, 0x3e35fd3cU, 0x3ea4671aU, 0x3f4e739dU}, 288U, 0U},
+   "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb", "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128", {0U, 0U, 0x3eca0236U, 0x3f95cb8bU, 0x3ef3705aU, 0x3f30a3d7U, 11U, 0U, 0x3f0efaa1U, 0x3f86075fU, 0x3f316cdcU, 0x3f35ad6bU, 0U, 5U, 0x3ef5d215U, 0x3f8b2019U, 0x3ef9e81fU, 0x3f30a3d7U, 11U, 5U, 0x3eae5632U, 0x3f908a41U, 0x3f647706U, 0x3f46318cU, 6U, 3U, 0x3e27a1e1U, 0x3f381430U, 0x3ec60762U, 0x3f4e739dU}, 288U, 0U},
   {4U, "prism-static-origin-tile", "filter/prismaticAberration:prismaticAberration", false, 10U, 7U, 5U,
    {0x00000000U, 0x00000000U}, {0x41200000U, 0x40e00000U}, 0x3eb00000U,
    {0x429a0000U, 0x42920000U, 0x42ac0000U, 0x41e80000U, 0x42880000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U}, {0U, 0U, 0U}, {false, false},
    "941b82422e092c6c544f7c8bd946647f96671dd913903f4a9e0758db83046a02", {0, 0, 0x3f18ce63U, 0x3dc08c09U, 0x3ee78357U, 0x3ef7bdefU, 9, 0, 0x3e663399U, 0x3f16f970U, 0x3ef9525dU, 0x3e94a529U, 0, 6, 0x3ece633aU, 0x3ebc2bc3U, 0x3d8e7835U, 0x3f35ad6bU, 9, 6, 0x3cfe03f8U, 0x3f5cfdd0U, 0x3dd5b450U, 0x3f042108U, 5, 3, 0x3eea2ba9U, 0x3d9d89d9U, 0x3d8e7835U, 0x3f1ce73aU},
-   "daad9591d01855520a052fd2d89ed2e9ed32da2d93421a041e40d58b5389daff", "5f73c9a1151a312569107b68abd705555f7d2c5540c8e3ea44abd7891a9a3640", {0, 0, 0x3f659ca9U, 0x3ea53e7cU, 0x3f324357U, 0x3ef7bdefU, 9, 0, 0x3e64a787U, 0x3f5e9d0dU, 0x3f800000U, 0x3e94a529U, 0, 6, 0x3f2762a0U, 0x3f08c962U, 0x3e03b466U, 0x3f35ad6bU, 9, 6, 0x3eae7fa2U, 0x3f800000U, 0x3d541c41U, 0x3f042108U, 5, 3, 0x3f657cb6U, 0x3d639a99U, 0x3e60f9d1U, 0x3f1ce73aU}, 280U, 0U},
+   "daad9591d01855520a052fd2d89ed2e9ed32da2d93421a041e40d58b5389daff", "5f73c9a1151a312569107b68abd705555f7d2c5540c8e3ea44abd7891a9a3640", {0U, 0U, 0x3f659ca9U, 0x3ea53e7cU, 0x3f324357U, 0x3ef7bdefU, 9U, 0U, 0x3e64a787U, 0x3f5e9d0dU, 0x3f800000U, 0x3e94a529U, 0U, 6U, 0x3f2762a0U, 0x3f08c962U, 0x3e03b466U, 0x3f35ad6bU, 9U, 6U, 0x3eae7fa2U, 0x3f800000U, 0x3d541c41U, 0x3f042108U, 5U, 3U, 0x3f657cb6U, 0x3d639a99U, 0x3e60f9d1U, 0x3f1ce73aU}, 280U, 0U},
   {5U, "prism-modulated-offset-tile", "filter/prismaticAberration:prismaticAberration", false, 9U, 6U, 6U,
    {0x40800000U, 0x40400000U}, {0x41880000U, 0x41500000U}, 0x3f280000U,
    {0x42ba0000U, 0x43770000U, 0x427c0000U, 0xc2240000U, 0x421c0000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U}, {0U, 0U, 0U}, {false, true},
    "e0c2061de6e21f55af23a57351cd316586893c6d105f6e23e0b3b5a15a791155", {0, 0, 0x3f329acaU, 0x3e94c94dU, 0x3f38c3e5U, 0x3f042108U, 8, 0, 0x3d1ec27bU, 0x3f1fb9fcU, 0x3e678357U, 0x3f56b5adU, 0, 5, 0x3ebe82faU, 0x3e494c95U, 0x3db21643U, 0x3f14a529U, 8, 5, 0x3f329acaU, 0x3f07a87bU, 0x3f0a0474U, 0x3f6739ceU, 4, 3, 0x3e8aea2cU, 0x3de38e39U, 0x3f41ab69U, 0x3ed6b5adU},
-   "dbc929af7ba49e768bd39a0188e0f9b9426581ba564c856e6289531304c8b216", "5f141b94b43d85418de325137173a181d705f50574f4d1ca78e01972a1044447", {0, 0, 0x3f5a430eU, 0x3f26e178U, 0x3f03b1caU, 0x3f042108U, 8, 0, 0x3e5a5511U, 0x3ec38565U, 0x3e823b53U, 0x3f56b5adU, 0, 5, 0x3ea5118cU, 0x3ea1fea6U, 0x3de11740U, 0x3f14a529U, 8, 5, 0x3f13b0f6U, 0x3ee14df8U, 0x3edf7514U, 0x3f6739ceU, 4, 3, 0x3e7c2ee3U, 0x3ee457a2U, 0x3f68a95bU, 0x3ed6b5adU}, 216U, 0U},
+   "dbc929af7ba49e768bd39a0188e0f9b9426581ba564c856e6289531304c8b216", "5f141b94b43d85418de325137173a181d705f50574f4d1ca78e01972a1044447", {0U, 0U, 0x3f5a430eU, 0x3f26e178U, 0x3f03b1caU, 0x3f042108U, 8U, 0U, 0x3e5a5511U, 0x3ec38565U, 0x3e823b53U, 0x3f56b5adU, 0U, 5U, 0x3ea5118cU, 0x3ea1fea6U, 0x3de11740U, 0x3f14a529U, 8U, 5U, 0x3f13b0f6U, 0x3ee14df8U, 0x3edf7514U, 0x3f6739ceU, 4U, 3U, 0x3e7c2ee3U, 0x3ee457a2U, 0x3f68a95bU, 0x3ed6b5adU}, 216U, 0U},
 }};
 
 constexpr std::array<std::string_view, 21> kTask25LensRequiredBindings{
@@ -4742,9 +4708,8 @@ constexpr std::array<std::string_view, 11> kTask25PrismRequiredBindings{
 [[nodiscard]] noisemaker::BoundKernel task25_direct_bind(
     const Task25NativeCase& fixture,
     const noisemaker::glsl::Bindings& bindings) {
-  // Lens captures predate 8ae8e2a's vector equality.
   if (fixture.lens)
-    return noisemaker::historical_generated::
+    return noisemaker::generated::
         bind_classicNoisedeck_lensDistortion_lensDistortion(bindings);
   return noisemaker::generated::
       bind_filter_prismaticAberration_prismaticAberration(bindings);
@@ -4753,10 +4718,8 @@ constexpr std::array<std::string_view, 11> kTask25PrismRequiredBindings{
 [[nodiscard]] noisemaker::Surface task25_render(
     const Task25NativeCase& fixture, const noisemaker::Surface& input) {
   return noisemaker::run_pass(
-      fixture.lens
-          ? task25_direct_bind(fixture, task25_bindings(fixture, input))
-          : noisemaker::generated::bind(
-                fixture.key, task25_bindings(fixture, input)),
+      noisemaker::generated::bind(
+          fixture.key, task25_bindings(fixture, input)),
       fixture.width, fixture.height, task25_f32(fixture.time_bits), 43.0f, 37U,
       1.0f / 60.0f);
 }
@@ -4899,7 +4862,7 @@ TEST(typed_task25_lens_and_prismatic_binding_abis_reject_every_missing_or_wrong_
 }
 
 TEST(typed_task25_public_factory_oracles_are_exact_repeatable_finite_and_nonmutating) {
-  bool all_exact = true;
+  std::string mismatches;
   for (const Task25NativeCase& fixture : kTask25NativeCases) {
     noisemaker::Surface first_input = task25_input(fixture);
     noisemaker::Surface second_input = task25_input(fixture);
@@ -4935,7 +4898,8 @@ TEST(typed_task25_public_factory_oracles_are_exact_repeatable_finite_and_nonmuta
     const std::string actual_rgba8_hash = task23_hex(task23_sha256(first_rgba8));
     if (actual_f32_hash != fixture.output_f32_hash ||
         actual_rgba8_hash != fixture.output_rgba8_hash)
-      all_exact = false;
+      mismatches += std::string(fixture.name) + " f32=" + actual_f32_hash +
+                    " rgba8=" + actual_rgba8_hash + "\n";
     if (actual_f32_hash == fixture.output_f32_hash &&
         actual_rgba8_hash == fixture.output_rgba8_hash)
       task25_require_probes(fixture, first, fixture.output_probes);
@@ -4953,7 +4917,7 @@ TEST(typed_task25_public_factory_oracles_are_exact_repeatable_finite_and_nonmuta
     REQUIRE(first.data().size() == fixture.width * fixture.height * 4U);
   }
 
-  REQUIRE(all_exact);
+  if (!mismatches.empty()) throw std::runtime_error(mismatches);
 
   REQUIRE(task25_f32(kTask25NativeCases[0].number_bits[5]) < 0.0f);
   REQUIRE(task25_f32(kTask25NativeCases[1].number_bits[5]) > 0.0f);
@@ -8575,37 +8539,28 @@ constexpr std::array<Task27NativeCase, 8> kTask27NativeCases{{
     {"mono-default-shape", 8U, 5U, 0x00000000U, 0, 1, 0, 0, 0,
      0x41c80000U, 0x42480000U, 0x42480000U, 0x3f800000U,
      {0U, 0U}, {0x41000000U, 0x40a00000U}, false,
-     "b018f8cc1fdda9f62e8bf4c98b348cb2ab30d06f7d7431f085fada7e846d5370",
-     "5e2f72a42f80ea0c4f8d817158bea3192c765447fb7163332762600b7ae30947",
-     {0U,0U,0x3f139e1aU,0x3f139e1aU,0x3f139e1aU,0x3f800000U,7U,0U,0x3ecdab10U,0x3ecdab10U,0x3ecdab10U,0x3f800000U,0U,4U,0x3f537ee8U,0x3f537ee8U,0x3f537ee8U,0x3f800000U,7U,4U,0x3f175011U,0x3f175011U,0x3f175011U,0x3f800000U,4U,2U,0x3f34dcfeU,0x3f34dcfeU,0x3f34dcfeU,0x3f800000U}, 160U},
+     "756db2b3c17b82ec852b2eae9b4f695f1b0db1ed92558d03e923d98977010749", "5e2f72a42f80ea0c4f8d817158bea3192c765447fb7163332762600b7ae30947", {0U, 0U, 0x3f139e1aU, 0x3f139e1aU, 0x3f139e1aU, 0x3f800000U, 7U, 0U, 0x3ecdab10U, 0x3ecdab10U, 0x3ecdab10U, 0x3f800000U, 0U, 4U, 0x3f537ee8U, 0x3f537ee8U, 0x3f537ee8U, 0x3f800000U, 7U, 4U, 0x3f175011U, 0x3f175011U, 0x3f175011U, 0x3f800000U, 4U, 2U, 0x3f34dcfeU, 0x3f34dcfeU, 0x3f34dcfeU, 0x3f800000U}, 160U},
     {"rgb-four-octaves", 7U, 6U, 0x3e000000U, 17, 4, 1, 0, 0,
      0x422c0000U,0x42480000U,0x42480000U,0x40000000U,{0U,0U},{0x40e00000U,0x40c00000U},false,
-     "2fffa3f23b68dd43c770264906426da052343f893116fa083cbb430862ada8e0","94a046751fea8a2c23f1832e05cad33037b586c74f2605520a1bf62e8ef86f69",
-     {0U,0U,0x3f0aee5aU,0x3f13e674U,0x3ec26ab6U,0x3f800000U,6U,0U,0x3f0a552aU,0x3efa8600U,0x3ef0e2e0U,0x3f800000U,0U,5U,0x3eb4a618U,0x3f0ead9bU,0x3f16dc56U,0x3f800000U,6U,5U,0x3f02eeb3U,0x3ebcab3eU,0x3f1ebe67U,0x3f800000U,3U,3U,0x3ee268efU,0x3f0635a0U,0x3f088829U,0x3f800000U},168U},
+     "daee82ca246d87bc30ea218f520b12b036e1cafb2e05809fd8622682c82ec7ca", "94a046751fea8a2c23f1832e05cad33037b586c74f2605520a1bf62e8ef86f69", {0U, 0U, 0x3f0aee59U, 0x3f13e674U, 0x3ec26ab6U, 0x3f800000U, 6U, 0U, 0x3f0a552aU, 0x3efa8600U, 0x3ef0e2e0U, 0x3f800000U, 0U, 5U, 0x3eb4a618U, 0x3f0ead9bU, 0x3f16dc56U, 0x3f800000U, 6U, 5U, 0x3f02eeb3U, 0x3ebcab3eU, 0x3f1ebe67U, 0x3f800000U, 3U, 3U, 0x3ee268efU, 0x3f0635a0U, 0x3f088829U, 0x3f800000U},168U},
     {"ridged-six-octaves",6U,7U,0x3f200000U,99,6,1,1,0,
      0x41000000U,0x42480000U,0x42480000U,0x3f800000U,{0U,0U},{0x40c00000U,0x40e00000U},false,
-     "3d387b3e9cdb11992f2d5534161a0fe69fbb407d69647b9bddf7a6bf493463f2","54aed294f85f2c315738ce0af00de16f207e67185da8a469767dbd5c8b78aeae",
-     {0U,0U,0x3f62283cU,0x3f54b52eU,0x3f643a06U,0x3f800000U,5U,0U,0x3f582adbU,0x3f4b42b1U,0x3f5d5732U,0x3f800000U,0U,6U,0x3f096cddU,0x3f3aa4d6U,0x3f11b940U,0x3f800000U,5U,6U,0x3f2b17d8U,0x3f2a2cefU,0x3f602d13U,0x3f800000U,3U,3U,0x3f422311U,0x3f5f88ffU,0x3f59c97bU,0x3f800000U},168U},
+     "a17797fbd45be3881a98d4845fd13f27bf6ee7029ab3852aca175969ab3a0d79", "54aed294f85f2c315738ce0af00de16f207e67185da8a469767dbd5c8b78aeae", {0U, 0U, 0x3f62283cU, 0x3f54b52fU, 0x3f643a06U, 0x3f800000U, 5U, 0U, 0x3f582adbU, 0x3f4b42b1U, 0x3f5d5732U, 0x3f800000U, 0U, 6U, 0x3f096cddU, 0x3f3aa4d6U, 0x3f11b940U, 0x3f800000U, 5U, 6U, 0x3f2b17d8U, 0x3f2a2cefU, 0x3f602d12U, 0x3f800000U, 3U, 3U, 0x3f422311U, 0x3f5f88ffU, 0x3f59c97bU, 0x3f800000U},168U},
     {"single-domain-warp",9U,5U,0x3ea8f5c3U,5,3,1,0,1,
      0x42900000U,0x42200000U,0x42820000U,0x40400000U,{0U,0U},{0x41100000U,0x40a00000U},false,
-     "25965f069dbd1511129c5e0ffc3a1a7e17c9f0158e113c0ec43c06a010b0941a","52bef32bb985f21f8f6502352359bfa37f03dd3bd48c59a60861696f42301bf3",
-     {0U,0U,0x3eeeed1fU,0x3ee4e79bU,0x3f160db4U,0x3f800000U,8U,0U,0x3e937b9fU,0x3f2dc282U,0x3f084d43U,0x3f800000U,0U,4U,0x3f0c5081U,0x3ecf280dU,0x3f0c26eaU,0x3f800000U,8U,4U,0x3ee52833U,0x3f23c44eU,0x3ed33640U,0x3f800000U,4U,2U,0x3ea6a502U,0x3efd9d9aU,0x3f2db52eU,0x3f800000U},180U},
+     "5d23d8c547f529b84ec40deb5e1378fbdc27ce0d8fb94de506d4d01ef10ff3fd", "52bef32bb985f21f8f6502352359bfa37f03dd3bd48c59a60861696f42301bf3", {0U, 0U, 0x3eeeed1fU, 0x3ee4e79bU, 0x3f160db4U, 0x3f800000U, 8U, 0U, 0x3e937b9fU, 0x3f2dc282U, 0x3f084d43U, 0x3f800000U, 0U, 4U, 0x3f0c5081U, 0x3ecf280dU, 0x3f0c26eaU, 0x3f800000U, 8U, 4U, 0x3ee52833U, 0x3f23c44eU, 0x3ed33640U, 0x3f800000U, 4U, 2U, 0x3ea6a501U, 0x3efd9d9aU, 0x3f2db52eU, 0x3f800000U},180U},
     {"four-domain-warps-ridged",5U,8U,0x3f68f5c3U,64,5,1,1,4,
      0x41700000U,0x40e00000U,0x42c80000U,0x40a00000U,{0U,0U},{0x40a00000U,0x41000000U},false,
-     "5ee347f46136546e8a7eaf49930534a6e9f06613f428e3be90b227e9eb9f4242","b9f70845a761d8fc419d699931b081955eb49f2df457ea5d4edc769e706d5a22",
-     {0U,0U,0x3f5cd236U,0x3f592a45U,0x3f553df5U,0x3f800000U,4U,0U,0x3f171981U,0x3f3fca62U,0x3f4bd4b7U,0x3f800000U,0U,7U,0x3f57db92U,0x3f37e046U,0x3f285ef1U,0x3f800000U,4U,7U,0x3f374511U,0x3f409c88U,0x3f3c77d4U,0x3f800000U,2U,4U,0x3f6d0b59U,0x3f71b579U,0x3f6b3cc7U,0x3f800000U},160U},
+     "087214c7d6458bf9cf45152cd5a9c49283d6aa311f2cac20ffe1f6180a9dc2e9", "b9f70845a761d8fc419d699931b081955eb49f2df457ea5d4edc769e706d5a22", {0U, 0U, 0x3f5cd236U, 0x3f592a45U, 0x3f553df5U, 0x3f800000U, 4U, 0U, 0x3f171981U, 0x3f3fca62U, 0x3f4bd4b7U, 0x3f800000U, 0U, 7U, 0x3f57db92U, 0x3f37e046U, 0x3f285ef1U, 0x3f800000U, 4U, 7U, 0x3f374511U, 0x3f409c88U, 0x3f3c77d4U, 0x3f800000U, 2U, 4U, 0x3f6d0b59U, 0x3f71b579U, 0x3f6b3cc7U, 0x3f800000U},160U},
     {"tiled-full-resolution",6U,4U,0x3ee147aeU,12,2,1,0,2,
      0x41f80000U,0x42a00000U,0x41b00000U,0x40000000U,{0x40e00000U,0x41300000U},{0x41980000U,0x41880000U},false,
-     "b7e8f598b5bfa125f415c3f1f48639714bfb09ddb15d8c15b3ed90e837682112","41c6ba39021f77993884418c097f25b138686797768a6b4f801856edfb126779",
-     {0U,0U,0x3ed05b9cU,0x3ecf0a8aU,0x3f3036cbU,0x3f800000U,5U,0U,0x3ef9fd2bU,0x3f0de0ddU,0x3eea3b86U,0x3f800000U,0U,3U,0x3f08056cU,0x3eff5862U,0x3ef0abadU,0x3f800000U,5U,3U,0x3eeac598U,0x3f1e24d4U,0x3ed8dd06U,0x3f800000U,3U,2U,0x3f31930dU,0x3ef9a9c4U,0x3ea38c44U,0x3f800000U},96U},
+     "76ce65b73fd80171242d75852a4431f7063161af4bc0da694cfeff1142cfc37c", "41c6ba39021f77993884418c097f25b138686797768a6b4f801856edfb126779", {0U, 0U, 0x3ed05b9cU, 0x3ecf0a8aU, 0x3f3036cbU, 0x3f800000U, 5U, 0U, 0x3ef9fd2bU, 0x3f0de0ddU, 0x3eea3b86U, 0x3f800000U, 0U, 3U, 0x3f08056cU, 0x3eff5862U, 0x3ef0abadU, 0x3f800000U, 5U, 3U, 0x3eeac598U, 0x3f1e24d4U, 0x3ed8dd05U, 0x3f800000U, 3U, 2U, 0x3f31930dU, 0x3ef9a9c4U, 0x3ea38c44U, 0x3f800000U},96U},
     {"speed-zero-time-inert",4U,4U,0x3f600000U,31,3,0,0,0,
      0x425c0000U,0x42480000U,0x42480000U,0x00000000U,{0U,0U},{0x40800000U,0x40800000U},false,
-     "333db2d83ff72baa64118005b283482855237626d94bf251f4b341e08a52b11e","2a500a663087433951e28b012b09495546d1cccd016aa0d0e1fa75e330573478",
-     {0U,0U,0x3ec98abaU,0x3ec98abaU,0x3ec98abaU,0x3f800000U,3U,0U,0x3f1a82dcU,0x3f1a82dcU,0x3f1a82dcU,0x3f800000U,0U,3U,0x3ef10296U,0x3ef10296U,0x3ef10296U,0x3f800000U,3U,3U,0x3f2126e1U,0x3f2126e1U,0x3f2126e1U,0x3f800000U,2U,2U,0x3f17ed62U,0x3f17ed62U,0x3f17ed62U,0x3f800000U},64U},
+     "333db2d83ff72baa64118005b283482855237626d94bf251f4b341e08a52b11e", "2a500a663087433951e28b012b09495546d1cccd016aa0d0e1fa75e330573478", {0U, 0U, 0x3ec98abaU, 0x3ec98abaU, 0x3ec98abaU, 0x3f800000U, 3U, 0U, 0x3f1a82dcU, 0x3f1a82dcU, 0x3f1a82dcU, 0x3f800000U, 0U, 3U, 0x3ef10296U, 0x3ef10296U, 0x3ef10296U, 0x3f800000U, 3U, 3U, 0x3f2126e1U, 0x3f2126e1U, 0x3f2126e1U, 0x3f800000U, 2U, 2U, 0x3f17ed62U, 0x3f17ed62U, 0x3f17ed62U, 0x3f800000U},64U},
     {"full-resolution-fallback",5U,3U,0x3e4ccccdU,3,1,1,0,0,
-     0x42c80000U,0x42480000U,0x42480000U,0x3f800000U,{0U,0U},{0x44800000U,0x44800000U},true,
-     "0b0cc11694cc7fdc5eeed2e0354b8382c94cf3d23d66e47c03477ee0a885d873","d617a8636255b0f49ed91dd82b255867fa698497c2286ba707839e98d721eac7",
-     {0U,0U,0x3e1ab3f6U,0x3f3950d0U,0x3f1faf31U,0x3f800000U,4U,0U,0x3e1ad4daU,0x3f399026U,0x3f1f67abU,0x3f800000U,0U,2U,0x3e1ac064U,0x3f394c19U,0x3f1fb0d1U,0x3f800000U,4U,2U,0x3e1ae3d2U,0x3f398c42U,0x3f1f67d4U,0x3f800000U,2U,1U,0x3e1ac4e0U,0x3f396e94U,0x3f1f8d37U,0x3f800000U},60U},
+     0x42c80000U,0x42480000U,0x42480000U,0x3f800000U,{0U,0U},{0U,0U},true,
+     "9c94d05241cc579871e7470d3ab82c4aa2e91e8945e4fd340d2b93f9a3bfe36b", "d617a8636255b0f49ed91dd82b255867fa698497c2286ba707839e98d721eac7", {0U, 0U, 0x3e1ab3f6U, 0x3f3950d0U, 0x3f1faf31U, 0x3f800000U, 4U, 0U, 0x3e1ad4daU, 0x3f399025U, 0x3f1f67abU, 0x3f800000U, 0U, 2U, 0x3e1ac064U, 0x3f394c18U, 0x3f1fb0d1U, 0x3f800000U, 4U, 2U, 0x3e1ae3d2U, 0x3f398c42U, 0x3f1f67d4U, 0x3f800000U, 2U, 1U, 0x3e1ac4e0U, 0x3f396e94U, 0x3f1f8d37U, 0x3f800000U},60U},
 }};
 
 struct Task27WordCase {
@@ -8666,6 +8621,7 @@ struct Task27WordWitness { Task27WordMode arm; std::uint32_t intermediate; std::
   number("aspect",static_cast<float>(fixture.width)/static_cast<float>(fixture.height));
   number("time",f32(fixture.time_bits)); number("scale",f32(fixture.scale_bits));
   integer("seed",fixture.seed); integer("octaves",fixture.octaves); integer("colorMode",fixture.color_mode);
+  integer("DIMENSIONS",2);
   integer("ridges",fixture.ridges); integer("warpIterations",fixture.warp_iterations);
   number("warpScale",f32(fixture.warp_scale_bits)); number("warpIntensity",f32(fixture.warp_intensity_bits));
   number("speed",f32(fixture.speed_bits));
@@ -8722,7 +8678,7 @@ TEST(typed_task27_perlin_public_oracles_are_exact_repeatable_finite_and_match_pr
 }
 
 TEST(typed_task27_perlin_binding_abi_rejects_every_missing_and_wrong_input) {
-  constexpr std::array<std::string_view,14> names{"resolution","tileOffset","fullResolution","aspect","time","scale","seed","octaves","colorMode","ridges","warpIterations","warpScale","warpIntensity","speed"};
+  constexpr std::array<std::string_view,15> names{"resolution","tileOffset","fullResolution","aspect","time","scale","seed","octaves","colorMode","DIMENSIONS","ridges","warpIterations","warpScale","warpIntensity","speed"};
   for(std::string_view name:names){
     REQUIRE_THROWS_AS(noisemaker::generated::bind_synth_perlin_perlin(task27_bindings(kTask27NativeCases[0],name)),noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind_synth_perlin_perlin(task27_bindings(kTask27NativeCases[0],{},name)),noisemaker::glsl::KernelBindingError);
@@ -9659,7 +9615,16 @@ constexpr std::array<Task30RelationalRow, 7> kTask30RelationalRows{{
     else
       bindings.set_uniform(std::string(name), value);
   };
+  const auto integer = [&](std::string_view name, std::int32_t value) {
+    if (name == omit) return;
+    if (name == wrong)
+      bindings.set_uniform(std::string(name), false);
+    else
+      bindings.set_uniform(std::string(name), value);
+  };
   texture("inputTex", input);
+  integer("DEPTH_SOURCE", 0);
+  integer("EXTRUDE_TYPE", 0);
   vector("resolution", {static_cast<float>(fixture.width),
                         static_cast<float>(fixture.height)});
   vector("tileOffset", {0.0f, 0.0f});
@@ -9740,9 +9705,9 @@ TEST(typed_task30_extrude_public_oracles_are_exact_repeatable_finite_and_nonmuta
 }
 
 TEST(typed_task30_extrude_binding_abi_rejects_every_missing_and_wrong_input_and_accepts_extras) {
-  constexpr std::array<std::string_view, 7> names{
-      "inputTex", "resolution", "tileOffset", "fullResolution",
-      "size",     "depth",      "solidFront"};
+  constexpr std::array<std::string_view, 9> names{
+      "inputTex", "DEPTH_SOURCE", "EXTRUDE_TYPE", "resolution",
+      "tileOffset", "fullResolution", "size", "depth", "solidFront"};
   const auto& fixture = kTask30NativeCases[0];
   const auto input = task30_surface(fixture.width, fixture.height, fixture.phase);
   for (std::string_view name : names) {
@@ -10176,44 +10141,44 @@ constexpr std::array<Task31Case, 6> kTask31NativeCases{{
     {"default-seed0-time0", 6U, 5U,
      0x00000000U, 0x41200000U, 0, 0x42480000U, 0x3f800000U,
      {0x00000000U, 0x00000000U}, {0x40c00000U, 0x40a00000U},
-     "38fb7d9ac469347a5d53b1d065550cec64923b8f8ed9792bd62d11773c95bb55",
-     "74304e9ef0601a4886a053299a16246b57113f1584f451109fc4dbcc95a33da9",
-     {0U,0U,0x3f3d7224U,0x3f35a327U,0x3f22bfe4U,0x3f800000U, 5U,0U,0x3f5e4b9cU,0x3ec855a8U,0x3f3bff83U,0x3f800000U, 0U,4U,0x3edc8714U,0x3f7914b0U,0x3ef464bcU,0x3f800000U, 5U,4U,0x3f423dd3U,0x3f42aa52U,0x3eed8a9eU,0x3f800000U, 3U,2U,0x3f23a326U,0x3f3f9115U,0x3f71088aU,0x3f800000U},
+     "93ca07d0da2ec4dd39229650b3f869a8fe686abf4a3ee6339710817562da2dcb",
+     "96e15060eb5916ab3c8039cb926aa4e65c658f6c4cca8649395005fd621a5fc6",
+     {0U, 0U, 0x3f3d7224U, 0x3f35a326U, 0x3f22bfb4U, 0x3f800000U, 5U, 0U, 0x3f5e4b9eU, 0x3ec855a8U, 0x3f3bff5aU, 0x3f800000U, 0U, 4U, 0x3edc8718U, 0x3f7914b0U, 0x3ef464d0U, 0x3f800000U, 5U, 4U, 0x3f423dd3U, 0x3f42aa54U, 0x3eed8a86U, 0x3f800000U, 3U, 2U, 0x3f23a326U, 0x3f3f9117U, 0x3f71089aU, 0x3f800000U},
      120U, 0U},
     {"seed7-tiled-midtime", 5U, 6U,
      0x40600000U, 0x41700000U, 7, 0x42a00000U, 0x40200000U,
      {0x40400000U, 0x40000000U}, {0x41500000U, 0x41300000U},
-     "e6f49b49ebee9b4bec0631e7209f2daf70a207a8f8a659044a40f7db8388c92f",
-     "0b0aeb879b6461fa23d192882dcce8a4d484821d6f638a6d2868911ec95cc81a",
-     {0U,0U,0x3d3deb00U,0x3f658d32U,0x3f544168U,0x3f800000U, 4U,0U,0x3f455f7fU,0x3f11d188U,0x3e65835cU,0x3f800000U, 0U,5U,0x3f40e116U,0x3e9e5e30U,0x3f402514U,0x3f800000U, 4U,5U,0x3f714b76U,0x3e9e81dcU,0x3eef7070U,0x3f800000U, 2U,3U,0x3ec63ab8U,0x3e0042a0U,0x3f405580U,0x3f800000U},
+     "68578a5c8adfdc5b6a15ec749a5f33024260f1e5c14c1e6c880753032ff51113",
+     "176960028f9f06a7fd99eb760ab60a462da7380f038d245b2268628f9ffc48c5",
+     {0U, 0U, 0x3d3de800U, 0x3f658f18U, 0x3f54416eU, 0x3f800000U, 4U, 0U, 0x3f455f86U, 0x3f11d18eU, 0x3e65835cU, 0x3f800000U, 0U, 5U, 0x3f40e116U, 0x3e9e5e58U, 0x3f402508U, 0x3f800000U, 4U, 5U, 0x3f714b76U, 0x3e9e81f0U, 0x3eef7024U, 0x3f800000U, 2U, 3U, 0x3ec63ab4U, 0x3e004450U, 0x3f405580U, 0x3f800000U},
      120U, 0U},
     {"negative-seed-drives-negative-mod-operands", 8U, 3U,
      0x41400000U, 0x00000000U, -13, 0x00000000U, 0x3f400000U,
      {0x00000000U, 0x00000000U}, {0x41000000U, 0x40400000U},
-     "6325f2198d92d04b02b6ff0b5f8102709f280c176d4a008dc5d0ddafa2c183d0",
+     "e5d43599979b0e2b1c7c44ca4b925056e6bf56649c32e3cdd4fd9bf7c99ebbfb",
      "ff92d82a215c70ea490077f882e342d3ba92cc9ffec70a69d4c59d527228230b",
-     {0U,0U,0x3f13b318U,0x3f323b7cU,0x3f060378U,0x3f800000U, 7U,0U,0x3f1eeef0U,0x3f7ad428U,0x3f605329U,0x3f800000U, 0U,2U,0x3f7c861cU,0x3f32614eU,0x3f6875d2U,0x3f800000U, 7U,2U,0x3f6c7cb8U,0x3f6d8ce8U,0x3f7fcc4dU,0x3f800000U, 4U,1U,0x3f4eb8aaU,0x3f03dfc6U,0x3f1ad600U,0x3f800000U},
+     {0U, 0U, 0x3f13b319U, 0x3f323b80U, 0x3f060378U, 0x3f800000U, 7U, 0U, 0x3f1eefb2U, 0x3f7ad440U, 0x3f605329U, 0x3f800000U, 0U, 2U, 0x3f7c861aU, 0x3f32614eU, 0x3f6875d2U, 0x3f800000U, 7U, 2U, 0x3f6c7cb8U, 0x3f6d8ce8U, 0x3f7fcc34U, 0x3f800000U, 4U, 1U, 0x3f4eb848U, 0x3f03e056U, 0x3f1ad5fcU, 0x3f800000U},
      96U, 0U},
     {"negative-intensity-flips-tanh-sign", 4U, 4U,
      0x42c88000U, 0x41a73333U, 99, 0x43480000U, 0xc0800000U,
      {0x00000000U, 0x00000000U}, {0x40800000U, 0x40800000U},
-     "311e9b9662461dac97a4b9f5a167707913aec4120bb63b8b590376128b237fcd",
+     "7eb29f9308f8aadb5ccf69285012bee6e0476987e642aaf847e61a51823c2935",
      "df8c2c90ccf93aff72894448dbe5292ece5fd24f3f2ce21fb68f4e23a4001e8b",
-     {0U,0U,0x3d1aa980U,0x3971c000U,0x3d53a490U,0x3f800000U, 3U,0U,0x3c16d300U,0x3984a000U,0x3cf9cb00U,0x3f800000U, 0U,3U,0x3dd51ee0U,0x3a23d000U,0x3e29a1e4U,0x3f800000U, 3U,3U,0x3cd63d80U,0x39ed4000U,0x3dc672a8U,0x3f800000U, 2U,2U,0x3cd09c00U,0x39b0b000U,0x3d979860U,0x3f800000U},
+     {0U, 0U, 0x3d1aa980U, 0x3971c000U, 0x3d53a490U, 0x3f800000U, 3U, 0U, 0x3c16d300U, 0x3984a000U, 0x3cf9cb20U, 0x3f800000U, 0U, 3U, 0x3dd51ee0U, 0x3a23d800U, 0x3e29a1ecU, 0x3f800000U, 3U, 3U, 0x3cd63d80U, 0x39ed4000U, 0x3dc672c8U, 0x3f800000U, 2U, 2U, 0x3cd09c00U, 0x39b0b000U, 0x3d979878U, 0x3f800000U},
      64U, 0U},
     {"large-seed-negative-scale-negative-speed", 7U, 7U,
      0x3a83126fU, 0xc0a00000U, 1000000, 0xc1f00000U, 0x42480000U,
      {0x00000000U, 0x00000000U}, {0x40e00000U, 0x40e00000U},
-     "aa573876f73366853d5898cb9a7e97f920dbae298f41f4ba0811d75b44e3991a",
-     "38983169f7e627250c60981b9fcfec851a56521e1679eceae2c3ae657b0c2fff",
-     {0U,0U,0x00000000U,0x00000000U,0x377e0000U,0x3f800000U, 6U,0U,0x3d920150U,0x00000000U,0x37000000U,0x3f800000U, 0U,6U,0x00000000U,0x00000000U,0x00000000U,0x3f800000U, 6U,6U,0x00000000U,0x00000000U,0x37070000U,0x3f800000U, 3U,3U,0x00000000U,0x3e804b10U,0x00000000U,0x3f800000U},
+     "959a51de8697422c2e21e4ac430349c295ded5ffabe31d9b83cdc539c82e9bf6",
+     "8c30b43e53d0cba58519ec98193d19ef0deef8af8f653c90f8c3a169b2551657",
+     {0U, 0U, 0x00000000U, 0x00000000U, 0x397b0000U, 0x3f800000U, 6U, 0U, 0x3d071d90U, 0x00000000U, 0x37000000U, 0x3f800000U, 0U, 6U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 6U, 6U, 0x00000000U, 0x00000000U, 0x36ac0000U, 0x3f800000U, 3U, 3U, 0x00000000U, 0x3f0bf9d6U, 0x00000000U, 0x3f800000U},
      196U, 0U},
     {"two-pi-time-near-identity-intensity", 10U, 2U,
      0x40c90fdbU, 0x412fffffU, 0, 0x3f800000U, 0x3a83126fU,
      {0x00000000U, 0x00000000U}, {0x41200000U, 0x40000000U},
-     "7a006260356fcf49ebcc27ca9069f37cfa7ee935d0d94e5d3ea2c9649befe95d",
+     "164f34e8d0375089bb50181d9a2d9696f483f3d97d317cb21298e0b6973b7284",
      "6d92a8ea911d0d96dad7f2d76f2647e8b612e645140157668298db20a9412d4b",
-     {0U,0U,0x3f7fdb26U,0x3f7fda8aU,0x3f7fd94aU,0x3f800000U, 9U,0U,0x3f7fe91eU,0x3f7ff49cU,0x3f7fdab4U,0x3f800000U, 0U,1U,0x3f7ffbdaU,0x3f7fe4d7U,0x3f7ff7feU,0x3f800000U, 9U,1U,0x3f7ff0e0U,0x3f7fe1d6U,0x3f7fffb4U,0x3f800000U, 5U,1U,0x3f7fc7fdU,0x3f7febe0U,0x3f7feb84U,0x3f800000U},
+     {0U, 0U, 0x3f7fdb26U, 0x3f7fda8aU, 0x3f7fd94aU, 0x3f800000U, 9U, 0U, 0x3f7fe91eU, 0x3f7ff49cU, 0x3f7fdab4U, 0x3f800000U, 0U, 1U, 0x3f7ffbdaU, 0x3f7fe4d7U, 0x3f7ff7feU, 0x3f800000U, 9U, 1U, 0x3f7ff0e0U, 0x3f7fe1d6U, 0x3f7fffb4U, 0x3f800000U, 5U, 1U, 0x3f7fc7fdU, 0x3f7febe0U, 0x3f7feb84U, 0x3f800000U},
      80U, 0U},
 }};
 
@@ -11137,7 +11102,7 @@ TEST(typed_task33_celshadingcolor_fwidth_vec3_matches_vendored_oracle_bit_exact)
   // strength.
   const Task33Case fixture{
       "filter/celShading:celShadingColor", 6U, 5U, 10,
-      "b5ad5619e43ba66bb4d9aec0483d168dad8068021f6975064ad5174ec98551fc",
+      "23410eafb8a4eedd15a2446e26bf0e57297af22006e9e9bc8ae90c8787de675e",
       "0bd57f2632857441c11e75801703800e161b793c8255741b87fad0dcf6547d32",
       120U,
       {{{0U, 0U, {0x3d825f51U, 0x3f22f4feU, 0x3eeb5b4bU, 0x3e8ee23cU}},
@@ -11189,27 +11154,15 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
   // filter/stipple:stipple's `_defaults()`-authorized define map). The
   // fwidth call is unconditional under this pinned define -- 1 ordinal,
   // no antialias uniform at all.
-  // f32_sha256 and the {0,4} probe's third lane were repinned against the
-  // real, unmodified JS authority (bindGlslKernel(canonicalKernelFactories
-  // ['filter/stipple:stipple'], createCanonicalBindings(...)) with paperColor
-  // left as a raw, un-rounded JS array [0.98, 0.96, 0.9]), not against
-  // docs/port-engineering/derivatives/oracle/derivative_oracle_generator.mjs's
-  // own `normalizeUniformsTyped`, which narrows every vec3 uniform to a
-  // `Float32Array` before binding (glsl-kernel.js's createCanonicalBindings
-  // never does this itself for an ordinary effect-parameter uniform -- see
-  // emit_typed_cpp.py's `_is_double_vector_uniform`) -- so that generator's
-  // own oracle output, and the hash/probe lane this test used to pin from it,
-  // reflected that generator's premature float32 narrowing, not the
-  // authority. The rgba8_sha256 and every other probe lane are unaffected
-  // (the ~1 ULP float32 difference does not survive RGBA8 quantization).
+  // CPU reference binds paperColor as the same raw Number array as DVec3.
   const Task33Case fixture{
       "filter/stipple:stipple", 6U, 5U, 120,
-      "617f13a0ac8c435a5527ca72085eaeba3e6d037d8ea9fe6b5ed129c357a6d8e8",
-      "a6272d86f087781c300a5babe6c5a9b32d09e29d59e4ec27920e9d4c8706371b",
+      "dbcd61385725c44173bd97265cf2d035836025e7e7008d5084316f8ebd0b3bdf",
+      "9f9b464da96f3bf3895aee8dacef72c26bf488a449d8031d9272a68869d7c6a5",
       120U,
       {{{0U, 0U, {0x3f1079aaU, 0x3e13cb37U, 0x3f697e98U, 0x3e0ee23cU}},
         {5U, 0U, {0x3e367ebcU, 0x3f507eaeU, 0x3f09d89eU, 0x3e8ee23cU}},
-        {0U, 4U, {0x3f061348U, 0x3f534902U, 0x3eeaaff6U, 0x3efa0be8U}},
+        {0U, 4U, {0x3f06453eU, 0x3f5357c1U, 0x3eeb10acU, 0x3efa0be8U}},
         {5U, 4U, {0x3f60a616U, 0x3f18ebdaU, 0x3f497736U, 0x3f20be83U}},
         {3U, 2U, {0x3f498529U, 0x3f383248U, 0x3ebf4ee7U, 0x3eee23b9U}}}}};
   const auto input = task33_patterned_surface(fixture.width, fixture.height,
@@ -11769,26 +11722,11 @@ TEST(typed_lighting_reflection_strong_sign_matters_matches_vendored_oracle_bit_e
       noisemaker::glsl::DVec3(0.1, 0.1, 0.12), noisemaker::glsl::DVec3(0.4, 0.6, 0.5),
       0.7, 24.0, 2.5, 1.2, 1.0,
       60.0, 0.0, 0.0,
-      // f32_sha256 and the two affected probe lanes were repinned against
-      // the real, unmodified JS authority (bindGlslKernel(
-      // canonicalKernelFactories['filter/lighting:lighting'],
-      // createCanonicalBindings(...)) with diffuseColor/specularColor/
-      // ambientColor/lightDirection left as raw, un-rounded JS arrays), not
-      // against docs/port-engineering/builtins/oracle/
-      // builtin_oracle_generator.mjs's own `normalizeUniformsTyped`, which
-      // narrows every vec3 uniform to a `Float32Array` before binding
-      // (glsl-kernel.js's createCanonicalBindings never does this itself for
-      // an ordinary effect-parameter uniform -- see emit_typed_cpp.py's
-      // `_is_double_vector_uniform`) -- so that generator's own oracle
-      // output, and the hash/probe lanes this test used to pin from it,
-      // reflected that generator's premature float32 narrowing, not the
-      // authority. The rgba8_sha256 and every other probe lane are
-      // unaffected (the ~1 ULP float32 difference does not survive RGBA8
-      // quantization).
-      "599e9523309736f7129c43d8c362a3017a73faa2ca15cf86144e14d0ba18180b",
+      // Authenticated CPU reference with raw Number and vector-array bindings.
+      "350e4ec59be83d644505a84ac5a51176b7126636ba65ed4f8256174053afa02f",
       "393f9e9ea80c1905e9946be18284d53f4f0339041e52feca7163f4829cabb6bc",
       120U,
-      {{{{0x3e6fd37aU, 0x3eb25377U, 0x3e243057U, 0x3ef7aa45U}},
+      {{{{0x3e6fd37aU, 0x3eb25377U, 0x3e243056U, 0x3ef7aa45U}},
         {{0x3e2c4c58U, 0x3e4d9953U, 0x3ed78354U, 0x3edb16a0U}},
         {{0x3e15a55cU, 0x3e460b30U, 0x3ee70a9aU, 0x3edb169fU}},
         {{0x3f40fa59U, 0x3ea09f04U, 0x3e8e70b3U, 0x3d3e82faU}},
@@ -11829,16 +11767,15 @@ TEST(typed_lighting_all_off_diagnostic_no_reflect_call_matches_vendored_oracle_b
       noisemaker::glsl::DVec3(0.1, 0.1, 0.1), noisemaker::glsl::DVec3(0.3, 0.4, 0.8),
       0.5, 12.0, 1.0, 1.0, 1.0,
       0.0, 0.0, 0.0,
-      // Repinned against the real JS authority for the same reason as
-      // "reflection-strong-sign-matters" above.
-      "18b48b9db34ddf4a4a8253a799f63901655baa2abc2a799e53d400d5894c062a",
+      // Authenticated CPU reference with raw Number and vector-array bindings.
+      "a2b3745f88ce7bd574cd66b9264bf72c275b352edaece2683ca3dea2135e1ba8",
       "3fab7fb930d21a8968e5ec01ba5d9bfef560643054f831b0098f5cc5b079ae44",
       112U,
       {{{{0x3de26f0cU, 0x3e9b3af2U, 0x3e68b3d8U, 0x3e9aca6bU}},
-        {{0x3d50785eU, 0x3d5910c6U, 0x3d109f3cU, 0x3dee23b9U}},
-        {{0x3e93abc4U, 0x3e8c3024U, 0x3f173ce3U, 0x3efa0be8U}},
-        {{0x3d22757fU, 0x3dc652c8U, 0x3d8be598U, 0x3e9aca6bU}},
-        {{0x3e884cd7U, 0x3e5f3c79U, 0x3ede9295U, 0x3d3e82faU}}}},
+        {{0x3d50785dU, 0x3d5910c5U, 0x3d109f3bU, 0x3dee23b9U}},
+        {{0x3e93abbdU, 0x3e8c301dU, 0x3f173cdfU, 0x3efa0be8U}},
+        {{0x3d227581U, 0x3dc652cbU, 0x3d8be59aU, 0x3e9aca6bU}},
+        {{0x3e884cdaU, 0x3e5f3c7fU, 0x3ede9299U, 0x3d3e82faU}}}},
       {{{0U, 0U}, {3U, 0U}, {0U, 6U}, {3U, 6U}, {2U, 3U}}},
   };
   task_lighting_run(fixture);
@@ -11871,15 +11808,15 @@ constexpr std::array<TetraRuntimeCase, 8> kTetraRuntimeCases{{
      "fa791a7ffb1b338671bd88b623129369ae3d851d8ea22010b55460a713f9c40b"},
     {"count2-hsv-manual-wrap-alpha1", 4U, 2, 1, 2, 1,
      {0.08f, 0.90f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}, 0.8f, 1.0f,
-     "21820ad3eeec664df6e39a4811a492ec5df321987d40de9074efdafbdc6c2196",
+     "58ad952052eda4ebadfb8b4fc3c1c3014233726326120a14a5495405bb63d586",
      "5f0ab6f8bdac32ef8a7452e5193123dd89e4844c8d38d0e4899ca6d3c919ab0d"},
     {"count3-oklab-auto-smooth-alpha1", 5U, 3, 2, 3, 0,
      kTetraDefaultPositions, 0.55f, 1.0f,
-     "7f6dd145d388035d887ab8f7354ea5f8ac112308ab2af4cd450acfb9109952f7",
+     "2ae126152d9abecf4b9cac72a65e1d165dbb3b6c4b9304ce536758d0654fc8f6",
      "b093599bf67fbec5910b217f3a5e21b3eb3d45df0675fb81ea366444165f9abe"},
     {"count4-oklch-manual-smooth-alpha-half", 6U, 4, 3, 4, 1,
      {0.0f, 0.18f, 0.67f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}, 0.6f, 0.5f,
-     "7bfa0f3bb354a40e96ac684b626f9297372099758275fc3b68c8e4b5e15e3497",
+     "6c4e50071ae170f10dd0a77233bb9be2007a4ac6f9428637b70105628ee5e35c",
      "84e3a53f2b74c8e0ad8ceb1eb56dd676dce0e362c5a7b2d178c18e5dcfce2204"},
     {"count6-rgb-manual-hard-alpha1", 4U, 5, 0, 6, 1,
      {0.0f, 0.08f, 0.23f, 0.47f, 0.81f, 1.0f, 1.0f, 1.0f}, 0.0f, 1.0f,
@@ -11887,15 +11824,15 @@ constexpr std::array<TetraRuntimeCase, 8> kTetraRuntimeCases{{
      "9cfbaf480e5c6e50bff9b9532e44024e05d456986554ada3b58874c914362e88"},
     {"count6-oklch-auto-wrap-alpha1", 5U, 6, 3, 6, 0,
      kTetraDefaultPositions, 0.9f, 1.0f,
-     "86af3fa97c866fe0a27ebf45fd4c42be707cdff39c4c794b8599efd4b1602df4",
+     "dfcf4cf557445c5df92a66d97aeeb29a8adacad83bf5e28fb865938ea371efdd",
      "faaa9d3df47b396be35a389966886f5dfee0f1baf5d0c8204089a24b429b82e3"},
     {"count8-hsv-auto-wrap-alpha1", 6U, 7, 1, 8, 0,
      kTetraDefaultPositions, 1.0f, 1.0f,
-     "b8564076387d982b669758eb32157354426136d75960178737a23d7a0be44acd",
+     "e2c7a60c5af545b921e2174a25d3d26d237691d3f3572003e60458eab8faaa38",
      "b0a1523f18451dae0757764e66b7db512a4d0dc3e8611aeb57047736fc09b164"},
     {"count8-oklab-manual-wrap-alpha065", 5U, 8, 2, 8, 1,
      {0.06f, 0.14f, 0.26f, 0.39f, 0.55f, 0.70f, 0.84f, 0.93f}, 0.5f, 0.65f,
-     "80ce433ab64d14a0d0caaae7623bb087e8480937004565adeb777465afd0c008",
+     "a8187be8b9bb947b21bebd3348a80261b65743587ba4abde4fb8f6345b1acda2",
      "185fcc2dcec8bac35addd0dcc7797a31d6e356ec1ae0fc45f590a0cb015fe9e9"},
 }};
 
@@ -13272,26 +13209,26 @@ struct GaborRuntimeCase {
 
 constexpr std::array<GaborRuntimeCase, 8> kGaborRuntimeCases{{
   {"default-landscape", 5U, 4U, 75, 0, 75, 0, 3, 1, 1, 1, 0, 0U, 999ULL, {0, 0}, {5, 4},
-   "e3dab43a27e8d586867a8a60b17db94e886ec04a02e250fefad05562a765f955", "ad5a765ae88df34f85415ccd5f478adfe1d746a68b1019f86ae909233810f14e",
-   {0U, 0U, 0x3f19e9aaU, 0x3f19e9aaU, 0x3f19e9aaU, 0x3f800000U, 4U, 0U, 0x3ede7049U, 0x3ede7049U, 0x3ede7049U, 0x3f800000U, 0U, 3U, 0x3f4bf8e1U, 0x3f4bf8e1U, 0x3f4bf8e1U, 0x3f800000U, 4U, 3U, 0x3f079c76U, 0x3f079c76U, 0x3f079c76U, 0x3f800000U, 2U, 2U, 0x3f4f7270U, 0x3f4f7270U, 0x3f4f7270U, 0x3f800000U}},
+   "f14e9426f45d5992436727ef36c163f096414f41483cb7f8bf627163ed98aac0", "ad5a765ae88df34f85415ccd5f478adfe1d746a68b1019f86ae909233810f14e",
+   {0U, 0U, 0x3f19e9aaU, 0x3f19e9aaU, 0x3f19e9aaU, 0x3f800000U, 4U, 0U, 0x3ede7049U, 0x3ede7049U, 0x3ede7049U, 0x3f800000U, 0U, 3U, 0x3f4bf8e0U, 0x3f4bf8e0U, 0x3f4bf8e0U, 0x3f800000U, 4U, 3U, 0x3f079c76U, 0x3f079c76U, 0x3f079c76U, 0x3f800000U, 2U, 2U, 0x3f4f7270U, 0x3f4f7270U, 0x3f4f7270U, 0x3f800000U}},
   {"max-depth-density-octaves", 4U, 3U, 1, 180, 1, 100, 8, 5, 5, 100, 0.125, 17U, 7ULL, {0, 0}, {4, 3},
    "fec494791b3b11e2b49c3b72221cb5384949421b58adf30a7eb2cefeaf369e4f", "54c377ff0fab8e0478ea10876628e146a7f88944037794d6807df9b1a035fe71",
    {0U, 0U, 0x3f011237U, 0x3f011237U, 0x3f011237U, 0x3f800000U, 3U, 0U, 0x3f08f131U, 0x3f08f131U, 0x3f08f131U, 0x3f800000U, 0U, 2U, 0x3f0caa96U, 0x3f0caa96U, 0x3f0caa96U, 0x3f800000U, 3U, 2U, 0x3f03c831U, 0x3f03c831U, 0x3f03c831U, 0x3f800000U, 2U, 1U, 0x3f2a4a9aU, 0x3f2a4a9aU, 0x3f2a4a9aU, 0x3f800000U}},
   {"minimum-work-speed-zero-time-a", 3U, 5U, 100, -180, 100, 0, 1, 1, 0, 37, 0, 2U, 1ULL, {0, 0}, {3, 5},
-   "f0db9762f51e63299a476a509a2c01e672588d6f64f00f877f4c9bccfb1eb40e", "ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d",
-   {0U, 0U, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f800000U, 2U, 0U, 0x3ec43e2fU, 0x3ec43e2fU, 0x3ec43e2fU, 0x3f800000U, 0U, 4U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f800000U, 2U, 4U, 0x3eae3535U, 0x3eae3535U, 0x3eae3535U, 0x3f800000U, 1U, 2U, 0x3ed14c37U, 0x3ed14c37U, 0x3ed14c37U, 0x3f800000U}},
+   "93184964f806a9d9d9fe626f7b0f34799daf92c08bdcbfc55ba18e0c08cc57e2", "ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d",
+   {0U, 0U, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f800000U, 2U, 0U, 0x3ec43e2fU, 0x3ec43e2fU, 0x3ec43e2fU, 0x3f800000U, 0U, 4U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f800000U, 2U, 4U, 0x3eae3535U, 0x3eae3535U, 0x3eae3535U, 0x3f800000U, 1U, 2U, 0x3ed14c38U, 0x3ed14c38U, 0x3ed14c38U, 0x3f800000U}},
   {"minimum-work-speed-zero-time-b", 3U, 5U, 100, -180, 100, 0, 1, 1, 0, 37, 0.98750001192092896, 4294967295U, 4294967295ULL, {0, 0}, {3, 5},
-   "f0db9762f51e63299a476a509a2c01e672588d6f64f00f877f4c9bccfb1eb40e", "ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d",
-   {0U, 0U, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f800000U, 2U, 0U, 0x3ec43e2fU, 0x3ec43e2fU, 0x3ec43e2fU, 0x3f800000U, 0U, 4U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f800000U, 2U, 4U, 0x3eae3535U, 0x3eae3535U, 0x3eae3535U, 0x3f800000U, 1U, 2U, 0x3ed14c37U, 0x3ed14c37U, 0x3ed14c37U, 0x3f800000U}},
+   "93184964f806a9d9d9fe626f7b0f34799daf92c08bdcbfc55ba18e0c08cc57e2", "ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d",
+   {0U, 0U, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f49ac9aU, 0x3f800000U, 2U, 0U, 0x3ec43e2fU, 0x3ec43e2fU, 0x3ec43e2fU, 0x3f800000U, 0U, 4U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f56d2d0U, 0x3f800000U, 2U, 4U, 0x3eae3535U, 0x3eae3535U, 0x3eae3535U, 0x3f800000U, 1U, 2U, 0x3ed14c38U, 0x3ed14c38U, 0x3ed14c38U, 0x3f800000U}},
   {"intermediate-anisotropic", 6U, 2U, 33.25, 37.5, 42, 40, 5, 3, 2, 17, 0.375, 23U, 888ULL, {0, 0}, {6, 2},
    "41b341a40bb1f22bcbfe6ce72d01e8fe5b360da7a1d1e7edac848bfa06ac7803", "6d598eb2147ac6bb562018b9e611abdd4c86c6ef2b3dbe693414a78cea431222",
    {0U, 0U, 0x3f4a482aU, 0x3f4a482aU, 0x3f4a482aU, 0x3f800000U, 5U, 0U, 0x3e6d72fcU, 0x3e6d72fcU, 0x3e6d72fcU, 0x3f800000U, 0U, 1U, 0x3f3ef9f9U, 0x3f3ef9f9U, 0x3f3ef9f9U, 0x3f800000U, 5U, 1U, 0x3f3464f5U, 0x3f3464f5U, 0x3f3464f5U, 0x3f800000U, 3U, 1U, 0x3dbebf64U, 0x3dbebf64U, 0x3dbebf64U, 0x3f800000U}},
   {"opposite-angle-random-orientation", 2U, 6U, 54, -73, 88, 100, 6, 4, 3, 63, 0.0625, 5U, 3ULL, {0, 0}, {2, 6},
-   "73263d9bf846184b0324a958c8adad4e4fc207921cdd86317a463ef70bb8cc8a", "9ea610c1737fa332cbe4d15f8737a619a92829dd90d1e2533caf8c7f2d60120c",
-   {0U, 0U, 0x3f525d2eU, 0x3f525d2eU, 0x3f525d2eU, 0x3f800000U, 1U, 0U, 0x3f620034U, 0x3f620034U, 0x3f620034U, 0x3f800000U, 0U, 5U, 0x3d9c954bU, 0x3d9c954bU, 0x3d9c954bU, 0x3f800000U, 1U, 5U, 0x3d871e27U, 0x3d871e27U, 0x3d871e27U, 0x3f800000U, 1U, 3U, 0x3f6e8b35U, 0x3f6e8b35U, 0x3f6e8b35U, 0x3f800000U}},
+   "cc8a3aa41558fdb9587420cba5ca08b849fb111da8bdd3730991f72acd2a2912", "9ea610c1737fa332cbe4d15f8737a619a92829dd90d1e2533caf8c7f2d60120c",
+   {0U, 0U, 0x3f525d2eU, 0x3f525d2eU, 0x3f525d2eU, 0x3f800000U, 1U, 0U, 0x3f620034U, 0x3f620034U, 0x3f620034U, 0x3f800000U, 0U, 5U, 0x3d9c954aU, 0x3d9c954aU, 0x3d9c954aU, 0x3f800000U, 1U, 5U, 0x3d871e27U, 0x3d871e27U, 0x3d871e27U, 0x3f800000U, 1U, 3U, 0x3f6e8b35U, 0x3f6e8b35U, 0x3f6e8b35U, 0x3f800000U}},
   {"tile-full-reference", 7U, 5U, 62, 91, 36, 57, 7, 4, 4, 29, 0.21875, 31U, 42ULL, {0, 0}, {7, 5},
-   "fa8780a091028aabdfcec7980a99485050e8729d91688ae9bde43ba508cda659", "9d82032633c1043c30f27b2e7c71392738684ed536f11ea57643d1efbc18fdd0",
-   {0U, 0U, 0x3ecf9650U, 0x3ecf9650U, 0x3ecf9650U, 0x3f800000U, 6U, 0U, 0x3e57f5c6U, 0x3e57f5c6U, 0x3e57f5c6U, 0x3f800000U, 0U, 4U, 0x3eedac28U, 0x3eedac28U, 0x3eedac28U, 0x3f800000U, 6U, 4U, 0x3f1ac1a4U, 0x3f1ac1a4U, 0x3f1ac1a4U, 0x3f800000U, 3U, 2U, 0x3f69914cU, 0x3f69914cU, 0x3f69914cU, 0x3f800000U}},
+   "2b96eab7fd32b02a81decd8e752a74a8f06803d92fc35b1cc64bc3d18c8e875a", "9d82032633c1043c30f27b2e7c71392738684ed536f11ea57643d1efbc18fdd0",
+   {0U, 0U, 0x3ecf9650U, 0x3ecf9650U, 0x3ecf9650U, 0x3f800000U, 6U, 0U, 0x3e57f5c5U, 0x3e57f5c5U, 0x3e57f5c5U, 0x3f800000U, 0U, 4U, 0x3eedac28U, 0x3eedac28U, 0x3eedac28U, 0x3f800000U, 6U, 4U, 0x3f1ac1a4U, 0x3f1ac1a4U, 0x3f1ac1a4U, 0x3f800000U, 3U, 2U, 0x3f69914cU, 0x3f69914cU, 0x3f69914cU, 0x3f800000U}},
   {"tile-3x2-bottom-offset-2x1", 3U, 2U, 62, 91, 36, 57, 7, 4, 4, 29, 0.21875, 31U, 4242ULL, {2, 1}, {7, 5},
    "d2db62258d55dc4e5ebe517d6b4cd87c8fec4a5f80590a1a04c68e69da02df33", "a13a3979f466a34c0e3e4d9c6cd5ca81f4f41073f9575c93266be5fca0f95456",
    {0U, 0U, 0x3f65ecafU, 0x3f65ecafU, 0x3f65ecafU, 0x3f800000U, 2U, 0U, 0x3ea36e4bU, 0x3ea36e4bU, 0x3ea36e4bU, 0x3f800000U, 0U, 1U, 0x3f35cc12U, 0x3f35cc12U, 0x3f35cc12U, 0x3f800000U, 2U, 1U, 0x3f0409caU, 0x3f0409caU, 0x3f0409caU, 0x3f800000U, 1U, 1U, 0x3f56b26dU, 0x3f56b26dU, 0x3f56b26dU, 0x3f800000U}},
@@ -13570,7 +13507,7 @@ constexpr std::array<ScanlineRuntimeCase, 10> kScanlineRuntimeCases{{
   {"scanline-animated-max-controls", 8U, 6U, 4U, 0, 5, -10, 3, 3,
    0.375, 2147483648.0, 17U, 1, {0, 0}, {8, 6},
    "5cb10fe0fb9a530b2069a016570d3b1ed8fe67f13c1de661adb5d3e39cc86a37",
-   "ba301896aa4ab5686d7a8531fbd18f88e4c71dffe43d58ed2c076623b2940d14",
+   "b50009f19a892580fc706485ee6ea72308e43f1fab6ba51feda0441e7c8a2c90",
    "eba117fe97f00937168a9402caf70c957310f0ce6b1de25a18796e9e8cf7f532"},
   {"vhs-animated-max-controls", 8U, 6U, 5U, 1, 5, 10, 3, 3,
    0.375, 2147483648.0, 17U, 1, {0, 0}, {8, 6},
@@ -13590,7 +13527,7 @@ constexpr std::array<ScanlineRuntimeCase, 10> kScanlineRuntimeCases{{
   {"scanline-tiled-noninteger-scale", 4U, 3U, 8U, 0, 2, -0.25, 2, 1.5,
    0.625, 123456789.0, 9U, 1.5, {3, 2}, {11, 7},
    "54d7039c980bd9c1513245bd63c54048b5bf4a4387266c303232339e2eb1fa39",
-   "f52466ddc0bf6cb3b779c6375b78168c3c5c8327bb20704a305a442517ef554f",
+   "bbf1e1144b6297ed18d5c7b48ed8541195b1ff6dc482df166a49c1f95cf45ce9",
    "9e702ed79d7a791c9b9f8de3b8c21c12c0785093bb8fa611606cfc42355dff19"},
   {"vhs-tiled-noninteger-scale", 4U, 3U, 9U, 1, 2, 0.25, 2, 1.5,
    0.625, 123456789.0, 9U, 1.5, {3, 2}, {11, 7},
@@ -13906,15 +13843,15 @@ constexpr std::array<std::string_view, 25> kGlyphInputHashes{{
 }};
 
 constexpr std::array<std::array<GlyphProbe, 5>, 25> kGlyphOutputProbes{{
-    {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {18U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 14U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {18U, 14U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {9U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {18U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 14U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {18U, 14U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {9U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
-    {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {22U, 0U, {{0x3eb2f393U, 0x3f33f5ddU, 0x3f30d322U, 0x3f800000U}}}, {0U, 16U, {{0x3f32f393U, 0x3f693029U, 0x3f2e2f81U, 0x3f800000U}}}, {22U, 16U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {11U, 8U, {{0x3f2b7ec2U, 0x3f40a238U, 0x3f507eaeU, 0x3f800000U}}}}},
+    {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {18U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 14U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {18U, 14U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {9U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
+    {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {22U, 0U, {{0x3eb2f393U, 0x3f33f5ddU, 0x3f30d322U, 0x3f800000U}}}, {0U, 16U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {22U, 16U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {11U, 8U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {6U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {0U, 10U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {6U, 10U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {3U, 5U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x80000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {10U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 8U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {10U, 8U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {5U, 4U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {4U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 6U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {4U, 6U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {2U, 3U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {4U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 6U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {4U, 6U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {2U, 3U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
-    {{{0U, 0U, {{0x00000000U, 0x80000000U, 0x00000000U, 0x3f800000U}}}, {12U, 0U, {{0x3d1f1166U, 0x3ea74981U, 0x3f361a64U, 0x3f800000U}}}, {0U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {12U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {6U, 4U, {{0x3eadfb07U, 0x3f59faeeU, 0x3ef8151dU, 0x3f800000U}}}}},
-    {{{0U, 0U, {{0x00000000U, 0x80000000U, 0x00000000U, 0x3f800000U}}}, {12U, 0U, {{0x3d1f1166U, 0x3ea74981U, 0x3f361a64U, 0x3f800000U}}}, {0U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {12U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {6U, 4U, {{0x3eadfb07U, 0x3f59faeeU, 0x3ef8151dU, 0x3f800000U}}}}},
+    {{{0U, 0U, {{0x00000000U, 0x80000000U, 0x00000000U, 0x3f800000U}}}, {12U, 0U, {{0x3d1f1166U, 0x3ea74981U, 0x3f361a64U, 0x3f800000U}}}, {0U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {12U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {6U, 4U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
+    {{{0U, 0U, {{0x00000000U, 0x80000000U, 0x00000000U, 0x3f800000U}}}, {12U, 0U, {{0x3d1f1166U, 0x3ea74981U, 0x3f361a64U, 0x3f800000U}}}, {0U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {12U, 7U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {6U, 4U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
@@ -13925,10 +13862,10 @@ constexpr std::array<std::array<GlyphProbe, 5>, 25> kGlyphOutputProbes{{
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
-    {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {17U, 17U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
+    {{{0U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
-    {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
-    {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
+    {{{0U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
+    {{{0U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 0U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {0U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {34U, 34U, {{0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
     {{{0U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 0U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {0U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {34U, 34U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}, {17U, 17U, {{0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U}}}}},
 }};
@@ -13955,24 +13892,24 @@ struct GlyphGeneralCase {
 constexpr std::array<GlyphGeneralCase, 9> kGlyphGeneralCases{{
     {"mono-min-cell-pattern", 19U, 15U, 1U, 4, 1, 0, 1, 0, 0U, 0,
      {0, 0}, {19, 15},
-     "2490a0308c6d434f91531923046200c057cadf783248d659fd654e290c11a69e",
-     "34c63f6bc50823bf299d1c30bbe0f9f1bad440c90c26addbf73887136fd377f7"},
+     "afb5fb5d45bfab209c8ff417e4124ad4d08c92cb5faa597f990f7189af4f7e15",
+     "e58c2a636885b780fdc28dc4d7474ca0993b73d1cb1765ced83660d85900f1a8"},
     {"rgb-default-pattern", 19U, 15U, 2U, 16, 1, 1, 1, 0, 0U, 0,
      {0, 0}, {19, 15},
-     "897ebf5620d8271196b4ed3e692f7c924a5174823b738a785eaca60e7f02be6f",
-     "44396746d97926eeabefefa71fcbc7d815d5c2bfdae49297aa9f416eb7a4b38e"},
+     "0cd79cc961dcaf65bc9f0d64b3cc9dd8747314b8a3331f9213099323d9e96874",
+     "a446cf3e64af0c587d8ffa667f1f17db451032d05927c44e384e8f917a23006d"},
     {"rgb-variant-two-seed", 23U, 17U, 3U, 7, 2, 1, 1, 0, 0U, 1,
      {0, 0}, {23, 17},
-     "6b796e2f4cb920e6326beee29e3dbeea76407b0c00263ea853c8eb19b909c7bd",
-     "665252f326c0a17dd7a90211161413113e0313ca6e5bc31bdd0cdbce8eeea585"},
+     "1f4d11179bb37180a7d3cb249cc769545fe72ed2fef14eb3393bd0e351773459",
+     "b7cb96cca9d6d904f0b82861fcf6303c6dfbe4289b387e04cb2a63ca4d05b2b8"},
     {"scale-zero-cs-one", 7U, 11U, 4U, 4, 100, 0, 0, 0.5, 17U, 99,
      {0, 0}, {7, 11},
      "07110a6cdf3075fb98f5d1bbda4b7cbd75ded61cc45de1c6b09c0135ed605ef2",
      "ca25b6a4fd644d91e92e434e4a20b59bff22f682816906de24a0103e40936f61"},
     {"tiled-noninteger-scale", 11U, 9U, 5U, 7, 37, 1, 1.5, 0.25, 9U,
      123456789, {7, 5}, {31, 23},
-     "772482a71743a25db150987804364e53b1147e14733ed091a2255b11ec1f7423",
-     "6cb74296f58e2607ced03baf74360c8ece50ef9723cc1d4f7a27ffc4268efc79"},
+     "cde28f5e6763a126eb508615e1c55d89ea5165d91fbff5dafa68cd1740e58f83",
+     "4461316b3dfd9735e3682c4983b656b64addd9ca104c047a720815cfaf7267bc"},
     {"tiled-cs-cap-1024", 5U, 7U, 6U, 32, 3, 0, 32, 0, 0U, 1,
      {1, 1}, {9, 9},
      "4d2dc9cdbac54d7b6c8800a91bf969ea3d08dd32c24eaa6a0387a7f40e35f88d",
@@ -13983,68 +13920,68 @@ constexpr std::array<GlyphGeneralCase, 9> kGlyphGeneralCases{{
      "3957236455d5befc513321b54222c48f168471ba09faadc9d4d8854812b88c0a"},
     {"external-context-base", 13U, 8U, 7U, 5, 11, 1, 1, 0, 0U, 0,
      {0, 0}, {13, 8},
-     "881b37251f44e58c02d27dce296e99e026f79ffa4866007bb5c1672fb6265c64",
-     "d30e30a5e0ef342f1837e3b34443b5076d660db0ce4e382e9ce6aba3e596a735"},
+     "f3bfc940931b619015adbfa9b58505a0ec88f5deef4ec24eb6d96b0a104d3820",
+     "465c23c9a9838b5abd00e89874b7e2bf6b6c6a49a470311e44fb38c9ed316686"},
     {"external-context-extreme", 13U, 8U, 7U, 5, 11, 1, 1, 16777216,
      4294967295U, 4294967295.0, {0, 0}, {13, 8},
-     "881b37251f44e58c02d27dce296e99e026f79ffa4866007bb5c1672fb6265c64",
-     "d30e30a5e0ef342f1837e3b34443b5076d660db0ce4e382e9ce6aba3e596a735"},
+     "f3bfc940931b619015adbfa9b58505a0ec88f5deef4ec24eb6d96b0a104d3820",
+     "465c23c9a9838b5abd00e89874b7e2bf6b6c6a49a470311e44fb38c9ed316686"},
 }};
 
 constexpr std::array<std::string_view, 16> kGlyphF32Hashes{{
     "0c29310078fd3de814bc8589145111ad99bcfcff8555a328f3a91a119d8e5538",
-    "03ae0abbf0da0386fc09e377bb5e82d5f19c283ca586216dd3680f7ea6e16b65",
+    "668b7f438fabaa8eaa516c410e060960018f44a007a0a406e7ad46da7c6c40ea",
     "8453ed73c09872f08102668ebe674326d603e32b10849efe3c1d715143b7777d",
     "150a477920ceb0ecad2d1297138779a1637afc2988c21aeb4f7fca705a9fd432",
     "574e8b083f86bdb83e794e4836c345e7aeab7fb70ac6930747c6c6f09a8bd102",
     "bbdbba8a94bf363b999229c4b62dd169a09acfa2010944c83a5ec113c2d61f13",
     "c87d8a875afaccde3dc6eeb7bf49f92e037a1aea222f874d5f64bff63459c8f4",
-    "72e77304d18653c6fc109987019be28efa831081e1fdf21e48d9d4e5951acbc0",
+    "a9011cf8f20fde6e3d897bbc1015fbe0fd20669086ab2bc34f9daf689d95208a",
     "8f56b489556e131f7ce9855545d2644614a746d3f54482d36d77e65169ff0da6",
     "3065c9ee828abc3ae6575738664923eb33264c74a84737f0e1ba7a8bfa1db4b8",
-    "64ac8cf85cc476b380b5104832688f0e84e672613a0684877d04f891aee66cc9",
-    "4035df02a3329685d83bec3a634e6224c875ad32078b5861ae2c9ea5708102ec",
-    "069b4cc8d035b31146ea5ce59a3a7805608ebf158870b75b403e44ebef9327b2",
-    "8004c32f1e2a19a13594bcd6f8aeb2c85d729c983cbd1a9c3b240f15ea045ce9",
-    "83acd171a379f2c9a35e448e7a210cf67409c7e328653c29877b34112b8d104d",
+    "c3850922a03fbf4aa57952072f213a581803333de198cf7488f6fe10836242a1",
+    "80209cf9cba6032fc6fb924a3818252cc17f9ce91f8ee5ce1c2d76ff82766d5a",
+    "a3ce9067248c8006304cf98be6f54fbae26b185afae0c25cd96ce1c5b49eeb76",
+    "fdc1bf4c112f3da4333237acd78e4c70c985333cca9f01497cee2f7ff8231108",
+    "f92c8752d5c6b24ad28fb157eac3e9b3963657aa32ce01fea34138729fa0dc9f",
     "48b453891479327f14f3e45e21a23a415ba3af378f3da919cd912a48866e472c",
 }};
 
 constexpr std::array<std::string_view, 16> kGlyphRgba8Hashes{{
     "bfc4362e6c3dc214f069838333c33bde4e95fb054b44fca5c8a76ac93edc4674",
-    "17305802881ecef394cdbb7be61caee780d4b5bdf10dc2e8619a7a0db5ce32cd",
+    "ac2673931dd46fd476e2ec417ba289e82374ec7f45567ec674f2dc39eda11218",
     "1fda35a2206959fe6bbd112b78e76b57107ee74f5f60d81d281b0d03e0070795",
     "526921e76956e28c6a03224801017297f8402fd81dd0dd28df064ceca0c5cbc6",
     "ee5d1fd73dcca1ad412196be4df2b886084c25fc5c1b0e36037028afd1f239a1",
     "9828a085d506a32ea879d8d634939422d8d33c984d283e007dd557969f6abc15",
     "90f3a87a801356e400b429b3b89ccf289618c71b6cd9f4d73762d7185f5e7af1",
-    "de95ce6103b64bc6364e85872924f353b16757b90d4d94633b01aaa566931507",
+    "0d6a3900aeaa89c4bb6e5171f706c82c691b0ec6e1b00660c4e3f140536ee03f",
     "ec2d93425e5d63e3026e5ca04d8d7c5826ccf50bd19b58246b04061e4a1b7939",
     "b7c7792493cc1f6e6a1d3003e8f361584cc633408884a1cbe597012b95e6f456",
-    "67a1eb93c52ecd64a770d24e84a9c70a31ec701cc63a282721372fd0c93f41f3",
-    "6a005d8e07e3b2bb2951d86c09196c62e1f08ae5a90b7fdc23ad481eb63ee105",
-    "8a8bb2c74ad6a866090921887b7959ca7a8ca55a80c372106b84d149e30d0b56",
-    "11d16e20ba71e8b306681f632bcbcd1b45e2743ab3fb52dce4bb347cd7afe2f0",
-    "73e784cacb7015d99ad838825a55efa439e34eaa916b61a815f9a7e759936338",
+    "a8749bef27e341d40808678befabf247f801702fcfc8dd28a32ed9010140b666",
+    "f40d2675d754bc443d64233555cbb4b6e78c9bc217feb9adf9299113d3b68625",
+    "1a0cdc8d035fbac27c26f01e2837885f67e72d163452a633ad76bffd084f8ee9",
+    "aa1d81a7ba0b6099377dc4d042a824bd7a3facdfaa15b42f5d0505bfb4d812ab",
+    "c857cafe54e7a457185fa438453f68173b8d93615dac568ee9bca94749fff097",
     "c713f7a6cbdfb091d09ee4264823c7bd5c8dd48e1cfa457a6bf255a7bc444ee5",
 }};
 
 constexpr std::array<std::array<std::string_view, 7>, 16> kGlyphRows{{
     {{".....", ".....", ".....", ".....", ".....", ".....", "....."}},
-    {{".....", "..#..", ".....", ".....", ".....", ".....", "....."}},
+    {{".....", ".....", ".....", ".....", ".....", "..#..", "....."}},
     {{".....", "..#..", ".....", ".....", ".....", "..#..", "....."}},
     {{".....", ".....", ".....", ".###.", ".....", ".....", "....."}},
     {{".....", "..#..", "..#..", ".###.", "..#..", "..#..", "....."}},
     {{".....", ".....", ".###.", ".....", ".###.", ".....", "....."}},
     {{".....", ".#.#.", "..#..", ".###.", "..#..", ".#.#.", "....."}},
-    {{".....", ".###.", ".#.#.", ".#.#.", ".###.", ".....", "....."}},
+    {{".....", ".....", ".###.", ".#.#.", ".#.#.", ".###.", "....."}},
     {{".....", ".#.#.", ".#.#.", "..#..", ".#.#.", ".#.#.", "....."}},
     {{".....", ".#.#.", "#####", ".#.#.", "#####", ".#.#.", "....."}},
-    {{".....", "#..##", ".#.##", ".#..#", "..#..", "##.#.", "##..#"}},
-    {{".....", "#...#", "#...#", "#####", "#...#", ".#.#.", "..#.."}},
-    {{".....", ".#.#.", "##.##", "#.#.#", "#.#.#", "#...#", "#...#"}},
-    {{".....", "#...#", "#...#", "#.#.#", "#.#.#", "##.##", "#...#"}},
-    {{".###.", "#....", "#.##.", "#.#.#", "#.###", "#...#", ".###."}},
+    {{"##..#", "##.#.", "..#..", ".#..#", ".#.##", "#..##", "....."}},
+    {{"..#..", ".#.#.", "#...#", "#####", "#...#", "#...#", "....."}},
+    {{"#...#", "#...#", "#.#.#", "#.#.#", "##.##", ".#.#.", "....."}},
+    {{"#...#", "##.##", "#.#.#", "#.#.#", "#...#", "#...#", "....."}},
+    {{".###.", "#...#", "#.###", "#.#.#", "#.##.", "#....", ".###."}},
     {{"#####", "#####", "#####", "#####", "#####", "#####", "#####"}},
 }};
 
@@ -14074,10 +14011,11 @@ constexpr std::array<std::array<std::string_view, 7>, 16> kGlyphRows{{
   return noisemaker::Surface(width, height, std::move(data));
 }
 
-[[nodiscard]] noisemaker::Surface glyph_flat_surface(std::size_t glyph) {
+[[nodiscard]] noisemaker::Surface glyph_flat_surface(
+    std::size_t glyph, std::size_t width = 35U, std::size_t height = 35U) {
   const float value = static_cast<float>(
       glyph == 15U ? 1.0 : (static_cast<double>(glyph) + 0.25) / 16.0);
-  std::vector<float> data(35U * 35U * 4U);
+  std::vector<float> data(width * height * 4U);
   for (std::size_t lane = 0; lane < data.size(); lane += 4U) {
     data[lane] = value;
     data[lane + 1U] = value;
@@ -14086,7 +14024,7 @@ constexpr std::array<std::array<std::string_view, 7>, 16> kGlyphRows{{
         static_cast<double>((lane / 4U) % 17U + 1U) / 19.0);
   }
   data[3] = -0.0f;
-  return noisemaker::Surface(35U, 35U, std::move(data));
+  return noisemaker::Surface(width, height, std::move(data));
 }
 
 [[nodiscard]] noisemaker::glsl::Bindings glyph_bindings(
@@ -14286,6 +14224,54 @@ TEST(typed_glyph_map_matches_all_twenty_five_exact_oracles) {
     }
     for (const float lane : public_output.data()) REQUIRE(std::isfinite(lane));
   }
+}
+
+TEST(typed_glyph_map_origin_tile_uses_full_resolution_difference) {
+  constexpr std::size_t width = 520U;
+  constexpr std::size_t height = 256U;
+  noisemaker::Surface input = glyph_flat_surface(14U, width, height);
+  const auto before = task23_float_bytes(input);
+  REQUIRE(task23_hex(task23_sha256(before)) ==
+          "e77a1777eb82dead39cfed11d1057f636550752ee2871dd715012ca27a2170b5");
+
+  struct Case {
+    noisemaker::glsl::Vec2 full_resolution;
+    std::string_view f32_hash;
+    std::string_view rgba8_hash;
+  };
+  constexpr std::array<Case, 2> cases{{
+      {{1040.0f, 256.0f},
+       "238f1d8557d1fb13585de360a50784cf9774e93925fcd7b6e8fd83a75633ec27",
+       "87f51a4f06952bf95fd5199677c905b6e52753f5e211a97caa43e727640fdbe3"},
+      {{520.0f, 256.0f},
+       "7147bb96771ec90d144627719eb082f0afd59b773b9da3e9dc110d85a19753c8",
+       "f383b8064ad4d438e012f5dc3e5e31ae605c16d93171fa1c0f66315af0673a82"},
+  }};
+  std::vector<noisemaker::Surface> outputs;
+  for (const Case& fixture : cases) {
+    const auto bindings = [&] {
+      return glyph_bindings(input, {0.0f, 0.0f}, fixture.full_resolution,
+                            32.0, 32, 37, 1);
+    };
+    const auto public_output = noisemaker::run_pass(
+        noisemaker::generated::bind("filter/glyphMap:glyphMap", bindings()),
+        width, height, 0.0f, 1.0f);
+    const auto direct_output = noisemaker::run_pass(
+        noisemaker::generated::bind_filter_glyphMap_glyphMap(bindings()),
+        width, height, 0.0f, 1.0f);
+    const auto repeat_output = noisemaker::run_pass(
+        noisemaker::generated::bind_filter_glyphMap_glyphMap(bindings()),
+        width, height, 0.0f, 1.0f);
+    glyph_map_require_exact(public_output, direct_output, "origin tile direct");
+    glyph_map_require_exact(public_output, repeat_output, "origin tile repeat");
+    REQUIRE(task23_float_bytes(input) == before);
+    REQUIRE(task23_hex(task23_sha256(task23_float_bytes(public_output)))
+            == fixture.f32_hash);
+    REQUIRE(task23_hex(task23_sha256(public_output.to_rgba8()))
+            == fixture.rgba8_hash);
+    outputs.push_back(public_output);
+  }
+  REQUIRE(task23_float_bytes(outputs[0]) != task23_float_bytes(outputs[1]));
 }
 
 TEST(typed_glyph_map_binding_abi_is_complete_and_accepts_extras) {
@@ -14907,7 +14893,7 @@ struct EdgeCase {
 constexpr std::array<EdgeCase, 25> kEdgeCases{{
   EdgeCase{"fine-color-radius-two", 9U, 7U, 1U, 0, {0.0f, 1.0f, 1.0f, 6.0f, 0.0f, 0.0f, 0.0f, 100.0f, 100.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "ac946879a94f7276d6d68f125913da85ed71e6577cd9445417f753f684f7512a", "9bdc913e82fe60bcc33a4ac648931dba39cc9c5ed3c5da950717d7ae3c5ed0b7", "2b8a923bcd69f3f76af214760c7ea95476afbe1b94f9080e5c0a4fe0213529a9", {EdgeProbe{0U, 0U, {0x00000000U, 0x3e4fd760U, 0x00000000U, 0x3e95da89U}}, EdgeProbe{8U, 0U, {0x3f800000U, 0x3e0df0e0U, 0x3f23a0f0U, 0x3f031f38U}}, EdgeProbe{0U, 6U, {0x00000000U, 0x3f800000U, 0x3f800000U, 0x3f4e0c7dU}}, EdgeProbe{8U, 6U, {0x3f800000U, 0x00000000U, 0x00000000U, 0x3e895da9U}}, EdgeProbe{4U, 3U, {0x3f800000U, 0x00000000U, 0x3f800000U, 0x3f2895dbU}}}},
   EdgeCase{"bold-color-radius-three", 9U, 7U, 2U, 0, {1.0f, 2.0f, 1.0f, 6.0f, 0.0f, 0.0f, 0.0f, 100.0f, 100.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "0abf8321c6813ccff9ca8d58dcb8ff9567e5a4dcf7f5589385e88ac57fffe9da", "1bfcb17c50f4995dbd7b7a69e643e26c050fec3567552b4901bb916cd85be2ed", "e55142c54cc2fd6ae26fc900fedef1cc179fc86d53fc3e4d603d57f2188c9811", {EdgeProbe{0U, 0U, {0x00000000U, 0x00000000U, 0x3f800000U, 0x3eed44afU}}, EdgeProbe{8U, 0U, {0x3f800000U, 0x3f800000U, 0x00000000U, 0x3f2ed44bU}}, EdgeProbe{0U, 6U, {0x3eb2f460U, 0x00000000U, 0x00000000U, 0x3e60c7ceU}}, EdgeProbe{8U, 6U, {0x3f800000U, 0x00000000U, 0x00000000U, 0x3ee0c7ceU}}, EdgeProbe{4U, 3U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f544aedU}}}},
-  EdgeCase{"fine-luma-threshold-invert", 8U, 6U, 3U, 0, {0.0f, 1.0f, 1.0f, 2.0f, 1.0f, 1.0f, 37.0f, 175.0f, 63.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "8461ac74e9591fc9b65b6beb1b226e718d0dc828b59ffa62fd128713284c46de", "43d14ec8c38eee1c8b3c5fce2ae2ab67b98042c3fb40087d3b61191499ed2d7a", "af85175b54cf35725ac3422ab182daa7ed0c0be1f56f62a184349ed0e47566cf", {EdgeProbe{0U, 0U, {0x00000000U, 0x3f40a238U, 0x3dfd5c5fU, 0x3f22576aU}}, EdgeProbe{7U, 0U, {0x3f3ce4a9U, 0x3f316cfdU, 0x3f434c89U, 0x3f3b512cU}}, EdgeProbe{0U, 5U, {0x3edfb077U, 0x3f75dc84U, 0x3ef8151dU, 0x3f2ed44bU}}, EdgeProbe{7U, 5U, {0x3f152050U, 0x3f66a74aU, 0x3e53224fU, 0x3f47ce0cU}}, EdgeProbe{4U, 3U, {0x3e18ce80U, 0x3f1faee4U, 0x3ee2f815U, 0x3e79c190U}}}},
+  EdgeCase{"fine-luma-threshold-invert", 8U, 6U, 3U, 0, {0.0f, 1.0f, 1.0f, 2.0f, 1.0f, 1.0f, 37.0f, 175.0f, 63.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "8461ac74e9591fc9b65b6beb1b226e718d0dc828b59ffa62fd128713284c46de", "07bab121e47a4b3d1fe8a438ed0045d58d2261b981477af75c3fc54629b233db", "af85175b54cf35725ac3422ab182daa7ed0c0be1f56f62a184349ed0e47566cf", {EdgeProbe{0U, 0U, {0x00000000U, 0x3f40a238U, 0x3dfd5c5fU, 0x3f22576aU}}, EdgeProbe{7U, 0U, {0x3f3ce4a9U, 0x3f316cfdU, 0x3f434c89U, 0x3f3b512cU}}, EdgeProbe{0U, 5U, {0x3edfb077U, 0x3f75dc84U, 0x3ef8151dU, 0x3f2ed44bU}}, EdgeProbe{7U, 5U, {0x3f152050U, 0x3f66a74aU, 0x3e53224fU, 0x3f47ce0cU}}, EdgeProbe{4U, 3U, {0x3e18ce80U, 0x3f1faee4U, 0x3ee2f815U, 0x3e79c190U}}}},
   EdgeCase{"radius-one-scale-zero", 6U, 5U, 4U, 0, {1.0f, 1.0f, 0.0f, 6.0f, 0.0f, 0.0f, 0.0f, 100.0f, 100.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "7255489e612325a90ecfb53cd3bbc68b1d84057a70b3ffc907219f3d592e5a2d", "ecae9908875b965929fed9b4843d923ef92b392b1ff2b3a0c51e4cfcda2acb5d", "a458c8d9851ee8aa034a83b41c731ca060f3831d06d0ab53129c46272f3429b4", {EdgeProbe{0U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f4e0c7dU}}, EdgeProbe{5U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f2895dbU}}, EdgeProbe{0U, 4U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3ec7ce0cU}}, EdgeProbe{5U, 4U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3e79c190U}}, EdgeProbe{3U, 2U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f15da89U}}}},
   EdgeCase{"amount-zero-normal", 6U, 5U, 5U, 0, {1.0f, 1.0f, 1.0f, 6.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "d17ad6aa5d51a8cc05fb87afc686cf76c5bf307e70fd401f2f2684b90618ca49", "64c5f118731fe83feb6639e7cf63c9a900b88579d5927ab89a414a5baf89f2bd", "2bca1d79171282f6d9f10be2f677e3c020bcc9ceb0d2b0b85e1b2ddbb9acc6f4", {EdgeProbe{0U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3e60c7ceU}}, EdgeProbe{5U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f544aedU}}, EdgeProbe{0U, 4U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f0f9c19U}}, EdgeProbe{5U, 4U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3ed44aedU}}, EdgeProbe{3U, 2U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f418f9cU}}}},
   EdgeCase{"mix-zero-input-identity", 6U, 5U, 6U, 0, {1.0f, 1.0f, 1.0f, 8.0f, 0.0f, 0.0f, 0.0f, 100.0f, 0.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "7d897e957e67455a1f58e99abba0b6071060987abef1f0e6c9f95a2cbe3ea22d", "e859cd989a0632253c5907945d750eadf61d9c4eea58c7f40a708eff2e6c1b99", "ebf4857f69d6f9912ad6fb6ecbdfb5658d88a22910a4601d2ff6538a957cafe1", {EdgeProbe{0U, 0U, {0x00000000U, 0x3ef353a5U, 0x3dd3224fU, 0x3ec7ce0cU}}, EdgeProbe{5U, 0U, {0x3f30774dU, 0x3e2237c3U, 0x3f30d322U, 0x3e79c190U}}, EdgeProbe{0U, 4U, {0x3f53431bU, 0x3e83cd4fU, 0x3ec893cbU, 0x3f3b512cU}}, EdgeProbe{5U, 4U, {0x3ebce4a9U, 0x3f66a74aU, 0x3d7d5c5fU, 0x3f15da89U}}, EdgeProbe{3U, 2U, {0x3ed5bf61U, 0x3f40a238U, 0x3f4893cbU, 0x3e2ed44bU}}}},
@@ -14919,13 +14905,13 @@ constexpr std::array<EdgeCase, 25> kEdgeCases{{
   EdgeCase{"contour-color-lower-level-hundred", 7U, 7U, 0U, 1, {2.0f, 1.0f, 1.0f, 6.0f, 0.0f, 0.0f, 0.0f, 100.0f, 100.0f, 100.0f, 0.0f, 0.0f, 0U, 0.0f}, "3195d982f9e9ae75d4251617ea3d4e3795c2e7e83fc3a83b3c3839168f77d839", "68adab5f5048a75880de1bff341845272093f617bcf260276e4010a59ba63e32", "d9b19470109ba436c8af9cfaf76d6acfc665e464dbff54510150703de5e7791e", {EdgeProbe{0U, 0U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3e000000U}}, EdgeProbe{6U, 0U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}, EdgeProbe{0U, 6U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}, EdgeProbe{6U, 6U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f600000U}}, EdgeProbe{3U, 3U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}}},
   EdgeCase{"contour-luma-lower", 7U, 7U, 0U, 1, {2.0f, 1.0f, 1.0f, 6.0f, 0.0f, 1.0f, 0.0f, 100.0f, 100.0f, 43.0f, 0.0f, 0.0f, 0U, 0.0f}, "3195d982f9e9ae75d4251617ea3d4e3795c2e7e83fc3a83b3c3839168f77d839", "fdb8c70d0df49093c617414bf289c98ec74ef29f525a2373ccbc8f296b73b783", "73cba512a2700ddfb4f18975668ed150ceac309eaa1d59e417c0496c60187ca6", {EdgeProbe{0U, 0U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3e000000U}}, EdgeProbe{6U, 0U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}, EdgeProbe{0U, 6U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}, EdgeProbe{6U, 6U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f600000U}}, EdgeProbe{3U, 3U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}}},
   EdgeCase{"contour-luma-upper", 7U, 7U, 0U, 1, {2.0f, 1.0f, 1.0f, 6.0f, 0.0f, 1.0f, 0.0f, 100.0f, 100.0f, 57.0f, 1.0f, 0.0f, 0U, 0.0f}, "3195d982f9e9ae75d4251617ea3d4e3795c2e7e83fc3a83b3c3839168f77d839", "940dd932fbaa810359783a70f3ac944835e8c4922f0b6fca9c325f18b479a257", "fd391208d91ab6bac9d159205ba396e908a8cdd52a4d1b6023a4ef8ec25a5b14", {EdgeProbe{0U, 0U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3e000000U}}, EdgeProbe{6U, 0U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}, EdgeProbe{0U, 6U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}, EdgeProbe{6U, 6U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f600000U}}, EdgeProbe{3U, 3U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f000000U}}}},
-  EdgeCase{"blend-0", 5U, 4U, 10U, 0, {0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 80.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "0a50e6db1b7b2650e01d720222771ba7d1588a0d5d3345edeee3b2fd205d1f3c", "8a8b03d743853e34bcd9a11975c860aa25888c1a3c7f5272b00a44d74b9f9dd1", "e7e0a9c04be65179e4bf11c5427ebb26b362035f0393fdaa44c13624e64b11c8", {EdgeProbe{0U, 0U, {0x00000000U, 0x3f555dfcU, 0x3f3c40fdU, 0x3ea2576aU}}, EdgeProbe{4U, 0U, {0x3f409258U, 0x3f7b96f7U, 0x3f8947aeU, 0x3f4e0c7dU}}, EdgeProbe{0U, 3U, {0x3f54c0dfU, 0x3f6ce383U, 0x3f6226a3U, 0x3e47ce0cU}}, EdgeProbe{4U, 3U, {0x3f54bc96U, 0x3e981447U, 0x3f416b17U, 0x3f2ed44bU}}, EdgeProbe{2U, 2U, {0x3f753038U, 0x3f606493U, 0x3f609ec6U, 0x3f3b512cU}}}},
+  EdgeCase{"blend-0", 5U, 4U, 10U, 0, {0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 80.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "0a50e6db1b7b2650e01d720222771ba7d1588a0d5d3345edeee3b2fd205d1f3c", "92a0be3ba6c49163c700998598706eb33fd40bec5bed7a0f73a7e2dbb9cd86af", "e7e0a9c04be65179e4bf11c5427ebb26b362035f0393fdaa44c13624e64b11c8", {EdgeProbe{0U, 0U, {0x00000000U, 0x3f555dfcU, 0x3f3c40fdU, 0x3ea2576aU}}, EdgeProbe{4U, 0U, {0x3f409258U, 0x3f7b96f7U, 0x3f8947aeU, 0x3f4e0c7dU}}, EdgeProbe{0U, 3U, {0x3f54c0dfU, 0x3f6ce383U, 0x3f6226a3U, 0x3e47ce0cU}}, EdgeProbe{4U, 3U, {0x3f54bc91U, 0x3e981447U, 0x3f416b13U, 0x3f2ed44bU}}, EdgeProbe{2U, 2U, {0x3f753038U, 0x3f606493U, 0x3f609ec6U, 0x3f3b512cU}}}},
   EdgeCase{"blend-1", 5U, 4U, 11U, 0, {1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 93.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "2f222aad9c43248d306464352fed7b57141ce9b05e7c0f0b3cdeae6d3196809f", "e256dff7e091bb45017e1314011d8e315fcdf20d7eb83051a9aa0cd8fc94eb7d", "d1848e5103b7ec96ec4618946e248428b021efed7a55918eb14a4292ef9af08d", {EdgeProbe{0U, 0U, {0x80000000U, 0x3f274981U, 0x3f2e2f81U, 0x3ef9c190U}}, EdgeProbe{4U, 0U, {0x3dc40d1fU, 0x3d76fa04U, 0x3f8947aeU, 0x3e60c7ceU}}, EdgeProbe{0U, 3U, {0x3f1a18dbU, 0x3f786563U, 0x3f659bb6U, 0x3ebb512cU}}, EdgeProbe{4U, 3U, {0x3f53431bU, 0x3f06562eU, 0x3cc3eeafU, 0x3f5a895eU}}, EdgeProbe{2U, 2U, {0x3c8a639eU, 0x3f4d4e93U, 0x3f605474U, 0x3e15da89U}}}},
   EdgeCase{"blend-2", 5U, 4U, 12U, 0, {0.0f, 1.0f, 1.0f, 2.0f, 0.0f, 0.0f, 0.0f, 106.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "6dd0f27242817c7b8cf1ad1ec5a695b10ab418d87adb15f48760abc5f38ae382", "f6d83885968ccf8a861da4bbf8964a97e4b886a0764d01460f4cec43959f4296", "8a0f78424e1739d7262be4c843c5f3300d5bff48fb3b2f92395daf56e2608c82", {EdgeProbe{0U, 0U, {0x00000000U, 0x3eae0781U, 0x3d7d5c5fU, 0x3f2895dbU}}, EdgeProbe{4U, 0U, {0x3f03ba68U, 0x3f06eb6bU, 0x3f0a3d71U, 0x3ec7ce0cU}}, EdgeProbe{0U, 3U, {0x3ec2692fU, 0x3e7353a5U, 0x3e8e83f5U, 0x3f095da9U}}, EdgeProbe{4U, 3U, {0x3cee9a19U, 0x3ec9b52dU, 0x3ec34c89U, 0x3e895da9U}}, EdgeProbe{2U, 2U, {0x3e788b2fU, 0x3d8df0cbU, 0x3e83f571U, 0x3ea2576aU}}}},
   EdgeCase{"blend-3", 5U, 4U, 13U, 0, {1.0f, 1.0f, 1.0f, 3.0f, 0.0f, 1.0f, 22.0f, 119.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "f3495143b96eca75636422fe44783a50845dac8447371db7c835aa51dfb47592", "559ba7b503e76f3edb950d1080cab5769608dd838f3b98e518263580ecbcadf3", "824fef9d490445780263e86c2a3f29f22f04d947583d26f9a42c547b380bb77b", {EdgeProbe{0U, 0U, {0x80000000U, 0x3e181447U, 0x3eb8be05U, 0x3f544aedU}}, EdgeProbe{4U, 0U, {0x3f69a7ebU, 0x3f670221U, 0x3f8947aeU, 0x3f0f9c19U}}, EdgeProbe{0U, 3U, {0x3f7dd671U, 0x3eee41e7U, 0x3f13cb37U, 0x3f3512bbU}}, EdgeProbe{4U, 3U, {0x3e5ab7ecU, 0x3ca237c3U, 0x3f2e2f81U, 0x3ee0c7ceU}}, EdgeProbe{2U, 2U, {0x3edab7ecU, 0x3e981447U, 0x3f0e83f5U, 0x3ef9c190U}}}},
   EdgeCase{"blend-4", 5U, 4U, 14U, 0, {0.0f, 1.0f, 1.0f, 4.0f, 0.0f, 0.0f, 0.0f, 132.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "cab6a2e192db0d7ac5ba8243aa8ff7493560f4294651715266143abad870277f", "cec42b1fea3dc977143de14c8e250095b001c66d3e1981a30c129841d35fc544", "305951cd1a2b7bd7ccc43c047d6827ab4f9b46661be5a55ccec3b239fc14cab5", {EdgeProbe{0U, 0U, {0x00000000U, 0x3ee54610U, 0x3f28e83fU, 0x3e79c190U}}, EdgeProbe{4U, 0U, {0x3f7759c6U, 0x3f77ea1aU, 0x3fa00000U, 0x3f3b512cU}}, EdgeProbe{0U, 3U, {0x3e32f393U, 0x3f316cfdU, 0x3f76d0d0U, 0x3df9c190U}}, EdgeProbe{4U, 3U, {0x3f534fd5U, 0x3e7d7721U, 0x3d7d5c5fU, 0x3f1c18faU}}, EdgeProbe{2U, 2U, {0x3f632b3fU, 0x3f4e6dd5U, 0x3f7548f2U, 0x3f2895dbU}}}},
   EdgeCase{"blend-5", 5U, 4U, 15U, 0, {1.0f, 1.0f, 1.0f, 5.0f, 0.0f, 0.0f, 0.0f, 145.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "b7ca788e2f3fcd110a1db20ec6e667693765b738811631e72aadf7e031bfe99a", "477835e29a7a8bc7bc41662f4a636c11330548372cd68036d34f7fe6c90e7d89", "ba808de4275704cb050ccb3a0140288f372924bba80ee4b26b82d31518478e0c", {EdgeProbe{0U, 0U, {0x80000000U, 0x3f1a9d26U, 0x3c43eeafU, 0x3ed44aedU}}, EdgeProbe{4U, 0U, {0x3ccf956dU, 0x3d3c2c34U, 0x3fa00000U, 0x3e15da89U}}, EdgeProbe{0U, 3U, {0x3dd55993U, 0x3f6bb908U, 0x3d991279U, 0x3e95da89U}}, EdgeProbe{4U, 3U, {0x3f152050U, 0x3ef353a5U, 0x3dd64d10U, 0x3f47ce0cU}}, EdgeProbe{2U, 2U, {0x3f4bce4bU, 0x3f40a238U, 0x3d8cd38eU, 0x3f544aedU}}}},
-  EdgeCase{"blend-6", 5U, 4U, 16U, 0, {0.0f, 1.0f, 1.0f, 6.0f, 0.0f, 1.0f, 0.0f, 158.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "60d04a707da8ae261e6e9c328073850823cc29c0772fb3dea8da2716d188d2cc", "991e436f4684851bc5122c76dd4428ba2cb43822223021cd89910ed8e8b2d1d9", "bd69518a512f924723b76dadc4bd8b2df091561bcb85a06a9d64e48356a6027c", {EdgeProbe{0U, 0U, {0x3f35c28fU, 0x3f738110U, 0x3f4f0454U, 0x3f15da89U}}, EdgeProbe{4U, 0U, {0x3ef71b04U, 0x3f526d4bU, 0x3f8947aeU, 0x3ea2576aU}}, EdgeProbe{0U, 3U, {0x3e217438U, 0x3d5f747eU, 0x3e255164U, 0x3eed44afU}}, EdgeProbe{4U, 3U, {0x3f6eb38cU, 0x3f69f2d2U, 0x3f66be3bU, 0x3e47ce0cU}}, EdgeProbe{2U, 2U, {0x3e9198ceU, 0x3bbc2c34U, 0x3e1f31eeU, 0x3e79c190U}}}},
+  EdgeCase{"blend-6", 5U, 4U, 16U, 0, {0.0f, 1.0f, 1.0f, 6.0f, 0.0f, 1.0f, 0.0f, 158.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "60d04a707da8ae261e6e9c328073850823cc29c0772fb3dea8da2716d188d2cc", "cfc86731c04f8c9691547753537a2773f432dd51eaffd6e3df5169db21ee60e1", "bd69518a512f924723b76dadc4bd8b2df091561bcb85a06a9d64e48356a6027c", {EdgeProbe{0U, 0U, {0x3f35c28fU, 0x3f738110U, 0x3f4f0454U, 0x3f15da89U}}, EdgeProbe{4U, 0U, {0x3ef71af2U, 0x3f526d4bU, 0x3f8947aeU, 0x3ea2576aU}}, EdgeProbe{0U, 3U, {0x3e217438U, 0x3d5f747eU, 0x3e255164U, 0x3eed44afU}}, EdgeProbe{4U, 3U, {0x3f6eb38cU, 0x3f69f2d2U, 0x3f66be3bU, 0x3e47ce0cU}}, EdgeProbe{2U, 2U, {0x3e9198ceU, 0x3bbc2c34U, 0x3e1f31eeU, 0x3e79c190U}}}},
   EdgeCase{"blend-7", 5U, 4U, 17U, 0, {1.0f, 1.0f, 1.0f, 7.0f, 0.0f, 0.0f, 0.0f, 171.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "8e039ee2ff5d98d54087d8ce5e11c0950d45058f8ada81012d24c7b7da7c578c", "050adc9953c661a799e5cdc89abc710d6059f5c73b89f1c5617827a5e2b4100e", "1e063cc897584d917015416effa3a4a9a7efd8e006796c3f3fcb95af699bd9af", {EdgeProbe{0U, 0U, {0x80000000U, 0x3ceb3741U, 0x3f65365eU, 0x3f418f9cU}}, EdgeProbe{4U, 0U, {0x3e07818bU, 0x3f635544U, 0x3f8947aeU, 0x3ef9c190U}}, EdgeProbe{0U, 3U, {0x3f6bd179U, 0x3df6fa04U, 0x3f7548f2U, 0x3f22576aU}}, EdgeProbe{4U, 3U, {0x3f7c6568U, 0x3f7adacbU, 0x3c43eeafU, 0x3ebb512cU}}, EdgeProbe{2U, 2U, {0x3d5b1dbaU, 0x3d930289U, 0x3f73c115U, 0x3ed44aedU}}}},
   EdgeCase{"blend-8", 5U, 4U, 18U, 0, {0.0f, 1.0f, 1.0f, 8.0f, 0.0f, 0.0f, 0.0f, 184.0f, 71.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "969025bbc36b9e53214366ecbfd457ae890ea670cee70cd7cd81b8001e5f3ce9", "745af9d1ed86f0ddde432621873be18d75fdadea4a6a773ff011492f206c68b9", "7f5bb075b78111d281aea79b9abbcffade27e2ca9408f9bbcbf434e449d6378c", {EdgeProbe{0U, 0U, {0x00000000U, 0x3f0eb8cfU, 0x3f7b6868U, 0x3e2ed44bU}}, EdgeProbe{4U, 0U, {0x3f6554ceU, 0x3f743d3dU, 0x3f8947aeU, 0x3f2895dbU}}, EdgeProbe{0U, 3U, {0x3f798355U, 0x3f24c0a2U, 0x3e72cddbU, 0x3f4e0c7dU}}, EdgeProbe{4U, 3U, {0x3e1f1166U, 0x3e4ac5b4U, 0x3eae2f81U, 0x3f095da9U}}, EdgeProbe{2U, 2U, {0x3ebce4a9U, 0x3f590ad9U, 0x3e5db0d3U, 0x3f15da89U}}}},
   EdgeCase{"external-context-base", 8U, 5U, 30U, 0, {1.0f, 1.0f, 1.0f, 7.0f, 0.0f, 0.0f, 0.0f, 100.0f, 100.0f, 50.0f, 0.0f, 0.0f, 0U, 0.0f}, "2c84072ccd3a129e0a2fe081b62e05b734fe2bc2062b472bb771494efbfe88de", "a17a831e563747209feb779d03aa22e717ab27b7275332b00896f87e889af97b", "2d3c553f02d4fa5e0ff58ab4a1dd926d56252fd28b02634e60ba5653c1a201a2", {EdgeProbe{0U, 0U, {0x80000000U, 0x00000000U, 0x3f800000U, 0x3f3512bbU}}, EdgeProbe{7U, 0U, {0x3f800000U, 0x00000000U, 0x3f800000U, 0x3f4e0c7dU}}, EdgeProbe{0U, 4U, {0x00000000U, 0x3f800000U, 0x00000000U, 0x3e95da89U}}, EdgeProbe{7U, 4U, {0x3f7d83baU, 0x3f800000U, 0x3f800000U, 0x3ec7ce0cU}}, EdgeProbe{4U, 2U, {0x00000000U, 0x3f800000U, 0x00000000U, 0x3f1c18faU}}}},
@@ -15528,7 +15514,7 @@ TEST(typed_glitch_exact_comparer_rejects_shape_and_signed_zero) {
 
 TEST(typed_glitch_matches_all_eight_authoritative_js_oracles) {
   REQUIRE(glitch_native_oracle::kOracleSha256 ==
-          "4d336018f947f0356d2a876fadf7fdeaf89a07c23bb0b8f52ba140f95c630a57");
+          "3c4f075f51a1d6951b3701335bfcb0f0764d9ca13b3ee0dba7ceb0f1fe65554c");
   REQUIRE(glitch_native_oracle::kProgramKey ==
           "classicNoisedeck/glitch:glitch");
   REQUIRE(glitch_native_oracle::kTotalFloatWords == 2468U);
@@ -15617,9 +15603,9 @@ TEST(typed_glitch_time_uniform_ingress_freezes_f32_before_number_binding) {
       fixture.width, fixture.height, static_cast<float>(fixture.time));
   constexpr std::size_t x1_red_lane = 4U;
   REQUIRE(noisemaker::float_bits_to_uint(
-              canonical.data()[x1_red_lane]) == 0x3f2dd64fU);
+              canonical.data()[x1_red_lane]) == 0x3f2dfc67U);
   REQUIRE(noisemaker::float_bits_to_uint(
-              raw_binary64.data()[x1_red_lane]) == 0x3f2dd651U);
+              raw_binary64.data()[x1_red_lane]) == 0x3f2dfc69U);
   REQUIRE(task23_float_bytes(canonical) != task23_float_bytes(raw_binary64));
 }
 
@@ -15839,6 +15825,10 @@ void emboss_require_same_surface(const noisemaker::Surface& expected,
     else
       bindings.set_uniform(std::string(name), value);
   };
+  if (missing != "STYLE") {
+    if (wrong == "STYLE") bindings.set_uniform("STYLE", 0.5);
+    else bindings.set_uniform("STYLE", std::int32_t{0});
+  }
   vector2("tileOffset", fixture.tile_offset);
   vector2("fullResolution", fixture.full_resolution);
   number("amount", fixture.amount);
@@ -16008,9 +15998,9 @@ TEST(typed_emboss_matches_all_seventeen_independent_js_oracles) {
 TEST(typed_emboss_binding_abi_and_catalog_are_exact) {
   const auto& fixture = emboss181_oracle::kCases[0];
   noisemaker::Surface input = emboss_input(fixture);
-  constexpr std::array<std::string_view, 8> names{
+  constexpr std::array<std::string_view, 9> names{
       "tileOffset", "fullResolution", "inputTex", "amount",
-      "angle", "height", "colorAmount", "renderScale"};
+      "angle", "height", "colorAmount", "renderScale", "STYLE"};
   for (const std::string_view name : names) {
     const auto missing = emboss_bindings(fixture, input, name);
     const auto wrong = emboss_bindings(fixture, input, {}, name);
@@ -16384,11 +16374,11 @@ TEST(typed_shape_mixer_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape_mixer_matches_all_forty_two_independent_js_oracles) {
   REQUIRE(shape_mixer182_oracle::kOracleSha256 ==
-          "0dd9f536aa8a3e57dba91c701e1f25b5f35617011c8e49a6cdfbb1bcdbcad6c8");
+          "58e04dd92abd174f17f29a0f919a1f017a579869658d8044414a9ba7931a7109");
   REQUIRE(shape_mixer182_oracle::kProgramKey ==
           "classicNoisedeck/shapeMixer:shapeMixer");
   REQUIRE(shape_mixer182_oracle::kCorpusRevision ==
-          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+          "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
   REQUIRE(shape_mixer182_oracle::kCaseCount == 42U);
 
   std::size_t total_float_words = 0U;
@@ -16854,7 +16844,7 @@ struct Shapes183Overrides {
   std::string_view missing{};
   std::string_view wrong{};
   bool extras = false;
-  bool define_named_uniforms = false;
+  bool parameter_alias_uniforms = false;
   std::optional<std::int32_t> seed{};
   std::optional<std::uint32_t> time_word{};
   std::optional<std::array<std::uint32_t, 2>> resolution_words{};
@@ -16912,6 +16902,8 @@ struct Shapes183Overrides {
                                 static_cast<double>(value[2])));
   };
 
+  integer("LOOP_A_OFFSET", 40);
+  integer("LOOP_B_OFFSET", 30);
   number("time", overrides.time_word.value_or(fixture.time_word));
   integer("seed", overrides.seed.value_or(fixture.seed));
   boolean("wrap", fixture.wrap);
@@ -16943,13 +16935,9 @@ struct Shapes183Overrides {
     bindings.set_uniform("shapesUnknownScalar", -12345.0);
     bindings.set_texture("unrelatedTexture", unrelated);
   }
-  if (overrides.define_named_uniforms) {
-    // LOOP_A_OFFSET / LOOP_B_OFFSET are compile-time defines baked into the
-    // generated kernel, not runtime bindings. Binding uniforms under those
-    // names -- and under the upstream effect's parameter spellings -- must be
-    // inert.
-    for (const char* name : {"LOOP_A_OFFSET", "LOOP_B_OFFSET", "loopAOffset",
-                             "loopBOffset"})
+  if (overrides.parameter_alias_uniforms) {
+    // The parameter-name aliases are not the generated define inputs.
+    for (const char* name : {"loopAOffset", "loopBOffset"})
       bindings.set_uniform(name, std::int32_t{999});
   }
   return bindings;
@@ -16999,6 +16987,8 @@ struct Shapes183Overrides {
     for (std::size_t lane = 0; lane < 3U; ++lane)
       push32(noisemaker::float_bits_to_uint(noisemaker::f32(value[lane])));
   };
+  integer("LOOP_A_OFFSET");
+  integer("LOOP_B_OFFSET");
   number("time");
   integer("seed");
   boolean("wrap");
@@ -17246,10 +17236,10 @@ TEST(typed_shapes_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shapes_matches_all_six_independent_js_oracles) {
   REQUIRE(shapes183_oracle::kOracleSha256 ==
-          "0712137d3f2d0bcb650d05db9af102817d61b3520d9cc4bea8789d8bc385296c");
+          "e1e5e2a42bf28a03643d3c55ed0f1c445cc74646b16195daf75c29c8347fea1b");
   REQUIRE(shapes183_oracle::kProgramKey == "classicNoisedeck/shapes:shapes");
   REQUIRE(shapes183_oracle::kCorpusRevision ==
-          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+          "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
   REQUIRE(shapes183_oracle::kCaseCount == 6U);
   REQUIRE(shapes183_oracle::kCases.size() == 6U);
   REQUIRE(shapes183_oracle::kLoopAOffset == 40);
@@ -17298,13 +17288,13 @@ TEST(typed_shapes_matches_all_six_independent_js_oracles) {
     std::size_t visited = 0U;
     const std::vector<std::uint8_t> public_state_before =
         shapes183_binding_state_bytes(public_bindings, visited);
-    REQUIRE(visited == shapes183_oracle::kBindingCount);
+    REQUIRE(visited == shapes183_oracle::kBindingCount + 2U);
     const std::vector<std::uint8_t> direct_state_before =
         shapes183_binding_state_bytes(direct_bindings, visited);
-    REQUIRE(visited == 18U);
+    REQUIRE(visited == 20U);
     const std::vector<std::uint8_t> repeat_state_before =
         shapes183_binding_state_bytes(repeat_bindings, visited);
-    REQUIRE(visited == 18U);
+    REQUIRE(visited == 20U);
     REQUIRE(public_state_before == direct_state_before);
     REQUIRE(public_state_before == repeat_state_before);
 
@@ -17343,13 +17333,13 @@ TEST(typed_shapes_matches_all_six_independent_js_oracles) {
     // binding-state proof -- not an input-surface claim.
     const std::vector<std::uint8_t> public_state_after =
         shapes183_binding_state_bytes(public_bindings, visited);
-    REQUIRE(visited == 18U);
+    REQUIRE(visited == 20U);
     const std::vector<std::uint8_t> direct_state_after =
         shapes183_binding_state_bytes(direct_bindings, visited);
-    REQUIRE(visited == 18U);
+    REQUIRE(visited == 20U);
     const std::vector<std::uint8_t> repeat_state_after =
         shapes183_binding_state_bytes(repeat_bindings, visited);
-    REQUIRE(visited == 18U);
+    REQUIRE(visited == 20U);
     REQUIRE(public_state_after == public_state_before);
     REQUIRE(direct_state_after == direct_state_before);
     REQUIRE(repeat_state_after == repeat_state_before);
@@ -17518,7 +17508,8 @@ TEST(typed_shapes_binding_abi_and_catalog_are_exact) {
       "cyclePalette", "rotatePalette", "repeatPalette"};
   for (std::size_t index = 0; index < names.size(); ++index)
     REQUIRE(shapes183_oracle::kBindingNames[index] == names[index]);
-  // The two compile-time defines are not runtime bindings.
+  // The original oracle lists 18 effect bindings. The generated runtime
+  // route also requires LOOP_A_OFFSET and LOOP_B_OFFSET as integer inputs.
   for (const std::string_view name : shapes183_oracle::kBindingNames) {
     REQUIRE(name != "LOOP_A_OFFSET");
     REQUIRE(name != "LOOP_B_OFFSET");
@@ -17555,7 +17546,12 @@ TEST(typed_shapes_binding_abi_and_catalog_are_exact) {
   REQUIRE(std::string_view("uniform binding 'seedOffset' is missing")
               .find("seed") != std::string_view::npos);
 
-  for (const std::string_view name : names) {
+  for (const std::string_view name : std::array<std::string_view, 20>{
+           "LOOP_A_OFFSET", "LOOP_B_OFFSET", "time", "seed", "wrap",
+           "resolution", "tileOffset", "fullResolution", "loopAScale",
+           "loopBScale", "speedA", "speedB", "paletteMode",
+           "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
+           "cyclePalette", "rotatePalette", "repeatPalette"}) {
     Shapes183Overrides omit;
     omit.missing = name;
     Shapes183Overrides variant;
@@ -17594,17 +17590,17 @@ TEST(typed_shapes_binding_abi_and_catalog_are_exact) {
   Shapes183Overrides extras;
   extras.extras = true;
   Shapes183Overrides defines;
-  defines.define_named_uniforms = true;
+  defines.parameter_alias_uniforms = true;
   Shapes183Overrides both;
   both.extras = true;
-  both.define_named_uniforms = true;
+  both.parameter_alias_uniforms = true;
   shapes183_require_exact(
       shapes183_render_direct(fixture, shapes183_bindings(fixture, vectors)),
       expected, "shapes ABI baseline/direct");
   for (const auto& variant : {std::pair<const Shapes183Overrides*, const char*>{
                                   &extras, "extras"},
-                              {&defines, "define-named-uniforms"},
-                              {&both, "extras+define-named-uniforms"}}) {
+                                  {&defines, "parameter-name-aliases"},
+                              {&both, "extras+parameter-name-aliases"}}) {
     shapes183_require_exact(
         shapes183_render_direct(fixture,
                                 shapes183_bindings(fixture, vectors,
@@ -17632,7 +17628,7 @@ TEST(typed_shapes_binding_abi_and_catalog_are_exact) {
   REQUIRE(entry->bind ==
           &noisemaker::generated::bind_classicNoisedeck_shapes_shapes);
   REQUIRE(entry != factories.begin());
-  REQUIRE((entry - 1)->key == "classicNoisedeck/shapeMixer:shapeMixer");
+  REQUIRE((entry - 1)->key == "classicNoisedeck/shapes3d:shapes3d");
   REQUIRE((entry + 1) != factories.end());
   REQUIRE((entry + 1)->key == "classicNoisedeck/splat:splat");
   REQUIRE(std::count_if(
@@ -17640,6 +17636,67 @@ TEST(typed_shapes_binding_abi_and_catalog_are_exact) {
               [](const noisemaker::generated::KernelFactory& item) {
                 return item.key.find("shapes:") != std::string_view::npos;
               }) == 1);
+}
+
+TEST(typed_shapes_runtime_defines_match_all_current_cpu_cases) {
+  REQUIRE(classic_shapes_runtime_oracle::kSourceSha256 ==
+          "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e");
+  REQUIRE(classic_shapes_runtime_oracle::kCases.size() == 55U);
+  REQUIRE(classic_shapes_runtime_oracle::kLoopADomain.size() == 25U);
+  REQUIRE(classic_shapes_runtime_oracle::kLoopBDomain.size() == 25U);
+
+  for (const auto& test_case : classic_shapes_runtime_oracle::kCases) {
+    REQUIRE(test_case.fixture_index < shapes183_oracle::kCases.size());
+    const auto& fixture = shapes183_oracle::kCases[test_case.fixture_index];
+    REQUIRE(test_case.width == fixture.width);
+    REQUIRE(test_case.height == fixture.height);
+    REQUIRE(test_case.words.size() == test_case.width * test_case.height * 4U);
+    REQUIRE(test_case.rgba8.size() == test_case.words.size());
+    const Shapes183CallerVectors vectors = shapes183_caller_vectors(fixture);
+    const Shapes183ExpectedSurface expected{
+        test_case.width, test_case.height, test_case.words, test_case.rgba8};
+    const auto bindings_for_case = [&] {
+      auto bindings = shapes183_bindings(fixture, vectors);
+      bindings.set_uniform("LOOP_A_OFFSET", test_case.loop_a);
+      bindings.set_uniform("LOOP_B_OFFSET", test_case.loop_b);
+      return bindings;
+    };
+    const auto public_bindings = bindings_for_case();
+    const auto direct_bindings = bindings_for_case();
+    const auto repeat_bindings = bindings_for_case();
+    std::size_t visited = 0U;
+    const auto before = shapes183_binding_state_bytes(public_bindings, visited);
+    REQUIRE(visited == 20U);
+    REQUIRE(shapes183_binding_state_bytes(direct_bindings, visited) == before);
+    REQUIRE(shapes183_binding_state_bytes(repeat_bindings, visited) == before);
+    const std::string label(test_case.name);
+    shapes183_require_exact(
+        shapes183_render_public(fixture, public_bindings), expected,
+        label + " public");
+    shapes183_require_exact(
+        shapes183_render_direct(fixture, direct_bindings), expected,
+        label + " direct");
+    shapes183_require_exact(
+        shapes183_render_public(fixture, repeat_bindings), expected,
+        label + " repeat");
+    REQUIRE(shapes183_binding_state_bytes(public_bindings, visited) == before);
+    REQUIRE(shapes183_binding_state_bytes(direct_bindings, visited) == before);
+    REQUIRE(shapes183_binding_state_bytes(repeat_bindings, visited) == before);
+  }
+  for (const std::int32_t value : classic_shapes_runtime_oracle::kLoopADomain)
+    REQUIRE(std::any_of(
+        classic_shapes_runtime_oracle::kCases.begin(),
+        classic_shapes_runtime_oracle::kCases.end(),
+        [value](const auto& item) {
+          return item.loop_a == value && item.loop_b == 30;
+        }));
+  for (const std::int32_t value : classic_shapes_runtime_oracle::kLoopBDomain)
+    REQUIRE(std::any_of(
+        classic_shapes_runtime_oracle::kCases.begin(),
+        classic_shapes_runtime_oracle::kCases.end(),
+        [value](const auto& item) {
+          return item.loop_a == 40 && item.loop_b == value;
+        }));
 }
 
 // ---------------------------------------------------------------------------
@@ -17913,6 +17970,8 @@ struct Shape184Overrides {
     else bindings.set_uniform(std::string(name), value);
   };
 
+  integer("LOOP_A_OFFSET", 40);
+  integer("LOOP_B_OFFSET", 30);
   number("time", overrides.time_word.value_or(fixture.time_word));
   integer("seed", overrides.seed.value_or(fixture.seed));
   boolean("wrap", overrides.wrap.value_or(fixture.wrap));
@@ -17944,12 +18003,9 @@ struct Shape184Overrides {
     bindings.set_uniform("globalCoord", noisemaker::glsl::Vec2(-777.0f));
   }
   if (overrides.define_named_uniforms) {
-    // LOOP_A_OFFSET / LOOP_B_OFFSET are compile-time defines baked into the
-    // generated kernel, not runtime bindings. Binding uniforms under those
-    // names -- and under the upstream effect's parameter spellings -- must be
-    // inert.
-    for (const char* name : {"LOOP_A_OFFSET", "LOOP_B_OFFSET", "loopAOffset",
-                             "loopBOffset"})
+    // The upstream parameter spellings remain unrelated to the runtime
+    // LOOP_A_OFFSET and LOOP_B_OFFSET bindings.
+    for (const char* name : {"loopAOffset", "loopBOffset"})
       bindings.set_uniform(name, std::int32_t{999});
   }
   return bindings;
@@ -17987,6 +18043,8 @@ struct Shape184Overrides {
     for (std::size_t lane = 0; lane < 2U; ++lane)
       push32(noisemaker::float_bits_to_uint(value[lane]));
   };
+  integer("LOOP_A_OFFSET");
+  integer("LOOP_B_OFFSET");
   number("time");
   integer("seed");
   boolean("wrap");
@@ -18338,10 +18396,10 @@ TEST(typed_shape184_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape184_matches_all_eight_independent_js_oracles) {
   REQUIRE(shape184_oracle::kOracleSha256 ==
-          "feb92398938ab8e08a1b94f11552409bc5503cc61853935db3992c465fa23745");
+          "8eb0d48e137b43f3e3dca6f8443642714032230c49e387474b3053fa74a545cb");
   REQUIRE(shape184_oracle::kProgramKey == "synth/shape:shape");
   REQUIRE(shape184_oracle::kCorpusRevision ==
-          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+          "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
   REQUIRE(shape184_oracle::kCaseCount == 8U);
   REQUIRE(shape184_oracle::kCases.size() == 8U);
   REQUIRE(shape184_oracle::kLoopAOffset == 40);
@@ -18391,13 +18449,13 @@ TEST(typed_shape184_matches_all_eight_independent_js_oracles) {
     std::size_t visited = 0U;
     const std::vector<std::uint8_t> public_state_before =
         shape184_binding_state_bytes(public_bindings, visited);
-    REQUIRE(visited == shape184_oracle::kBindingCount);
+    REQUIRE(visited == shape184_oracle::kBindingCount + 2U);
     const std::vector<std::uint8_t> direct_state_before =
         shape184_binding_state_bytes(direct_bindings, visited);
-    REQUIRE(visited == 10U);
+    REQUIRE(visited == 12U);
     const std::vector<std::uint8_t> repeat_state_before =
         shape184_binding_state_bytes(repeat_bindings, visited);
-    REQUIRE(visited == 10U);
+    REQUIRE(visited == 12U);
     REQUIRE(public_state_before == direct_state_before);
     REQUIRE(public_state_before == repeat_state_before);
 
@@ -18436,13 +18494,13 @@ TEST(typed_shape184_matches_all_eight_independent_js_oracles) {
     // binding-state proof -- not an input-surface claim.
     const std::vector<std::uint8_t> public_state_after =
         shape184_binding_state_bytes(public_bindings, visited);
-    REQUIRE(visited == 10U);
+    REQUIRE(visited == 12U);
     const std::vector<std::uint8_t> direct_state_after =
         shape184_binding_state_bytes(direct_bindings, visited);
-    REQUIRE(visited == 10U);
+    REQUIRE(visited == 12U);
     const std::vector<std::uint8_t> repeat_state_after =
         shape184_binding_state_bytes(repeat_bindings, visited);
-    REQUIRE(visited == 10U);
+    REQUIRE(visited == 12U);
     REQUIRE(public_state_after == public_state_before);
     REQUIRE(direct_state_after == direct_state_before);
     REQUIRE(repeat_state_after == repeat_state_before);
@@ -18779,7 +18837,8 @@ TEST(typed_shape184_binding_abi_and_catalog_are_exact) {
       "fullResolution", "loopAScale", "loopBScale", "speedA", "speedB"};
   for (std::size_t index = 0; index < names.size(); ++index)
     REQUIRE(shape184_oracle::kBindingNames[index] == names[index]);
-  // The two compile-time defines are not runtime bindings.
+  // The captured oracle metadata records ten historical controls. The two
+  // defines are now separate runtime bindings and are absent from this record.
   for (const std::string_view name : shape184_oracle::kBindingNames) {
     REQUIRE(name != "LOOP_A_OFFSET");
     REQUIRE(name != "LOOP_B_OFFSET");
@@ -18823,7 +18882,11 @@ TEST(typed_shape184_binding_abi_and_catalog_are_exact) {
   REQUIRE(std::string_view("uniform binding 'seedOffset' is missing")
               .find("seed") != std::string_view::npos);
 
-  for (const std::string_view name : names) {
+  constexpr std::array<std::string_view, 12> runtime_names{
+      "LOOP_A_OFFSET", "LOOP_B_OFFSET", "time", "seed", "wrap", "resolution",
+      "tileOffset", "fullResolution", "loopAScale", "loopBScale", "speedA",
+      "speedB"};
+  for (const std::string_view name : runtime_names) {
     Shape184Overrides omit;
     omit.missing = name;
     Shape184Overrides variant;
@@ -18903,7 +18966,7 @@ TEST(typed_shape184_binding_abi_and_catalog_are_exact) {
               factories.begin(), factories.end(),
               [](const noisemaker::generated::KernelFactory& item) {
                 return item.key.find("shape") != std::string_view::npos;
-              }) == 5);
+              }) == 6);
 }
 
 // The two contracts, and what the native side can and cannot say about them.
@@ -20257,6 +20320,8 @@ struct Cellrefract186Overrides {
       bindings.set_uniform(std::string(name), value);
   };
 
+  integer("KERNEL", 0);
+  integer("SHAPE", 1);
   number("time", overrides.time_word.value_or(fixture.time_word));
   integer("seed", overrides.seed.value_or(fixture.seed));
   integer("wrap", overrides.wrap.value_or(fixture.wrap));
@@ -20287,13 +20352,10 @@ struct Cellrefract186Overrides {
     bindings.set_texture("unrelatedTexture", unrelated);
   }
   if (overrides.define_named_uniforms) {
-    // KERNEL and SHAPE are compile-time defines baked into the generated
-    // kernel at 0 and 1 -- the JavaScript materializes them as runtime
-    // bindings, the port does not. Binding uniforms under those spellings, and
-    // under the five kernel tables' names, must be inert.
+    // Unrelated names and the five kernel tables must remain inert.
     for (const char* name :
-         {"KERNEL", "SHAPE", "kernel", "shape", "emboss", "sharpen", "blur",
-          "edge", "edge2"})
+         {"unrelatedKERNEL", "unrelatedSHAPE", "kernel", "shape", "emboss",
+          "sharpen", "blur", "edge", "edge2"})
       bindings.set_uniform(name, std::int32_t{999});
   }
   return bindings;
@@ -20337,6 +20399,8 @@ struct Cellrefract186Overrides {
   number("refractAmt");
   number("direction");
   number("effectWidth");
+  integer("KERNEL");
+  integer("SHAPE");
   integer("seed");
   integer("wrap");
   vector2("resolution");
@@ -20699,13 +20763,13 @@ TEST(typed_cellrefract186_matches_all_four_independent_js_oracles) {
     std::size_t visited = 0U;
     const std::vector<std::uint8_t> public_state_before =
         cellrefract186_binding_state_bytes(public_bindings, visited);
-    REQUIRE(visited == cellrefract186_oracle::kBindingCount);
+    REQUIRE(visited == cellrefract186_oracle::kBindingCount + 2U);
     const std::vector<std::uint8_t> direct_state_before =
         cellrefract186_binding_state_bytes(direct_bindings, visited);
-    REQUIRE(visited == cellrefract186_oracle::kBindingCount);
+    REQUIRE(visited == cellrefract186_oracle::kBindingCount + 2U);
     const std::vector<std::uint8_t> repeat_state_before =
         cellrefract186_binding_state_bytes(repeat_bindings, visited);
-    REQUIRE(visited == cellrefract186_oracle::kBindingCount);
+    REQUIRE(visited == cellrefract186_oracle::kBindingCount + 2U);
     // Deliberately no cross-binding equality here: the serialized state
     // includes the borrowed sampler address, and the three binding sets
     // deliberately bind three independently constructed input surfaces. The
@@ -20761,13 +20825,13 @@ TEST(typed_cellrefract186_matches_all_four_independent_js_oracles) {
     // Binding-state and caller-vector immutability.
     const std::vector<std::uint8_t> public_state_after =
         cellrefract186_binding_state_bytes(public_bindings, visited);
-    REQUIRE(visited == cellrefract186_oracle::kBindingCount);
+    REQUIRE(visited == cellrefract186_oracle::kBindingCount + 2U);
     const std::vector<std::uint8_t> direct_state_after =
         cellrefract186_binding_state_bytes(direct_bindings, visited);
-    REQUIRE(visited == cellrefract186_oracle::kBindingCount);
+    REQUIRE(visited == cellrefract186_oracle::kBindingCount + 2U);
     const std::vector<std::uint8_t> repeat_state_after =
         cellrefract186_binding_state_bytes(repeat_bindings, visited);
-    REQUIRE(visited == cellrefract186_oracle::kBindingCount);
+    REQUIRE(visited == cellrefract186_oracle::kBindingCount + 2U);
     REQUIRE(public_state_after == public_state_before);
     REQUIRE(direct_state_after == direct_state_before);
     REQUIRE(repeat_state_after == repeat_state_before);
@@ -21048,7 +21112,7 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
       "direction",   "wrap",          "effectWidth"};
   for (std::size_t index = 0; index < names.size(); ++index)
     REQUIRE(cellrefract186_oracle::kBindingNames[index] == names[index]);
-  // The two compile-time defines are not runtime bindings in the port.
+  // The frozen parameter-only binding list excludes the runtime defines.
   for (const std::string_view name : cellrefract186_oracle::kBindingNames) {
     REQUIRE(name != "KERNEL");
     REQUIRE(name != "SHAPE");
@@ -21090,7 +21154,7 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
   REQUIRE(std::string_view("uniform binding 'seedOffset' is missing")
               .find("seed") != std::string_view::npos);
 
-  // Omit each of the fifteen bindings and supply one wrong variant each;
+  // Omit each of the fifteen frozen parameter bindings and supply one wrong variant;
   // both binders must fail closed naming the binding.
   for (const std::string_view name : names) {
     Cellrefract186Overrides omit;
@@ -21129,9 +21193,24 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
         name);
   }
 
-  // Unrelated extra uniform/texture entries are ignored and behavior-neutral,
-  // and so are uniforms spelled like the compile-time defines and the five
-  // write-only kernel tables.
+  for (const std::string_view name : {"KERNEL", "SHAPE"}) {
+    Cellrefract186Overrides omit;
+    omit.missing = name;
+    Cellrefract186Overrides variant;
+    variant.wrong = name;
+    const auto missing = cellrefract186_bindings(fixture, input, vectors, omit);
+    const auto wrong = cellrefract186_bindings(fixture, input, vectors, variant);
+    cellrefract186_require_binding_error(
+        [&] { static_cast<void>(noisemaker::generated::bind_classicNoisedeck_cellRefract_cellRefract(missing)); }, name);
+    cellrefract186_require_binding_error(
+        [&] { static_cast<void>(noisemaker::generated::bind_classicNoisedeck_cellRefract_cellRefract(wrong)); }, name);
+    cellrefract186_require_binding_error(
+        [&] { static_cast<void>(noisemaker::generated::bind("classicNoisedeck/cellRefract:cellRefract", missing)); }, name);
+    cellrefract186_require_binding_error(
+        [&] { static_cast<void>(noisemaker::generated::bind("classicNoisedeck/cellRefract:cellRefract", wrong)); }, name);
+  }
+
+  // Unrelated extra uniform/texture entries and the five kernel tables are inert.
   const Cellrefract186ExpectedSurface expected =
       cellrefract186_expected(fixture);
   cellrefract186_require_exact(
@@ -21148,8 +21227,8 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
   for (const auto& variant :
        {std::pair<const Cellrefract186Overrides*, const char*>{&extras,
                                                                "extras"},
-        {&defines, "define-and-table-named-uniforms"},
-        {&both, "extras+define-and-table-named-uniforms"}}) {
+        {&defines, "unrelated-and-table-named-uniforms"},
+        {&both, "extras+unrelated-and-table-named-uniforms"}}) {
     cellrefract186_require_exact(
         cellrefract186_render_direct(
             fixture,
@@ -21229,8 +21308,7 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
 // frozen defines, no table mutant can move a pixel, and their protection is
 // structural (the Python-side identity locks), per the oracle's
 // write_only_tables_axis. The KERNEL != 0 non-reaching control is likewise
-// oracle-side; the port's absence of a KERNEL binding is asserted in the ABI
-// test, and the KERNEL = 0 parity itself is the parity test.
+// oracle-side; the KERNEL = 0 parity itself is the parity test.
 TEST(typed_cellrefract186_mutant_ledger_and_native_necessary_conditions) {
   REQUIRE(cellrefract186_oracle::kMutantSets.size() == 4U);
   REQUIRE(cellrefract186_oracle::kMutantWitnesses.size() == 16U);
@@ -23042,10 +23120,12 @@ void shared_native_require_exact(const noisemaker::Surface& actual,
 [[nodiscard]] noisemaker::glsl::Bindings shared_native_kaleido_bindings(
     const kaleido187_oracle::CaseView& fixture, const noisemaker::Surface& input,
     std::string_view omitted = {},
-    const kaleido187_oracle::NativeExpectedRejectionView* wrong = nullptr) {
+    const kaleido187_oracle::NativeExpectedRejectionView* wrong = nullptr,
+    std::string_view wrong_runtime_define = {}) {
   noisemaker::glsl::Bindings bindings;
   const auto wrong_name = [&](std::string_view name) {
-    return wrong != nullptr && wrong->binding_name == name;
+    return (wrong != nullptr && wrong->binding_name == name) ||
+           wrong_runtime_define == name;
   };
   const auto put_texture = [&](std::string_view name) {
     if (name == omitted) return;
@@ -23088,6 +23168,10 @@ void shared_native_require_exact(const noisemaker::Surface& actual,
     }
     bindings.set_uniform(std::string(name), value);
   };
+  put_int("DIRECTION", 2);
+  put_int("KERNEL", 0);
+  put_int("LOOP_OFFSET", 10);
+  put_int("METRIC", 0);
   put_texture("inputTex");
   put_vec2("resolution", noisemaker::glsl::Vec2(
                            static_cast<float>(fixture.width),
@@ -23109,7 +23193,8 @@ void shared_native_require_exact(const noisemaker::Surface& actual,
 [[nodiscard]] noisemaker::glsl::Bindings shared_native_effects_bindings(
     const effects188_oracle::NativeCaseBindingView& fixture,
     const noisemaker::Surface& input, std::string_view omitted = {},
-    const effects188_oracle::BindingPreflightView* wrong = nullptr) {
+    const effects188_oracle::BindingPreflightView* wrong = nullptr,
+    std::string_view wrong_runtime_define = {}) {
   noisemaker::glsl::Bindings bindings;
   const auto wrong_name = [&](std::string_view name) {
     return wrong != nullptr && wrong->binding == name;
@@ -23149,10 +23234,21 @@ void shared_native_require_exact(const noisemaker::Surface& actual,
     }
     bindings.set_uniform(std::string(name), shared_native_number(value.word));
   };
+  const auto put_int = [&](std::string_view name, std::int32_t value) {
+    if (name == omitted) return;
+    if (name == wrong_runtime_define)
+      bindings.set_uniform(std::string(name), 0.5);
+    else
+      bindings.set_uniform(std::string(name), value);
+  };
+  put_int("EFFECT", 0);
+  put_int("FLIP", 0);
   put_texture("inputTex");
   put_vec2("resolution", fixture.resolution);
   put_vec2("tileOffset", fixture.tileOffset);
   put_vec2("fullResolution", fixture.fullResolution);
+  put_vec2("invFullResolution", fixture.invFullResolution);
+  put_number("aspectInv", fixture.aspectInv);
   put_number("renderScale", fixture.renderScale);
   put_number("time", fixture.time);
   put_number("effectAmt", fixture.effectAmt);
@@ -23316,18 +23412,17 @@ void shared_native_integration_require_effects() {
     const noisemaker::BoundKernel public_kernel = [&]() {
       noisemaker::glsl::Bindings bindings =
           shared_native_effects_bindings(binding_fixture, public_input);
-      // Captured from the e24c844f source, before 5976b7a6 changed Effects.
-      return noisemaker::historical_generated::bind_classicNoisedeck_effects_effects(bindings);
+      return noisemaker::generated::bind(effects188_oracle::kProgramKey, bindings);
     }();
     const noisemaker::BoundKernel direct_kernel = [&]() {
       noisemaker::glsl::Bindings bindings =
           shared_native_effects_bindings(binding_fixture, direct_input);
-      return noisemaker::historical_generated::bind_classicNoisedeck_effects_effects(bindings);
+      return noisemaker::generated::bind_classicNoisedeck_effects_effects(bindings);
     }();
     const noisemaker::BoundKernel repeat_kernel = [&]() {
       noisemaker::glsl::Bindings bindings =
           shared_native_effects_bindings(binding_fixture, repeat_input);
-      return noisemaker::historical_generated::bind_classicNoisedeck_effects_effects(bindings);
+      return noisemaker::generated::bind_classicNoisedeck_effects_effects(bindings);
     }();
     const noisemaker::Surface public_output =
         noisemaker::run_pass(public_kernel, fixture.width, fixture.height);
@@ -23412,8 +23507,22 @@ void shared_native_integration_require_abi() {
     require_bind_succeeds(noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido(extra));
   }
 
-  constexpr std::array<std::string_view, 13> effects_names{
-      "inputTex", "resolution", "tileOffset", "fullResolution", "renderScale",
+  for (const std::string_view name : {"DIRECTION", "KERNEL", "LOOP_OFFSET", "METRIC"}) {
+    const auto missing = shared_native_kaleido_bindings(kaleido_fixture, kaleido_input, name);
+    const auto wrong = shared_native_kaleido_bindings(kaleido_fixture, kaleido_input, {}, nullptr, name);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido(missing),
+                      noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind(kaleido187_oracle::kProgramKey, missing),
+                      noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido(wrong),
+                      noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind(kaleido187_oracle::kProgramKey, wrong),
+                      noisemaker::glsl::KernelBindingError);
+  }
+
+  constexpr std::array<std::string_view, 15> effects_names{
+      "inputTex", "resolution", "tileOffset", "fullResolution",
+      "invFullResolution", "aspectInv", "renderScale",
       "time", "effectAmt", "scaleAmt", "rotation", "offsetX", "offsetY",
       "intensity", "saturation"};
   REQUIRE(effects188_oracle::kBindingPreflight.size() == effects_names.size());
@@ -23465,6 +23574,19 @@ void shared_native_integration_require_abi() {
     extra.set_uniform("unrelated", 3.0);
     extra.set_texture("unrelatedTex", effects_input);
     require_bind_succeeds(noisemaker::generated::bind_classicNoisedeck_effects_effects(extra));
+  }
+
+  for (const std::string_view name : {"EFFECT", "FLIP"}) {
+    const auto missing = shared_native_effects_bindings(effects_fixture, effects_input, name);
+    const auto wrong = shared_native_effects_bindings(effects_fixture, effects_input, {}, nullptr, name);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_effects_effects(missing),
+                      noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind(effects188_oracle::kProgramKey, missing),
+                      noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_effects_effects(wrong),
+                      noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind(effects188_oracle::kProgramKey, wrong),
+                      noisemaker::glsl::KernelBindingError);
   }
 }
 
@@ -25332,6 +25454,24 @@ void testpattern_native_integration_require_parity() {
   }
 }
 
+void testpattern_native_integration_require_cpu9f3_glyph() {
+  noisemaker::glsl::Bindings bindings;
+  bindings.set_uniform("resolution", noisemaker::glsl::Vec2(64.0f, 64.0f));
+  bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+  bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(64.0f, 64.0f));
+  bindings.set_uniform("gridSize", std::int32_t(4));
+  bindings.set_uniform("pattern", std::int32_t(0));
+  const auto output = noisemaker::run_pass(
+      noisemaker::generated::bind_synth_testPattern_testPattern(bindings),
+      64U, 64U);
+  const auto float32 = task23_float_bytes(output);
+  REQUIRE(task23_hex(task23_sha256(float32)) ==
+          "20920f269e836c0f10af7b51d83ad7b6ca468d043f358b2bffffccf29661827c");
+  const auto rgba8 = output.to_rgba8();
+  REQUIRE(task23_hex(task23_sha256(rgba8)) ==
+          "4bdd1636dd6bccdb3e16c3b57a19bd55dbf867887b72f8d628fa0e57b0f8932d");
+}
+
 void testpattern_native_integration_require_binding_abi() {
   constexpr std::array<std::string_view, 5> expected_names{
       "resolution", "tileOffset", "fullResolution", "gridSize", "pattern"};
@@ -25743,6 +25883,10 @@ struct TextureControls {
       bindings.set_uniform(std::string(name),
                            noisemaker::glsl::Vec2(value[0], value[1]));
   };
+  if (!skip("MODE")) {
+    if (wrong_type("MODE")) bindings.set_uniform("MODE", false);
+    else bindings.set_uniform("MODE", std::int32_t{3});
+  }
   put_texture("inputTex");
   put_number("time", controls.time);
   put_number("alpha", controls.alpha);
@@ -25855,8 +25999,8 @@ void texture_native_integration_require_parity() {
 }
 
 void texture_native_integration_require_binding_abi() {
-  constexpr std::array<std::string_view, 9> names{
-      "inputTex", "time", "alpha", "scale", "intensity", "contrast", "mono", "tileOffset", "fullResolution"};
+  constexpr std::array<std::string_view, 10> names{
+      "inputTex", "MODE", "time", "alpha", "scale", "intensity", "contrast", "mono", "tileOffset", "fullResolution"};
   const auto& fixture = noisemaker_texture_oracle::kCases.front();
   const TextureControls controls = texture_controls(fixture.name);
   noisemaker::Surface input = shared_native_surface(fixture.width, fixture.height, fixture.input_f32);
@@ -28767,6 +28911,8 @@ void require_exact(const noisemaker::Surface& actual,
     else result.set_uniform(std::string(name), value);
   };
   const auto& controls = fixture.controls;
+  integer("COLOR_MODE", 2);
+  integer("NOISE_TYPE", 10);
   number("time", controls.time);
   integer("seed", controls.seed);
   boolean("wrap", controls.wrap);
@@ -28981,8 +29127,8 @@ void require_parity() {
 }
 
 void require_binding_abi() {
-  constexpr std::array<std::string_view, 13> names{
-      "time", "seed", "wrap", "resolution", "tileOffset", "fullResolution",
+  constexpr std::array<std::string_view, 15> names{
+      "COLOR_MODE", "NOISE_TYPE", "time", "seed", "wrap", "resolution", "tileOffset", "fullResolution",
       "noiseScale", "refractAmt", "speed", "hueRotation", "hueRange",
       "intensity", "ridges"};
   const auto& fixture = noisemaker_moodscape_oracle::kCases.front();
@@ -29049,16 +29195,16 @@ void require_oracle_metadata() {
   REQUIRE(noisemaker_moodscape_oracle::kProgramKey ==
           "classicNoisedeck/moodscape:moodscape");
   REQUIRE(noisemaker_moodscape_oracle::kOracleJsonSha256 ==
-          "fb147952d885ba1c6d8837cc3b8fdb6ba9ddf8b2496f7acabe85f02c91b9c10e");
+          "475aa45021575b46f5ceadf10ed9a3dd0dec6bd6a1d2eab2ad2e12cabcb1834e");
   REQUIRE(noisemaker_moodscape_oracle::kFactorySha256 ==
-          "70db1168604045e22ac0c74f4b58a96d5e4ed2c6e107ec2fe3b2beab08ca479d");
+          "1ed6bdafbced57679854e7502909d052875c5a9814a2e49fa4e86bd56abc1516");
   REQUIRE(noisemaker_moodscape_oracle::kSourceSha256 ==
           "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44");
   REQUIRE(noisemaker_moodscape_oracle::kSourceBytes == 19559U);
   REQUIRE(noisemaker_moodscape_oracle::kSourceRelativePath ==
-          "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/moodscape/moodscape.glsl");
-  REQUIRE(noisemaker_moodscape_oracle::kImportClosureCardinality == 23U);
-  REQUIRE(noisemaker_moodscape_oracle::kImportClosure.size() == 23U);
+          "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/classicNoisedeck/moodscape/moodscape.glsl");
+  REQUIRE(noisemaker_moodscape_oracle::kImportClosureCardinality == 24U);
+  REQUIRE(noisemaker_moodscape_oracle::kImportClosure.size() == 24U);
   constexpr std::array<std::string_view, 15> runtime_names{
       "NOISE_TYPE", "COLOR_MODE", "time", "seed", "wrap", "resolution",
       "tileOffset", "fullResolution", "noiseScale", "refractAmt", "speed",
@@ -29083,12 +29229,12 @@ void require_oracle_metadata() {
   constexpr std::array<std::uint32_t, 6> f32_counts{192U, 16U, 480U, 320U, 336U, 96U};
   constexpr std::array<std::uint32_t, 6> rgba8_counts{48U, 4U, 120U, 80U, 84U, 24U};
   constexpr std::array<std::string_view, 6> f32_hashes{
-      "716745c185dd72cbb0ab504c6b2d4151a7ce66b822ab2741e231828b9bd76315",
+      "1f6ea1b967d053002b587f96b176046de11f0f96df563e687148a74f47c2c47b",
       "249cd66ba48f4691303dd5da94e022053dc5906d9388b6789876abc487c666af",
-      "32eccd7eb1048920f526f8fd804d709715e4108508a881312716739514a72d7a",
-      "f440ea730966398ff92f68e853745e4d44655f74cf7517e16e484833e02ba634",
-      "2d84e2bb9a6b6459bb0eaa62e07a00a4cc2373af01ed670f3480b17b90e24db4",
-      "33c4f09792343d2784321bc6c850369e0d1600002038d01646587b769f0d106e"};
+      "476c793ce0904cfb16001fefda86e226efd4e2d97425bea47ea0bb2f577cf298",
+      "5dc7a1e74cd47703061f3875100e3ea362d693d13b10557e3d4e03a9277f317c",
+      "8a044d60011f8f676dec8c997e36c3aba17dd6c6e7929dadf27f8c3ebf308e3f",
+      "73c5aceadbf02395441d072e875ed84e681070900e4df24db97ee2b23c9bfc10"};
   constexpr std::array<std::string_view, 6> rgba8_hashes{
       "9f1ffd875bf49b4446be0d19252114de613bcf57a9dc80ab1e8ef6357977979a",
       "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
@@ -29162,11 +29308,11 @@ void require_oracle_metadata() {
       "be612bc0fbf3fc21d41ecaed73aa07c94c899f778135c55b22059cbcc05c009a",
       "8b4d2f6b80440e27a5ea157c65915173b29a640ebb6dc334245d3ede7df36af2"};
   constexpr std::array<std::string_view, 5> mutation_factory_hashes{
-      "ed551f6db2cd336b2cbe03fd8621cfff0f4985f0a579a65e4175b5d3fd32f89b",
-      "6c8c4d0d1f86ad31908e5898a7b2e69c29c52fe34f0e8d3f1f7a5426da979eb9",
-      "dc61a38fc3f0adab907429edd5401bd614e409f2de250c1e906d99fe8c09cd0e",
-      "8a0bc0ccd72472a1414b3375104cb66e16a063bb6086b068466fd2d4b55752be",
-      "9ea561fce3ff1733e54fb4455927fc93707d5e8b8621cb3bd10c7dfe0084d2cb"};
+      "687eb24107224d77c9b648d3044ba7da65977eefe715cdd795ff867bd5e69355",
+      "bb3eb5a2621a661f6ec2c74a4bf72cfa8de75df9b3fe5ed8ade71ec3fb01382a",
+      "32a5c68fbbaa1ed8abbad6a0a816138703199dfe90ec5c5d7d44434832b7e3a7",
+      "2a4ae6dc96a3ec02ef7c8dec1d59b71cfd5229ba8837420a542c2b5b2c88020d",
+      "eeacb89cfbfd207b42c95235f5cce07e9c0bb23499cf5affc665406d31f0e476"};
   REQUIRE(noisemaker_moodscape_oracle::kMutations.size() == 5U);
   for (std::size_t index = 0U; index < mutation_names.size(); ++index) {
     const auto& mutation = noisemaker_moodscape_oracle::kMutations[index];
@@ -29376,8 +29522,16 @@ void require_exact(const noisemaker::Surface& actual,
   const auto vector3 = [&](std::string_view name, const std::array<float, 3>& value) {
     if (skip(name)) return;
     if (wrong_type(name)) result.set_uniform(std::string(name), 1.0);
-    else result.set_uniform(std::string(name), noisemaker::glsl::Vec3(value[0], value[1], value[2]));
+    else result.set_uniform(std::string(name),
+                            noisemaker::glsl::DVec3(static_cast<double>(value[0]),
+                                                    static_cast<double>(value[1]),
+                                                    static_cast<double>(value[2])));
   };
+  integer("NOISE_TYPE", 10);
+  integer("REFRACT_MODE", 2);
+  integer("LOOP_OFFSET", 300);
+  integer("METRIC", 0);
+  integer("COLOR_MODE", 6);
   number("time", c.time);
   integer("seed", c.seed);
   vector("resolution", {c.resolution_x, c.resolution_y});
@@ -29406,8 +29560,8 @@ void require_exact(const noisemaker::Surface& actual,
 }
 
 struct BindingSnapshot {
-  std::array<std::uint32_t, 36> words{};
-  std::array<std::uint8_t, 24> categories{};
+  std::array<std::uint32_t, 41> words{};
+  std::array<std::uint8_t, 29> categories{};
   bool operator==(const BindingSnapshot&) const = default;
 };
 
@@ -29435,10 +29589,12 @@ struct BindingSnapshot {
     snapshot.words[word++] = noisemaker::float_bits_to_uint(value2[1]);
   };
   const auto vector3 = [&](std::string_view name) {
-    const auto value3 = value.get<noisemaker::glsl::Vec3>(name);
+    const auto value3 = value.get<noisemaker::glsl::DVec3>(name);
     for (std::size_t lane = 0U; lane < 3U; ++lane)
-      snapshot.words[word++] = noisemaker::float_bits_to_uint(value3[lane]);
+      snapshot.words[word++] = noisemaker::float_bits_to_uint(static_cast<float>(value3[lane]));
   };
+  integer("NOISE_TYPE"); integer("REFRACT_MODE"); integer("LOOP_OFFSET");
+  integer("METRIC"); integer("COLOR_MODE");
   number("time"); integer("seed"); vector("resolution"); vector("tileOffset");
   vector("fullResolution"); number("xScale"); number("yScale"); integer("octaves");
   boolean("ridges"); number("refractAmt"); number("kaleido"); number("loopScale");
@@ -29446,7 +29602,8 @@ struct BindingSnapshot {
   vector3("paletteAmp"); vector3("paletteFreq"); vector3("palettePhase");
   integer("cyclePalette"); number("rotatePalette"); number("repeatPalette");
   number("hueRange"); number("hueRotation"); boolean("wrap");
-  snapshot.categories = {0U, 1U, 2U, 2U, 2U, 0U, 0U, 1U, 3U, 0U, 0U, 0U,
+  snapshot.categories = {1U, 1U, 1U, 1U, 1U,
+                         0U, 1U, 2U, 2U, 2U, 0U, 0U, 1U, 3U, 0U, 0U, 0U,
                          0U, 1U, 2U, 2U, 2U, 2U, 1U, 0U, 0U, 0U, 0U, 3U};
   return snapshot;
 }
@@ -29602,7 +29759,8 @@ void require_parity() {
 }
 
 void require_binding_abi() {
-  constexpr std::array<std::string_view, 24> names{
+  constexpr std::array<std::string_view, 29> names{
+      "NOISE_TYPE", "REFRACT_MODE", "LOOP_OFFSET", "METRIC", "COLOR_MODE",
       "time", "seed", "resolution", "tileOffset", "fullResolution", "xScale",
       "yScale", "octaves", "ridges", "refractAmt", "kaleido", "loopScale", "speed",
       "paletteMode", "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
@@ -29643,11 +29801,11 @@ void require_oracle_metadata() {
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kProgramKey) ==
           "classicNoisedeck/noise:noise");
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kFactorySha256) ==
-          "b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424");
+          "aa489d990e14a0bdd45b63383953282bc2e42083940af755583bc7f32e3141bf");
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kSourceSha256) ==
-          "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138");
-  REQUIRE(noisemaker_classic_noise_oracle::kSourceBytes == 31258U);
-  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 23U);
+          "d86306e285a2f80dae86fe79cde92ceb89ec898ef78e6a15d140bfdf0e030bb2");
+  REQUIRE(noisemaker_classic_noise_oracle::kSourceBytes == 32527U);
+  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 24U);
   REQUIRE(noisemaker_classic_noise_oracle::kRuntimeBindingCardinality == 29U);
   constexpr std::array<std::string_view, 29> names{
       "NOISE_TYPE", "REFRACT_MODE", "LOOP_OFFSET", "METRIC", "COLOR_MODE", "time", "seed",
@@ -29678,19 +29836,19 @@ void require_oracle_metadata() {
   constexpr std::array<std::pair<std::uint32_t, std::uint32_t>, 8> dimensions{{
       {1U, 1U}, {5U, 4U}, {4U, 5U}, {6U, 3U}, {3U, 2U}, {7U, 3U}, {3U, 2U}, {3U, 2U}}};
   constexpr std::array<std::string_view, 8> f32_hashes{
-      "97cd951e107cc97b7f262e831883992ae2bfa491a933be79c0c2e7f5a126bd48",
-      "0f744763cacccc39762b33f43331a3efefb571f3078ecef7ccec628dfa0bca12",
-      "30b856b46b245950463cba28f925fe7f380de02e4be03458547d466aafbe9cf2",
-      "b2dfbcf6a15155740a871717a78c93e862fad04dd40a031129961f66921beb59",
-      "da980d911eea3df74bae26c9d98dab11ead680f76bc62e32c9e1657e39519272",
-      "8136893d33e740f26521d3a1847357b78dfbd2c281aff92248dce9f6841eb353",
-      "da980d911eea3df74bae26c9d98dab11ead680f76bc62e32c9e1657e39519272",
-      "da980d911eea3df74bae26c9d98dab11ead680f76bc62e32c9e1657e39519272"};
+      "c53c479135e1e0199b4c286bd113cce3ad26caf18b6ab60f04a11ba1d302e0a3",
+      "391971ab136b949f7e363b81b81950aacf525187568278b7b4e32f66f2592040",
+      "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e",
+      "1637ea3a41cfca75edb1786373ab36f3086d924b489bff617821607d8e5ca199",
+      "c49b4781a362e17398b77b388b6e67aae67b1e388bff663cd4847d50bcb85527",
+      "c9b0f090afe7f24e3cf14779f619792bb5eabd08a18c668a544d626f20a6f3f5",
+      "c49b4781a362e17398b77b388b6e67aae67b1e388bff663cd4847d50bcb85527",
+      "c49b4781a362e17398b77b388b6e67aae67b1e388bff663cd4847d50bcb85527"};
   constexpr std::array<std::string_view, 8> rgba8_hashes{
       "f8f6e67d01a7404b190b09bac91dc9498f9d4a27b61c0e10bb583905cfe0c381",
-      "7b164e82ee0adde9b0c8994c7b118a4e3e67e1d9a01f391b53f6083ecde90cbc",
-      "6a8ed79c305c74fc04f45d4753efcfc929590f59ac9860d47c10b2e47fbcda09",
-      "b6a072690afc00a7085371d1e0f864ed2244fd11933d8bbb221d0f74eae02f2b",
+      "76e7e623ad3d71f05ee6a26dd4ac5595ab2419a49b0c448599ea618770ef77cc",
+      "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc",
+      "b58492ef631d67080ed512c6e98a7365acd04cd69c8d37cea49cfc66bb373ed6",
       "3c6261100abb90d27416ab4c9dc0e161448a6bffed1179129371cf65b3294c8e",
       "dc52c608d6424cdb1e4dac1f3fc60261faaa0de147fc4d8a6276722c4f28dcb8",
       "3c6261100abb90d27416ab4c9dc0e161448a6bffed1179129371cf65b3294c8e",
@@ -29725,11 +29883,11 @@ void require_oracle_metadata() {
       "c824a77821a780c002f0d69846d5102485f65c977d1132ce888566eac5c4744b",
       "d92b010a2a28001378b41faf78f27b9bde10a2daf0a253853eed38fdc2e51afd"};
   constexpr std::array<std::string_view, 5> factories{
-      "75ab4b63d0a4969e18794aa8985f7e9ae743fac7a0772c7c2ee6da52a9cbc8de",
-      "dd873d362743aa7e3391e48c8ad52bdca22e39dc06a06eb3cd64081ac64a2bf3",
-      "753c72087cc9e1370adc088eec8f91891240a5776a565d4e5cac7c4d877bb5c9",
-      "69088be842abf5ffb5b964f2cc71a485a9f665644fac4b8fa9e212e77d594ead",
-      "b03fe40ed6dc85802e8f72f733984044fbcf4b3fc3805eca868168f5590be0e8"};
+      "fa2bd000f4390a4a4da1eabf299d67cff46dfd447032ddb3084bb5aaf677cd24",
+      "f8e299661ace8045d131b3252074126be33b36eb2bc8722c7541f6efe3d29b81",
+      "06aff61b4c35bfc5b4612fe5fac5dc9f2f5a709fd72e76c96d36f00605204511",
+      "3d0a607e26068fb30bf6d562542aec70b06065fc60b11a69d2fdd1a166264aaa",
+      "b6a5e0dacc1e68433171a02fc6f4b61fe5285213d0b638c60b6ff6f008bfdbf9"};
   constexpr std::array<std::string_view, 5> anchor_texts{
       "var globalCoord = new $runtime.PooledFloat32Array([gl_FragCoord[0] + tileOffset[0], gl_FragCoord[1] + tileOffset[1]]);",
       "for (var i = 1; i <= octaves; i++) {",
@@ -29750,39 +29908,24 @@ void require_oracle_metadata() {
   };
   constexpr std::array<bool, 5> expected_independent{true, true, true, true, true};
   constexpr std::array<std::uint32_t, 5> expected_anchor_cardinality{1U, 1U, 1U, 1U, 1U};
-  constexpr std::array<std::size_t, 5> expected_witness_counts{8U, 8U, 7U, 7U, 7U};
+  constexpr std::array<std::size_t, 5> expected_witness_counts{
+      8U,
+      8U,
+      7U,
+      7U,
+      7U};
   constexpr std::array<std::array<std::string_view, 8>, 5> expected_witnesses{{
-      {{"origin-min", "max-ridges", "negative-speed-offset", "asymmetric-axis",
-        "refract-mid", "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel"}},
-      {{"origin-min", "max-ridges", "negative-speed-offset", "asymmetric-axis",
-        "refract-mid", "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel"}},
-      {{"max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid",
-        "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel", ""}},
-      {{"max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid",
-        "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel", ""}},
-      {{"max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid",
-        "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel", ""}}}};
+      {{"origin-min", "max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid", "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel"}},
+      {{"origin-min", "max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid", "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel"}},
+      {{"max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid", "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel", ""}},
+      {{"max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid", "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel", ""}},
+      {{"max-ridges", "negative-speed-offset", "asymmetric-axis", "refract-mid", "seam-and-hue", "dead-bindings-base", "dead-bindings-sentinel", ""}}}};
   constexpr std::array<std::array<ExpectedMutationResult, 8>, 5> expected_results{{
-      {{{"origin-min", false, 3U, 3U}, {"max-ridges", false, 57U, 43U},
-        {"negative-speed-offset", false, 60U, 60U}, {"asymmetric-axis", false, 54U, 34U},
-        {"refract-mid", false, 18U, 18U}, {"seam-and-hue", false, 63U, 63U},
-        {"dead-bindings-base", false, 18U, 18U}, {"dead-bindings-sentinel", false, 18U, 18U}}},
-      {{{"origin-min", false, 3U, 3U}, {"max-ridges", false, 60U, 13U},
-        {"negative-speed-offset", false, 60U, 58U}, {"asymmetric-axis", false, 54U, 54U},
-        {"refract-mid", false, 18U, 14U}, {"seam-and-hue", false, 63U, 19U},
-        {"dead-bindings-base", false, 18U, 14U}, {"dead-bindings-sentinel", false, 18U, 14U}}},
-      {{{"origin-min", true, 0U, 0U}, {"max-ridges", false, 60U, 60U},
-        {"negative-speed-offset", false, 60U, 58U}, {"asymmetric-axis", false, 54U, 46U},
-        {"refract-mid", false, 18U, 17U}, {"seam-and-hue", false, 63U, 52U},
-        {"dead-bindings-base", false, 18U, 17U}, {"dead-bindings-sentinel", false, 18U, 17U}}},
-      {{{"origin-min", true, 0U, 0U}, {"max-ridges", false, 60U, 60U},
-        {"negative-speed-offset", false, 33U, 31U}, {"asymmetric-axis", false, 18U, 15U},
-        {"refract-mid", false, 12U, 12U}, {"seam-and-hue", false, 58U, 56U},
-        {"dead-bindings-base", false, 12U, 12U}, {"dead-bindings-sentinel", false, 12U, 12U}}},
-      {{{"origin-min", true, 0U, 0U}, {"max-ridges", false, 60U, 60U},
-        {"negative-speed-offset", false, 60U, 60U}, {"asymmetric-axis", false, 54U, 54U},
-        {"refract-mid", false, 18U, 18U}, {"seam-and-hue", false, 63U, 54U},
-        {"dead-bindings-base", false, 18U, 18U}, {"dead-bindings-sentinel", false, 18U, 18U}}}}};
+      {{{"origin-min", false, 3U, 3U}, {"max-ridges", false, 57U, 49U}, {"negative-speed-offset", false, 60U, 60U}, {"asymmetric-axis", false, 54U, 34U}, {"refract-mid", false, 18U, 18U}, {"seam-and-hue", false, 63U, 63U}, {"dead-bindings-base", false, 18U, 18U}, {"dead-bindings-sentinel", false, 18U, 18U}}},
+      {{{"origin-min", false, 3U, 3U}, {"max-ridges", false, 60U, 20U}, {"negative-speed-offset", false, 60U, 58U}, {"asymmetric-axis", false, 54U, 54U}, {"refract-mid", false, 18U, 14U}, {"seam-and-hue", false, 63U, 19U}, {"dead-bindings-base", false, 18U, 14U}, {"dead-bindings-sentinel", false, 18U, 14U}}},
+      {{{"origin-min", true, 0U, 0U}, {"max-ridges", false, 60U, 60U}, {"negative-speed-offset", false, 60U, 58U}, {"asymmetric-axis", false, 54U, 46U}, {"refract-mid", false, 18U, 17U}, {"seam-and-hue", false, 63U, 52U}, {"dead-bindings-base", false, 18U, 17U}, {"dead-bindings-sentinel", false, 18U, 17U}}},
+      {{{"origin-min", true, 0U, 0U}, {"max-ridges", false, 60U, 60U}, {"negative-speed-offset", false, 33U, 30U}, {"asymmetric-axis", false, 18U, 14U}, {"refract-mid", false, 12U, 12U}, {"seam-and-hue", false, 58U, 56U}, {"dead-bindings-base", false, 12U, 12U}, {"dead-bindings-sentinel", false, 12U, 12U}}},
+      {{{"origin-min", true, 0U, 0U}, {"max-ridges", false, 60U, 60U}, {"negative-speed-offset", false, 60U, 60U}, {"asymmetric-axis", false, 54U, 54U}, {"refract-mid", false, 18U, 18U}, {"seam-and-hue", false, 63U, 54U}, {"dead-bindings-base", false, 18U, 18U}, {"dead-bindings-sentinel", false, 18U, 18U}}}}};
   REQUIRE(noisemaker_classic_noise_oracle::kMutations.size() == mutation_names.size());
   for (std::size_t index = 0U; index < mutation_names.size(); ++index) {
     const auto& mutation = noisemaker_classic_noise_oracle::kMutations[index];
@@ -31032,4 +31175,293 @@ void julia_native_integration_require_catalog_identity() {
 }
 void julia_native_integration_require_production_admission() {
   julia_native::require_production_admission();
+}
+
+
+// Authenticated CPU9f3 canonicalFactory13, 12x8, two binding sets per source branch.
+TEST(typed_classic_noise3d_all_runtime_modes_match_cpu9f3) {
+  struct Case {
+    std::int32_t noise_type;
+    bool offset;
+    std::string_view f32_sha256;
+    std::string_view rgba8_sha256;
+  };
+  constexpr std::array<Case, 18> cases{{
+      {12, false, "4c638142280e803813f0087be0501f43858c4623b34e52fe627cc95954eebc95", "9266b5e269ec7c63e98bb89959a6852d04a0e33fd9790e1b0e14e0d32195866f"},
+      {12, true, "9e9423f7e620a09abd4ad6b7853156f508be92a8c5d95e1c0a8804fde7eed489", "a1efa2e291c5b281921349c941d856b08aa9d88b6d8e190450ac8a8083ec2d2c"},
+      {20, false, "92b9e69a8a7b47cf20c7c5773b3e0ef5b19be8f3bff904db382a6d32fb9d96d0", "495d16b3834c9b45ee90ba29ebea0b73e59ba73a31fcb615bfd5c47dd1c7cd0e"},
+      {20, true, "35311ea82dbc1575372b8e5cbc6b43d0d9f85f5afab20f00a3502d7ce641acab", "ad5c3ebf885986bcfb64b88542e6bb4bc887365b1fb1934dba771cd0358bf681"},
+      {21, false, "a7a9d33fc7df452821cd57e19f998d0bd9a5c2f386aa7df68a50ee0e4aa1d6af", "b0d575e3f56a2b955f00747cd8f114768fe5bcedf97db15196fdfb0e1e84af06"},
+      {21, true, "ba9c1ae90b686f6d2a9f3f1afbd2a1747b5b31db41c82f307c71a6f08674b73d", "855c7ca56bb0cd1b82926dbac4991477d96a20f7f1c157378c2d98ce0d806ec2"},
+      {30, false, "bdb9f8189c7f1d5dac0bee48ca7fb16b1f117a0ba1d14deb9af87f63a3040996", "0f538b417bcd3d37a52543faaca1af09b0482a9cb0fd6d73c67d8c4c7fea8d47"},
+      {30, true, "8af09dcace5224155553bd6c1ace695a319f4592523ddc01bdb257a24ce04fd4", "77972c707faaf770bf750b7da1f265ddf43d5793a3fb5664f4b4de4fe99e5142"},
+      {40, false, "74a6dd549f5b15d7f96a6a8f039114f5d67b375cc9d62e86434a19f99d0d2268", "2063be237c8827aa5a1f63c8741d12cf5e7a6d0cdc0bb2a02b0db94dda544c4d"},
+      {40, true, "5a1a021c8ffc8051d0822e79d9d1e27609cd04cc43266835ca9c317709121cc8", "71c3fcf1e54d3eaa0a5d640ac6c6ff6bee9a47379685f57c0489a583cce7f48b"},
+      {50, false, "f17089ca8f9e887cc2cd290f4425045a57bc826c60f1f5a4b00c4bc1410477e8", "5a2cbb0e56eaab0df778a8cb04682ddebf30ddb71871dd28ab9b52ab4e535d61"},
+      {50, true, "178e1b02f56dac25791e757b8a03473e4f7ca2461ae1508e0cf9ba4033f8d6df", "f95cfa095c7833da40c233669b2ec326dda6e56d146acf8b453960ecf205e99a"},
+      {60, false, "9b944eb4e54eb806a5affec18677a292cf6208f70c57edd0a681d89eda5229a3", "c6b34450cebb46bd213a76eba7aa40c0105469091fc44b566a1187c980146f34"},
+      {60, true, "f9538090e4bde4a51635d07d62fe5f7d1edeb326f12f3c357a22202dc29432b8", "949dc70abaaaadada44aed113dc2efea5763a634326239a852e99d11595a6947"},
+      {61, false, "907b5c9aded662a224d42c5b9553578ff087de2aa92a9dc1103851209df314b2", "7cfc2a3111711dae238d51f13f6e0220b1e7522686e08558b9eec32cd90ede41"},
+      {61, true, "6bbf59a640184073ca9afa2e5d59df56440cab8ce1259ebf8085ea2c0bd18343", "4d55761a896f045456cb61fa79a19238498c8fe345c5e309f26309568008266f"},
+      {62, false, "495e01511f23a714c2a1ee81932521f2efa1e3e57258e35e6530687cce56f251", "9d5aad0787722c96dd43838842b0c81e471c941245db935bca93c314a34c6b0b"},
+      {62, true, "e834892c3c3018f47e866bd85ba1a944df37c9fca79512c8ef55b4ccef881227", "7e1e47a138a61f2bc3ca18a28ba5e3230a5f0627539f10e8acad4c414a461bd8"},
+  }};
+  for (const Case& item : cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("NOISE_TYPE", item.noise_type);
+    bindings.set_uniform("resolution", noisemaker::glsl::Vec2(12.0f, 8.0f));
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+    bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(12.0f, 8.0f));
+    bindings.set_uniform("time", item.offset ? 1.25 : 0.0);
+    bindings.set_uniform("seed", std::int32_t(item.offset ? 7 : 1));
+    bindings.set_uniform("scale", item.offset ? 31.0 : 25.0);
+    bindings.set_uniform("ridges", item.offset);
+    bindings.set_uniform("offsetX", item.offset ? 0.25 : 0.0);
+    bindings.set_uniform("offsetY", item.offset ? -0.5 : 0.0);
+    bindings.set_uniform("speed", item.offset ? -2.0 : 1.0);
+    bindings.set_uniform("colorMode", std::int32_t(item.offset ? 7 : 6));
+    bindings.set_uniform("hueRotation", item.offset ? 30.0 : 0.0);
+    bindings.set_uniform("hueRange", item.offset ? 15.0 : 10.0);
+    const auto surface = noisemaker::run_pass(
+        noisemaker::generated::bind_classicNoisedeck_noise3d_noise3d(bindings),
+        12U, 8U, 0.0f, 1.0f);
+    const auto actual_f32 = task23_hex(task23_sha256(task23_float_bytes(surface)));
+    const auto actual_rgba = task23_hex(task23_sha256(surface.to_rgba8()));
+    if (actual_f32 != item.f32_sha256 || actual_rgba != item.rgba8_sha256) {
+      throw std::runtime_error(
+          "classic Noise3D mode=" + std::to_string(item.noise_type) +
+          (item.offset ? " offset" : " default") +
+          " f32=" + actual_f32 + " rgba8=" + actual_rgba);
+    }
+  }
+}
+
+// Exact CPU9f3 cases from tests/fixtures/array_runtime_reference.mjs.
+namespace {
+noisemaker::Surface dynamic_kernel9_input(std::size_t width,
+                                           std::size_t height,
+                                           std::size_t salt) {
+  std::vector<float> data(width * height * 4U);
+  for (std::size_t y = 0; y < height; ++y)
+    for (std::size_t x = 0; x < width; ++x) {
+      const std::size_t i = (y * width + x) * 4U;
+      data[i] = static_cast<float>(((x * 3U + y * 5U + salt) % 16U) / 16.0);
+      data[i + 1U] = static_cast<float>(((x * 7U + y * 2U + salt * 3U) % 16U) / 16.0);
+      data[i + 2U] = static_cast<float>(((x * 11U + y * 13U + salt * 2U) % 16U) / 16.0);
+      data[i + 3U] = 1.0f;
+    }
+  return noisemaker::Surface(width, height, std::move(data));
+}
+
+noisemaker::glsl::Bindings dynamic_kernel9_bindings(
+    const dynamic_kernel9_oracle::Case& c, const noisemaker::Surface& input) {
+  noisemaker::glsl::Bindings bindings;
+  bindings.set_texture("inputTex", input);
+  bindings.set_uniform("resolution", noisemaker::glsl::Vec2(
+      static_cast<float>(c.width), static_cast<float>(c.height)));
+  bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+  bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(
+      static_cast<float>(c.width), static_cast<float>(c.height)));
+  bindings.set_uniform("seed", std::int32_t{7});
+  bindings.set_uniform("effectWidth", 4.0);
+  if (c.key == "classicNoisedeck/cellRefract:cellRefract") {
+    bindings.set_uniform("KERNEL", c.defines[0]);
+    bindings.set_uniform("SHAPE", c.defines[1]);
+    bindings.set_uniform("time", 0.3);
+    bindings.set_uniform("scale", 50.0);
+    bindings.set_uniform("cellScale", 75.0);
+    bindings.set_uniform("cellSmooth", 40.0);
+    bindings.set_uniform("variation", 30.0);
+    bindings.set_uniform("speed", 2.0);
+    bindings.set_uniform("refractAmt", 55.0);
+    bindings.set_uniform("direction", 90.0);
+    bindings.set_uniform("wrap", std::int32_t{1});
+  } else {
+    bindings.set_uniform("DIRECTION", c.defines[0]);
+    bindings.set_uniform("KERNEL", c.defines[1]);
+    bindings.set_uniform("LOOP_OFFSET", c.defines[2]);
+    bindings.set_uniform("METRIC", c.defines[3]);
+    bindings.set_uniform("time", 0.375);
+    bindings.set_uniform("wrap", true);
+    bindings.set_uniform("speed", 2.0);
+    bindings.set_uniform("loopScale", 3.0);
+    bindings.set_uniform("kaleido", 3.0);
+  }
+  return bindings;
+}
+}  // namespace
+
+TEST(typed_dynamic_cellrefract_kaleido_cpu9f3_enums_exact_repeatable_nonmutating) {
+  REQUIRE(dynamic_kernel9_oracle::kCases.size() == 138U);
+  std::size_t cell_count = 0U, kaleido_count = 0U;
+  for (const auto& c : dynamic_kernel9_oracle::kCases) {
+    const bool cell = c.key == "classicNoisedeck/cellRefract:cellRefract";
+    if (cell) ++cell_count; else ++kaleido_count;
+    noisemaker::Surface input = dynamic_kernel9_input(c.width, c.height, c.salt);
+    noisemaker::Surface direct_input = dynamic_kernel9_input(c.width, c.height, c.salt);
+    noisemaker::Surface repeat_input = dynamic_kernel9_input(c.width, c.height, c.salt);
+    const auto original = task23_float_bytes(input);
+    REQUIRE(task23_hex(task23_sha256(original)) == c.input_f32_sha256);
+    const auto bind = [&](const noisemaker::Surface& surface) {
+      return dynamic_kernel9_bindings(c, surface);
+    };
+    const float external_time = cell ? 0.3f : 0.375f;
+    const auto first = noisemaker::run_pass(
+        noisemaker::generated::bind(c.key, bind(input)),
+        c.width, c.height, external_time, 7.0f);
+    const auto direct = noisemaker::run_pass(
+        cell ? noisemaker::generated::bind_classicNoisedeck_cellRefract_cellRefract(
+                   bind(direct_input))
+             : noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido(
+                   bind(direct_input)),
+        c.width, c.height, external_time, 7.0f);
+    const auto repeat = noisemaker::run_pass(
+        noisemaker::generated::bind(c.key, bind(repeat_input)),
+        c.width, c.height, external_time, 7.0f);
+    REQUIRE(task23_float_bytes(input) == original);
+    REQUIRE(task23_float_bytes(direct_input) == original);
+    REQUIRE(task23_float_bytes(repeat_input) == original);
+    REQUIRE(task23_float_bytes(first) == task23_float_bytes(direct));
+    REQUIRE(task23_float_bytes(first) == task23_float_bytes(repeat));
+    REQUIRE(first.to_rgba8() == direct.to_rgba8());
+    REQUIRE(first.to_rgba8() == repeat.to_rgba8());
+    REQUIRE(task23_hex(task23_sha256(task23_float_bytes(first))) ==
+            c.output_f32_sha256);
+    REQUIRE(task23_hex(task23_sha256(first.to_rgba8())) ==
+            c.output_rgba8_sha256);
+  }
+  REQUIRE(cell_count == 42U);
+  REQUIRE(kaleido_count == 96U);
+}
+
+// Exact CPU4307 cases from tests/fixtures/effects_runtime_reference.mjs.
+TEST(typed_effects_runtime_defines_match_all_current_cpu_cases) {
+  REQUIRE(effects_runtime_oracle::kSourceSha256 ==
+          "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316");
+  REQUIRE(effects_runtime_oracle::kCases.size() == 72U);
+  REQUIRE(effects_runtime_oracle::kEffects.size() == 19U);
+  REQUIRE(effects_runtime_oracle::kFlips.size() == 12U);
+  struct Geometry {
+    std::size_t width, height, input_width, input_height;
+    int input_seed;
+    float tile_x, tile_y, full_width, full_height;
+    double time, effect_amt, scale_amt, rotation, offset_x, offset_y;
+  };
+  constexpr std::array<Geometry, 4> kGeometries{{
+      {7U, 5U, 7U, 5U, 2, 0.0f, 0.0f, 7.0f, 5.0f,
+       1.25, 1.0, 75.0, 37.0, 23.0, -17.0},
+      {4U, 3U, 9U, 8U, 7, 2.0f, 3.0f, 9.0f, 8.0f,
+       2.5, 1.0, 140.0, -28.0, -31.0, 26.0},
+      {4U, 3U, 9U, 8U, 7, 0.0f, 0.0f, 9.0f, 8.0f,
+       2.5, 1.0, 140.0, -28.0, -31.0, 26.0},
+      {4U, 3U, 600U, 600U, 7, 3000.0f, 2200.0f, 4096.0f, 3072.0f,
+       2.5, 20.0, 100.0, 0.0, 0.0, 0.0},
+  }};
+  for (const auto& test_case : effects_runtime_oracle::kCases) {
+    REQUIRE(test_case.fixture < kGeometries.size());
+    const auto& geometry = kGeometries[test_case.fixture];
+    const std::size_t width = geometry.width;
+    const std::size_t height = geometry.height;
+    const std::size_t input_width = geometry.input_width;
+    const std::size_t input_height = geometry.input_height;
+    const int input_seed = geometry.input_seed;
+    std::vector<float> input_data(input_width * input_height * 4U);
+    for (std::size_t y = 0; y < input_height; ++y) {
+      for (std::size_t x = 0; x < input_width; ++x) {
+        const std::size_t i = (y * input_width + x) * 4U;
+        input_data[i] = static_cast<float>((3 * x + 5 * y + input_seed) % 16U) / 16.0f;
+        input_data[i + 1U] = static_cast<float>((x + 2 * y + input_seed) % 8U) / 8.0f;
+        input_data[i + 2U] = static_cast<float>((5 * x + y + input_seed) % 32U) / 32.0f;
+        input_data[i + 3U] = 1.0f;
+      }
+    }
+    noisemaker::Surface public_input(input_width, input_height, input_data);
+    noisemaker::Surface direct_input(input_width, input_height, input_data);
+    noisemaker::Surface repeat_input(input_width, input_height, input_data);
+    const auto before = shared_native_words(public_input);
+    const auto make_bindings = [&](const noisemaker::Surface& input) {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_texture("inputTex", input);
+      bindings.set_uniform("resolution", noisemaker::glsl::Vec2(
+          static_cast<float>(width), static_cast<float>(height)));
+      bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(
+          geometry.tile_x, geometry.tile_y));
+      bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(
+          geometry.full_width, geometry.full_height));
+      bindings.set_uniform("invFullResolution", noisemaker::glsl::Vec2(
+          1.0f / geometry.full_width,
+          1.0f / geometry.full_height));
+      bindings.set_uniform("aspectInv", static_cast<double>(static_cast<float>(
+          1.0 / (static_cast<double>(geometry.full_width) /
+                 static_cast<double>(geometry.full_height)))));
+      bindings.set_uniform("renderScale", 1.0);
+      bindings.set_uniform("time", geometry.time);
+      bindings.set_uniform("effectAmt", geometry.effect_amt);
+      bindings.set_uniform("scaleAmt", geometry.scale_amt);
+      bindings.set_uniform("rotation", geometry.rotation);
+      bindings.set_uniform("offsetX", geometry.offset_x);
+      bindings.set_uniform("offsetY", geometry.offset_y);
+      bindings.set_uniform("intensity", 20.0);
+      bindings.set_uniform("saturation", -15.0);
+      bindings.set_uniform("EFFECT", test_case.effect);
+      bindings.set_uniform("FLIP", test_case.flip);
+      return bindings;
+    };
+    const noisemaker::BoundKernel public_kernel = [&] {
+      auto bindings = make_bindings(public_input);
+      return noisemaker::generated::bind("classicNoisedeck/effects:effects", bindings);
+    }();
+    const noisemaker::BoundKernel direct_kernel = [&] {
+      auto bindings = make_bindings(direct_input);
+      return noisemaker::generated::bind_classicNoisedeck_effects_effects(bindings);
+    }();
+    const noisemaker::BoundKernel repeat_kernel = [&] {
+      auto bindings = make_bindings(repeat_input);
+      return noisemaker::generated::bind_classicNoisedeck_effects_effects(bindings);
+    }();
+    const SharedNativeExpectedSurface expected{
+        width, height, test_case.words, test_case.rgba};
+    shared_native_require_exact(noisemaker::run_pass(public_kernel, width, height),
+                                expected, test_case.name);
+    shared_native_require_exact(noisemaker::run_pass(direct_kernel, width, height),
+                                expected, test_case.name);
+    shared_native_require_exact(noisemaker::run_pass(repeat_kernel, width, height),
+                                expected, test_case.name);
+    REQUIRE(shared_native_words(public_input) == before);
+    REQUIRE(shared_native_words(direct_input) == before);
+    REQUIRE(shared_native_words(repeat_input) == before);
+  }
+}
+
+// CPU9f3 canonicalFactory9 returns undefined for LOOP_OFFSET=999; Number
+// arithmetic consumes it as canonical NaN (0x7fc00000 in every Float32 lane).
+TEST(typed_dynamic_kaleido_unmatched_offset_cpu9f3_nan_exact) {
+  const auto it = std::find_if(dynamic_kernel9_oracle::kCases.begin(),
+                               dynamic_kernel9_oracle::kCases.end(),
+      [](const auto& c) { return c.key == "classicNoisedeck/kaleido:kaleido"; });
+  REQUIRE(it != dynamic_kernel9_oracle::kCases.end());
+  const auto& c = *it;
+  REQUIRE(c.width == 7U);
+  REQUIRE(c.height == 5U);
+  auto input = dynamic_kernel9_input(c.width, c.height, c.salt);
+  auto repeat_input = dynamic_kernel9_input(c.width, c.height, c.salt);
+  const auto before = task23_float_bytes(input);
+  const auto bind = [&](const noisemaker::Surface& source) {
+    auto bindings = dynamic_kernel9_bindings(c, source);
+    bindings.set_uniform("LOOP_OFFSET", std::int32_t{999});
+    return bindings;
+  };
+  const auto first = noisemaker::run_pass(
+      noisemaker::generated::bind(c.key, bind(input)),
+      c.width, c.height, 0.375f, 7.0f);
+  const auto repeat = noisemaker::run_pass(
+      noisemaker::generated::bind(c.key, bind(repeat_input)),
+      c.width, c.height, 0.375f, 7.0f);
+  REQUIRE(task23_float_bytes(input) == before);
+  REQUIRE(task23_float_bytes(repeat_input) == before);
+  REQUIRE(task23_float_bytes(first) == task23_float_bytes(repeat));
+  REQUIRE(first.data().size() == 140U);
+  for (float value : first.data()) {
+    REQUIRE(noisemaker::float_bits_to_uint(value) == 0x7fc00000U);
+  }
 }

@@ -35,16 +35,16 @@ REQUIRED_COMPANION_PROFILES = {
                   ("ceil_admission_profile", "ceil-admission-v1")),
 }
 
-_RAW_BYTES = 8195
-_RAW_SHA256 = "9ed4cce15c5d4358f191d8beeaae93624520530f1c4181dd7a5895e47821cc0e"
-_NORMALIZED_BYTES = 7575
-_NORMALIZED_BYTES_SHA256 = "d73526898d099818d6d6bc9efb3810b8c8e636aae47741feda7f9e7b0ae4badd"
-_NORMALIZED_IR_SHA256 = "7e9e8ef537289448a41961f886ee48136e98b3c6270ca6573c1730ea33fd191d"
-_RAW_IR_SHA256 = "c1b52fd92974886db55d2ba2b8541f10f35f78903535a2db1db1255bd591fad7"
-_FUNCTIONS_SHA256 = "a36d53eebe262b2874535ea260ae76928eeb131c3d958100adbfec9c439a3d54"
+_RAW_BYTES = 8268
+_RAW_SHA256 = "4bb633e963eed011c4724d9b18470baed3ac474eadce98e06288ace5c382846a"
+_NORMALIZED_BYTES = 7648
+_NORMALIZED_BYTES_SHA256 = "67d21c46b7322a4b7a3f3b80a8729ac8bc228c245154bcade5805919c50ba172"
+_NORMALIZED_IR_SHA256 = "8d6f851df157907ffe0eff2130e268ba34612178565e15cbaa6bf50783f4f353"
+_RAW_IR_SHA256 = "942ff7191e30bc346af21db90fff651d686c05953d6390b2125bcfbb8feac4e6"
+_FUNCTIONS_SHA256 = "684c9e7238cabe651aa01f9abee7794f2f1a8c7d68df5b1cf2ac0b02bcd8e9f9"
 _DECLARATIONS_SHA256 = "3501eee0dc5daa002d085d9a272fb8f39dd387d311f77f09f87f47601d2c50d4"
-_WHOLE_SHA256 = "77ac4023cc522790da6b8d3450d0e1b41f926b5c6737dab1e15655c746e57a9a"
-_INTERFACE_SHA256 = "cccab93b4e2a271eea295b4fe6c1099b88d144b1c60a5abd222674cbf2cf61de"
+_WHOLE_SHA256 = "6dc3aea258768a9d571eda706f7f6b73ea1fd54517a3e05bed87cb3cb6a714f5"
+_INTERFACE_SHA256 = "2a525a736cbea69a562240918ae86a96bbcc47c0eff31e9498f224efbe448deb"
 _FUNCTIONS = (
     (33, "bicubic"), (34, "f"), (35, "glitch"), (36, "main"),
     (37, "map"), (38, "offsets"), (39, "pcg"),
@@ -135,7 +135,7 @@ _ORDERED_FREQ_SPLAT = (
     "78e7858935345d594910dd94e739b49350f8dec6a5ec95fc17db8df24502d678",
 )
 
-_PROFILE_SHA256 = "fb4e4cbc70a5341b3bf42f9272f4084ba51d32e5b36e21813f8b694325f31e12"
+_PROFILE_SHA256 = "46b7c19ebb29518c68ed1716012b691b1a5d050bbbcaf8868ca4b998f902af5a"
 
 # --- effects' frozen record (measured; see effects-design.md §§1, 4) ------
 # Structurally the same bicubic closure as glitch's (the upstream author
@@ -146,110 +146,247 @@ _PROFILE_SHA256 = "fb4e4cbc70a5341b3bf42f9272f4084ba51d32e5b36e21813f8b694325f31
 # reachable set (8 of 28 -- glitch's check demands every function
 # reachable), and NO freq splat (glitch's `vec2 *=` site does not exist in
 # effects at all; the splat fields are per-key optional below).
-_EFFECTS_RAW_BYTES = 21279
-_EFFECTS_RAW_SHA256 = "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457"
-_EFFECTS_NORMALIZED_BYTES = 15821
-_EFFECTS_NORMALIZED_BYTES_SHA256 = "ed61aa21c55782d5325c514cb29c3d19992fe93669e9391aa28b19963046b150"
-_EFFECTS_NORMALIZED_IR_SHA256 = "808bee0ca5378aa06ac95a970a76e2da87678fa3fd06d745572e38d11f71a352"
-_EFFECTS_RAW_IR_SHA256 = "27869bc85b25a5322262868fb44a34b1c9fa25017bc5804b0308bdec6b909171"
-_EFFECTS_FUNCTIONS_SHA256 = "4165298021dd882ccab94042267c209fa4fd34c3c414aa81e1946d93c8500f58"
-_EFFECTS_DECLARATIONS_SHA256 = "d70dc9c99d2aa5a1546b8eb5a6f15b7bb8d0db2cc86cc7a51ba37643e3930a2a"
-_EFFECTS_WHOLE_SHA256 = "53ce4d08011b9f09e2072723facf7ecece0e203326698d2a748cc445b9ce9197"
-_EFFECTS_INTERFACE_SHA256 = "8cbdb73990c43f4739fadaeb20a06d5cc7adcb891fd50bfc7588abf3acdfee5b"
-_EFFECTS_DEFINES = (("EFFECT", "int", "0"), ("FLIP", "int", "0"))
-_EFFECTS_FUNCTIONS = (
-    (65, "bicubic"), (66, "bloom"), (67, "brightnessContrast"),
-    (68, "cga"), (69, "convolutionEffect"), (70, "convolve"),
-    (71, "derivatives"), (72, "desaturate"), (73, "f"), (74, "hsv2rgb"),
-    (75, "loadKernels"), (76, "main"), (77, "map"), (78, "offsets"),
-    (79, "outline"), (80, "pcg"), (81, "periodicFunction"),
-    (82, "pixellate"), (83, "posterize"), (84, "prng"), (85, "random"),
-    (86, "rgb2hsv"), (87, "rotate2D"), (88, "saturate"), (89, "shadow"),
-    (90, "sobel"), (91, "subpixel"), (92, "zoomBlur"),
-)
-_EFFECTS_CALL_GRAPH = {
-    "bicubic": ("f",),
-    "bloom": ("map",),
-    "brightnessContrast": ("map",),
-    "cga": ("map",),
-    "convolutionEffect": (),
-    "convolve": (),
-    "derivatives": ("convolve", "desaturate"),
-    "desaturate": (),
-    "f": ("random",),
-    "hsv2rgb": (),
-    "loadKernels": (),
-    "main": ("brightnessContrast", "loadKernels", "map", "offsets",
-             "periodicFunction", "rotate2D", "saturate"),
-    "map": (),
-    "offsets": (),
-    "outline": ("convolve", "desaturate"),
-    "pcg": (),
-    "periodicFunction": ("map",),
-    "pixellate": (),
-    "posterize": (),
-    "prng": ("pcg",),
-    "random": ("pcg",),
-    "rgb2hsv": (),
-    "rotate2D": ("map",),
-    "saturate": ("map",),
-    "shadow": ("convolve", "hsv2rgb", "rgb2hsv"),
-    "sobel": ("convolve", "desaturate"),
-    "subpixel": ("map", "pixellate"),
-    "zoomBlur": ("map", "prng"),
-}
-_EFFECTS_REACHABLE = ("brightnessContrast", "loadKernels", "main", "map",
-                      "offsets", "periodicFunction", "rotate2D", "saturate")
-_EFFECTS_UNREACHABLE = ("bicubic", "bloom", "cga", "convolutionEffect",
-                        "convolve", "derivatives", "desaturate", "f",
-                        "hsv2rgb", "outline", "pcg", "pixellate", "posterize",
-                        "prng", "random", "rgb2hsv", "shadow", "sobel",
-                        "subpixel", "zoomBlur")
-_EFFECTS_RESOURCES = (
-    ("inputTex", "resolution", "tileOffset", "fullResolution", "renderScale",
-     "time", "effectAmt", "scaleAmt", "rotation", "offsetX", "offsetY",
-     "intensity", "saturation"),
-    ("inputTex",), ("fragColor",), True, False,
-)
-_EFFECTS_LOOP_PROOF = (4, 0, 2, 48, 0, True)
-_EFFECTS_DECLARATION_COUNT = 21
-_EFFECTS_HOST = (65, "bicubic")
+_EFFECTS_RAW_BYTES = 26106
+_EFFECTS_RAW_SHA256 = '1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90'
+_EFFECTS_NORMALIZED_BYTES = 17038
+_EFFECTS_NORMALIZED_BYTES_SHA256 = '9e2f853168720c5923440e2f835bcbf4f85e50e15c8cc5b739c15a5ecd150207'
+_EFFECTS_NORMALIZED_IR_SHA256 = 'eb2bc4333772e408e14802109cbd222edaf93f80db501938513606b63e07abd9'
+_EFFECTS_RAW_IR_SHA256 = '4bd3f8ef4780ffd04a55adeccd639b11bb01792da781202bd4f10882fa74d612'
+_EFFECTS_FUNCTIONS_SHA256 = '4c2ebe270f45b8ee86f230c1a48254b62b668943c2f10b481fa04b5f2e75698e'
+_EFFECTS_DECLARATIONS_SHA256 = 'b5b3eabcf8ad9e2e52e1c037e17f81c70d904cf9cf9f4f6a54bb0107695ac7d2'
+_EFFECTS_WHOLE_SHA256 = '7c7211aff83abb13c370f0983b4e1adc31371385bcd5ee8943ee015edcd15fb3'
+_EFFECTS_INTERFACE_SHA256 = '3cdb27b87bfe71e7e6e9d46460faafdf6116c0746d5d1f25888e4bddaa109317'
+_EFFECTS_DEFINES = (('EFFECT', 'int', '0'), ('FLIP', 'int', '0'))
+_EFFECTS_FUNCTIONS = ((67, 'bicubic'),
+ (68, 'bloom'),
+ (69, 'brightnessContrast'),
+ (70, 'cga'),
+ (71, 'convolutionEffect'),
+ (72, 'convolve'),
+ (73, 'derivatives'),
+ (74, 'desaturate'),
+ (75, 'f'),
+ (76, 'hsv2rgb'),
+ (77, 'loadKernels'),
+ (78, 'main'),
+ (79, 'map'),
+ (80, 'offsets'),
+ (81, 'outline'),
+ (82, 'pcg'),
+ (83, 'periodicFunction'),
+ (84, 'pixellate'),
+ (85, 'posterize'),
+ (86, 'prng'),
+ (87, 'random'),
+ (88, 'rgb2hsv'),
+ (89, 'rotate2D'),
+ (90, 'saturate'),
+ (91, 'shadow'),
+ (92, 'sobel'),
+ (93, 'subpixel'),
+ (94, 'zoomBlur'))
+_EFFECTS_CALL_GRAPH = {'bicubic': ('f',),
+ 'bloom': ('map',),
+ 'brightnessContrast': ('map',),
+ 'cga': ('map',),
+ 'convolutionEffect': (),
+ 'convolve': (),
+ 'derivatives': ('convolve', 'desaturate'),
+ 'desaturate': (),
+ 'f': ('random',),
+ 'hsv2rgb': (),
+ 'loadKernels': (),
+ 'main': ('brightnessContrast',
+          'loadKernels',
+          'map',
+          'offsets',
+          'periodicFunction',
+          'rotate2D',
+          'saturate'),
+ 'map': (),
+ 'offsets': (),
+ 'outline': ('convolve', 'desaturate'),
+ 'pcg': (),
+ 'periodicFunction': ('map',),
+ 'pixellate': (),
+ 'posterize': (),
+ 'prng': ('pcg',),
+ 'random': ('pcg',),
+ 'rgb2hsv': (),
+ 'rotate2D': ('map',),
+ 'saturate': ('map',),
+ 'shadow': ('convolve', 'hsv2rgb', 'rgb2hsv'),
+ 'sobel': ('convolve', 'desaturate'),
+ 'subpixel': ('map', 'pixellate'),
+ 'zoomBlur': ('map', 'prng')}
+_EFFECTS_REACHABLE = ('brightnessContrast',
+ 'loadKernels',
+ 'main',
+ 'map',
+ 'offsets',
+ 'periodicFunction',
+ 'rotate2D',
+ 'saturate')
+_EFFECTS_UNREACHABLE = ('bicubic',
+ 'bloom',
+ 'cga',
+ 'convolutionEffect',
+ 'convolve',
+ 'derivatives',
+ 'desaturate',
+ 'f',
+ 'hsv2rgb',
+ 'outline',
+ 'pcg',
+ 'pixellate',
+ 'posterize',
+ 'prng',
+ 'random',
+ 'rgb2hsv',
+ 'shadow',
+ 'sobel',
+ 'subpixel',
+ 'zoomBlur')
+_EFFECTS_RESOURCES = (('inputTex',
+  'resolution',
+  'tileOffset',
+  'fullResolution',
+  'invFullResolution',
+  'aspectInv',
+  'renderScale',
+  'time',
+  'effectAmt',
+  'scaleAmt',
+  'rotation',
+  'offsetX',
+  'offsetY',
+  'intensity',
+  'saturation'),
+ ('inputTex',),
+ ('fragColor',),
+ True,
+ False)
+_EFFECTS_LOOP_PROOF = (5, 0, 2, 48, 0, True)
+_EFFECTS_DECLARATION_COUNT = 23
+_EFFECTS_HOST = (67, 'bicubic')
 # Semantic traversal order; same shape as glitch's `_MATRIX_NODES`.
-_EFFECTS_MATRIX_NODES = (
-    ((22, "e0"), "395:10-395:114", "declaration", "mat4", None, 116, "Q",
-     "c3d2f8a595e09785cd461ac1d61690bcfec74d50111946c7b65518e78e2fdd7a"),
-    ((22, "e0", 0), "395:14-395:114", "construct", "mat4", None, None, None,
-     "c1d89f1636788055a5598118696c117b385a5af159edc41888bda08159771202"),
-    ((23, "e0"), "396:10-396:86", "declaration", "mat4", None, 117, "S",
-     "68e756de68f46f35d4ef2132ea068d7f4f68546dc2885b1abbfb1418079626f6"),
-    ((23, "e0", 0), "396:14-396:86", "construct", "mat4", None, None, None,
-     "941620628f633fc4268d0dbf75ea233718163e02e9c9da8df5b2c28531378b22"),
-    ((24, "e0"), "397:10-397:86", "declaration", "mat4", None, 118, "T",
-     "d8419991dce8fbab8d3521ec1a1ad7e0753b7ede0000b9c91df7de25148acc9d"),
-    ((24, "e0", 0), "397:14-397:86", "construct", "mat4", None, None, None,
-     "4b773367f45912ab55765cea54ece66c0bc2c176f5319c193df724e2476f899e"),
-    ((25, "e0"), "398:10-398:23", "declaration", "mat4", None, 119, "A",
-     "60fec21a980e82842084c1a492a4d2e553bf3ab9c7004b1cff4d3cceb28364d8"),
-    ((25, "e0", 0), "398:14-398:23", "binary", "mat4", "*", None, None,
-     "e14127d9f03c29de2913dffaa26da4fe0479f634d9f40aa4852f102223d3fc11"),
-    ((25, "e0", 0, 0), "398:14-398:19", "binary", "mat4", "*", None, None,
-     "b6aeaa401804a0b3d9eda9b1309b22f391f9638ec33cf9f4c3360f8c9589989f"),
-    ((25, "e0", 0, 0, 0), "398:14-398:15", "id", "mat4", None, 118, "T",
-     "0557fd5a067c67f6259f16f3e7e3128b6dd125284b0bc20928203aee70cdb54b"),
-    ((25, "e0", 0, 0, 1), "398:18-398:19", "id", "mat4", None, 116, "Q",
-     "8073137859ad397e63a49618b255580cc49887c239c7d4c108efb0c3e10c1924"),
-    ((25, "e0", 0, 1), "398:22-398:23", "id", "mat4", None, 117, "S",
-     "1e1bbb34e3d4deeca26c8644bab2f79260243d16d8600946d0d945c8ad523529"),
-    ((30, "e0", 0), "403:16-403:22", "binary", "vec4", "*", None, None,
-     "1cdd338743417ab1b6fe299714124398e473e5b4de497e186219224946afe7e5"),
-    ((30, "e0", 0, 1), "403:21-403:22", "id", "mat4", None, 119, "A",
-     "b2940dbe59de5b11feb26cd8e47223aa0e7befe1737828580b387aabf2a8e328"),
-)
+_EFFECTS_MATRIX_NODES = (((22, 'e0'),
+  '427:10-427:114',
+  'declaration',
+  'mat4',
+  None,
+  118,
+  'Q',
+  'e8e3622c9ed34d6cd5887aec2ce52a27c0a3073abdd0a4ea932015a20ccedbbf'),
+ ((22, 'e0', 0),
+  '427:14-427:114',
+  'construct',
+  'mat4',
+  None,
+  None,
+  None,
+  'ebe89822ff73dedd4ab775615232933c3b0bd301e273970ef51eb53797f99293'),
+ ((23, 'e0'),
+  '428:10-428:86',
+  'declaration',
+  'mat4',
+  None,
+  119,
+  'S',
+  'a4544d1612e043a3b734e20e5be45a495e3a184121c26d9c7f5d71cdcec9b7c4'),
+ ((23, 'e0', 0),
+  '428:14-428:86',
+  'construct',
+  'mat4',
+  None,
+  None,
+  None,
+  '55cdc6c95b3dd1bcbfdc91709ee97b35fb131cdf86104a17dcc59e4dbf48e45e'),
+ ((24, 'e0'),
+  '429:10-429:86',
+  'declaration',
+  'mat4',
+  None,
+  120,
+  'T',
+  'ee378c14f86b6698fef4fbdc4de608c360c7191b4141d4f46737219fb1a6715a'),
+ ((24, 'e0', 0),
+  '429:14-429:86',
+  'construct',
+  'mat4',
+  None,
+  None,
+  None,
+  '2a7826688768a6d4e034fe448b13167b90eb372594a6c69d771bf934f58c2453'),
+ ((25, 'e0'),
+  '430:10-430:23',
+  'declaration',
+  'mat4',
+  None,
+  121,
+  'A',
+  '640d1286b5010325b3b5e502968054a7054fee0a295bd96f109692d8745b291d'),
+ ((25, 'e0', 0),
+  '430:14-430:23',
+  'binary',
+  'mat4',
+  '*',
+  None,
+  None,
+  'a2111a68333b11da74aa2f280608d47265f4591246fb05b975dc192ba558e078'),
+ ((25, 'e0', 0, 0),
+  '430:14-430:19',
+  'binary',
+  'mat4',
+  '*',
+  None,
+  None,
+  '47f1359a28a62f06d3f868ba4d521b45f8f5386f8634c62cee1b13ddbcddb275'),
+ ((25, 'e0', 0, 0, 0),
+  '430:14-430:15',
+  'id',
+  'mat4',
+  None,
+  120,
+  'T',
+  '55ea6207b2c3702ec74d19184748b0de96460fe2305498a408fb14a941464c14'),
+ ((25, 'e0', 0, 0, 1),
+  '430:18-430:19',
+  'id',
+  'mat4',
+  None,
+  118,
+  'Q',
+  'cad067e9ad05351aa80b1e3f48105b70bbbe126f78781b9f2d71be1518ddc5d1'),
+ ((25, 'e0', 0, 1),
+  '430:22-430:23',
+  'id',
+  'mat4',
+  None,
+  119,
+  'S',
+  '995c9c917004e702b7e025b2f4d8b5fc162b5c10420d76009243bfb2130b9cd3'),
+ ((30, 'e0', 0),
+  '435:16-435:22',
+  'binary',
+  'vec4',
+  '*',
+  None,
+  None,
+  'd61adac5f968a1e1356f589ccc61e7588c6d586c76e359003e37874992fddad2'),
+ ((30, 'e0', 0, 1),
+  '435:21-435:22',
+  'id',
+  'mat4',
+  None,
+  121,
+  'A',
+  '319ae979160431af0c6eb1b4df8725358b645ed56062c5e7dc59742b0872c135'))
 # The dot/return route locks: `dot(tv * A, uv)` as the sole expression of
 # bicubic's `return` (statement 30).
-_EFFECTS_DOT_SPAN = "403:12-403:27"
-_EFFECTS_DOT_SECOND_ARGUMENT = "uv"
-_EFFECTS_RETURN_SPAN = "403:5-403:28"
+_EFFECTS_DOT_SPAN = '435:12-435:27'
+_EFFECTS_DOT_SECOND_ARGUMENT = 'uv'
+_EFFECTS_RETURN_SPAN = '435:5-435:28'
 
 
 def _effects_profile_tuple() -> tuple[object, ...]:
@@ -266,7 +403,7 @@ def _effects_profile_tuple() -> tuple[object, ...]:
             _EFFECTS_DOT_SECOND_ARGUMENT, _EFFECTS_RETURN_SPAN)
 
 
-_EFFECTS_PROFILE_SHA256 = "c5fba754a3b50ac589a3a42325bcd96ef53126ec6247ff329dc4b46aa73118d6"
+_EFFECTS_PROFILE_SHA256 = "affccf42ea32177332b98867005ecf0cc98c5ad5f33581f600c2e0972d458585"
 
 
 @dataclass(frozen=True, slots=True)
@@ -385,6 +522,9 @@ def authenticate_glitch_mat4_chain(
     """Authenticate one of the frozen bicubic-chain keys and return only
     objects owned by ``program``."""
     if profile == EFFECTS_PROFILE:
+        from . import dynamic_kernel9_profile, dynamic_kernel9_companions
+        if dynamic_kernel9_profile.is_dynamic(program):
+            return dynamic_kernel9_companions.effects_matrix(program, source_hash)
         return _authenticate_effects_chain(program, source_hash, profile)
     if profile != PROFILE:
         raise _fail("exact profile carrier required")

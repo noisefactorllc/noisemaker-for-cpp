@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from tests.historical_cpu import historical_cpu_root, historical_environment, historical_run
+from tests.historical_cpu import current_run, historical_cpu_root, historical_environment, historical_run
 from tests.simulated_links import run_with_simulated_links, simulate_symlink
 
 
@@ -43,6 +43,59 @@ class HistoricalCpuTests(unittest.TestCase):
             historical_run(["python3.13", "script.py"], env={"NOISEMAKER_CPU_ROOT": "/current"})
             run.assert_called_once_with(["python3.13", "script.py"],
                                         env={"NOISEMAKER_CPU_ROOT": "/current"})
+
+    def test_oracle_node_override_changes_only_node_child_executable(self):
+        with tempfile.TemporaryDirectory() as raw:
+            executable = pathlib.Path(raw) / "node"
+            executable.write_text("#!/bin/sh\nexit 0\n")
+            executable.chmod(0o700)
+            parent = {"NOISEMAKER_ORACLE_NODE": str(executable), "PATH": "/parent-path",
+                      "NOISEMAKER_CPU_ROOT": "/current",
+                      "NOISEMAKER_HISTORICAL_CPU_ROOT": "/historical"}
+            args = ["node", "oracle.mjs"]
+            with patch.dict(os.environ, parent, clear=True), \
+                 patch("tests.historical_cpu.run_with_simulated_links") as node_run, \
+                 patch("tests.historical_cpu.subprocess.run") as other_run:
+                current_run(args)
+                node_run.assert_called_once_with([str(executable), "oracle.mjs"])
+                node_run.reset_mock()
+                historical_run(args)
+                child_args, child_kwargs = node_run.call_args
+                self.assertEqual(child_args[0], [str(executable), "oracle.mjs"])
+                self.assertEqual(child_kwargs["env"]["NOISEMAKER_CPU_ROOT"], "/historical")
+                self.assertEqual(child_kwargs["env"]["PATH"], "/parent-path")
+                historical_run(["python3.13", "check.py"])
+                other_run.assert_called_once_with(["python3.13", "check.py"])
+                self.assertEqual(args, ["node", "oracle.mjs"])
+                self.assertEqual(os.environ["PATH"], "/parent-path")
+                self.assertEqual(os.environ["NOISEMAKER_CPU_ROOT"], "/current")
+
+    def test_explicit_child_environment_does_not_inherit_oracle_node(self):
+        with tempfile.TemporaryDirectory() as raw:
+            executable = pathlib.Path(raw) / "node"
+            executable.write_text("#!/bin/sh\nexit 0\n")
+            executable.chmod(0o700)
+            with patch.dict(os.environ, {"NOISEMAKER_ORACLE_NODE": str(executable)}, clear=True), \
+                 patch("tests.historical_cpu.run_with_simulated_links") as node_run:
+                current_run(["node", "oracle.mjs"], env={})
+                node_run.assert_called_once_with(["node", "oracle.mjs"], env={})
+                node_run.reset_mock()
+                historical_run(["node", "oracle.mjs"], env={"NOISEMAKER_CPU_ROOT": "/forged"})
+                node_run.assert_called_once_with(
+                    ["node", "oracle.mjs"], env={"NOISEMAKER_CPU_ROOT": "/forged"})
+
+    def test_invalid_oracle_node_fails_before_child_start(self):
+        with tempfile.TemporaryDirectory() as raw:
+            non_executable = pathlib.Path(raw) / "node"
+            non_executable.write_text("#!/bin/sh\nexit 0\n")
+            with patch("tests.historical_cpu.run_with_simulated_links") as node_run:
+                for configured in ("", "node", str(pathlib.Path(raw) / "missing"),
+                                   str(non_executable), raw):
+                    with self.subTest(configured=configured), \
+                         patch.dict(os.environ, {"NOISEMAKER_ORACLE_NODE": configured}, clear=True):
+                        with self.assertRaises(ValueError):
+                            current_run(["node", "oracle.mjs"])
+                node_run.assert_not_called()
 
     def test_node_simulates_leaf_metadata_resolution_and_reads_only_registered_paths(self):
         with tempfile.TemporaryDirectory() as raw:

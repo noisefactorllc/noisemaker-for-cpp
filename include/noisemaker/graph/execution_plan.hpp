@@ -82,6 +82,8 @@ struct AuthorityPassMetadata {
   bool blend = false;
   std::array<std::string, 2> blend_factors{};
   std::optional<PlanValue> repeat;
+  std::optional<effects::Value> defines;
+  std::optional<effects::Value> viewport;
 };
 
 struct CompatibilityOutput {

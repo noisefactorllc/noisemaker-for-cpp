@@ -157,7 +157,7 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> pow(const FloatExpr<N
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> pow(const FloatExpr<N>& a,const Vec<N,float>& b) { return pow(Vec<N,float>(a),b); }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> pow(const FloatExpr<N>& a,const FloatExpr<N>& b) { return pow(Vec<N,float>(a),Vec<N,float>(b)); }
 
-template <std::size_t N> [[nodiscard]] inline float dot(const Vec<N,float>& a,const Vec<N,float>& b) { double sum=0.0; for(std::size_t i=0;i<N;++i) sum+=static_cast<double>(a[i])*b[i]; return noisemaker::f32(sum); }
+template <std::size_t N> [[nodiscard]] inline float dot(const Vec<N,float>& a,const Vec<N,float>& b) { double sum=0.0; for(std::size_t i=0;i<N;++i) sum=noisemaker::f32(static_cast<double>(a[i])*b[i]+sum); return static_cast<float>(sum); }
 template <std::size_t N> [[nodiscard]] inline float dot(const FloatExpr<N>& a,const Vec<N,float>& b) { return dot(Vec<N,float>(a),b); }
 template <std::size_t N> [[nodiscard]] inline float dot(const Vec<N,float>& a,const FloatExpr<N>& b) { return dot(a,Vec<N,float>(b)); }
 template <std::size_t N> [[nodiscard]] inline float dot(const FloatExpr<N>& a,const FloatExpr<N>& b) { return dot(Vec<N,float>(a),Vec<N,float>(b)); }
@@ -346,7 +346,7 @@ template <class A,class B>
 [[nodiscard]] inline float dot(const A& a,const B& b) {
   const auto fa = float_expr(a); const auto fb = float_expr(b);
   double sum = 0.0;
-  for (std::size_t i = 0; i < detail::lane_count_v<A>; ++i) sum += fa[i]*fb[i];
+  for (std::size_t i = 0; i < detail::lane_count_v<A>; ++i) sum = noisemaker::f32(fa[i]*fb[i]+sum);
   return noisemaker::f32(sum);
 }
 template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline float length(const T& value) { return noisemaker::f32(std::sqrt(static_cast<double>(dot(value,value)))); }
@@ -444,7 +444,7 @@ struct AudioUniform128 {
     return static_cast<double>(data[static_cast<std::size_t>(index)]);
   }
 };
-using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec2,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData,AudioUniform128>;
+using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec2,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,DMat3,Mat4,RemapUniformData,AudioUniform128>;
 class KernelBindingError : public std::runtime_error { public: using std::runtime_error::runtime_error; };
 class Bindings {
  public:

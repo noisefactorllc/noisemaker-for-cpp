@@ -4,8 +4,8 @@
   "program_key": "synth/noise:noise",
   "effect_key": "synth/noise",
   "runtime_key": "synth/noise:noise",
-  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
-  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "upstream_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "defines": {
     "NOISE_TYPE": 10,
     "LOOP_OFFSET": 300
@@ -61,7 +61,7 @@
   },
   "factory": {
     "name": "canonicalFactory273",
-    "text_sha256": "1b3860b7e5580828598f09b2b4c1c085f186367aa489349482f48e3560c36698",
+    "text_sha256": "d3068b8c3ad15fa04454cf03b95fed917077291369e673bc4062d22dc476017f",
     "public_factory_is_canonical_identity": true
   },
   "exactness_contract": {
@@ -89,11 +89,11 @@
     "import_closure": [
       {
         "relative_path": "src/csl/glsl-kernel.js",
-        "sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"
+        "sha256": "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff"
       },
       {
         "relative_path": "src/csl/glsl-runtime.js",
-        "sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"
+        "sha256": "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1"
       },
       {
         "relative_path": "src/csl/runtime.js",
@@ -145,7 +145,7 @@
       },
       {
         "relative_path": "src/effects/definition.js",
-        "sha256": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"
+        "sha256": "64d722d6bdeec753ff294c76f4b58c72a38c8182cc8d7bf65c2c113d07a96a6d"
       },
       {
         "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -153,7 +153,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+        "sha256": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -161,11 +161,15 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+        "sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"
       },
       {
         "relative_path": "src/effects/registry.js",
         "sha256": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"
+      },
+      {
+        "relative_path": "src/runtime/automation.js",
+        "sha256": "982b3ea9b83e100aebfb9a9091be058516c41837a40d7731d629f896a4d48c92"
       },
       {
         "relative_path": "src/runtime/pass-runner.js",
@@ -183,17 +187,17 @@
   },
   "provenance": {
     "source": {
-      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/noise/noise.glsl",
+      "relative_path": "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/synth/noise/noise.glsl",
       "bytes": 18131,
       "sha256": "410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274"
     },
     "generator": {
       "relative_path": "docs/port-engineering/noise-parity/noise_oracle_generator.mjs",
-      "sha256": "93e36d585dce77b4a1542fe5c07ab8f2fc70cc231ea9babf6c1fd748fc516363"
+      "sha256": "cc4e67ebe3e4d93738b4067501c05c1509a7356bd0257fe89af64b265ff0bcb9"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_noise_native_oracle_include.py",
-      "sha256": "2d817dddf752adeb553dc3ecf6cab1f54df0fe5601f3ad2b825d9dcf800044ef"
+      "sha256": "9c8acc1814492c77045cfaa9fb334e65fdde6a8bcbfbe243749cb6085667591e"
     },
     "cpu_root": "<immutable-cpu-snapshot-root>"
   },
@@ -629,88 +633,88 @@
         "width": 4,
         "height": 5,
         "f32_words_le": [
-          "0x3f2b1446",
-          "0x3f3bc22a",
-          "0x3f470c60",
+          "0x3f2b1392",
+          "0x3f3bc1fc",
+          "0x3f470a76",
           "0x3f800000",
-          "0x3ebfefc0",
-          "0x3e20bdf8",
-          "0x3f2a5e57",
+          "0x3ebff0a4",
+          "0x3e20beb8",
+          "0x3f2a5faf",
           "0x3f800000",
           "0x3f404ff6",
-          "0x3f0668a7",
+          "0x3f0668b4",
           "0x3f122766",
           "0x3f800000",
-          "0x3f34e9d4",
+          "0x3f34e9c6",
           "0x3f52b353",
-          "0x3f4af926",
+          "0x3f4af928",
           "0x3f800000",
           "0x3f47c8ba",
-          "0x3f6f6fb2",
-          "0x3f1703f0",
+          "0x3f6f6fee",
+          "0x3f1703b0",
           "0x3f800000",
           "0x3f76e236",
           "0x3f5b102e",
-          "0x3e1142b4",
+          "0x3e114188",
           "0x3f800000",
-          "0x3f6ec238",
-          "0x3f3ee7f4",
-          "0x3f2fbc5a",
+          "0x3f6ec224",
+          "0x3f3ee7f6",
+          "0x3f2fbc60",
           "0x3f800000",
-          "0x3f60be1e",
+          "0x3f60be15",
           "0x3f2182b1",
           "0x3ea3c0ea",
           "0x3f800000",
-          "0x3ea48a8e",
-          "0x3f3895f6",
-          "0x3ea269c6",
+          "0x3ea48a8c",
+          "0x3f38963c",
+          "0x3ea269c8",
           "0x3f800000",
-          "0x3e84346e",
+          "0x3e843490",
           "0x3f236f3a",
-          "0x3f30043d",
+          "0x3f300424",
           "0x3f800000",
           "0x3f0bd378",
           "0x3f4fc118",
           "0x3df940e0",
           "0x3f800000",
-          "0x3ebae9bc",
-          "0x3f04fbf3",
-          "0x3f4ad65f",
+          "0x3ebae974",
+          "0x3f04fbec",
+          "0x3f4ad685",
           "0x3f800000",
-          "0x3f05fa5c",
+          "0x3f05fa5b",
           "0x3f717416",
-          "0x3f3302f5",
+          "0x3f330362",
           "0x3f800000",
-          "0x3f3ecf9a",
+          "0x3f3ecf98",
           "0x3e8495e0",
           "0x3f4770dc",
           "0x3f800000",
           "0x3e0acc68",
-          "0x3f03ad99",
-          "0x3f3e41e2",
+          "0x3f03ad60",
+          "0x3f3e41e4",
           "0x3f800000",
-          "0x3f6e1c74",
-          "0x3f6c1352",
-          "0x3f159e5a",
+          "0x3f6e1d0f",
+          "0x3f6c135c",
+          "0x3f159e66",
           "0x3f800000",
-          "0x3ef3a484",
+          "0x3ef3a400",
           "0x3da502e0",
-          "0x3f3d8fb0",
+          "0x3f3d905b",
           "0x3f800000",
           "0x3e0c8cbc",
-          "0x3f656a7d",
-          "0x3f306edc",
+          "0x3f656a51",
+          "0x3f306ef4",
           "0x3f800000",
           "0x3f5bc089",
-          "0x3ed62240",
-          "0x3eea2254",
+          "0x3ed6225e",
+          "0x3eea229e",
           "0x3f800000",
           "0x3f25d197",
-          "0x3f4ec6d2",
-          "0x3f18df92",
+          "0x3f4ec6d6",
+          "0x3f18df85",
           "0x3f800000"
         ],
-        "f32_sha256": "9baea6701f07fe45f3d8af59a07388a27074fe90b377fa2406eaf587f289451b",
+        "f32_sha256": "144fc29a3a7ffeed7a707de426c3e06cbfe10c189b89b19a71e65c435cc87b04",
         "rgba8_bytes": [
           170,
           187,
@@ -3261,7 +3265,7 @@
       "replacement_text": "(globalCoord[0] = gl_FragCoord[0] + tileOffset[0], globalCoord[1] = gl_FragCoord[1] + tileOffset[1] + 1, globalCoord);",
       "anchor_sha256": "6c61d1d9c538263fb40b160bdac65d060dc64748197b866f99a2260d84d918bf",
       "replacement_sha256": "9982c75d15a5cf8c1328acf6b621531d9f8c71c11e06ff2020e65a5f134c7f8f",
-      "mutated_factory_sha256": "956834b3b00dc589de17e0adbceefab33baad4b31a73fa7d019bd4295a59f2da",
+      "mutated_factory_sha256": "5b8349407a6eb08f0d372339a0c0d0548cefc95d8750eb56ed33fc3295c3a91e",
       "rows": [
         {
           "case": "mono-hermite",
@@ -3461,7 +3465,7 @@
       "replacement_text": "for (var i = 1; i < oct; i++) {",
       "anchor_sha256": "7dca0229b063ecd50fb6dda61cc202d99f3d036da2a6e46223255650a0e11adb",
       "replacement_sha256": "7d3c4aa1d382c224e07a00ac2f591072b3edeaa4c20f7364fc5c7e59cad75c84",
-      "mutated_factory_sha256": "bf2080a479b16c4eb860ab63913033fb885b0c46f11f42f9242ad0cd806da2fc",
+      "mutated_factory_sha256": "cd0b66572711f1bd239b8f40857015802fa0e9e48e97a2e03641502f9d844a05",
       "rows": [
         {
           "case": "mono-hermite",
@@ -3661,7 +3665,7 @@
       "replacement_text": "floatBitsToUint(sFrac + 0.125)",
       "anchor_sha256": "8eeab152f20e4e83c0c8091e649b85d3eafec7b98868f119c4a525ce5d100662",
       "replacement_sha256": "028c473cf8ed4eae00c330f7c68f0c13cf3cf226d52024901bfdc3a6a783ab29",
-      "mutated_factory_sha256": "445a649aa481f32e64de10a17d770e1e937606c0bbd235608cddcee5b6da0128",
+      "mutated_factory_sha256": "3f463c11ccc126a9be8e32d5c69a5b177e1cda4764723d7bf925bc345203d92f",
       "rows": [
         {
           "case": "mono-hermite",
@@ -3861,7 +3865,7 @@
       "replacement_text": "var speed = $bindings[\"speed\"] * 2;",
       "anchor_sha256": "d5773b533941651b0dcb30546a6d1bc4d1648f61f51058a0610f93cc9293e949",
       "replacement_sha256": "3cfb6c567f23b6ee56ca6e028f219de34f54050bcea85ef424a4502e1c9ddc43",
-      "mutated_factory_sha256": "d4a8da6a99d861bf0341b2956fe151e2105b7644608464def35e814f7e78f0c8",
+      "mutated_factory_sha256": "e84fd124dabc576f5bf83cd4e72c69959b45d6ccbf534ff7b75036c85b36f0e7",
       "rows": [
         {
           "case": "mono-hermite",

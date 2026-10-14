@@ -49,9 +49,9 @@ SHAPES3D_KEY = "classicNoisedeck/shapes3d:shapes3d"
 # (structs, locals, members, total_nodes) per carrier, measured this session.
 CENSUS = {
     "classicNoisedeck/shapes3d:shapes3d": (2, 4, 29, 1146),
-    "render/render3d:render3d": (2, 4, 29, 1204),
+    "render/render3d:render3d": (2, 4, 29, 1207),
     "render/renderCubemap3d:renderCubemap3d": (2, 4, 29, 1165),
-    "render/renderLit3d:renderLit3d": (1, 2, 18, 1006),
+    "render/renderLit3d:renderLit3d": (1, 2, 18, 997),
     "synth3d/flythrough3d:precompute": (1, 4, 15, 795),
 }
 CONSUMED = {
@@ -146,17 +146,28 @@ def _source_hash(source: str) -> str:
 
 
 class ModulePresenceTests(unittest.TestCase):
-    def test_module_carries_exactly_the_five_carriers(self):
+    def test_module_carries_exactly_the_six_carriers(self):
         module = _module()
-        self.assertEqual(KEYS, module.KEYS)
-        self.assertEqual(PROFILES, module.PROFILES)
-        self.assertEqual(frozenset(KEYS), module.STRUCT_FRONTIER_KEYS)
+        landscape = "render/renderLandscape3d:landscape"
+        self.assertEqual(KEYS + (landscape,), module.KEYS)
+        self.assertEqual(PROFILES | {landscape: "struct-frontier-landscape-v1"},
+                         module.PROFILES)
+        self.assertEqual(frozenset(KEYS + (landscape,)),
+                         module.STRUCT_FRONTIER_KEYS)
         for key in KEYS:
             self.assertIn(key, module._LOCKS)
+            expected_fields = {"defines", "program_key", "struct_frontier_profile"}
+            if key in {"classicNoisedeck/shapes3d:shapes3d", RENDER3D_KEY,
+                       "render/renderCubemap3d:renderCubemap3d"}:
+                expected_fields.add("runtime_define_profile")
             self.assertEqual(
-                frozenset({"defines", "program_key",
-                           "struct_frontier_profile"}),
+                frozenset(expected_fields),
                 module.allowed_row_fields(key))
+        self.assertEqual(frozenset({"defines", "program_key",
+                                    "struct_frontier_profile",
+                                    "runtime_loop_bound_profile",
+                                    "runtime_define_profile"}),
+                         module.allowed_row_fields(landscape))
         with self.assertRaisesRegex(ValueError, "not an admitted"):
             module.allowed_row_fields("test:foreign")
 
@@ -341,28 +352,12 @@ class ValidatorIntegrationTests(unittest.TestCase):
         every stage and are vendored; the two remaining pending carriers'
         first blockers are unchanged."""
         from tools.glslcpp import corpus_ratchet
-        expected_frontiers = {
-            SHAPES3D_KEY: ("typed.validator", "unsupported builtin round"),
-            "synth3d/flythrough3d:precompute":
-                ("typed.validator", "unsupported parameter direction out"),
-        }
-        promoted = {
-            RENDER3D_KEY,
-            "render/renderCubemap3d:renderCubemap3d",
-            "render/renderLit3d:renderLit3d",
-        }
         for key in KEYS:
             with self.subTest(key=key):
                 blocker = corpus_ratchet.probe_program(
                     key, _source_text(key).encode("utf-8"),
                     _effect_record(key))
-                if key in promoted:
-                    self.assertIsNone(blocker)
-                else:
-                    stage, diagnostic = expected_frontiers[key]
-                    self.assertIsNotNone(blocker)
-                    self.assertEqual(stage, blocker["stage"])
-                    self.assertIn(diagnostic, blocker["diagnostic"])
+                self.assertIsNone(blocker)
 
 
 class CorpusCensusTests(unittest.TestCase):

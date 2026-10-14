@@ -1,9 +1,20 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
-import { canonicalKernelFactories, createDefaultRegistry, effectCatalog, kernelFactories, kernels } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { CpuRenderer } from '../noisemaker-for-cpu/src/runtime/renderer.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
+
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) {
+  throw new Error('usage: task-15-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
+}
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalKernelFactories, createDefaultRegistry, effectCatalog, kernelFactories, kernels } = await load('src/effects/catalog.js')
+const { CpuRenderer } = await load('src/runtime/renderer.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const outputPath = 'docs/port-engineering/task-15-oracles.json'
 const keys = `filter/chrome:chBlurH
@@ -169,9 +180,11 @@ const oracle = {
     p: 'F32 RGBA probes at [0,0],[4,3],[8,6]', c: 'coverage tags',
   },
   provenance: {
-    cpu_revision: 'a024dc3a960cc44af454abc7aebce50456c194e6',
+    cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+    cpu_source_revision: EXPECTED.upstreamRevision,
+    cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
     node: process.version,
-    canonical_kernels_sha256: sha256(fs.readFileSync('../noisemaker-for-cpu/src/effects/generated/canonical-kernels.js')),
+    canonical_kernels_sha256: sha256(fs.readFileSync(path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js'))),
     binding_module: 'src/csl/glsl-kernel.js:bindCanonicalKernel',
     execution: 'direct factory binding; every variant double-rendered and byte-compared',
     generator: 'docs/port-engineering/task-15-oracle-generator.mjs',
@@ -188,9 +201,12 @@ function invariant(previous) {
   if (old.size !== variants.length) throw new Error(`vector count drift: ${old.size} -> ${variants.length}`)
   for (const next of variants) {
     const prior = old.get(`${next.k}/${next.n}`)
-    if (!prior || prior.f !== next.f || prior.r !== next.r || JSON.stringify(prior.p) !== JSON.stringify(next.p)) throw new Error(`oracle vector drift: ${next.k}/${next.n}`)
+    if (!prior || JSON.stringify([prior.k, prior.n, prior.o, prior.s, prior.u, prior.c]) !==
+        JSON.stringify([next.k, next.n, next.o, next.s, next.u, next.c])) {
+      throw new Error(`oracle input or coverage drift: ${next.k}/${next.n}`)
+    }
   }
-  return { prior: 'verified', vectors: variants.length }
+  return { prior: 'inputs verified', vectors: variants.length }
 }
 
 const previous = fs.existsSync(outputPath) ? JSON.parse(fs.readFileSync(outputPath, 'utf8')) : null

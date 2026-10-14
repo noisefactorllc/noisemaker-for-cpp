@@ -1,13 +1,19 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { createCanonicalBindings } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { bindGlslKernel, GlslCpuRuntime } from '../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { createCanonicalBindings } = await load('src/csl/glsl-kernel.js')
+const { bindGlslKernel, GlslCpuRuntime } = await load('src/csl/glsl-runtime.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 // ---------------------------------------------------------------------------
 // Derivative cluster oracle -- 15 GLSL programs blocked on dFdx/dFdy/fwidth,
@@ -77,15 +83,15 @@ import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outPath = path.join(here, 'derivative-oracles.json')
 const reportPath = path.join(here, 'derivative-oracle-report.md')
-const revision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const corpusRoot = `tools/glslcpp/corpus/${revision}`
-const glslKernelPath = '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-const glslRuntimePath = '../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-const passRunnerPath = '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-const surfacePath = '../noisemaker-for-cpu/src/runtime/surface.js'
-const catalogPath = '../noisemaker-for-cpu/src/effects/catalog.js'
-const canonicalPath = '../noisemaker-for-cpu/src/effects/generated/canonical-kernels.js'
-const adapterPath = '../noisemaker-for-cpu/src/effects/adapters/index.js'
+const revision = EXPECTED.upstreamRevision
+const corpusRoot = path.resolve(here, `../../../../tools/glslcpp/corpus/${revision}`)
+const glslKernelPath = path.join(cpuRoot, 'src/csl/glsl-kernel.js')
+const glslRuntimePath = path.join(cpuRoot, 'src/csl/glsl-runtime.js')
+const passRunnerPath = path.join(cpuRoot, 'src/runtime/pass-runner.js')
+const surfacePath = path.join(cpuRoot, 'src/runtime/surface.js')
+const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
+const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
+const adapterPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
 const f = Math.fround
 
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
@@ -104,13 +110,13 @@ function sameBytes(a, b) { return Buffer.compare(bytes(a.data), bytes(b.data)) =
 // not copy-pasted trust.
 // ---------------------------------------------------------------------------
 const RUNTIME_PROVENANCE = {
-  glsl_kernel_sha256: 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa',
-  glsl_runtime_sha256: 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072',
+  glsl_kernel_sha256: 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
+  glsl_runtime_sha256: 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1',
   pass_runner_sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   surface_sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  canonical_kernels_sha256: 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56',
-  adapter_index_sha256: '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267',
+  canonical_kernels_sha256: 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
 }
 for (const [file, hash] of [
   [glslKernelPath, RUNTIME_PROVENANCE.glsl_kernel_sha256],
@@ -368,9 +374,13 @@ function normalizeUniformsTyped(typeMap, raw) {
 // output and recording ordinal counts -- Lesson 3), then renders through
 // SignFlipRuntime and LaneTransposeRuntime for the mutation table.
 // ---------------------------------------------------------------------------
-function renderCase(program, c) {
+function renderCase(program, c, nativeVectorBindings = false) {
   assertNoReservedKeysInUniforms(c.uniforms)
   const uniforms = normalizeUniformsTyped(program.uniformTypes, c.uniforms)
+  if (nativeVectorBindings) {
+    if (program.key !== 'filter/stipple:stipple') throw new Error('raw vector capture is limited to stipple')
+    uniforms.paperColor = [...c.uniforms.paperColor]
+  }
   const textures = { inputTex: patternedSurface(c.width, c.height, c.phase) }
   if (program.extraTextures) {
     for (const [texName, texPhaseOffset] of Object.entries(program.extraTextures)) {
@@ -387,6 +397,7 @@ function renderCase(program, c) {
   const intendedFullResolution = fullResolution ?? new Float32Array([c.width, c.height])
 
   const bindings = createCanonicalBindings({ width: c.width, height: c.height, uniforms, textures, tileOffset, fullResolution, time })
+  if (nativeVectorBindings && !uniforms.paperColor.every((value, index) => Object.is(bindings.paperColor[index], value))) throw new Error('stipple raw vector binding changed')
   if (f32Bits(bindings.time) !== f32Bits(f(time))) throw new Error(`${program.id}/${c.name}: kernel did not observe intended time -- top-level binding lesson violated`)
   if (f32Bits(bindings.tileOffset[0]) !== f32Bits(f(intendedTileOffset[0])) || f32Bits(bindings.tileOffset[1]) !== f32Bits(f(intendedTileOffset[1]))) throw new Error(`${program.id}/${c.name}: kernel did not observe intended tileOffset`)
   if (f32Bits(bindings.fullResolution[0]) !== f32Bits(f(intendedFullResolution[0])) || f32Bits(bindings.fullResolution[1]) !== f32Bits(f(intendedFullResolution[1]))) throw new Error(`${program.id}/${c.name}: kernel did not observe intended fullResolution`)
@@ -461,7 +472,7 @@ function renderCase(program, c) {
 const PROGRAM_DEFS = [
   {
     id: 'bulge', key: 'filter/bulge:bulge', sourceFile: 'bulge/bulge.glsl',
-    factoryName: 'canonicalFactory26', factorySha256: '48eb3ed665bd4d3f27d5bac68e9474ccc38a75168f46ddb61dadf611fc7903ef',
+    factoryName: 'canonicalFactory25', factorySha256: '0915a49efe3abce961e815de418a0e21aa7a200088b7e77902f1d92e59b5a83f',
     sourceRawBytes: 2352, sourceSha256: '87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', aspectLens: 'bool', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -474,7 +485,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'celShadingColor', key: 'filter/celShading:celShadingColor', sourceFile: 'celShading/celShadingColor.glsl',
-    factoryName: 'canonicalFactory28', factorySha256: '5c10f42ac05d71a35295b6d2e42adbb3c137da8eb1a6b2d5fbfe277f2f5488c9',
+    factoryName: 'canonicalFactory27', factorySha256: '0ff2c4c917b1dd0136c48788aa792e29f783a8e9be167bc50cd6390978b579c4',
     sourceRawBytes: 2780, sourceSha256: '90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4',
     defines: {}, family: 'fwidth', hasAntialias: true, expectedOrdinals: 1,
     uniformTypes: { levels: 'int', gamma: 'float', antialias: 'bool', lightDirection: 'vec3', strength: 'float' },
@@ -487,7 +498,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'halftone', key: 'filter/halftone:halftone', sourceFile: 'halftone/halftone.glsl',
-    factoryName: 'canonicalFactory67', factorySha256: '7ddd550b40cc5484a4cac387c2560fe0cbf8d5eb7b30b28a123605d84995b58d',
+    factoryName: 'canonicalFactory65', factorySha256: 'bd871eab3baf361602c23965acf45f463ef9cb9b230bbb4ec5dd70496cd87626',
     sourceRawBytes: 8440, sourceSha256: '063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7',
     defines: { MODE: 0, PATTERN: 0 }, family: 'fwidth', hasAntialias: false, expectedOrdinals: 4,
     uniformTypes: { frequency: 'float', cyanAngle: 'float', magentaAngle: 'float', yellowAngle: 'float', blackAngle: 'float', monoAngle: 'float', sharpness: 'float', inkColor: 'vec3', paperColor: 'vec3', MODE: 'int', PATTERN: 'int' },
@@ -499,7 +510,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'lens', key: 'filter/lens:lens', sourceFile: 'lens/lens.glsl',
-    factoryName: 'canonicalFactory74', factorySha256: 'bbee3c76d338b5a7d7013761be6b925f29e8699cc9f8dca06d3d3aa0bef51e41',
+    factoryName: 'canonicalFactory71', factorySha256: '34b7d733404af7dbeca09a83530e773f8c0cff1abf50ce8ffc65df51d6ab45ff',
     sourceRawBytes: 2909, sourceSha256: '6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { lensDisplacement: 'float', aspectLens: 'bool', antialias: 'bool' },
@@ -512,7 +523,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'lensWarp', key: 'filter/lensWarp:lensWarp', sourceFile: 'lensWarp/lensWarp.glsl',
-    factoryName: 'canonicalFactory76', factorySha256: 'c4d5f24a54342ff9599a85fd2bdf556badce8cf6da7d8397b33518dc321cc4a9',
+    factoryName: 'canonicalFactory73', factorySha256: 'abd3e31cb7da4d67d87c9b00b86fb74a5c9b433c7e6d9ab95e63191469795d77',
     sourceRawBytes: 4033, sourceSha256: '543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { displacement: 'float', speed: 'float', antialias: 'bool' },
@@ -525,8 +536,8 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'octaveWarp', key: 'filter/octaveWarp:octaveWarp', sourceFile: 'octaveWarp/octaveWarp.glsl',
-    factoryName: 'canonicalFactory91', factorySha256: '122e909b90228a9e22184d3601611091ee5493029d03392966e82591846ccf30',
-    sourceRawBytes: 4902, sourceSha256: 'ced7dca971a24fb3d8a48641c7bb66c4af637a57984d45ddc9e51f0492a59bea',
+    factoryName: 'canonicalFactory88', factorySha256: '180c70dd5605e464aea56920b4c8ec7eec3245db5e40194c8146a64beebf43aa',
+    sourceRawBytes: 4889, sourceSha256: '193ed3406281cde12a460560438c9ce839f07e9f7a96f11aac50c23d3a31039f',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { frequency: 'float', octaves: 'float', displacement: 'float', speed: 'float', wrap: 'float', seed: 'float', antialias: 'bool' },
     cases: [
@@ -538,7 +549,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'pinch', key: 'filter/pinch:pinch', sourceFile: 'pinch/pinch.glsl',
-    factoryName: 'canonicalFactory103', factorySha256: '9061ee4b7cd062fc06723cd9366777949bcba7c50a7cd6f1fc1c74b9e1d3a355',
+    factoryName: 'canonicalFactory100', factorySha256: '7b53ce4a42fce3b2b90e4b2e84f69d33d385833e30f38a2b8bec900c28b36d32',
     sourceRawBytes: 2296, sourceSha256: '031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', aspectLens: 'bool', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -551,7 +562,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'polar', key: 'filter/polar:polar', sourceFile: 'polar/polar.glsl',
-    factoryName: 'canonicalFactory114', factorySha256: '782461118d560ca22e7a5f4e945a1b3619c5fa381f07a032f5c305c08149aa96',
+    factoryName: 'canonicalFactory111', factorySha256: '6cf35ee99e5ab1746648a23353317055420233b45f860e6ab7d2068beace0748',
     sourceRawBytes: 2027, sourceSha256: '391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { polarMode: 'int', speed: 'float', rotation: 'float', scale: 'float', aspectLens: 'bool', antialias: 'bool' },
@@ -564,7 +575,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'pondRipples', key: 'filter/pondRipples:pondRipples', sourceFile: 'pondRipples/pondRipples.glsl',
-    factoryName: 'canonicalFactory115', factorySha256: 'acd9474e33c243581c29858426ad1ffb107698c42176735c1f7c1b0d03c329b5',
+    factoryName: 'canonicalFactory112', factorySha256: '02203f5598dd7338d1901521a2741ce9987bf014e5544c6598316494f34a1fb6',
     sourceRawBytes: 5187, sourceSha256: '2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d',
     defines: { STYLE: 2, WRAP: 0 }, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { amount: 'float', ridges: 'int', speed: 'int', antialias: 'bool', STYLE: 'int', WRAP: 'int' },
@@ -577,7 +588,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'spiral', key: 'filter/spiral:spiral', sourceFile: 'spiral/spiral.glsl',
-    factoryName: 'canonicalFactory146', factorySha256: '69f34db1db7515a72c87f0d67dea8cc0e08fd067a398b1655b4e5b3fa8541684',
+    factoryName: 'canonicalFactory143', factorySha256: 'a7f7bb7a38e6e81d0d5e3346252b8f722da22bbc9e72407d77ede091136e252b',
     sourceRawBytes: 2869, sourceSha256: '3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', speed: 'int', aspectLens: 'bool', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -590,7 +601,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'stThreshold', key: 'filter/stamp:stThreshold', sourceFile: 'stamp/stThreshold.glsl',
-    factoryName: 'canonicalFactory150', factorySha256: '3c6a795c3782cf5c3b32b48c5828696df87ed687e585e56c97971604a680aa79',
+    factoryName: 'canonicalFactory147', factorySha256: '66a9f063457ec317b557c9a5c6fde25f1d30d1b8c9e5433de269826e1d4c4c8e',
     sourceRawBytes: 3467, sourceSha256: 'd93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94',
     defines: {}, family: 'fwidth', hasAntialias: false, expectedOrdinals: 1,
     uniformTypes: { balance: 'float', roughness: 'float', inkColor: 'vec3', paperColor: 'vec3' },
@@ -603,7 +614,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'step', key: 'filter/step:step', sourceFile: 'step/step.glsl',
-    factoryName: 'canonicalFactory151', factorySha256: 'a2e3ae28362d275bacdda15b53d62fe97e36c9df45b60075ee65db116a053aba',
+    factoryName: 'canonicalFactory148', factorySha256: '29448cafeecb2459fa5a3f9d87d35504130d27a35e8aa3e4d5d4fde8a50a92d5',
     sourceRawBytes: 709, sourceSha256: '4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf',
     defines: {}, family: 'fwidth', hasAntialias: true, expectedOrdinals: 1,
     uniformTypes: { threshold: 'float', antialias: 'bool' },
@@ -616,7 +627,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'stipple', key: 'filter/stipple:stipple', sourceFile: 'stipple/stipple.glsl',
-    factoryName: 'canonicalFactory152', factorySha256: '50e732c0b6904d2397bf28ac9da6184550c06c4dd416ac2d115846feae51694f',
+    factoryName: 'canonicalFactory149', factorySha256: 'ac82012ece03dfd1aafbae2fe6ccfeb9b71775033c2a47b6b0b18a78baa99c91',
     sourceRawBytes: 8490, sourceSha256: '69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609',
     defines: { MODE: 0 }, family: 'fwidth', hasAntialias: false, expectedOrdinals: 1,
     uniformTypes: { cellSize: 'float', grainSize: 'float', density: 'float', paperColor: 'vec3', seed: 'int', MODE: 'int' },
@@ -628,7 +639,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'tunnel', key: 'filter/tunnel:tunnel', sourceFile: 'tunnel/tunnel.glsl',
-    factoryName: 'canonicalFactory166', factorySha256: 'c214607fae06b63d8e77f7b6aadee2b5d5b633f193cc8ee4fa7928d1ab97bf26',
+    factoryName: 'canonicalFactory163', factorySha256: 'ddf2adbde6aac7eb3d8bf123dbaa32bf39a04b5005e561306a5b68075777ed7a',
     sourceRawBytes: 3062, sourceSha256: 'c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { shape: 'int', speed: 'float', rotation: 'float', scale: 'float', center: 'float', aspectLens: 'bool', antialias: 'bool' },
@@ -641,7 +652,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'warp', key: 'filter/warp:warp', sourceFile: 'warp/warp.glsl',
-    factoryName: 'canonicalFactory172', factorySha256: '960469b2bbc57d943e2c7c489860967c2e263eb3fbaa99199154e0e1e750fc68',
+    factoryName: 'canonicalFactory169', factorySha256: 'c87b88745cdd30f4dbad852171c9ad6282112b82ad73f69471e064b9e5d4c20f',
     sourceRawBytes: 3095, sourceSha256: 'f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', scale: 'float', seed: 'int', speed: 'int', wrap: 'int', antialias: 'bool' },
@@ -765,12 +776,16 @@ function build() {
       canonical_factory_name: program.factoryName, canonical_factory_to_string_sha256: program.factorySha256,
       defines: { ...program.defines }, family: program.family, has_antialias: program.hasAntialias, expected_ordinals_active: program.expectedOrdinals,
       cases: program.caseRecords,
+      ...(program.key === 'filter/stipple:stipple' ? {
+        native_number_vector_cases: program.cases.filter(c => c.name === 'small-cells-jitter')
+          .map(c => ({ ...renderCase(program, c, true), binding_contract: 'raw JavaScript Number paperColor array; matches native DVec3 parameter' })),
+      } : {}),
       mutations: program.mutationSummary,
     }
   }
   return {
     schema: 'noisemaker-for-cpp.derivatives.cluster15.derivative-oracles.v1',
-    corpus_revision: revision,
+    corpus_revision: revision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
     provenance: { ...RUNTIME_PROVENANCE, node: process.version, public_identity: true, adapter_absent: true },
     define_as_binding_note: 'halftone (MODE, PATTERN), pondRipples (STYLE, WRAP), and stipple (MODE) pin compile-time GLSL #defines that the JS reference reads as ordinary $bindings[...] lookups (no preprocessor in JS) -- every case for these three programs supplies the define at its generate_typed_slice._defaults()-authorized value via `uniforms`, verified live against the real _defaults() output (see report) and against the factory text actually containing the $bindings["<NAME>"] read (loadProgram()). Omitting these would silently select the wrong runtime branch, not fail loudly.',
     programs: programsOut,

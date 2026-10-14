@@ -730,19 +730,18 @@ class PreparedDisciplineTests(unittest.TestCase):
         self.assertIn(f"{PROFILE}: unrelated proof carrier is not absent",
                       str(raised.exception))
 
-    def test_corpus_log_census_names_all_three_carriers(self):
-        """Source-level census over the pinned corpus: `log(` callers are
-        newton (its own prepared lane), mandelbrot (this module's), julia
-        (adapter-only), and -- since fractal3d:precompute was promoted with
-        its own log admission -- `synth3d/fractal3d:precompute` (that
-        module's). The module's authenticatable set is mandelbrot alone."""
+    def test_corpus_log_census_names_all_current_carriers(self):
+        """The complete source census does not widen Mandelbrot's proof."""
         module = _module()
         carriers = sorted(
             path.relative_to(CORPUS).with_suffix("").as_posix().replace("/", ":")
             for path in CORPUS.rglob("*.glsl")
             if "log(" in path.read_text(encoding="utf-8"))
         self.assertEqual(
-            ["synth3d:fractal3d:precompute", "synth:julia:julia",
+            ["classicNoisedeck:noise3d:noise3d",
+             "classicNoisedeck:shapes3d:shapes3d",
+             "synth3d:flythrough3d:precompute",
+             "synth3d:fractal3d:precompute", "synth:julia:julia",
              "synth:mandelbrot:mandelbrot", "synth:newton:newton"],
             carriers)
         self.assertEqual(frozenset({KEY}), module._authenticatable_keys())

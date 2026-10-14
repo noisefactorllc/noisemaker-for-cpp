@@ -25,6 +25,18 @@ PROFILE = "cross-lane-assignment-v1"
 RAW = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}" / "sources/synth/gradient/gradient.glsl"
 RAW_SHA256 = "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75"
 ORACLE = ROOT / "docs/port-engineering/cross-lane-parity/gradient_oracle.mjs"
+HISTORICAL_KERNEL = ROOT / "tests/fixtures/historical/gradient_kernel.cpp"
+HISTORICAL_HEADER = (
+    "// Frozen Gradient alias behavior for its authenticated historical oracle.\n"
+    '#include "gradient_kernel.hpp"\n'
+    "#include <cmath>\n"
+    "#include <cstdint>\n"
+    "#include <memory>\n"
+    '#include "noisemaker/numeric.hpp"\n'
+    '#include "noisemaker/sampler.hpp"\n'
+    "namespace noisemaker::historical_generated {\n"
+)
+HISTORICAL_FOOTER = "// End frozen Gradient block\n}\n"
 
 
 def _analyzed(raw: str | None = None, key: str = KEY):
@@ -122,6 +134,8 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
         self.assertEqual((0, 1), proof.source_lanes)
         self.assertEqual((0, 1), proof.destination_lanes)
         self.assertEqual(proof.rhs_source.symbol_id, proof.target_source.symbol_id)
+        self.assertEqual(50, proof.alias_declaration.symbol_id)
+        self.assertIs(proof.target_source, proof.alias_declaration.children[0])
 
     def test_gradient_requires_exact_profile_at_both_boundaries(self):
         with self.assertRaisesRegex(
@@ -237,16 +251,53 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, r"exact profile carrier required"):
             module.authenticate_cross_lane_assignment(_analyzed(), RAW_SHA256, None)
 
-    def test_authenticated_emitter_is_source_ordered_and_rejects_temporary(self):
+    def test_current_emitter_copies_source_and_reads_original_lanes(self):
         rendered = emit_typed_cpp.render_typed_cpp(
             _analyzed(), KEY, RAW_SHA256, "probe", "bind_probe",
             cross_lane_assignment_profile=PROFILE)
+        copy = "[[maybe_unused]] glsl::Vec2 rotatedCentered = centered;"
         lane0 = "glsl::set_swizzle<0>(rotatedCentered, (c * glsl::swizzle<0>(centered) + s * glsl::swizzle<1>(centered)));"
-        lane1 = "glsl::set_swizzle<1>(rotatedCentered, ((-s) * glsl::swizzle<0>(rotatedCentered) + c * glsl::swizzle<1>(centered)));"
+        lane1 = "glsl::set_swizzle<1>(rotatedCentered, ((-s) * glsl::swizzle<0>(centered) + c * glsl::swizzle<1>(centered)));"
+        self.assertIn(copy, rendered)
+        self.assertNotIn("glsl::Vec2& rotatedCentered = centered", rendered)
         self.assertIn(lane0, rendered)
         self.assertIn(lane1, rendered)
         self.assertLess(rendered.index(lane0), rendered.index(lane1))
         self.assertNotIn("rotatedCentered = glsl::Mat2", rendered)
+
+    def test_frozen_emitter_retains_alias_and_cross_lane_read(self):
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False):
+            rendered = emit_typed_cpp.render_typed_cpp(
+                _analyzed(), KEY, RAW_SHA256, "probe", "bind_probe",
+                cross_lane_assignment_profile=PROFILE)
+        self.assertIn("[[maybe_unused]] glsl::Vec2& rotatedCentered = centered;", rendered)
+        self.assertIn(
+            "glsl::set_swizzle<1>(rotatedCentered, ((-s) * glsl::swizzle<0>(rotatedCentered) + c * glsl::swizzle<1>(centered)));",
+            rendered)
+
+    def test_frozen_fixture_reproduces_exact_authenticated_emission(self):
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False):
+            emitted = emit_typed_cpp.render_typed_cpp(
+                _analyzed(), KEY, RAW_SHA256, "typed_gradient_historical",
+                "bind_synth_gradient_gradient",
+                cross_lane_assignment_profile=PROFILE)
+        self.assertTrue(HISTORICAL_KERNEL.is_file())
+        self.assertFalse(HISTORICAL_KERNEL.is_symlink())
+        self.assertEqual(
+            (HISTORICAL_HEADER + emitted + HISTORICAL_FOOTER).encode("utf-8"),
+            HISTORICAL_KERNEL.read_bytes())
+        self.assertIn("glsl::Vec2& rotatedCentered = centered;", emitted)
+        self.assertNotIn("glsl::Vec2 rotatedCentered = centered;", emitted)
+
+    def test_current_copy_rejects_changed_source_before_emission(self):
+        changed = RAW.read_text(encoding="utf-8").replace(
+            "vec2 rotatedCentered = centered;", "vec2 rotatedCentered = st;", 1)
+        self.assertNotEqual(changed, RAW.read_text(encoding="utf-8"))
+        with self.assertRaisesRegex(emit_typed_cpp.TypedEmissionError,
+                                    "source, function, whole-program, or interface identity mismatch"):
+            emit_typed_cpp.render_typed_cpp(
+                _analyzed(changed), KEY, RAW_SHA256, "probe", "bind_probe",
+                cross_lane_assignment_profile=PROFILE)
 
     def test_executable_oracle_reruns_mutant_and_checks_recomputed_ledger(self):
         authority_root = self._authority_root()

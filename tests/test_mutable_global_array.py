@@ -2717,5 +2717,44 @@ class KaleidoMutableGlobalArrayVocabularyTests(unittest.TestCase):
         self.assertEqual(before[1], generate_typed_slice.APPROVED_TYPES)
 
 
+class EffectsEmissionOmissionTests(unittest.TestCase):
+    def test_generated_runtime_effects_keeps_reachable_zoom_blur(self):
+        generated = (ROOT / "src/typed_generated/typed_slice.cpp").read_text()
+        section = generated.split(
+            "// Typed IR program: classicNoisedeck/effects:effects\n", 1)[1]
+        section = section.split("// Typed IR program:", 1)[0]
+        # Runtime EFFECT=230 reaches zoomBlur. Keep its declaration, body,
+        # and call; the frozen EFFECT=0 omission proof is checked below.
+        self.assertEqual(3, section.count("zoomBlur("))
+        self.assertEqual(1, section.count("if (state.EFFECT == std::int32_t(230))"))
+        self.assertIn("void loadKernels(", section)
+        self.assertIn("void pixel(", section)
+
+    def test_only_exact_default_effects_row_omits_zoom_blur(self):
+        module = _module()
+        historical = (ROOT / "tools/glslcpp/corpus"
+                      / "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15"
+                      / "sources/classicNoisedeck/effects/effects.glsl")
+        raw = historical.read_text()
+        source_hash = _hash(raw)
+        program = analyze_program(
+            parse_program(raw, EFFECTS_KEY, {"EFFECT": 0, "FLIP": 0}),
+            EFFECTS_KEY)
+        omitted = module.authenticated_effects_emission_omission(
+            program, source_hash, EFFECTS_PROFILE)
+        self.assertEqual((94, "zoomBlur"), (omitted.id, omitted.name))
+        self.assertIn(omitted.id, module._reachability(program)[1])
+        with self.assertRaisesRegex(ValueError, "exact caller source hash"):
+            module.authenticated_effects_emission_omission(
+                program, "0" * 64, EFFECTS_PROFILE)
+
+        nondefault = analyze_program(
+            parse_program(raw, EFFECTS_KEY, {"EFFECT": 1, "FLIP": 0}),
+            EFFECTS_KEY)
+        with self.assertRaisesRegex(ValueError, "define lock mismatch"):
+            module.authenticated_effects_emission_omission(
+                nondefault, source_hash, EFFECTS_PROFILE)
+
+
 if __name__ == "__main__":
     unittest.main()

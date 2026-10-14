@@ -705,8 +705,8 @@ class GrimeVaryingCensusTests(unittest.TestCase):
             item.symbol.id != VARYING_ID
             for item in candidate.declarations))
 
-    def test_the_whole_corpus_still_carries_exactly_five_varying_programs(self):
-        """The source census retains the original five varying programs and
+    def test_the_whole_corpus_varying_program_census_is_exact(self):
+        """The source census includes the current point renderers and
         Mesh Render's exact three geometry inputs."""
         pattern = re.compile(
             r"^[ \t]*(?:flat[ \t]+)?in[ \t]+(vec2|vec3|vec4)[ \t]+(\w+)[ \t]*;"
@@ -731,7 +731,10 @@ class GrimeVaryingCensusTests(unittest.TestCase):
              "points/physarum:deposit": [("vec4", "vColor")],
              "render/meshRender:render": [("vec3", "vNormal"),
                                            ("vec2", "vUV"),
-                                           ("vec3", "vPosition")]},
+                                           ("vec3", "vPosition")],
+             "render/pointsBillboardRender:deposit": [("vec4", "vColor"),
+                                                       ("vec2", "vSpriteUV")],
+             "render/pointsRender:deposit": [("vec4", "vColor")]},
             found)
         self.assertEqual([("vec2", "v_texCoord")], found[KEY])
 

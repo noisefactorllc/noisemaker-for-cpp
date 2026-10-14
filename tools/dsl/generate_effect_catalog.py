@@ -25,7 +25,7 @@ DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-COMPATIBILITY_SHA256 = "538f2af4353fd674b5aeb901b06f3e2ed83438fdbd3ee33586cf3c8c6dea8507"
+COMPATIBILITY_SHA256 = "55cd3ca1ecc17d453333625b60068ca9b333b7442edb1d0e62e672f69151f425"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
@@ -198,6 +198,10 @@ def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[st
         expected_authority = {"blend": current_pass.get("blend", False), "inputs": current_pass.get("inputs", {}),
                               "name": current_pass.get("name"), "outputs": current_pass.get("outputs", {}),
                               "repeat": current_pass.get("repeat"), "uniforms": current_pass.get("uniforms", {})}
+        if current_pass.get("defines"):
+            expected_authority["defines"] = current_pass["defines"]
+        if "viewport" in current_pass:
+            expected_authority["viewport"] = current_pass["viewport"]
         if row.get("authority_pass") != expected_authority:
             raise CatalogError(f"compatibility authority pass projection mismatch for {expected[3]} pass {expected[1]}")
     if {row["program_key"] for row in passes} != set(closure):
@@ -351,6 +355,10 @@ def _authority_pass_cpp(authority_pass: dict[str, Any]) -> list[str]:
         lines.append(f"      p.authority_pass.uniforms.emplace_back({_cpp_string(str(key))}, {cpp_value(value)});")
     lines.extend([f"      p.authority_pass.blend = {cpp_value(authority_pass.get('blend', False))};",
                   f"      p.authority_pass.repeat = {cpp_value(authority_pass.get('repeat'))};"])
+    if authority_pass.get("defines"):
+        lines.append(f"      p.authority_pass.defines = {cpp_value(authority_pass['defines'])};")
+    if "viewport" in authority_pass:
+        lines.append(f"      p.authority_pass.viewport = {cpp_value(authority_pass['viewport'])};")
     return lines
 
 

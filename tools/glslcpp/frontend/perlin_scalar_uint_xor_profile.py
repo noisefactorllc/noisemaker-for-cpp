@@ -1,4 +1,4 @@
-"""Exact identity profile for Perlin's two unreachable scalar uint XORs."""
+"""Exact identity profile for Perlin's default and runtime scalar uint XORs."""
 
 from __future__ import annotations
 
@@ -106,10 +106,38 @@ def from_expression(statement: TypedStatement):
         yield expression
 
 
+
+def _authenticate_runtime_perlin(program, source_hash, profile):
+    if (profile != PROFILE or program.key != PERLIN_KEY
+            or source_hash != _RAW_SHA256
+            or len(program.raw_source.encode()) != _RAW_BYTES
+            or hashlib.sha256(program.raw_source.encode()).hexdigest() != _RAW_SHA256
+            or len(program.source.encode()) != 7798
+            or hashlib.sha256(program.source.encode()).hexdigest()
+            != "7e2a8c6cf41f85c9eecf3b2ac5ca2f6707f66b2f1e3bd480077ee78d0ce438ae"
+            or _sha(program.functions)
+            != "86ba9bc311a85f9e1a288052fe64e80cada6f738bd34823427beadfe0de0643d"
+            or _whole_fingerprint(program)
+            != "b74922ad26c60782ee9a86e67c57bb82bf0b880182fda0d09f0f568ac1f8297c"
+            or _interface_fingerprint(program)
+            != "c17273b4700caa13a2de1c8ba4846cfd4a889fcd5346937df1d2eb2f745525f9"
+            or any(getattr(program, field) is not None for field in _OPTIONAL_PROOF_FIELDS)):
+        raise _fail("runtime source, tree, or interface mismatch")
+    nodes = tuple(value for function in program.functions
+                  for statement in function.body for value in _walk_statement(statement)
+                  if value.kind == "binary" and value.operator == "^"
+                  and value.type.display() == "uint")
+    if len(nodes) != 2 or nodes[0] is nodes[1]:
+        raise _fail("runtime scalar XOR census mismatch")
+    return nodes
+
 def authenticate_perlin_scalar_uint_xor(
         program: TypedProgram, source_hash: str | None,
         profile: str | None) -> tuple[TypedExpression, TypedExpression]:
     """Authenticate and return the exact outer and inner scalar XOR objects."""
+    if tuple((item.name, item.kind, item.canonical_value)
+             for item in program.preprocessor_defines) == (("DIMENSIONS", "str", "int"),):
+        return _authenticate_runtime_perlin(program, source_hash, profile)
     if profile != PROFILE:
         raise _fail("exact profile carrier required")
     if program.key != PERLIN_KEY or source_hash != _RAW_SHA256:

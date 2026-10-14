@@ -4,10 +4,10 @@ Frozen JavaScript ground truth for `filter/scanlineError:scanlineError`. Exact F
 
 ## Frozen authority
 
-- Upstream snapshot revision: `117a236679d1db3ab8f0e278230ece277b57564c`
-- Corpus revision: `a024dc3a960cc44af454abc7aebce50456c194e6`
+- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - GLSL source: 13302 bytes, SHA-256 `66556b29659b479edd397f8e0c87c176cafa7560c426eab8211b6939a08f2198`
-- Canonical factory: `canonicalFactory129`, 17646 bytes, SHA-256 `ea129bebd5933e5bafa69b5906d79622118f1a243137afc365eb775f09f7447f`
+- Canonical factory: `canonicalFactory126`, 17646 bytes, SHA-256 `6766de45957986cfa5ebc0863a01670478d22f9990715622acf212046f13e056`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
 
 ## Captured pre-admission C++ frontend boundary
@@ -30,11 +30,11 @@ The 15 raw-word fixtures cover signed zero, subnormals, normal finite values, Fl
 | scanline-default-still | 7x5 | 0 | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 0,0/7,5 | `0cc937af6ba3be4858a3c2bd54cc2d0805f91b1b299d46764b0d01778ccb2e78` | `a7ba786bf33be952656da1a92093cf9666375c422bae4c31d07034e6dcf71cd2` |
 | vhs-default-still | 7x5 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0,0/7,5 | `7dc34b70cc1f670d26ff3347ce7b7c74f2c9196283e491dde5b76fe47ec8ce24` | `5e041a3c129ed5bbe4199ca0cc88adb80b225b49d13c300324344eea4694be25` |
 | vhs-default-extreme-seed-frame | 7x5 | 1 | 1 | 0 | 1 | 1 | 0 | 4294967295 | 4294967295 | 0,0/7,5 | `7dc34b70cc1f670d26ff3347ce7b7c74f2c9196283e491dde5b76fe47ec8ce24` | `5e041a3c129ed5bbe4199ca0cc88adb80b225b49d13c300324344eea4694be25` |
-| scanline-animated-max-controls | 8x6 | 0 | 5 | -10 | 3 | 3 | 0.375 | 2147483648 | 17 | 0,0/8,6 | `ba301896aa4ab5686d7a8531fbd18f88e4c71dffe43d58ed2c076623b2940d14` | `eba117fe97f00937168a9402caf70c957310f0ce6b1de25a18796e9e8cf7f532` |
+| scanline-animated-max-controls | 8x6 | 0 | 5 | -10 | 3 | 3 | 0.375 | 2147483648 | 17 | 0,0/8,6 | `b50009f19a892580fc706485ee6ea72308e43f1fab6ba51feda0441e7c8a2c90` | `eba117fe97f00937168a9402caf70c957310f0ce6b1de25a18796e9e8cf7f532` |
 | vhs-animated-max-controls | 8x6 | 1 | 5 | 10 | 3 | 3 | 0.375 | 2147483648 | 17 | 0,0/8,6 | `4c11d6923a3e00c18e1b39ceb56de3bb7e0734956c276c6645c66470ccd9f218` | `428023ad927269df7a78eea6f36c890dcb003f1ceb71b2249a0d800cea7f94ea` |
 | vhs-signed-zero-controls | 6x4 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0,0/6,4 | `0bde87f5e4280078e397227bd7f1ae9c9d55f2d5d1c39072c635d3183c505e66` | `fd9437bb23f305ed2255aacfc2d73126f1d2c70e3c752ae7ddd02fafa7913d7c` |
 | vhs-large-time-offset-ulp | 6x5 | 1 | 1 | 1 | 2 | 2 | 16777216 | 16777217 | 9007199254740991 | 0,0/6,5 | `b732eb09cdab383a50f664179fcce403108336b9865b0614972b68a0e8dcb138` | `7cf174ba6a03e9f7d6f80eafdf43c59ce3cd26d4a8a7d0db978cbba79463ef1c` |
-| scanline-tiled-noninteger-scale | 4x3 | 0 | 2 | -0.25 | 2 | 1.5 | 0.625 | 123456789 | 9 | 3,2/11,7 | `f52466ddc0bf6cb3b779c6375b78168c3c5c8327bb20704a305a442517ef554f` | `9e702ed79d7a791c9b9f8de3b8c21c12c0785093bb8fa611606cfc42355dff19` |
+| scanline-tiled-noninteger-scale | 4x3 | 0 | 2 | -0.25 | 2 | 1.5 | 0.625 | 123456789 | 9 | 3,2/11,7 | `bbf1e1144b6297ed18d5c7b48ed8541195b1ff6dc482df166a49c1f95cf45ce9` | `9e702ed79d7a791c9b9f8de3b8c21c12c0785093bb8fa611606cfc42355dff19` |
 | vhs-tiled-noninteger-scale | 4x3 | 1 | 2 | 0.25 | 2 | 1.5 | 0.625 | 123456789 | 9 | 3,2/11,7 | `fda929f088a7de0319de2761527f18f131c037c47128dabdc7263167ea62da0d` | `3fe72e8d9530f59c7852fae8b1b77b2524864ed7eb999d4c06fdd927f1ed5eea` |
 
 Every case requires exact repeated-render identity, exact input-bit immutability, finite output for finite legal controls, and direct-canonical/public-catalog equality. The paired extreme seed/frame case proves those external bindings are unused. Both tile cases require their offset mutation to diverge.

@@ -910,8 +910,8 @@ class VaryingUvCensusTests(unittest.TestCase):
 
     @full_run_only
     def test_the_whole_corpus_carries_exactly_five_varying_programs(self):
-        """Keep the original five varying programs, Mesh Render's exact
-        three geometry inputs, and the four vendored particle-family
+        """Keep the original varying programs, Mesh Render's exact
+        three geometry inputs, and the vendored particle-family
         scatter deposits explicit in the current corpus census."""
         from tools.glslcpp import check_corpus
         root = check_corpus._corpus_root(ROOT)
@@ -942,7 +942,11 @@ class VaryingUvCensusTests(unittest.TestCase):
              "points/physarum:deposit": (("vColor", "vec4"),),
              "render/meshRender:render": (("vNormal", "vec3"),
                                            ("vPosition", "vec3"),
-                                           ("vUV", "vec2"))},
+                                           ("vUV", "vec2")),
+             "render/pointsBillboardRender:deposit": (("vBlurRadius", "float"),
+                                                       ("vColor", "vec4"),
+                                                       ("vSpriteUV", "vec2")),
+             "render/pointsRender:deposit": (("vColor", "vec4"),)},
             carriers)
 
 

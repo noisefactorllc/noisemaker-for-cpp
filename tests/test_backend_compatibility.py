@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 from tests import corpus_census
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.dsl import generate_backend_compatibility as generator
 from tools.dsl import mesh_render_contract
 
@@ -62,9 +63,9 @@ class BackendCompatibilityTests(unittest.TestCase):
             document["counts"]["duplicate_fragment_keys"],
         )
         self.assertEqual("filter/wormhole:deposit", document["scatter"]["program_key"])
-        self.assertEqual("5976b7a6b77f69c47c41f4ee296a54d5318e1f9d", document["authority"]["upstream_revision"])
-        self.assertEqual("b0729d2bf429e0e7307ff8f4fffe99422870c059", document["authority"]["upstream_tree"])
-        self.assertEqual("dfb565a24c33bd0e3dfaddc3f719d0f252b4c6f8df7059198a5f9e07b6a895d0", document["authority"]["source_lock_sha256"])
+        self.assertEqual(CORPUS_REVISION, document["authority"]["upstream_revision"])
+        self.assertEqual("f5ea13282fd27ea01c94280ae60fcb59bcb5389f", document["authority"]["upstream_tree"])
+        self.assertEqual("7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf", document["authority"]["source_lock_sha256"])
         self.assertEqual(corpus_census.vendored_count(), document["counts"]["raw_exact"])
         self.assertEqual(0, document["counts"]["semantic_exact"])
         self.assertEqual([], document["counts"]["incompatible_keys"])
@@ -168,6 +169,19 @@ class BackendCompatibilityTests(unittest.TestCase):
         declared_explicit = {"textures": {"outputTex": {"width": "screen", "height": "screen", "format": "rgba8unorm"}}}
         self.assertEqual("rgba8unorm", generator._extent(declared_explicit, {}, "outputTex")["format"])
 
+    def test_viewport_overrides_each_extent_axis_before_texture_fallback(self) -> None:
+        effect = {"textures": {"outputTex": {"width": {"param": "volumeSize"},
+                                               "height": {"param": "volumeSize", "power": 2},
+                                               "format": "rgba8unorm"}}}
+        viewport = {"width": {"param": "volumeSize", "default": 32}}
+        current_pass = {"viewport": viewport}
+        self.assertEqual({"width": viewport["width"], "height": effect["textures"]["outputTex"]["height"],
+                          "format": "rgba8unorm"}, generator._extent(effect, current_pass, "outputTex"))
+        self.assertEqual({"width": "screen", "height": "screen", "format": "rgba16f"},
+                         generator._extent({}, {}, "outputTex"))
+        self.assertEqual(viewport, generator._authority_pass(current_pass)["viewport"])
+        self.assertNotIn("viewport", generator._authority_pass({}))
+
     def test_scatter_extent_comes_from_authenticated_effect_texture(self) -> None:
         entry = {"program_key": "filter/wormhole:deposit", "effect_id": "filter/wormhole",
                  "program": "deposit", "source": "sources/filter/wormhole/deposit.glsl"}
@@ -236,13 +250,15 @@ class BackendCompatibilityTests(unittest.TestCase):
         contracts = {item["program_key"]: item for item in self.document["scatter_contracts"]}
         self.assertEqual(
             {"points/physarum:deposit", "points/dla:depositGrid",
-             "points/lenia:deposit", "filter3d/flow3d:deposit"},
+             "points/lenia:deposit", "filter3d/flow3d:deposit",
+             "render/pointsRender:deposit", "render/pointsBillboardRender:deposit"},
             set(contracts))
         for key, item in contracts.items():
             self.assertEqual("registered", item["status"])
             self.assertEqual("noisemaker::scatter::resolve_scatter_adapter", item["registry"])
             self.assertEqual("in_place_accumulate", item["destination_mutation"])
-            self.assertEqual("points", item["draw_mode"])
+            self.assertEqual("billboards" if key == "render/pointsBillboardRender:deposit" else "points",
+                             item["draw_mode"])
             self.assertEqual(item["output_route"], item["output_abi"]["logical_routes"][0])
         self.assertEqual(
             "noisemaker::scatter::physarum::adapter",

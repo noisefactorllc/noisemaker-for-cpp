@@ -8,7 +8,7 @@ import hashlib
 import math
 import re
 
-from .typed_ir import (CountedLoopProgramProof, CountedLoopProof, TypedExpression,
+from .typed_ir import (CountedLoopProgramProof, CountedLoopProof, PreprocessorDefine, TypedExpression,
                        TypedFunction, TypedProgram, TypedStatement)
 
 
@@ -291,8 +291,8 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
     # post-proof trees (same pre_functions as the profile's frozen
     # functions_sha256 -- proof the profile was locked pre-proof).
     "render/render3d:render3d": {
-        "raw": "5ff6fc621924c7c53425c2f18202e549ace6a4ff8a96f9e908ad26bba6e0c7e2",
-        "source": "0fde47a6fd4d39a0cd085a5af72e87de5f3fdf2456c24c2c11667318866dcffb",
+        "raw": "138d3e0daa247100fe3553b2699bce3f302e77fce25d9d4fb507868d31a84a30",
+        "source": "a211ec112f89ccea8cabeee2bd7f45a896b9c54812b49ff4a6091e9629aa3f53",
         "defines": (("FILTERING", "int", "0"), ("INVERT", "bool", "false")),
         "integer": ("MAX_STEPS", 17, "256", 256),
         "globals": (("TAU", 15, "float", "6.283185307179586"),
@@ -301,15 +301,15 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
                     ("MAX_DIST", 18, "float", "10.0")),
         "reads": (("isosurfaceTrace", 48, 281, 25, 281, 34),
                   ("voxelTrace", 55, 161, 25, 161, 34)),
-        "pre_functions": "166c56ce8104f1a6c480d77de96c719662b3ecb549f7b3ef7dc7c1bf52723161",
-        "post_functions": "f6bbb586902c4a17f95866f17f1696059021943a1af07e404d398833942d0d84",
-        "pre_whole": "a72dd52f6be51ef8fe24d07d4a7ab69e6f31e0f56c7375f288cf4577da08c5f7",
-        "post_whole": "00dfc79804df55b1d20d681fc67ad5da40e6f5effa37c38f26a212063221a744",
-        "interface": "33bbe0c8346497495b7d0bab56b40840854e27a6e56ec14e876000d716e101e6",
+        "pre_functions": "1bd80d666ba4aa91256d70d6168627a72859f740f7196d8e41f3c047f99a9294",
+        "post_functions": "f658d31e5a1ba348713e862f9016ece193419831f58da04b035a4c7bb0faba37",
+        "pre_whole": "b575936e63deaa050942c3deb8e2ade6a979c4ae3a0e27cffe76a390ff722d91",
+        "post_whole": "8de2584a45895b30fec34b527112c52c3b0688f041c299a42bdeac879e493838",
+        "interface": "4f1eb4b5aea7ad075a5756dfa748d88f83705993085f1446c427d9d4e09cb3fe",
     },
     "render/renderLit3d:renderLit3d": {
-        "raw": "77460fb4a9e53f7776d7a3d73cb3fcc1840dce577c6f0989354eeb540011529f",
-        "source": "cc72ea7149272c38ff05fb6842a4f7f720ea05c4065b2e6900edb7f1885ec980",
+        "raw": "ea309e7e9c4bcb13fd96bf05f0e587bfd25557b7184872b32aabc160df49b627",
+        "source": "436cdf22da60272b948b145b0dabc113d65bc1b9006659517e07dcd80ba48b62",
         "defines": (),
         "integer": ("MAX_STEPS", 28, "256", 256),
         "globals": (("TAU", 26, "float", "6.283185307179586"),
@@ -318,11 +318,11 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
                     ("MAX_DIST", 29, "float", "10.0"),
                     ("NEAR_CLIP", 30, "float", "0.01")),
         "reads": (("raymarch", 66, 227, 25, 227, 34),),
-        "pre_functions": "53177f751e12bdfc19a8921a6731f69dfb454e528356f88fee450e8d5462030b",
-        "post_functions": "82752b9a047ff5613dbf7073aad1a4358ed83b46cb93b406aa5b4f78c9cdb11c",
-        "pre_whole": "45ddfc7d6db5b45b5721b01a4d9f98af4285a06aec29bd597c3fe72b67aa5a46",
-        "post_whole": "a7553f3dcf3c0ff6bf74e8d55bb6976c8c70dff4bda014fb3cdd59db50b4450c",
-        "interface": "ec6d329d5512d28f68ce1ea7b2bd102a7ef1985fe5e72d8ed6cf3c11b918ca49",
+        "pre_functions": "a9b40ebce520c2e194ee9eb60f03527b288c359ac73e3599ecda0c5c26d6a1e2",
+        "post_functions": "d6c4f6bbf5a4cd19ca2006fd1b997fde798c280a51039246be9e1c423cc41e38",
+        "pre_whole": "cb31cbfb6ffd1f480797291308316c4175d0c7c157471f5730c81d3b4025c4bb",
+        "post_whole": "2688f3be3bed47ff1facee122dd2e7da11501f21044bda9206c847efaf077ac0",
+        "interface": "e3f61fcd73cd0441cf76d4a119f618bd6fad0515ec6b588d074ccc2751e87b86",
     },
     "render/renderCubemap3d:renderCubemap3d": {
         "raw": "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
@@ -370,30 +370,30 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
     # the const-global path, so attach/rebuild/validate machinery is shared
     # unchanged and no generated artifact moves.
     "synth3d/fractal3d:precompute": {
-        "raw": "8ab3dfe63e16d4406deee719c1f822d405c712bae21bd1348ae5b75b79a14d41",
-        "source": "bfc4b9e886fa4dc5d642abfd6457c643a47287f2095ccac0f99759ad5ff1d5a6",
+        "raw": "4bc39fb7920cf0829cc6a6fc4670cdac9f5ea68c5438f569050a4732c1e6de19",
+        "source": "3dd80cd8f5a01004ace3df4e3dea95b0861b8e1f191b66958ceabe36f3a8be93",
         "defines": (),
         "parameter_uniform": (
             "iterations", 4, "int",
             {"default": 10, "max": 20, "min": 1, "type": "int", "uniform": "iterations"},
         ),
         "parameters": (
-            ("mandelbulb", 42, 17, "maxIter", 2),
-            ("juliaBulb", 39, 22, "maxIter", 3),
-            ("mandelcube", 43, 28, "maxIter", 2),
-            ("juliaCube", 40, 33, "maxIter", 3),
+            ("mandelbulb", 40, 15, "maxIter", 2),
+            ("juliaBulb", 37, 20, "maxIter", 3),
+            ("mandelcube", 41, 26, "maxIter", 2),
+            ("juliaCube", 38, 31, "maxIter", 3),
         ),
         "reads": (
-            (("mandelbulb", 42, 30, 25, 30, 32), ("mandelbulb", 42, 57, 42, 57, 49)),
-            (("juliaBulb", 39, 68, 25, 68, 32), ("juliaBulb", 39, 94, 42, 94, 49)),
-            (("mandelcube", 43, 113, 25, 113, 32), ("mandelcube", 43, 142, 42, 142, 49)),
-            (("juliaCube", 40, 156, 25, 156, 32), ("juliaCube", 40, 185, 42, 185, 49)),
+            (("mandelbulb", 40, 28, 25, 28, 32), ("mandelbulb", 40, 55, 42, 55, 49)),
+            (("juliaBulb", 37, 66, 25, 66, 32), ("juliaBulb", 37, 92, 42, 92, 49)),
+            (("mandelcube", 41, 111, 25, 111, 32), ("mandelcube", 41, 140, 42, 140, 49)),
+            (("juliaCube", 38, 154, 25, 154, 32), ("juliaCube", 38, 183, 42, 183, 49)),
         ),
-        "pre_functions": "a6c435a3887543d3aa3dc4e3560369a877f1a7b37083197b8e8324da26991a3a",
-        "post_functions": "c014facaa7abbd70dac21bb5f14bdea505355de3b8daf4d5312dd8ef28d3aa1c",
-        "pre_whole": "e8266219a128492532d69183fd0b55ed862ea8eb1a625021ef8fa13fe4dc990e",
-        "post_whole": "76914c2bc26cc25f68a44477f33abe280386e596495458ed416b10d9fcb55a95",
-        "interface": "47b3ed25f3ccea8f7e58ad566c7a2df79cdac82674aa728985d1dae7bfacf9cb",
+        "pre_functions": "12e274f8dbf497961ff11160898d060106eac4e5f478af2aeb8694da9752d2f3",
+        "post_functions": "f7b555f7d7e13a719e70c922d943b7948d7cbf4f4af39d1e563cf2c3e3edb432",
+        "pre_whole": "010e849e6f0200c60386d2e534fff888d30337d006d87842378212014773b493",
+        "post_whole": "a245a18602b73ead28931d4625cc43be8107ded0b7055dca174da22097c49560",
+        "interface": "cd93a4bff583a921ca02539c2f537dde9b8151efd5f298f0bd3ae9dae831cbb7",
     },
     # The second parameter-bound counted-for program:
     # synth3d/flythrough3d:precompute (2026-10-05 leg). Same third schema
@@ -440,6 +440,78 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
 }
 SOURCE_GLOBAL_LITERAL_INT_KEYS = frozenset(_SOURCE_GLOBAL_LITERAL_INT_PROFILES)
 
+_RENDER_RUNTIME_DEFINES = (("FILTERING", "str", "int"),
+                           ("INVERT", "str", "bool"))
+_RENDER_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
+    "render/render3d:render3d": {
+        **_SOURCE_GLOBAL_LITERAL_INT_PROFILES["render/render3d:render3d"],
+        "source": "001cda0e746f30bfd3c0d407ebc5b057cbbca5f7d359cae71bec196e37292b57",
+        "defines": _RENDER_RUNTIME_DEFINES,
+        "integer": ("MAX_STEPS", 19, "256", 256),
+        "globals": (("TAU", 17, "float", "6.283185307179586"),
+                    ("PI", 18, "float", "3.141592653589793"),
+                    ("MAX_STEPS", 19, "int", "256"),
+                    ("MAX_DIST", 20, "float", "10.0")),
+        "reads": (("isosurfaceTrace", 50, 283, 25, 283, 34),
+                  ("voxelTrace", 57, 163, 25, 163, 34)),
+        "pre_functions": "ff300c17577db76c376dd3a08c13f3407bf66db00b05e9c4f10c1de340a380fe",
+        "post_functions": "5dcdd99853125e9f83aab78cd0fb2bfbeef19488832897e0d5d9f7bb0d735af9",
+        "pre_whole": "3986d950cfdae31d53bfc34d3a1e53cd62bdfc410432e991b3579d34900d318e",
+        "post_whole": "1bc8d1107edcc33329aac2d5ff524f9ddc26a1e98fd1eb3486bfb438caff5a86",
+        "interface": "7a3699a10686d022f30a5b40aac40f164b022bc7203508f875949f8f5c87cf31",
+    },
+    "render/renderCubemap3d:renderCubemap3d": {
+        **_SOURCE_GLOBAL_LITERAL_INT_PROFILES["render/renderCubemap3d:renderCubemap3d"],
+        "source": "4e85f68b66a23f5eaf3a945469a5276ae42b6f00c8f8dc525db381e8fad33924",
+        "defines": _RENDER_RUNTIME_DEFINES,
+        "integer": ("MAX_STEPS", 18, "256", 256),
+        "globals": (("TAU", 16, "float", "6.283185307179586"),
+                    ("PI", 17, "float", "3.141592653589793"),
+                    ("MAX_STEPS", 18, "int", "256"),
+                    ("MAX_DIST", 19, "float", "10.0")),
+        "reads": (("isosurfaceTrace", 49, 282, 25, 282, 34),
+                  ("voxelTrace", 56, 162, 25, 162, 34)),
+        "pre_functions": "f9b7e61f2cd23797fd947d177e95c94f75a9c6f92c6f9e1d9230596beb0507be",
+        "post_functions": "eb2d4805c0129b09ca4af87bb243873f50694a2d6c1566e24290fe8bc4a1963e",
+        "pre_whole": "93b61a46387564da36d7cd0d0fe476b4076328dfe323ead6a320c62c6da4431d",
+        "post_whole": "ce339d9a868be249323e8b515139dfdd89fb89008f06160fe0c236e43413338f",
+        "interface": "e28d67288dcc7fa6ee07865836f19cb8956614595616b5d2f147baa044e14635",
+    },
+}
+
+# Keep the default Strokes proof unchanged. The runtime MODE tree adds one
+# uniform before MAX_TAPS and changes the exact read and whole-tree identities.
+_STROKES_RUNTIME_DEFINES = (("MODE", "str", "int"),)
+_STROKES_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILE = {
+    **_SOURCE_GLOBAL_LITERAL_INT_PROFILES["filter/strokes:stkSmear"],
+    "source": "ef71bff7e3d7867eb526cfddd51651760df59a885bed93a6d863c4597d52f336",
+    "defines": _STROKES_RUNTIME_DEFINES,
+    "integer": ("MAX_TAPS", 9, "24", 24),
+    "globals": (("MAX_TAPS", 9, "int", "24"),),
+    "reads": (("smear", 40, 173, 26, 173, 34),),
+    "pre_functions": "fd06bed6754e7ca9fa227a68c74c18eb9f9cbfeddec40add4212478b624086d0",
+    "post_functions": "00cfe44379387000f2882c259ae8a0acbbf23a28c3df69063c96b489b3d39244",
+    "pre_whole": "f25baf8e39413c97a187469da685b4548976f9341aaaece9a3dfe39b1377b75c",
+    "post_whole": "3be4df5ec3865bab5a5e7061c4296ecd0e077643a937bab0b51e4d69bcef4256",
+    "interface": "64da3eb5d6499d4d405499a32fb65f0dee64dc97dfc714b5f1614554af79323a",
+}
+
+
+def _source_global_profile(key: str, defines: tuple[object, ...]) -> dict | None:
+    if not isinstance(defines, tuple) or any(
+            not isinstance(item, PreprocessorDefine) for item in defines):
+        raise ValueError(f"{key}: malformed source-global define profile")
+    shape = tuple((item.name, item.kind, item.canonical_value) for item in defines)
+    if key == "filter/strokes:stkSmear" and shape == _STROKES_RUNTIME_DEFINES:
+        return _STROKES_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILE
+    if key in _RENDER_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILES and shape == _RENDER_RUNTIME_DEFINES:
+        return _RENDER_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
+    if key == "classicNoisedeck/shapes3d:shapes3d":
+        from .shapes3d_runtime_profile import DEFINES, SOURCE_GLOBAL
+        if shape == DEFINES:
+            return SOURCE_GLOBAL
+    return _SOURCE_GLOBAL_LITERAL_INT_PROFILES.get(key)
+
 
 def _sha(value: object) -> str:
     return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
@@ -476,7 +548,7 @@ def authenticate_source_global_literal_int(
         functions: tuple[TypedFunction, ...], profile: str | None,
 ) -> tuple[tuple[int, int, str, object], ...]:
     """Authenticate the closed Task 23 pre-proof profile and return one bound seed."""
-    expected = _SOURCE_GLOBAL_LITERAL_INT_PROFILES.get(key)
+    expected = _source_global_profile(key, preprocessor_defines)
     if expected is None:
         if profile is not None:
             raise ValueError(f"{key}: source-global literal-int profile is not admitted")
@@ -1008,6 +1080,20 @@ def _annotate_statement(value: TypedStatement, key: str, depth: int,
     else:
         start = _integer_valued_float_literal(declaration.children[0])
     condition, update = value.expressions
+    # A side-effect-free scalar comparison can only shorten a counted loop.
+    # Keep the original conjunction in the IR and emitted loop. Use its left
+    # comparison only to derive the upper bound. Calls, writes, disjunctions
+    # and compound right operands remain outside this proof.
+    if (condition.kind == "binary" and condition.operator == "&&"
+            and len(condition.children) == 2):
+        left, guard = condition.children
+        if (guard.kind != "binary" or guard.operator not in {"<", "<=", ">", ">=", "==", "!="}
+                or len(guard.children) != 2
+                or any(node.kind not in {"id", "literal"}
+                       or node.type.display() not in {"int", "uint", "float"}
+                       for node in guard.children)):
+            return value
+        condition = left
     if (start is None or condition.kind != "binary" or condition.operator not in {"<", "<="}
             or len(condition.children) != 2):
         return value
@@ -1331,7 +1417,7 @@ def rebuild_authenticated_counted_loop_proofs(
         program, _text_sha(program.raw_source), runtime_loop_bound_profile)
     if runtime_contract is not None:
         validate_runtime_loop_contract(runtime_contract)
-    expected = _SOURCE_GLOBAL_LITERAL_INT_PROFILES.get(program.key)
+    expected = _source_global_profile(program.key, program.preprocessor_defines)
     pre_summary = summarize_counted_loop_proofs(pre_functions)
     if expected is not None:
         if _sha(_whole_program_identity(program, pre_functions, pre_summary)) != expected["pre_whole"]:
@@ -1356,7 +1442,8 @@ def validate_source_global_literal_int_program(
     if program.key not in _SOURCE_GLOBAL_LITERAL_INT_PROFILES and profile is None:
         return
     attached, summary = rebuild_authenticated_counted_loop_proofs(program, profile)
-    expected = _SOURCE_GLOBAL_LITERAL_INT_PROFILES[program.key]
+    expected = _source_global_profile(program.key, program.preprocessor_defines)
+    assert expected is not None
     if program.functions != attached or program.counted_loop_proof != summary:
         raise ValueError(f"{program.key}: source-global literal-int post-proof mismatch")
     if _sha(attached) != expected["post_functions"]:

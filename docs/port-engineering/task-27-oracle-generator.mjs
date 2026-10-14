@@ -1,30 +1,36 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { createCanonicalBindings } = await load('src/csl/glsl-kernel.js')
+const { bindGlslKernel } = await load('src/csl/glsl-runtime.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'task-27-oracles.json')
 const reportPath = path.join(here, 'task-27-oracle-report.md')
-const cpuRoot = '../noisemaker-for-cpu'
-const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const cppRoot = path.resolve(here, '../..')
+const corpusRevision = EXPECTED.upstreamRevision
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
 const adapterIndexPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
-const canonicalSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
+const canonicalSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
 const catalogSha256 = 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'
-const adapterIndexSha256 = '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'
+const adapterIndexSha256 = 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'
 const key = 'synth/perlin:perlin'
 const sourceRelative = 'sources/synth/perlin/perlin.glsl'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, sourceRelative)
-const factoryName = 'canonicalFactory268'
-const factorySha256 = '55ea0bb422438d8ed6182fc4f587395de5321dc8f8ca0588c0202f23732ca0f4'
+const factoryName = 'canonicalFactory276'
+const factorySha256 = 'dd27a1276a13550eb30accd08a458c8366276f22f861adb2daff168197ac49ef'
 const f = Math.fround
 
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
@@ -72,10 +78,15 @@ const cases = [
 ]
 
 function render(factory, definition) {
-  const kernel = bindCanonicalKernel(factory, {
+  const bindings = createCanonicalBindings({
     width: definition.width, height: definition.height, time: definition.time, frame: 37,
     deltaTime: f(1 / 60), seed: definition.seed, uniforms: definition.uniforms,
     tileOffset: definition.tileOffset, fullResolution: definition.fullResolution,
+  })
+  // Keep the original fixture's explicit aspect, including the zero-size
+  // fullResolution witness. The native binder receives this same scalar.
+  const kernel = bindGlslKernel(factory, {
+    ...bindings, aspect: f(definition.width / definition.height),
   })
   const output = new Surface(definition.width, definition.height)
   runPass({ kernel, destination: output, time: definition.time, seed: definition.seed })
@@ -89,11 +100,11 @@ function probe(surface, x, y) {
 function probes(surface) {
   return [[0, 0], [surface.width - 1, 0], [0, surface.height - 1], [surface.width - 1, surface.height - 1], [Math.floor(surface.width / 2), Math.floor(surface.height / 2)]].map(([x, y]) => probe(surface, x, y))
 }
-function outputRecord(output) {
+function outputRecord(output, name) {
   const rgba = output.toRgba8()
   let nonfinite = 0
   for (const value of output.data) if (!Number.isFinite(value)) nonfinite += 1
-  if (nonfinite) throw new Error('nonfinite output')
+  if (nonfinite) throw new Error(`${name}: nonfinite output`)
   return { f32_sha256: sha256(bytes(output.data)), rgba8_sha256: sha256(bytes(rgba)), probes: probes(output), finite_lanes: output.data.length }
 }
 function diff(reference, candidate) {
@@ -144,7 +155,7 @@ function buildData() {
       seed: definition.seed, uniforms: definition.uniforms,
       tile_offset: Array.from(definition.tileOffset ?? new Float32Array(2)),
       full_resolution: Array.from(definition.fullResolution ?? new Float32Array([definition.width, definition.height])),
-      coverage: definition.coverage, output: outputRecord(first), repeat_identity: true,
+      coverage: definition.coverage, output: outputRecord(first, definition.name), repeat_identity: true,
     }
   })
   const mutationResults = renderMutations.map(mutation => {
@@ -159,8 +170,8 @@ function buildData() {
   if (wordCases.some(row => row.mutations.right_associated_xor !== row.result_u32_hex)) throw new Error('XOR associativity control drift')
   if (!wordCases.some(row => row.source_unsigned_numerator_f32_bits_le !== row.canonical_js_signed_numerator_f32_bits_le)) throw new Error('word table lacks signed/unsigned discriminator')
   return {
-    schema: 'noisemaker-for-cpp.task27.perlin-scalar-uint-xor.public-canonical-oracles.v1', corpus_revision: corpusRevision,
-    provenance: { node: process.version, public_api: 'kernelFactories.get(key)', canonical_identity: true, adapter_entry_absent: true, canonical_kernels_sha256: canonicalSha256, public_catalog_sha256: catalogSha256, adapter_index_sha256: adapterIndexSha256 },
+    schema: 'noisemaker-for-cpp.task27.perlin-scalar-uint-xor.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
+    provenance: { node: process.version, public_api: 'kernelFactories.get(key) + bindGlslKernel; explicit original fixture aspect=Float32(width/height)', canonical_identity: true, adapter_entry_absent: true, canonical_kernels_sha256: canonicalSha256, public_catalog_sha256: catalogSha256, adapter_index_sha256: adapterIndexSha256 },
     program: {
       key, source: sourceRelative, raw_source_bytes: 10882, raw_source_sha256: '9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318', normalized_source_bytes: 4875, normalized_source_sha256: '88cb30dfb53c75f2d1bf51e9f9b865dca48ffb528e6ff2f77dec224dab309f64', defines: { DIMENSIONS: 2 }, profile: 'perlin-scalar-uint-xor-v1', generic_scalar_bitwise_capability: false, dimensions_3_authorized: false,
       canonical_factory_name: factoryName, canonical_factory_to_string_sha256: factorySha256,
@@ -195,7 +206,7 @@ function buildReport(data) {
 const data = buildData()
 const json = `${JSON.stringify(data, null, 2)}\n`
 const report = buildReport(data)
-if (process.argv.length === 2) process.stdout.write(json)
-else if (process.argv.length === 3 && process.argv[2] === '--write') { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-27-oracles.json and task-27-oracle-report.md\n') }
-else if (process.argv.length === 3 && process.argv[2] === '--check') { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-27-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-27-oracle-report.md drift'); process.stdout.write('ok task-27-oracles.json and task-27-oracle-report.md\n') }
+if (!process.argv.includes('--write') && !process.argv.includes('--check')) process.stdout.write(json)
+else if (process.argv.includes('--write')) { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-27-oracles.json and task-27-oracle-report.md\n') }
+else if (process.argv.includes('--check')) { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-27-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-27-oracle-report.md drift'); process.stdout.write('ok task-27-oracles.json and task-27-oracle-report.md\n') }
 else throw new Error('usage: node task-27-oracle-generator.mjs [--write|--check]')

@@ -14,6 +14,7 @@ import unittest
 from tests import corpus_census
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import (
     emit_typed_cpp,
     generate_glitch_native_oracle_include,
@@ -28,8 +29,8 @@ from tests.gate import full_run_only
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "classicNoisedeck/glitch:glitch"
 PROFILE = "glitch-mat4-chain-v1"
-RAW_SHA256 = "9ed4cce15c5d4358f191d8beeaae93624520530f1c4181dd7a5895e47821cc0e"
-SOURCE = (ROOT / "tools/glslcpp/corpus/5976b7a6b77f69c47c41f4ee296a54d5318e1f9d"
+RAW_SHA256 = "4bb633e963eed011c4724d9b18470baed3ac474eadce98e06288ace5c382846a"
+SOURCE = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources/classicNoisedeck/glitch/glitch.glsl")
 MODULE = "tools.glslcpp.frontend.glitch_mat4_chain_profile"
 
@@ -182,7 +183,11 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
         self.assertEqual(12, sum(
             line.count("glsl::Vec4(") for line in matrix_constructor_lines))
         self.assertIn("glsl::Mat4 A = ((T * Q) * S);", rendered)
-        self.assertIn("glsl::dot((tv * A), uv)", rendered)
+        self.assertIn(
+            "glsl::dot(glsl::Vec4(glsl::dot(tv, A[0]), "
+            "glsl::dot(tv, A[1]), glsl::dot(tv, A[2]), "
+            "glsl::dot(tv, A[3])), uv)", rendered)
+        self.assertNotIn("glsl::dot((tv * A), uv)", rendered)
         self.assertNotIn("mat4", generate_typed_slice.APPROVED_TYPES)
         self.assertNotIn("mat4", emit_typed_cpp._TYPES)
 

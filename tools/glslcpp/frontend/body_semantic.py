@@ -31,7 +31,7 @@ _BUILTIN_IDS = {name: -(index + 1) for index, name in enumerate((
     # (_ANY_SIGNATURE_ID, _NOTEQUAL_SIGNATURE_ID, REFLECT_SIGNATURE_ID,
     # _NODE_SIGNATURE_ID for round). Appending keeps every existing id
     # unchanged; only a brand-new name gets the newly free id.
-    "greaterThan", "acos", "cross", "uintBitsToFloat", "isnan",
+    "greaterThan", "acos", "cross", "uintBitsToFloat", "isnan", "tan",
 ))}
 
 # Declarative GLSL ES builtin surface.  Names select a reusable signature
@@ -57,6 +57,7 @@ _BUILTIN_FAMILIES = {
     "reflect": ("reflect",), "refract": ("refract",), "round": ("unary_float",),
     "sign": ("unary_float",), "sin": ("unary_float",), "smoothstep": ("smoothstep",),
     "sqrt": ("unary_float",), "step": ("step",), "tanh": ("unary_float",),
+    "tan": ("unary_float",),
     "texelFetch": ("texel_fetch",), "texture": ("texture",),
     "textureLod": ("texture_lod",), "textureSize": ("texture_size",),
     "unpackHalf2x16": ("unpack_half",),

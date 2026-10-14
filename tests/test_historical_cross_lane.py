@@ -12,11 +12,13 @@ import tempfile
 import unittest
 from unittest import mock
 
-from tools.glslcpp import generate_typed_slice, regen_cache
+from tools.glslcpp import emit_typed_cpp, generate_typed_slice, regen_cache
 from tools.glslcpp import check_corpus
 from tests import corpus_census
 from tests.historical_authority import historical_authority
-from tools.glslcpp.frontend import parse_program, noise_frontend_profile
+from tools.glslcpp.frontend import (
+    moodscape_frontend_profile, noise_frontend_profile, parse_program,
+    texture_frontend_profile)
 from tools.glslcpp.frontend.semantic import analyze_program
 from tests.gate import full_run_only
 
@@ -157,6 +159,118 @@ class HistoricalCrossLaneTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     authenticate(dataclasses.replace(program, raw_source=raw + '\n'),
                                  source_hash, profile)
+
+    def test_classic_noise_current_and_historical_single_program_projection(self) -> None:
+        key = noise_frontend_profile.KEY
+        live = generate_typed_slice.load_slice(ROOT)
+        current = next(row for row in live['programs'] if row['program_key'] == key)
+        self.assertEqual('runtime-defines-generic-v1', current['runtime_define_profile'])
+        damaged = copy.deepcopy(live)
+        next(row for row in damaged['programs'] if row['program_key'] == key).pop(
+            'runtime_define_profile')
+        with self.assertRaisesRegex(AssertionError, 'runtime carrier census drift'):
+            corpus_census.without_expansion(damaged)
+        source_path = 'sources/classicNoisedeck/noise/noise.glsl'
+        raw = (check_corpus._corpus_root(ROOT) / source_path).read_text()
+        source_hash = hashlib.sha256(raw.encode()).hexdigest()
+        self.assertEqual(noise_frontend_profile.RAW_SHA256, source_hash)
+        transformed = generate_typed_slice.transform_generic_dynamic_source(raw, key)
+        parsed = parse_program(
+            transformed, key, generate_typed_slice.GENERIC_DYNAMIC_DEFINE_TYPES[key])
+        parsed['raw_source'] = raw
+        current_program = analyze_program(parsed, key)
+        current_projected = noise_frontend_profile.apply_noise_frontend(
+            current_program, source_hash, current['noise_frontend_profile'])
+        noise_frontend_profile.authenticate_noise_projection(
+            current_projected, source_hash, current['noise_frontend_profile'])
+
+        historical = corpus_census.without_expansion(live)
+        frozen = next(row for row in historical['programs'] if row['program_key'] == key)
+        self.assertNotIn('runtime_define_profile', frozen)
+        with historical_authority(historical):
+            entry = next(row for row in corpus_census.historical_document('manifest.json')['programs']
+                         if row['program_key'] == key)
+            self.assertEqual(source_path, entry['source'])
+            raw = (check_corpus._corpus_root(ROOT) / entry['source']).read_text()
+            source_hash = hashlib.sha256(raw.encode()).hexdigest()
+            self.assertEqual(entry['raw_sha256'], source_hash)
+            frozen_program = analyze_program(parse_program(raw, key, frozen['defines']), key)
+            frozen_projected = noise_frontend_profile.apply_noise_frontend(
+                frozen_program, source_hash, frozen['noise_frontend_profile'])
+            noise_frontend_profile.authenticate_noise_projection(
+                frozen_projected, source_hash, frozen['noise_frontend_profile'])
+
+    def test_moodscape_and_texture_restore_frozen_single_program_contracts(self) -> None:
+        live = generate_typed_slice.load_slice(ROOT)
+        historical = corpus_census.without_expansion(live)
+        cases = (
+            (moodscape_frontend_profile.KEY, 'moodscape_frontend_profile',
+             'moodscape-runtime-frontend-v1', moodscape_frontend_profile.PROFILE),
+            (texture_frontend_profile.KEY, 'texture_frontend_profile',
+             texture_frontend_profile.PROFILE, texture_frontend_profile.PROFILE),
+        )
+        for key, field, current_profile, frozen_profile in cases:
+            with self.subTest(key=key):
+                current = next(row for row in live['programs'] if row['program_key'] == key)
+                frozen = next(row for row in historical['programs'] if row['program_key'] == key)
+                self.assertEqual('runtime-defines-generic-v1', current['runtime_define_profile'])
+                self.assertEqual(current_profile, current[field])
+                self.assertNotIn('runtime_define_profile', frozen)
+                self.assertEqual(frozen_profile, frozen[field])
+                damaged = copy.deepcopy(live)
+                next(row for row in damaged['programs'] if row['program_key'] == key).pop(
+                    'runtime_define_profile')
+                with self.assertRaisesRegex(AssertionError, 'runtime carrier census drift'):
+                    corpus_census.without_expansion(damaged)
+                if key == moodscape_frontend_profile.KEY:
+                    damaged = copy.deepcopy(live)
+                    next(row for row in damaged['programs'] if row['program_key'] == key)[
+                        field] = 'wrong-profile'
+                    with self.assertRaisesRegex(AssertionError,
+                                                'Moodscape frontend carrier identity drift'):
+                        corpus_census.without_expansion(damaged)
+                with historical_authority(historical):
+                    entry = next(row for row in corpus_census.historical_document(
+                        'manifest.json')['programs'] if row['program_key'] == key)
+                    raw = (check_corpus._corpus_root(ROOT) / entry['source']).read_text()
+                    source_hash = hashlib.sha256(raw.encode()).hexdigest()
+                    self.assertEqual(entry['raw_sha256'], source_hash)
+                    program = analyze_program(parse_program(raw, key, frozen['defines']), key)
+                    self.assertEqual(entry['normalized_sha256'],
+                                     hashlib.sha256(program.source.encode()).hexdigest())
+                    if key == moodscape_frontend_profile.KEY:
+                        projected = moodscape_frontend_profile.apply_moodscape_frontend(
+                            program, source_hash, frozen[field])
+                        moodscape_frontend_profile.authenticate_moodscape_projection(
+                            projected, source_hash, frozen[field])
+                    else:
+                        texture_frontend_profile.apply_texture_frontend(
+                            program, source_hash, frozen[field])
+
+    def test_historical_effects_retains_authenticated_zoomblur_helper(self) -> None:
+        from tools.glslcpp.frontend.fixed_array_in_parameter_proof import (
+            attach_fixed_array_in_parameter_proof)
+
+        spec = self._spec()
+        key = "classicNoisedeck/effects:effects"
+        row = next(item for item in spec["programs"] if item["program_key"] == key)
+        original = emit_typed_cpp.authenticated_effects_emission_omission
+        with historical_authority(spec):
+            entry = next(item for item in corpus_census.historical_document(
+                "manifest.json")["programs"] if item["program_key"] == key)
+            raw = (check_corpus._corpus_root(ROOT) / entry["source"]).read_text()
+            source_hash = hashlib.sha256(raw.encode()).hexdigest()
+            self.assertEqual(entry["raw_sha256"], source_hash)
+            program = attach_fixed_array_in_parameter_proof(analyze_program(
+                parse_program(raw, key, row["defines"]), key))
+            profiles = {name: value for name, value in row.items()
+                        if name.endswith("_profile")}
+            body = emit_typed_cpp.render_typed_cpp(program, key, source_hash, **profiles)
+            self.assertEqual(2, body.count("glsl::Vec3 zoomBlur("))
+            with self.assertRaises(ValueError):
+                emit_typed_cpp.authenticated_effects_emission_omission(
+                    program, "0" * 64, row["mutable_global_array_profile"])
+        self.assertIs(original, emit_typed_cpp.authenticated_effects_emission_omission)
 
     def test_historical_documents_and_verifier_reject_byte_drift(self) -> None:
         original = pathlib.Path.read_bytes

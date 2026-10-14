@@ -1,5 +1,6 @@
 #include "test_harness.hpp"
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -25,11 +26,76 @@ std::vector<float> bits_to_floats(const std::vector<std::uint32_t>& bits) {
   return out;
 }
 
+std::size_t deposit_agent(const std::array<float, 4>& position, double volume_size,
+                          noisemaker::Surface& destination, float red = 0.5f) {
+  noisemaker::Surface positions(1, 1, {position[0], position[1], position[2], position[3]});
+  noisemaker::Surface colors(1, 1, {red, 0.0f, 0.0f, 1.0f});
+  noisemaker::scatter::flow3d::Uniforms uniforms;
+  uniforms.density = 100.0;
+  uniforms.volume_size = volume_size;
+  return noisemaker::scatter::flow3d::run_deposit(
+      positions, colors, uniforms, std::nullopt, destination);
+}
+
+std::array<float, 4> pixel_at(const noisemaker::Surface& surface, std::size_t row,
+                         std::size_t column) {
+  const auto data = surface.data();
+  const auto offset = (row * surface.width() + column) * 4U;
+  return {data[offset], data[offset + 1], data[offset + 2], data[offset + 3]};
+}
+
 }  // namespace
 
 TEST(scatter_flow3d_registers_under_the_canonical_key) {
   noisemaker::scatter::register_builtin_scatter_adapters();
   REQUIRE(noisemaker::scatter::resolve_scatter_adapter("filter3d/flow3d:deposit") != nullptr);
+}
+
+// CPU 9f3bd6ad test/scatter-adapters.test.js supplies these raster witnesses.
+TEST(scatter_flow3d_integer_boundaries_use_the_lower_gl_pixel) {
+  noisemaker::Surface destination(32, 1024);
+  REQUIRE(deposit_agent({20.0f, 1.9599609375f, 5.7421875f, 0.0f},
+                        32.0, destination) == 1U);
+  REQUIRE(deposit_agent({20.71875f, 17.0f, 29.671875f, 0.0f},
+                        32.0, destination, 0.25f) == 1U);
+  REQUIRE((pixel_at(destination, 862, 19) == std::array<float, 4>{0.5f, 0.0f, 0.0f, 1.0f}));
+  REQUIRE((pixel_at(destination, 862, 20) == std::array<float, 4>{}));
+  REQUIRE((pixel_at(destination, 79, 20) == std::array<float, 4>{0.25f, 0.0f, 0.0f, 1.0f}));
+  REQUIRE((pixel_at(destination, 78, 20) == std::array<float, 4>{}));
+}
+
+TEST(scatter_flow3d_rounds_atlas_addition_before_raster_placement) {
+  noisemaker::Surface destination(64, 4096);
+  REQUIRE(deposit_agent({1.25f, 0.0001220703125f, 63.0f, 0.0f},
+                        64.0, destination) == 1U);
+  REQUIRE((pixel_at(destination, 64, 1) == std::array<float, 4>{0.5f, 0.0f, 0.0f, 1.0f}));
+  REQUIRE((pixel_at(destination, 63, 1) == std::array<float, 4>{}));
+}
+
+TEST(scatter_flow3d_culls_the_half_subpixel_viewport_edge) {
+  const std::array<float, 4> positions[]{
+      {0.00032138824462890625f, 22.546875f, 13.6015625f, 0.0f},
+      {1.0f / 512.0f, 22.546875f, 13.6015625f, 0.0f},
+      {1.25f, 0.00006103515625f, 0.0f, 0.0f},
+      {1.25f, 1.0f / 512.0f, 0.0f, 0.0f}};
+  for (std::size_t index = 0; index < 4; ++index) {
+    const auto volume = index < 2 ? 32U : 64U;
+    noisemaker::Surface destination(volume, volume * volume);
+    REQUIRE(deposit_agent(positions[index], volume, destination) == 0U);
+    for (const auto value : destination.data()) REQUIRE(value == 0.0f);
+  }
+}
+
+TEST(scatter_flow3d_snaps_near_integer_positions_to_the_subpixel_grid) {
+  noisemaker::Surface destination(32, 1024);
+  REQUIRE(deposit_agent({1.0009765625f, 0.25f, 1.1f, 0.0f},
+                        32.0, destination) == 1U);
+  REQUIRE(deposit_agent({2.25f, 1.0009765625f, 1.1f, 0.0f},
+                        32.0, destination, 0.25f) == 1U);
+  REQUIRE((pixel_at(destination, 991, 0) == std::array<float, 4>{0.5f, 0.0f, 0.0f, 1.0f}));
+  REQUIRE((pixel_at(destination, 991, 1) == std::array<float, 4>{}));
+  REQUIRE((pixel_at(destination, 991, 2) == std::array<float, 4>{0.25f, 0.0f, 0.0f, 1.0f}));
+  REQUIRE((pixel_at(destination, 990, 2) == std::array<float, 4>{}));
 }
 
 // oracle case index 0: pass.count absent (falls back to capacity, JS
@@ -92,7 +158,7 @@ TEST(scatter_flow3d_direct_call_matches_js_oracle_fractional_pass_count) {
   const std::vector<std::uint32_t> dest_bits{0x3f6846e6, 0xbefe6cde, 0x3e0c84d9, 0xbf62a2e6,
                                               0xbf76e3fb, 0x3f4bbf34, 0x3f793169, 0x7fc00000};
   const std::vector<std::uint32_t> expected_bits{0x3f6846e6, 0xbefe6cde, 0x3e0c84d9, 0xbf62a2e6,
-                                                  0x3d9a81b6, 0x4030fc08, 0x40cf8232, 0x7fc00000};
+                                                  0xbf76e3fb, 0x3f4bbf34, 0x3f793169, 0x7fc00000};
 
   noisemaker::Surface state_tex1(1, 9, bits_to_floats(state1_bits));
   noisemaker::Surface state_tex2(1, 9, bits_to_floats(state2_bits));
@@ -103,7 +169,7 @@ TEST(scatter_flow3d_direct_call_matches_js_oracle_fractional_pass_count) {
 
   const std::size_t pixels = noisemaker::scatter::flow3d::run_deposit(state_tex1, state_tex2, uniforms,
                                                                        10.720472631743178, destination);
-  REQUIRE(pixels == 3U);
+  REQUIRE(pixels == 2U);
   const auto got = destination.data();
   for (std::size_t i = 0; i < expected_bits.size(); ++i) {
     REQUIRE(noisemaker::float_bits_to_uint(got[i]) == expected_bits[i]);
@@ -111,9 +177,9 @@ TEST(scatter_flow3d_direct_call_matches_js_oracle_fractional_pass_count) {
 }
 
 // oracle case index 9: 6x6 agents -> 2x2 destination, pass.count absent
-// (falls back to capacity=36) -- forces real overlapping accumulation
-// across all 9 destination-pixel writes, via the registry dispatch path.
-TEST(scatter_flow3d_via_registry_matches_js_oracle_6x6_overlap) {
+// (falls back to capacity=36). The 6x36 atlas does not fit the destination;
+// nine raster hits address outside it and leave its Float32Array unchanged.
+TEST(scatter_flow3d_via_registry_matches_js_oracle_mismatched_atlas_size) {
   const std::vector<std::uint32_t> state1_bits{
       0xc0000000, 0x3eb817a9, 0x3f87a286, 0xbf68db19, 0xc9742400, 0x3f486c97, 0x3fc7222d, 0xbebf8504,
       0xbeaa93ad, 0xbf386960, 0x3eb76590, 0xbe1cfe1e, 0x3fbdfb3a, 0x3fa81cbb, 0x3c6d2642, 0x3f1ba346,
@@ -160,7 +226,7 @@ TEST(scatter_flow3d_via_registry_matches_js_oracle_6x6_overlap) {
   };
   const std::vector<std::uint32_t> expected_bits{
       0x3e3b30e6, 0x441a81b1, 0xbf5b1b5b, 0x3eeba601, 0x3f9e6da7, 0x3f8626fd, 0x3f82fde1, 0xbdbdb50c,
-      0xc1dcd855, 0x40fea974, 0x7fc00000, 0x41132307, 0x3fba0352, 0x3f639743, 0x3fdf07e0, 0xbe83f81b,
+      0xc20219e8, 0x3f84dc40, 0xbbb31bfe, 0x3e48c1b7, 0x3fba0352, 0x3f639743, 0x3fdf07e0, 0xbe83f81b,
   };
 
   noisemaker::scatter::register_builtin_scatter_adapters();

@@ -54,23 +54,27 @@ from .typed_ir import TypedExpression, TypedFunction, TypedProgram
 
 KEY = "synth3d/fractal3d:precompute"
 PROFILE = "fractal3d-log-admission-v1"
-KEYS: tuple[str, ...] = (KEY,)
-PROFILES = {KEY: PROFILE}
+FLYTHROUGH_KEY = "synth3d/flythrough3d:precompute"
+FLYTHROUGH_PROFILE = "fractal3d-log-flythrough3d-v1"
+KEYS: tuple[str, ...] = (FLYTHROUGH_KEY, KEY)
+PROFILES = {KEY: PROFILE, FLYTHROUGH_KEY: FLYTHROUGH_PROFILE}
 FRACTAL3D_LOG_KEYS = frozenset(KEYS)
 
 # The complete allowed field set for the slice row -- an ALLOWLIST enforced
 # by the validator's `set(item) != expected` comparison.
 ALLOWED_ROW_FIELDS: dict[str, frozenset[str]] = {
     KEY: frozenset({"defines", "fractal3d_log_profile", "program_key"}),
+    FLYTHROUGH_KEY: frozenset({"defines", "fractal3d_log_profile",
+                              "out_inout_admission_profile", "program_key"}),
 }
 
-RAW_BYTES = 6912
-RAW_SHA256 = "8ab3dfe63e16d4406deee719c1f822d405c712bae21bd1348ae5b75b79a14d41"
-NORMALIZED_BYTES = 6409
-NORMALIZED_SHA256 = "bfc4b9e886fa4dc5d642abfd6457c643a47287f2095ccac0f99759ad5ff1d5a6"
-FUNCTIONS_SHA256 = "a6c435a3887543d3aa3dc4e3560369a877f1a7b37083197b8e8324da26991a3a"
-WHOLE_SHA256 = "e8266219a128492532d69183fd0b55ed862ea8eb1a625021ef8fa13fe4dc990e"
-INTERFACE_SHA256 = "47b3ed25f3ccea8f7e58ad566c7a2df79cdac82674aa728985d1dae7bfacf9cb"
+RAW_BYTES = 6882
+RAW_SHA256 = "4bc39fb7920cf0829cc6a6fc4670cdac9f5ea68c5438f569050a4732c1e6de19"
+NORMALIZED_BYTES = 6173
+NORMALIZED_SHA256 = "3dd80cd8f5a01004ace3df4e3dea95b0861b8e1f191b66958ceabe36f3a8be93"
+FUNCTIONS_SHA256 = "12e274f8dbf497961ff11160898d060106eac4e5f478af2aeb8694da9752d2f3"
+WHOLE_SHA256 = "010e849e6f0200c60386d2e534fff888d30337d006d87842378212014773b493"
+INTERFACE_SHA256 = "cd93a4bff583a921ca02539c2f537dde9b8151efd5f298f0bd3ae9dae831cbb7"
 
 # The seed-attached counted-for summary: four carrier loops (one per
 # fractal carrier), all proved, depth 1, product 20, entrypoint charge
@@ -79,26 +83,26 @@ COUNTED_LOOP_SUMMARY = (4, 0, 1, 20, 80, True)
 
 FUNCTION_COUNT = 7
 FUNCTION_INVENTORY = (
-    (37, "boxFold", "vec3", ((24, "z", "vec3"), (25, "foldingLimit", "float"))),
-    (38, "computeFractal", "vec3", ((35, "p", "vec3"), (36, "juliaC", "vec3"))),
-    (39, "juliaBulb", "vec3",
-     ((19, "pos", "vec3"), (20, "c", "vec3"), (21, "n", "float"),
-      (22, "maxIter", "int"), (23, "bail", "float"))),
-    (40, "juliaCube", "vec3",
-     ((30, "pos", "vec3"), (31, "c", "vec3"), (32, "scale", "float"),
-      (33, "maxIter", "int"), (34, "bail", "float"))),
-    (41, "main", "void", ()),
-    (42, "mandelbulb", "vec3",
-     ((15, "pos", "vec3"), (16, "n", "float"), (17, "maxIter", "int"),
-      (18, "bail", "float"))),
-    (43, "mandelcube", "vec3",
-     ((26, "pos", "vec3"), (27, "scale", "float"), (28, "maxIter", "int"),
-      (29, "bail", "float"))),
+    (35, "boxFold", "vec3", ((22, "z", "vec3"), (23, "foldingLimit", "float"))),
+    (36, "computeFractal", "vec3", ((33, "p", "vec3"), (34, "juliaC", "vec3"))),
+    (37, "juliaBulb", "vec3",
+     ((17, "pos", "vec3"), (18, "c", "vec3"), (19, "n", "float"),
+      (20, "maxIter", "int"), (21, "bail", "float"))),
+    (38, "juliaCube", "vec3",
+     ((28, "pos", "vec3"), (29, "c", "vec3"), (30, "scale", "float"),
+      (31, "maxIter", "int"), (32, "bail", "float"))),
+    (39, "main", "void", ()),
+    (40, "mandelbulb", "vec3",
+     ((13, "pos", "vec3"), (14, "n", "float"), (15, "maxIter", "int"),
+      (16, "bail", "float"))),
+    (41, "mandelcube", "vec3",
+     ((24, "pos", "vec3"), (25, "scale", "float"), (26, "maxIter", "int"),
+      (27, "bail", "float"))),
 )
 
 RESOURCES = (
     ("volumeSize", "noiseType", "power", "iterations", "bailout", "juliaX",
-     "juliaY", "juliaZ", "colorMode", "tileOffset", "renderScale"),
+     "juliaY", "juliaZ", "colorMode"),
     (),
     ("fragColor", "geoOut"),
     False,
@@ -110,37 +114,37 @@ RESOURCES = (
 # pow, already approved, carries exactly the four frozen carrier sites.
 _ZERO_FAMILY = ("log2", "exp", "exp2", "tanh")
 POW_SITES = (
-    ("juliaBulb", "77:14-77:29", 2),
-    ("juliaBulb", "79:20-79:29", 2),
-    ("mandelbulb", "39:14-39:29", 2),
-    ("mandelbulb", "41:20-41:29", 2),
+    ("juliaBulb", "75:14-75:29", 2),
+    ("juliaBulb", "77:20-77:29", 2),
+    ("mandelbulb", "37:14-37:29", 2),
+    ("mandelbulb", "39:20-39:29", 2),
 )
 
 LOG_SITE_COUNT = 2
 # (owner_id, owner_name, node span, argument span, statement span,
 #  parent kind, (call sha, argument sha, statement sha))
 LOG_SITES = (
-    (39, "juliaBulb", "93:24-93:30", "93:28-93:29", "93:5-93:40", "binary",
-     ("f9c8a6dc4d06b349bb42fac714f941707ca408d7fc5531857f496a1f75ec11b7",
-      "46b25d6ad0bc19233b8da832b60b2c89c4bb59b92290a46c14a9a6e124fbba6a",
-      "996a06f7917bb773840fb7d0f8761019fef580abf69581be73092375cb164711")),
-    (42, "mandelbulb", "55:24-55:30", "55:28-55:29", "55:5-55:40", "binary",
-     ("455eb003b04ff0663afded2ae92a969eb15df5743ccc0ad3a6371857e949a455",
-      "d59559d021ffe4280c6274027fab2d52894084cc3ffa7fc44668806601aca3ce",
-      "82fa0140890420d1eb332e3fbf41341243ea718f634f6f2edc7948ae9170cfb9")),
+    (37, "juliaBulb", "91:24-91:30", "91:28-91:29", "91:5-91:40", "binary",
+     ("cb37bc093964e64fc7b5b0503c8792a7c2f0f41371fe5d72591c7fb2659aa6a6",
+      "13ecb77cd7c814691e2dca41343311974e2c13592907f2605134a17ab7f7b69d",
+      "81c641843dd61232745eccec3d90b2f5812c10639845e46cae51abe4c726dcb0")),
+    (40, "mandelbulb", "53:24-53:30", "53:28-53:29", "53:5-53:40", "binary",
+     ("538a3d4d95060469632d18797bf29ce1f05d230667059b68a797cb800651a7cd",
+      "e13dc161393beb9c1caa7d28396d72010e8e6561f1d1b4564b230940786f6b3f",
+      "66df880b7efd7239a3a503472cae2e20fecf81720c0c1928d309ca9c46b64b61")),
 )
 # Argument kind and type, result type per site -- the value tier the
 # identity hashes alone would absorb.
 LOG_SHAPE = (
-    (39, "juliaBulb", "id", "float", "float", "binary", "93:24-93:30"),
-    (42, "mandelbulb", "id", "float", "float", "binary", "55:24-55:30"),
+    (37, "juliaBulb", "id", "float", "float", "binary", "91:24-91:30"),
+    (40, "mandelbulb", "id", "float", "float", "binary", "53:24-53:30"),
 )
 
 # The two sites' two live nodes each and the two DISTINCT owner functions:
 # 6 distinct objects, each consumed exactly once.
 _CONSUMED_LEDGER = 6
 
-_TOTAL_NODES = 670
+_TOTAL_NODES = 656
 _TOTAL_ASSIGNS = 35
 
 
@@ -290,6 +294,54 @@ def _site_proofs(program: TypedProgram) -> tuple[Fractal3dLogSite, ...]:
     return tuple(sites)
 
 
+def _authenticate_flythrough_log(program, source_hash, profile):
+    def fail(message):
+        return _profile_fail(FLYTHROUGH_PROFILE, message)
+
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    if profile != FLYTHROUGH_PROFILE:
+        raise fail("exact profile carrier required")
+    if (source_hash != "e4288dfc3384f76e63eda968ad4ce3219a9b96989d8e6ff38755dbcf44f788f3"
+            or len(raw) != 11404
+            or hashlib.sha256(raw).hexdigest() != source_hash
+            or len(normalized) != 7766
+            or hashlib.sha256(normalized).hexdigest()
+            != "b8ae9dac1d40943d7bd023fbd6bc26494c686fe62fecd2e26551367ea82eaa58"
+            or _sha(clear_counted_loop_proofs(program.functions))
+            != "6f3edced834a17851390e18356b9a4b6a5fb72edde48d69b50f95b8594b0e93a"
+            or _whole_cleared(program)
+            != "250d2cb9a66ad470c67489ba4e5af1f9036b9e21d5b0f8be39174df601e29258"
+            or _interface(program)
+            != "45e03760bdc51c6217d746b5fb329fe8c67e9f2b5301fb88660c79db93f32c8a"):
+        raise fail("source or typed identity lock mismatch")
+    summary = program.counted_loop_proof
+    if summary is None or (
+            summary.loop_count, summary.unproved_loop_count,
+            summary.max_effective_depth, summary.max_lexical_product,
+            summary.entrypoint_charge, summary.call_graph_acyclic) != (2, 0, 1, 24, 240, True):
+        raise fail("counted-for closure summary mismatch")
+    sites = _site_proofs(program)
+    if (len(sites) != 1 or sites[0].record != (
+            62, "mandelbulb", "211:25-211:31", "211:29-211:30",
+            "211:5-211:41", "binary",
+            ("163f0bdc62ba739b2e0b7ce8fcc24f4ed46a505f0e48e0acbbab09850f1bebc8",
+             "92f13db83c4d3d74ef3bfa93dfc69b11c29b8efcf78f8ae88025db6bf2717f1c",
+             "2b27095f78a8bb78b0e17ef6d21be30e3902aef7937a2dfc969c25fe39bc091d"))
+            or sites[0].argument.kind != "id"
+            or sites[0].argument.type.display() != "float"
+            or sites[0].node.type.display() != "float"
+            or _node_census(program) != (798, 34)
+            or tuple(sum(1 for _, node, _ in _program_nodes(program)
+                         if node.kind == "builtin" and node.callee == name)
+                     for name in _ZERO_FAMILY) != (0, 0, 0, 0)):
+        raise fail("log site or builtin census mismatch")
+    consumed = (sites[0].node, sites[0].argument, sites[0].owner)
+    if len({id(item) for item in consumed}) != 3:
+        raise fail("log admission visitation ledger mismatch")
+    return Fractal3dLogProof(sites, consumed)
+
+
 def authenticate_fractal3d_log_admission(
         program: TypedProgram, source_hash: str | None,
         profile: str | None) -> Fractal3dLogProof | None:
@@ -300,13 +352,15 @@ def authenticate_fractal3d_log_admission(
     was supplied; supplying a profile for a non-carrier key is a hard
     failure that names the sole admitted sites.
     """
+    if program.key == FLYTHROUGH_KEY:
+        return _authenticate_flythrough_log(program, source_hash, profile)
     if program.key != KEY:
         if profile is not None:
             raise _profile_fail(
                 PROFILE,
                 "program key is not an admitted fractal3d log admission "
-                f"carrier; {KEY} 93:24 and 55:24 are the sole admitted "
-                "log sites")
+                f"carrier; {KEY} has sites 91:24 and 53:24; "
+                f"{FLYTHROUGH_KEY} has site 211:25")
         return None
     if profile != PROFILE:
         raise _profile_fail(PROFILE, "exact profile carrier required")
@@ -388,6 +442,86 @@ def apply_fractal3d_log_admission(
     return program
 
 
+def authenticate_fractal3d_value_copies(
+        program: TypedProgram, source_hash: str | None,
+        profile: str | None) -> tuple[TypedExpression, ...]:
+    if program.key != KEY:
+        raise _profile_fail(PROFILE, "value-copy program key mismatch")
+    # The log proof binds raw source, normalized source, defines, the complete
+    # typed tree, and the loop carrier before selecting these live nodes.
+    authenticate_fractal3d_log_admission(program, source_hash, profile)
+    expected = (
+        (37, "juliaBulb", 45, 17, 60),
+        (38, "juliaCube", 57, 28, 145),
+        (40, "mandelbulb", 91, 13, 22),
+        (41, "mandelcube", 103, 24, 102),
+    )
+    copies = []
+    for owner_id, owner_name, target_id, source_id, line in expected:
+        owners = [item for item in program.functions
+                  if item.id == owner_id and item.name == owner_name]
+        if len(owners) != 1 or not owners[0].body:
+            raise _profile_fail(PROFILE, "value-copy owner mismatch")
+        statement = owners[0].body[0]
+        if statement.kind != "decl" or len(statement.expressions) != 1:
+            raise _profile_fail(PROFILE, "value-copy statement mismatch")
+        declaration = statement.expressions[0]
+        source = declaration.children[0] if len(declaration.children) == 1 else None
+        if (statement.span.start_line != line
+                or declaration.kind != "declaration"
+                or declaration.symbol_id != target_id
+                or declaration.symbol is None
+                or declaration.symbol.name != "z"
+                or declaration.symbol.storage != "local"
+                or declaration.type.display() != "vec3"
+                or source is None or source.kind != "id"
+                or source.symbol_id != source_id
+                or source.symbol is None or source.symbol.name != "pos"
+                or source.symbol.storage != "parameter"
+                or source.type.display() != "vec3"):
+            raise _profile_fail(PROFILE, "value-copy declaration mismatch")
+        copies.append(declaration)
+    if len({id(item) for item in copies}) != len(expected):
+        raise _profile_fail(PROFILE, "value-copy identity mismatch")
+    return tuple(copies)
+
+
+def authenticate_fractal3d_pow_nan_sites(
+        program: TypedProgram, source_hash: str | None,
+        profile: str | None) -> tuple[TypedExpression, ...]:
+    """Return the four exact bulb pow calls whose NaN input follows Math.pow."""
+    if program.key != KEY:
+        raise _profile_fail(PROFILE, "pow program key mismatch")
+    authenticate_fractal3d_log_admission(program, source_hash, profile)
+    expected = (
+        (37, "juliaBulb", "75:14-75:29", 47, "binary"),
+        (37, "juliaBulb", "77:20-77:29", 47, "id"),
+        (40, "mandelbulb", "37:14-37:29", 93, "binary"),
+        (40, "mandelbulb", "39:20-39:29", 93, "id"),
+    )
+    sites = [(owner, node) for owner, node, _ in _program_nodes(program)
+             if node.kind == "builtin" and node.callee == "pow"]
+    if len(sites) != len(expected):
+        raise _profile_fail(PROFILE, "pow site count mismatch")
+    for (owner, node), (owner_id, owner_name, span, r_id, exponent_kind) in zip(
+            sites, expected):
+        if (owner is None or owner.id != owner_id or owner.name != owner_name
+                or _span(node) != span or node.type.display() != "float"
+                or len(node.children) != 2
+                or node.children[0].kind != "id"
+                or node.children[0].symbol_id != r_id
+                or node.children[0].symbol is None
+                or node.children[0].symbol.name != "r"
+                or node.children[0].type.display() != "float"
+                or node.children[1].kind != exponent_kind
+                or node.children[1].type.display() != "float"):
+            raise _profile_fail(PROFILE, "pow typed site mismatch")
+    nodes = tuple(node for _, node in sites)
+    if len({id(node) for node in nodes}) != len(expected):
+        raise _profile_fail(PROFILE, "pow node identity mismatch")
+    return nodes
+
+
 def allowed_row_fields(key: str) -> frozenset[str]:
     """The complete set of slice-row fields permitted for ``key``."""
     fields = ALLOWED_ROW_FIELDS.get(key)
@@ -398,7 +532,8 @@ def allowed_row_fields(key: str) -> frozenset[str]:
 
 
 __all__ = (
-    "KEY", "PROFILE", "KEYS", "PROFILES", "FRACTAL3D_LOG_KEYS",
+    "KEY", "PROFILE", "FLYTHROUGH_KEY", "FLYTHROUGH_PROFILE",
+    "KEYS", "PROFILES", "FRACTAL3D_LOG_KEYS",
     "ALLOWED_ROW_FIELDS", "allowed_row_fields",
     "RAW_BYTES", "RAW_SHA256", "NORMALIZED_BYTES", "NORMALIZED_SHA256",
     "FUNCTIONS_SHA256", "WHOLE_SHA256", "INTERFACE_SHA256",
@@ -406,4 +541,6 @@ __all__ = (
     "RESOURCES", "POW_SITES", "LOG_SITE_COUNT", "LOG_SITES", "LOG_SHAPE",
     "Fractal3dLogSite", "Fractal3dLogProof",
     "authenticate_fractal3d_log_admission", "apply_fractal3d_log_admission",
+    "authenticate_fractal3d_value_copies",
+    "authenticate_fractal3d_pow_nan_sites",
 )

@@ -58,12 +58,12 @@ KALEIDO_WHOLE_PROGRAM_SHA256 = "3511527d77fdcef9859e5e751ea244069b0acd37816401b5
 
 EFFECTS_KEY = "classicNoisedeck/effects:effects"
 EFFECTS_SOURCE_PROFILE = "effects-convolve-v1"
-EFFECTS_RAW_SOURCE_SHA256 = "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457"
-EFFECTS_NORMALIZED_SOURCE_SHA256 = "ed61aa21c55782d5325c514cb29c3d19992fe93669e9391aa28b19963046b150"
-EFFECTS_CANONICAL_FACTORY_SHA256 = "ebf43ff45f4a3568854da02b41baf6b1a25efd2bc5bbf2d8cf78f0a11e3dd81a"
-EFFECTS_INTERFACE_SHA256 = "8cbdb73990c43f4739fadaeb20a06d5cc7adcb891fd50bfc7588abf3acdfee5b"
-EFFECTS_TYPED_IR_SHA256 = "4165298021dd882ccab94042267c209fa4fd34c3c414aa81e1946d93c8500f58"
-EFFECTS_WHOLE_PROGRAM_SHA256 = "9c6dcd15e6014a8dae8fc74579f1c8dd0ee483b84e5fb9a7a3332d8f2d5c03e3"
+EFFECTS_RAW_SOURCE_SHA256 = "1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90"
+EFFECTS_NORMALIZED_SOURCE_SHA256 = "9e2f853168720c5923440e2f835bcbf4f85e50e15c8cc5b739c15a5ecd150207"
+EFFECTS_CANONICAL_FACTORY_SHA256 = "f8af81a40c4fc8e9251b205cd17c4e7193cb8da823e3b68865d9efafce3338d3"
+EFFECTS_INTERFACE_SHA256 = "3cdb27b87bfe71e7e6e9d46460faafdf6116c0746d5d1f25888e4bddaa109317"
+EFFECTS_TYPED_IR_SHA256 = "4c2ebe270f45b8ee86f230c1a48254b62b668943c2f10b481fa04b5f2e75698e"
+EFFECTS_WHOLE_PROGRAM_SHA256 = "d67dd1575cdb41d275d7d29bf884662bdf361cd9aa93754b5cd1bf3af6a2feca"
 
 _BINDINGS = (
     "inputTex:sampler2D", "resolution:vec2", "tileOffset:vec2",
@@ -210,53 +210,52 @@ _EFFECTS_DEFINES = (
 )
 _EFFECTS_BINDINGS = (
     "inputTex:sampler2D", "resolution:vec2", "tileOffset:vec2",
-    "fullResolution:vec2", "renderScale:float", "time:float",
+    "fullResolution:vec2", "invFullResolution:vec2", "aspectInv:float",
+    "renderScale:float", "time:float",
     "effectAmt:float", "scaleAmt:float", "rotation:float", "offsetX:float",
     "offsetY:float", "intensity:float", "saturation:float",
 )
-# The SEVEN mutable global float[9] tables (15-21, the array module's
-# effects record), the convolve parameter (42), convolve's vec2 offset table
-# (151) and the eight caller tables -- the whole-program array census covers
-# every one of them.  effects' census is the family's first SEVEN-array /
-# 63-store shape: 144 literal stores (63 + 72 + 9) over 17 array ids, frozen
-# per key and never shared with the two landed convolve keys.
+# The seven mutable global float[9] tables, convolve's parameter and offset
+# table, eight caller tables, and the unreachable zoomBlur local vec3[41]
+# constitute the complete whole-program array census. The 144 literal stores
+# are still 63 global, 72 caller, and nine offset stores.
 _EFFECTS_ARRAY_IDS = frozenset(
-    {15, 16, 17, 18, 19, 20, 21, 42, 151, 157, 158, 179, 180, 202, 203,
-     210, 211})
-_EFFECTS_CENSUS = (1, 9, 164, 155, 144, 3, 147, 8, 8)
+    {17, 18, 19, 20, 21, 22, 23, 44, 153, 159, 160, 188, 189, 218, 219,
+     226, 227, 239})
+_EFFECTS_CENSUS = (1, 10, 167, 157, 144, 3, 149, 8, 8)
 # Unreachability frozen as a fact (the proof vouches grammar, not liveness):
 # at EFFECT=0 the reachable set from main is exactly these eight functions
 # (effects-design §1 -- the runtime-live pixel path).
 _EFFECTS_REACHABLE = ("brightnessContrast", "loadKernels", "main", "map",
                       "offsets", "periodicFunction", "rotate2D", "saturate")
 _EFFECTS_PARAMETERS = (
-    (41, "uv", "vec2", "in"),
-    (42, "kernel", "float[9]", "in"),
-    (43, "divide", "bool", "in"),
+    (43, "uv", "vec2", "in"),
+    (44, "kernel", "float[9]", "in"),
+    (45, "divide", "bool", "in"),
 )
 _EFFECTS_LOOP_PROOF = (
-    154, 0, 9, "<", "++", "literal", 9, 1, 1, 9, 0,
+    156, 0, 9, "<", "++", "literal", 9, 1, 1, 9, 0,
 )
-# convolve's `vec2 offset[9]` table: symbol 151, declared at body[1], nine
-# component stores at body[2..10], its `step` base is symbol 150, one
-# induction-indexed read (induction 154) inside the loop at body[13].
-_EFFECTS_OFFSET_SYMBOL_ID = 151
-_EFFECTS_OFFSET_STEPS_ID = 150
+# convolve's `vec2 offset[9]` table: symbol 153, declared at body[1], nine
+# component stores at body[2..10], its `step` base is symbol 152, one
+# induction-indexed read (induction 156) inside the loop at body[13].
+_EFFECTS_OFFSET_SYMBOL_ID = 153
+_EFFECTS_OFFSET_STEPS_ID = 152
 # The 8 caller tables; owner id, owner name, owner body count, symbol id,
 # name, call statement index, literal values -- the same family payloads.
 # `shadow`'s tables sit at statements 0 and 10, the kaleido quirk the
 # declaration-searching helper absorbs (effects-design §1/§12).
 _EFFECTS_CALLER_TABLES = (
-    (71, "derivatives", 25, 157, "deriv_x", 21,
+    (73, "derivatives", 25, 159, "deriv_x", 21,
      (0.0, 0.0, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0)),
-    (71, "derivatives", 25, 158, "deriv_y", 22,
+    (73, "derivatives", 25, 160, "deriv_y", 22,
      (0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0)),
-    (90, "sobel", 25, 210, "sobel_x", 21, _SOBEL_X),
-    (90, "sobel", 25, 211, "sobel_y", 22, _SOBEL_Y),
-    (79, "outline", 26, 179, "sobel_x", 21, _SOBEL_X),
-    (79, "outline", 26, 180, "sobel_y", 22, _SOBEL_Y),
-    (89, "shadow", 29, 202, "sobel_x", 21, _SOBEL_X),
-    (89, "shadow", 29, 203, "sobel_y", 22, _SOBEL_Y),
+    (92, "sobel", 25, 226, "sobel_x", 21, _SOBEL_X),
+    (92, "sobel", 25, 227, "sobel_y", 22, _SOBEL_Y),
+    (81, "outline", 26, 188, "sobel_x", 21, _SOBEL_X),
+    (81, "outline", 26, 189, "sobel_y", 22, _SOBEL_Y),
+    (91, "shadow", 29, 218, "sobel_x", 21, _SOBEL_X),
+    (91, "shadow", 29, 219, "sobel_y", 22, _SOBEL_Y),
 )
 
 
@@ -363,6 +362,10 @@ def source_provenance_error(program: TypedProgram,
     profile = PROFILES.get(program.key)
     if profile is None:
         return None
+    from . import dynamic_kernel9_profile
+    if dynamic_kernel9_profile.is_dynamic(program):
+        return dynamic_kernel9_profile.source_provenance_error(
+            program, source_hash)
     raw_hash = hashlib.sha256(program.raw_source.encode("utf-8")).hexdigest()
     normalized_hash = hashlib.sha256(program.source.encode("utf-8")).hexdigest()
     if (program.preprocessor_defines != profile.preprocessor_defines
@@ -1452,9 +1455,9 @@ def _prove_effects(program: TypedProgram,
     if binding_signature != profile.binding_signature:
         return None
 
-    convolve = _definition(program, 70, "convolve", 16)
-    main = _definition(program, 76, "main", 23)
-    collapsed = _definition(program, 69, "convolutionEffect", 1)
+    convolve = _definition(program, 72, "convolve", 16)
+    main = _definition(program, 78, "main", 27)
+    collapsed = _definition(program, 71, "convolutionEffect", 1)
     if None in (convolve, main, collapsed):
         return None
     assert convolve is not None and main is not None and collapsed is not None
@@ -1483,23 +1486,23 @@ def _prove_effects(program: TypedProgram,
     if (initializer.kind != "decl" or len(initializer.expressions) != 1
             or initializer.children
             or initializer.expressions[0].kind != "declaration"
-            or initializer.expressions[0].symbol_id != 154
+            or initializer.expressions[0].symbol_id != 156
             or len(initializer.expressions[0].children) != 1
             or not _literal_int(initializer.expressions[0].children[0], 0)
             or condition.kind != "binary" or condition.operator != "<"
             or len(condition.children) != 2
             or condition.children[0].kind != "id"
-            or condition.children[0].symbol_id != 154
+            or condition.children[0].symbol_id != 156
             or not _literal_int(condition.children[1], 9)
             or update.kind != "post" or update.operator != "++"
             or len(update.children) != 1
             or update.children[0].kind != "id"
-            or update.children[0].symbol_id != 154):
+            or update.children[0].symbol_id != 156):
         return None
 
     offset = _cellrefract_offset_table(
-        convolve, owner_signature_id=70, symbol_id=_EFFECTS_OFFSET_SYMBOL_ID,
-        steps_id=_EFFECTS_OFFSET_STEPS_ID, induction_id=154)
+        convolve, owner_signature_id=72, symbol_id=_EFFECTS_OFFSET_SYMBOL_ID,
+        steps_id=_EFFECTS_OFFSET_STEPS_ID, induction_id=156)
     if offset is None:
         return None
 
@@ -1511,7 +1514,7 @@ def _prove_effects(program: TypedProgram,
             return None
         table = _cellrefract_caller_table(
             program, owner, symbol_id, name, call_index, values,
-            convolve_signature_id=70)
+            convolve_signature_id=72)
         if table is None:
             return None
         caller_results.append(table)
@@ -1523,20 +1526,20 @@ def _prove_effects(program: TypedProgram,
         for value in _walk_statement(statement)
         if isinstance(value, TypedExpression) and value.kind == "index"
         and len(value.children) == 2 and value.children[0].kind == "id"
-        and value.children[0].symbol_id == 42
+        and value.children[0].symbol_id == 44
         and value.children[1].kind == "id"
-        and value.children[1].symbol_id == 154)
+        and value.children[1].symbol_id == 156)
     if len(parameter_reads) != 2:
         return None
     kernel_references = tuple(
         value for statement in convolve.body
         for value in _walk_statement(statement)
         if isinstance(value, TypedExpression) and value.kind == "id"
-        and value.symbol_id == 42)
+        and value.symbol_id == 44)
     if len(kernel_references) != 2:
         return None
     parameter = FixedArrayParameterProof(
-        owner_signature_id=70, parameter_ordinal=1, symbol_id=42,
+        owner_signature_id=72, parameter_ordinal=1, symbol_id=44,
         symbol_name="kernel", array_type="float[9]", element_type="float",
         extent=9, direction="in", native_abi="const Kernel9&",
         induction_read_spans=parameter_reads, reads_per_iteration=2,
@@ -1551,18 +1554,18 @@ def _prove_effects(program: TypedProgram,
     if (witness.kind != "return" or len(witness.expressions) != 1
             or witness.children
             or witness.expressions[0].kind != "id"
-            or witness.expressions[0].symbol_id != 53
+            or witness.expressions[0].symbol_id != 55
             or witness.expressions[0].symbol is None
             or witness.expressions[0].symbol.name != "color"):
         return None
-    if _cellrefract_reachable_names(program, main_signature_id=76) \
+    if _cellrefract_reachable_names(program, main_signature_id=78) \
             != _EFFECTS_REACHABLE:
         return None
 
     (array_parameters, array_declarations, array_expressions,
      array_identifiers, literal_stores, induction_reads, indexes,
      whole_arguments, array_calls) = _array_census(
-        program, profile.array_ids, 154, direct_calls)
+        program, profile.array_ids, 156, direct_calls)
     if ((len(array_parameters), len(array_declarations), len(array_expressions),
          len(array_identifiers), len(literal_stores), len(induction_reads),
          len(indexes), len(whole_arguments), len(array_calls))
@@ -1581,9 +1584,9 @@ def _prove_effects(program: TypedProgram,
         compatibility_sites=(),
         kernel_alias="Kernel9", offsets_alias="Offsets9",
         caller_tables=callers, parameter=parameter, offset_table=offset,
-        convolve_loop_span=loop.span, induction_symbol_id=154,
+        convolve_loop_span=loop.span, induction_symbol_id=156,
         loop_trip_count=9, lexical_product=9, entrypoint_charge=0,
-        main_signature_id=76, mode_one_span=witness.span,
+        main_signature_id=78, mode_one_span=witness.span,
         main_derivative_call_spans=(),
         array_parameter_count=len(array_parameters),
         array_declaration_count=len(array_declarations),
@@ -1615,6 +1618,9 @@ def prove_fixed_array_in_parameter(
     profile = PROFILES.get(program.key)
     if profile is None:
         return None
+    from . import dynamic_kernel9_profile
+    if dynamic_kernel9_profile.is_dynamic(program):
+        return dynamic_kernel9_profile.prove(program)
     if program.key == REFRACT_KEY:
         return _prove_refract(program, profile)
     if program.key == CELLREFRACT_KEY:

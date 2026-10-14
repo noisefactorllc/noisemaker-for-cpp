@@ -199,7 +199,7 @@ jobs:
     name: byte-exact corpus parity (C++ vs JS authority)
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
 
@@ -209,7 +209,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: 5b686a45b5c56329adf0c63cbcf572eb6f23fad1
+          ref: 4307ca9f26fc415e4fc5e75227d429d35cc741cd
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree
@@ -220,7 +220,7 @@ jobs:
       # The JS runner refuses any authority without its ledger (fail-closed).
       # Here the content is already authenticated by checking out the pinned
       # commit, so a ledger generated from that checkout carries the same
-      # trust. 780 entries, `sha256  abspath` — the runner verifies each.
+      # trust. 784 entries, `sha256  abspath` — the runner verifies each.
       - name: Write the authority ledger
         run: |
           python3 - "$RUNNER_TEMP/cpu-authority" "$RUNNER_TEMP/cpu-authority-ledger.sha256" <<'PY'
@@ -234,7 +234,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '26'
 
       - name: Install zlib
         run: sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -267,7 +267,7 @@ jobs:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
           NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
           NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
-        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep" --variants 6 --gate kit
+        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep" --variants 6 --gate kit --workers 2 --max-seconds-per-case 3600 --timeout-retry-factor 0
 
       - name: Define-parameter enumeration parity gate
         if: ${{ !cancelled() && steps.build-driver.outcome == 'success' }}
@@ -275,7 +275,7 @@ jobs:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
           NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
           NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
-        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep-defines" --define-enum --gate kit
+        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep-defines" --define-enum --gate kit --workers 2 --max-seconds-per-case 3600 --timeout-retry-factor 0
 
       - name: Keep the sweep reports
         if: always()

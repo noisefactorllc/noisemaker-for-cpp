@@ -1,18 +1,25 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
 
-import { canonicalKernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) {
+  throw new Error('usage: task-17-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
+}
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalKernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outputPath = path.join(here, 'task-17-oracles.json')
-const cpuRoot = '../noisemaker-for-cpu'
 const cppRoot = '.'
-const corpus = path.join(cppRoot, 'tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6')
+const corpus = path.join(cppRoot, 'tools/glslcpp/corpus', EXPECTED.upstreamRevision)
 const canonicalKernelsPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const inputDescription = 'top-down 11x9 Float32Array: R=((17*x+31*y+13)%101)/100; G=((7*x+19*y+23)%97)/96; B=((29*x+11*y+5)%89)/88; A=0.35+((3*x+5*y+1)%13)/20; every lane assignment crosses the Float32Array boundary'
 const dimensions = Object.freeze({ input: [11, 9], output: [9, 7], tileOffset: [2, 1], fullResolution: [13, 11] })
@@ -110,9 +117,11 @@ function build() {
   const alphaOne = Math.fround(1)
   const document = {
     schema: 'noisemaker-for-cpp.task17-fixed-nine-local-tables.canonical-oracles.v1',
-    corpus_revision: 'a024dc3a960cc44af454abc7aebce50456c194e6',
+    corpus_revision: EXPECTED.upstreamRevision,
     provenance: {
       node: process.version,
+      cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+      cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
       api: 'canonicalKernelFactories+bindCanonicalKernel+runPass+Surface',
       canonical_kernels_path: 'src/effects/generated/canonical-kernels.js',
       canonical_kernels_sha256: sha256(fs.readFileSync(canonicalKernelsPath)),
@@ -151,12 +160,15 @@ function build() {
 }
 
 const expected = build()
-if (process.argv.length === 2) {
+if (!process.argv.includes('--check') && !process.argv.includes('--write')) {
   process.stdout.write(expected)
-} else if (process.argv.length === 3 && process.argv[2] === '--check') {
+} else if (process.argv.includes('--write') && !process.argv.includes('--check')) {
+  fs.writeFileSync(outputPath, expected, 'utf8')
+  process.stdout.write(`wrote ${path.basename(outputPath)}\n`)
+} else if (process.argv.includes('--check') && !process.argv.includes('--write')) {
   const actual = fs.readFileSync(outputPath, 'utf8')
   if (actual !== expected) throw new Error(`${outputPath} is not the exact frozen canonical oracle output`)
   process.stdout.write(`ok ${path.basename(outputPath)}\n`)
 } else {
-  throw new Error('usage: node task-17-oracle-generator.mjs [--check]')
+  throw new Error('usage: task-17-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
 }

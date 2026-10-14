@@ -254,6 +254,9 @@ def authenticate_shapes_float_bits_ingress(
     can treat the result as a membership set unconditionally; supplying a
     profile for a non-carrier key is a hard failure.
     """
+    if program.key == 'classicNoisedeck/shapes:shapes' and tuple((d.name,d.kind,d.canonical_value) for d in program.preprocessor_defines) == (('LOOP_A_OFFSET', 'str', 'int'), ('LOOP_B_OFFSET', 'str', 'int')):
+        from .shapes_float_bits_ingress_runtime_profile import authenticate_shapes_float_bits_ingress as runtime_auth
+        return runtime_auth(program,source_hash,profile)
     if program.key not in SHAPES_FLOAT_BITS_INGRESS_KEYS:
         if profile is not None:
             raise _fail("program key is not an admitted Shapes float-bit "

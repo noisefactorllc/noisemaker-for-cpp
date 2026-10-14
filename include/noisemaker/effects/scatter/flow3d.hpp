@@ -10,16 +10,16 @@
 // This is the one adapter of the six that reads `pass.count`
 // (`pass?.count ?? capacity`) -- see registry.hpp's `ScatterPass`.
 //
-// Numeric contract: plain IEEE double throughout (flow3d-deposit.js never
-// calls `Math.fround`); `Math.min`/`Math.max` go through
+// Numeric contract: the atlas-y addition rounds to float32 before the
+// rasterizer snaps to 1/256 pixel. Other arithmetic uses IEEE double.
+// `Math.min`/`Math.max` go through
 // `glsl::component_min<double>`/`component_max<double>` (NOT `std::min`/
 // `std::max`, which do not reproduce JS's NaN-propagation or signed-zero
 // tie-break rules for every argument order); `Math.trunc` is `std::trunc`
 // (agrees with JS `Math.trunc` on every double: sign/exponent truncation
 // with no rounding ambiguity, same class of function as `Math.ceil`/
 // `Math.floor`, which noisemaker/glsl_runtime.hpp already documents as
-// needing no fdlibm shim). The only narrowing is the destination's own
-// float32 store on `+=`.
+// needing no fdlibm shim). The destination also narrows each `+=` to float32.
 
 #include <cstddef>
 #include <optional>

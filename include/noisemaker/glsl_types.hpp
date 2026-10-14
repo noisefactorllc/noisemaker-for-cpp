@@ -587,4 +587,28 @@ using BVec2=Vec<2,bool>; using BVec3=Vec<3,bool>; using BVec4=Vec<4,bool>;
 // template at T=double; no new class, no change to any existing alternative.
 using DVec2=Vec<2,double>; using DVec3=Vec<3,double>; using DVec4=Vec<4,double>;
 using Mat2=Mat<2>; using Mat3=Mat<3>; using Mat4=Mat<4>;
+
+// The two cubemap cubeBasis uniforms arrive as JavaScript Number arrays.
+// Keep their lanes as doubles until the completed matrix-vector product is
+// stored in the authority's Float32Array ray.
+class DMat3 {
+ public:
+  [[nodiscard]] constexpr DVec3& operator[](std::size_t column) noexcept { return columns_[column]; }
+  [[nodiscard]] constexpr const DVec3& operator[](std::size_t column) const noexcept { return columns_[column]; }
+ private:
+  std::array<DVec3, 3> columns_{};
+};
+[[nodiscard]] inline Vec3 operator*(const DMat3& matrix, const Vec3& vector) {
+  Vec3 result;
+  for (std::size_t row = 0; row < 3; ++row) {
+    double sum = matrix[0][row] * static_cast<double>(vector[0]);
+    for (std::size_t column = 1; column < 3; ++column)
+      sum += matrix[column][row] * static_cast<double>(vector[column]);
+    result[row] = noisemaker::f32(sum);
+  }
+  return result;
+}
+[[nodiscard]] inline Vec3 operator*(const DMat3& matrix, const FloatExpr<3>& vector) {
+  return matrix * Vec3(vector);
+}
 }  // namespace noisemaker::glsl

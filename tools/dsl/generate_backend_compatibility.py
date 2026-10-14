@@ -53,27 +53,27 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "src/effects/generated/backend_compatibility.json"
-UPSTREAM_REVISION = "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d"
-UPSTREAM_TREE = "b0729d2bf429e0e7307ff8f4fffe99422870c059"
-SOURCE_LOCK_SHA256 = "dfb565a24c33bd0e3dfaddc3f719d0f252b4c6f8df7059198a5f9e07b6a895d0"
+UPSTREAM_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
+UPSTREAM_TREE = "f5ea13282fd27ea01c94280ae60fcb59bcb5389f"
+SOURCE_LOCK_SHA256 = "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf"
 CPU_PACKAGE_SHA256 = "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21"
 CPU_LOCK_SHA256 = "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d"
-UPSTREAM_PACKAGE_SHA256 = "412b9210feb975e3d6607a10ab5b1e905edbe253b0307d4b045cec6eca577183"
-UPSTREAM_LOCK_SHA256 = "85313babc45c8ab92d70116a46bc4581fa93ea6c86f2797cbd1bc126be2addad"
+UPSTREAM_PACKAGE_SHA256 = "ac0bca6bde670ba48096bc28f41421f484aabe14c7f668ead590a76497c218dd"
+UPSTREAM_LOCK_SHA256 = "301b650e128c72d00b67f156fbc9929a81ddafea500825bbe275e9e0f78a3c48"
 CORPUS_REVISION = check_corpus.REVISION
 SCATTER_KEY = "filter/wormhole:deposit"
 # Particle-family deposit programs executed through registered C++ scatter
 # adapters (src/effects/scatter/*.cpp, behaviorally locked by
 # tests/test_scatter_*.cpp). wormhole keeps the singular historical `scatter`
-# contract; these single-pass programs register through `scatter_contracts`.
-# Multi-pass scatter programs (render/pointsRender:deposit,
-# render/pointsBillboardRender:deposit) stay refused until the corpus
-# manifest can represent their authority pass sets.
+# contract; these programs register through `scatter_contracts`, including
+# the two render programs with ordered multi-pass bindings.
 SCATTER_CONTRACT_KEYS = frozenset({
     "points/physarum:deposit",
     "points/dla:depositGrid",
     "points/lenia:deposit",
     "filter3d/flow3d:deposit",
+    "render/pointsRender:deposit",
+    "render/pointsBillboardRender:deposit",
 })
 SCATTER_KEYS = frozenset({SCATTER_KEY}) | SCATTER_CONTRACT_KEYS
 # Adapter metadata mirrored from the C++ registrations: the adapter symbol,
@@ -109,6 +109,31 @@ _SCATTER_CONTRACTS: dict[str, dict[str, Any]] = {
         "uniforms": ["density", "volumeSize"],
         "source_sha256": "3df54b20e8dd1716c63156758097d1935c04082caac806a60c54611fc15df823",
     },
+    "render/pointsRender:deposit": {
+        "adapter": "noisemaker::scatter::points_render::adapter", "draw_mode": "points",
+        "count": "input", "input_texture": "xyzTex",
+        "samplers": ["xyzTex", "rgbaTex"], "output_route": "global_points_trail",
+        "output_routes": ["global_points_trail"],
+        "uniforms": ["density", "viewMode", "rotateX", "rotateY", "rotateZ",
+                     "posX", "posY", "posZ", "viewScale", "fieldOfView"],
+        "source_sha256": "340def672386279e0407bb56630bd37b78e6bdacd348d942737dfc268de6b72f",
+        "pass_count": 3,
+        "pass_sha256": "5cdf6352144300d9d8b2d2904867d98f2bbb21b32e6b5b508ef105424032807e",
+    },
+    "render/pointsBillboardRender:deposit": {
+        "adapter": "noisemaker::scatter::points_billboard_render::adapter",
+        "draw_mode": "billboards", "count": "input", "input_texture": "xyzTex",
+        "samplers": ["xyzTex", "rgbaTex", "orderTex", "spriteTex", "spriteMeanTex"],
+        "output_route": "defocus", "output_routes": ["defocus", "global_billboard_trail"],
+        "uniforms": ["density", "viewMode", "rotateX", "rotateY", "rotateZ",
+                     "posX", "posY", "posZ", "viewScale", "fieldOfView",
+                     "shapeMode", "blendMode", "blurLayer", "depositOpacity", "seed",
+                     "sizeVariation", "rotationVar", "pointSize", "sizeDistance",
+                     "brightnessDistance", "aperture", "focalDistance"],
+        "source_sha256": "c6981a708d7d9771eacd8e945c4d18b9f811795a4203fb91618b105719221ff1",
+        "pass_count": 8,
+        "pass_sha256": "84cf4bc42a8f15d306181fb4fd6d22ef497aa9b851244d5eaefe46b216c0c13b",
+    },
 }
 for _key, _contract in _SCATTER_CONTRACTS.items():
     _contract["program_key"] = _key
@@ -119,7 +144,8 @@ for _key, _contract in _SCATTER_CONTRACTS.items():
     _contract["uniforms"] = [{"name": name, "cpp_type": "double", "source": "effect_parameter"}
                              for name in _contract["uniforms"]]
 RESERVED_RUNTIME = frozenset({
-    "resolution", "fullResolution", "renderScale", "tileOffset", "time",
+    "resolution", "fullResolution", "invFullResolution", "aspectInv",
+    "renderScale", "tileOffset", "time",
     "frame", "seed", "deltaTime", "audioWaveform", "audioSpectrum", "midiClockCount",
 })
 # These uniforms are supplied by the canonical CPU binding layer rather than
@@ -132,6 +158,8 @@ PASS_DERIVED_BINDINGS = {
     "centerLoY": "canonical_center_low_y_default",
     "data": "remap_uniform_data",
     "LOOP_OFFSET": "typed_compile_define",
+    "LOOP_A_OFFSET": "typed_compile_define",
+    "LOOP_B_OFFSET": "typed_compile_define",
     "motion": "canonical_motion_default",
     "NOISE_TYPE": "typed_compile_define",
     "size": "canonical_size_default",
@@ -152,6 +180,26 @@ PASS_DERIVED_BINDINGS = {
     "RIDGES": "typed_compile_define",
     "STYLE": "typed_compile_define",
     "WRAP": "typed_compile_define",
+    "PATTERN": "typed_compile_define",
+    "BEHAVIOR": "typed_compile_define",
+    "BLEND_MODE": "typed_compile_define",
+    "SHAPE_A": "typed_compile_define",
+    "SHAPE_B": "typed_compile_define",
+    "FILTERING": "typed_compile_define",
+    "INVERT": "typed_compile_define",
+    "VIEW_MODE": "typed_compile_define",
+    "COLOR_MODE": "typed_compile_define",
+    "DIMENSIONS": "typed_compile_define",
+    "METRIC": "typed_compile_define",
+    "REFRACT_MODE": "typed_compile_define",
+    "DEPTH_SOURCE": "typed_compile_define",
+    "EXTRUDE_TYPE": "typed_compile_define",
+    "LP_BORDER": "typed_compile_define",
+    "LP_LIGHT": "typed_compile_define",
+    "EFFECT": "typed_compile_define",
+    "FLIP": "typed_compile_define",
+    "KERNEL": "typed_compile_define",
+    "DIRECTION": "typed_compile_define",
     "resetState": "canonical_reset_state_default",
     "useCustom": "canonical_use_custom_default",
 }
@@ -162,6 +210,12 @@ CPP_TYPES = {
     "ivec4": "glsl::IVec4", "uvec2": "glsl::UVec2", "uvec3": "glsl::UVec3",
     "uvec4": "glsl::UVec4", "mat2": "glsl::Mat2", "mat3": "glsl::Mat3",
 }
+DOUBLE_CUBEMAP_BASIS_SOURCES = {
+    "render/renderCubemap3d:renderCubemap3d":
+        "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
+    "render/renderCubemapSurface:renderCubemapSurface":
+        "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+}
 # Mirrors tools/glslcpp/emit_typed_cpp.py's
 # `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS` exactly -- the authority binds
 # classicNoisedeck's paletteAmp/paletteFreq/paletteOffset/palettePhase as raw
@@ -171,7 +225,7 @@ CPP_TYPES = {
 # which is measurably not byte-exact against the authority. This was once
 # the only carrier list `_cpp_type()` applied; `is_double_vector_uniform()`
 # below generalizes the same rule to every vec3/vec4 effect-parameter
-# uniform in the corpus (this five-program list is kept only because it is
+# uniform in the corpus (this explicit program list is kept only because it is
 # already proven, not because the general rule wouldn't also reach it: it
 # would, identically). Two independent generators (this one and
 # emit_typed_cpp.py) each compute a uniform's cpp_type; they must agree, so
@@ -183,29 +237,13 @@ CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS = frozenset({
     "classicNoisedeck/cellNoise:cellNoise",
     "classicNoisedeck/colorLab:colorLab",
     "classicNoisedeck/fractal:fractal",
+    "classicNoisedeck/noise:noise",
     "classicNoisedeck/shapeMixer:shapeMixer",
     "classicNoisedeck/shapes:shapes",
 })
 CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
     (program_key, uniform_name)
     for program_key in CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
-    for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
-)
-# classicNoisedeck/noise:noise also declares the same four palette-typed
-# uniforms as the carriers above (routed through the identical catalog
-# "palette" parameter mechanism, so `source == "effect_parameter"` too),
-# but its generated typed route bakes `colorMode` to a compile-time
-# constant that never reaches `pal()` -- dead code in this port, so there
-# is no live path to prove a widened ABI against, and
-# src/graph/executor.cpp's `apply_classic_noisedeck_palette_override`
-# deliberately keeps binding it `glsl::Vec3`. `is_double_vector_uniform`'s
-# general rule below would otherwise also widen it (it IS an ordinary
-# effect-parameter vec3 uniform); this is the one deliberate carve-out,
-# mirrored exactly in tools/glslcpp/emit_typed_cpp.py's
-# `_CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION`.
-CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION = frozenset(
-    (program_key, uniform_name)
-    for program_key in ("classicNoisedeck/noise:noise",)
     for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
 )
 # The only vec2/vec3/vec4 uniform NAMES, anywhere in the pinned corpus,
@@ -228,7 +266,8 @@ CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION = frozenset(
 # effect-parameter-sourced must fail closed via `source`, not silently
 # widen.
 DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({
-    "size", "motion", "resolution", "fullResolution", "tileOffset",
+    "size", "motion", "resolution", "fullResolution", "invFullResolution",
+    "tileOffset",
 })
 # `synth/solid:solid`'s `color` is an ordinary effect-parameter vec3
 # uniform, but this port's frozen, hand-written
@@ -513,6 +552,18 @@ _LEGACY_FACTORY_FLOAT_UNIFORMS = frozenset({
 
 def _cpp_type(display: str, name: str | None = None, source: str | None = None,
              program_key: str | None = None) -> str:
+    if (display == "mat3" and name == "cubeBasis"
+            and source == "effect_parameter"
+            and program_key in DOUBLE_CUBEMAP_BASIS_SOURCES):
+        return "glsl::DMat3"
+    # This exact current-source route declares `uniform int seed`, but its
+    # compiled CPU factory reads the full render seed as a JS Number in
+    # `float(seed)`. The typed emitter authenticates the same source and
+    # carries it as double until the first Float32 vector boundary.
+    if (program_key in {"synth3d/noise3d:precompute",
+                        "synth3d/cell3d:precompute"} and name == "seed"
+            and source == "effect_parameter" and display == "int"):
+        return "double"
     if (display == "float[128]" and source == "reserved_runtime_state"
             and (program_key, name) in {("synth/scope:scope", "audioWaveform"),
                                       ("synth/spectrum:spectrum", "audioSpectrum")}):
@@ -523,8 +574,7 @@ def _cpp_type(display: str, name: str | None = None, source: str | None = None,
         return "double"
     if (program_key, name) in CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS:
         return "glsl::DVec3"
-    if (program_key, name) not in CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION \
-            and is_double_vector_uniform(display, name, source, program_key):
+    if is_double_vector_uniform(display, name, source, program_key):
         return {"vec2": "glsl::DVec2", "vec3": "glsl::DVec3", "vec4": "glsl::DVec4"}[display]
     if display in CPP_TYPES:
         return CPP_TYPES[display]
@@ -596,7 +646,7 @@ def _authority_passes(effect: dict[str, Any], key: str) -> list[dict[str, Any]]:
 
     A fragment program may be bound by several passes (each a distinct
     runtime binding of the same compiled program; the corpus manifest records
-    the full binding set). Scatter adapters stay strictly single-pass.
+    the full binding set). Render scatter adapters also have several passes.
     """
     _, program = key.split(":", 1)
     matches = [item for item in effect.get("passes", []) if item.get("program") == program]
@@ -606,7 +656,7 @@ def _authority_passes(effect: dict[str, Any], key: str) -> list[dict[str, Any]]:
 
 
 def _authority_pass(current_pass: dict[str, Any]) -> dict[str, Any]:
-    return {
+    result = {
         "blend": current_pass.get("blend", False),
         "inputs": current_pass.get("inputs", {}),
         "name": current_pass.get("name"),
@@ -614,19 +664,24 @@ def _authority_pass(current_pass: dict[str, Any]) -> dict[str, Any]:
         "repeat": current_pass.get("repeat"),
         "uniforms": current_pass.get("uniforms", {}),
     }
+    if current_pass.get("defines"):
+        result["defines"] = current_pass["defines"]
+    if "viewport" in current_pass:
+        result["viewport"] = current_pass["viewport"]
+    return result
 
 
 def _extent(effect: dict[str, Any], current_pass: dict[str, Any], route: str) -> dict[str, Any]:
-    if route in effect.get("textures", {}):
-        texture = effect["textures"][route]
-        if isinstance(texture, dict):
-            return {"width": texture.get("width", "screen"), "height": texture.get("height", "screen"),
-                    "format": texture.get("format", "rgba16f")}
+    texture = effect.get("textures", {}).get(route)
+    if not isinstance(texture, dict):
+        texture = {}
     viewport = current_pass.get("viewport")
     if isinstance(viewport, dict):
-        return {"width": viewport.get("width", "screen"), "height": viewport.get("height", "screen"),
-                "format": "rgba16f"}
-    return {"width": "screen", "height": "screen", "format": "rgba16f"}
+        return {"width": viewport.get("width", texture.get("width", "screen")),
+                "height": viewport.get("height", texture.get("height", "screen")),
+                "format": texture.get("format", "rgba16f")}
+    return {"width": texture.get("width", "screen"), "height": texture.get("height", "screen"),
+            "format": texture.get("format", "rgba16f")}
 
 
 def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_record: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
@@ -694,6 +749,10 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
         elif name in uniform_map:
             source = "pass_derived"
             source_name = mapped
+        elif (name == "VIEW_MODE" and
+              typed_record.get("program_key") == "render/pointsBillboardRender:depthKeys"):
+            source = "pass_derived"
+            source_name = "typed_pass_define"
         elif name in PASS_DERIVED_BINDINGS:
             source = "pass_derived"
             source_name = PASS_DERIVED_BINDINGS[name]
@@ -701,6 +760,17 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
             source = None
             source_name = mapped
         program_key = typed_record.get("program_key")
+        if (program_key == "synth3d/noise3d:precompute" and name == "seed"
+                and typed_record.get("source_sha256") !=
+                "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727"):
+            raise CompatibilityError(f"{program_key}: Number seed carrier source mismatch")
+        if (program_key == "synth3d/cell3d:precompute" and name == "seed"
+                and typed_record.get("source_sha256") !=
+                "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755"):
+            raise CompatibilityError(f"{program_key}: Number seed carrier source mismatch")
+        if (program_key in DOUBLE_CUBEMAP_BASIS_SOURCES and name == "cubeBasis"
+                and typed_record.get("source_sha256") != DOUBLE_CUBEMAP_BASIS_SOURCES[program_key]):
+            raise CompatibilityError(f"{program_key}: double matrix carrier source mismatch")
         cpp_type = _cpp_type(typ, name, source, program_key)
         item = {"name": name, "type": typ, "cpp_type": cpp_type, "source": source,
                 "source_name": source_name}
@@ -794,7 +864,11 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
     # src/effects/registry.cpp records for the canonical row -- while every
     # binding (including its own inputs/uniforms/outputs routes) stays
     # enumerated in the document's reference_passes rows for this program.
-    if any(item.get("defines") for item in authority_passes):
+    if key == "render/pointsBillboardRender:depthKeys":
+        from tools.glslcpp.corpus_ratchet import depth_keys_pass_defines
+        depth_keys_pass_defines(effect)
+        defines = {"VIEW_MODE": 1}
+    elif any(item.get("defines") for item in authority_passes):
         raise CompatibilityError(f"{key}: authority pass declares pass-level defines")
     current_pass = authority_passes[0]
     old_text = old.decode("utf-8")
@@ -899,9 +973,7 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
         "typed_abi_sha256": _sha(_encoded(typed_abi)),
         "capabilities": list(typed_record.get("capabilities", [])),
         "status": status, "reasons": reasons,
-        "authority_pass": {"name": current_pass.get("name"), "inputs": current_pass.get("inputs", {}),
-                            "outputs": current_pass.get("outputs", {}), "uniforms": current_pass.get("uniforms", {}),
-                            "blend": current_pass.get("blend", False), "repeat": current_pass.get("repeat")},
+        "authority_pass": _authority_pass(current_pass),
     }
     if len(authority_passes) > 1:
         # One compiled program renders from every pass that binds it, and each
@@ -959,7 +1031,9 @@ def _shader_path(entry: dict[str, Any]) -> str:
 def _scatter_source_entry(entry: dict[str, Any], effect: dict[str, Any], old: bytes, new: bytes,
                           contract: dict[str, Any] | None = None) -> dict[str, Any]:
     classification = "raw_exact" if old == new else "incompatible"
-    current_pass = _pass_index(effect, entry["program_key"])
+    current_pass = (_authority_passes(effect, entry["program_key"])[0]
+                    if contract and "pass_sha256" in contract
+                    else _pass_index(effect, entry["program_key"]))
     logical_outputs = list((current_pass.get("outputs") or {}).values())
     route = contract["output_route"] if contract else "wormhole_accum"
     draw_mode = contract["draw_mode"] if contract else "points"
@@ -991,27 +1065,65 @@ def _scatter_source_entry(entry: dict[str, Any], effect: dict[str, Any], old: by
     }
 
 
+def _render_scatter_passes(effect: dict[str, Any], key: str) -> list[tuple[int, dict[str, Any]]]:
+    program = key.split(":", 1)[1]
+    return [(index, {name: value for name, value in item.items() if name != "key"})
+            for index, item in enumerate(effect.get("passes", []))
+            if item.get("program") == program]
+
+
+def _render_scatter_bindings(effect: dict[str, Any], key: str) -> list[dict[str, Any]]:
+    return [{"pass_index": index, "pass_name": item["name"],
+             "draw_mode": item.get("drawMode"), "count": item.get("count"),
+             "inputs": item.get("inputs"), "outputs": item.get("outputs"),
+             "uniforms": item.get("uniforms"), "blend": item.get("blend"),
+             "defines": item.get("defines")}
+            for index, item in _render_scatter_passes(effect, key)]
+
+
 def authenticate_scatter_contract(key: str, source_bytes: bytes, effect: dict[str, Any]) -> None:
     """Authenticate one registered particle-family scatter contract.
 
-    Fails closed unless the authority effect projects exactly one pass for the
-    program, that pass is the registered scatter draw mode routing fragColor
-    to the contract's destination texture, the texture is declared, and the
-    pinned corpus source round-trips the normalizer and parser unchanged.
+    Fails closed unless the authority pass set matches the registered source
+    and ordered pass fingerprint, each pass has the registered scatter ABI,
+    and the source round-trips the normalizer and parser unchanged.
     """
     contract = _SCATTER_CONTRACTS.get(key)
     if contract is None:
         raise ValueError(f"{key}: no registered scatter contract")
-    effect_id, program = key.split(":", 1)
+    _, program = key.split(":", 1)
     passes = [item for item in effect.get("passes", []) if item.get("program") == program]
-    if len(passes) != 1:
+    if "pass_sha256" in contract:
+        selected = _render_scatter_passes(effect, key)
+        payload = json.dumps([item for _, item in selected], sort_keys=True,
+                             separators=(",", ":")).encode()
+        if (len(selected) != contract["pass_count"]
+                or hashlib.sha256(payload).hexdigest() != contract["pass_sha256"]):
+            raise ValueError(f"{key}: ordered authority scatter pass set mismatch")
+        routes = []
+        for _, item in selected:
+            if (item.get("drawMode") != contract["draw_mode"]
+                    or item.get("count") != contract["count"]
+                    or set((item.get("inputs") or {})) != set(contract["samplers"])
+                    or any(not isinstance(route, str) or not route
+                           for route in (item.get("inputs") or {}).values())
+                    or set((item.get("outputs") or {})) != {"fragColor"}):
+                raise ValueError(f"{key}: authority scatter binding mismatch")
+            route = item["outputs"]["fragColor"]
+            texture = (effect.get("textures") or {}).get(route)
+            if not isinstance(texture, dict) or not isinstance(texture.get("format"), str):
+                raise ValueError(f"{key}: authority scatter output texture mismatch")
+            routes.append(route)
+        if sorted(set(routes)) != sorted(contract["output_routes"]):
+            raise ValueError(f"{key}: authority scatter output routes mismatch")
+    elif len(passes) != 1:
         raise ValueError(f"{key}: expected exactly one authority pass, found {len(passes)}")
     current_pass = passes[0]
     if current_pass.get("drawMode") != contract["draw_mode"]:
         raise ValueError(f"{key}: authority drawMode {current_pass.get('drawMode')!r} "
                          f"does not match the registered {contract['draw_mode']!r} contract")
     outputs = current_pass.get("outputs") or {}
-    if outputs != {"fragColor": contract["output_route"]}:
+    if "pass_sha256" not in contract and outputs != {"fragColor": contract["output_route"]}:
         raise ValueError(f"{key}: authority outputs {json.dumps(outputs, sort_keys=True)} "
                          f"do not route fragColor to {contract['output_route']}")
     texture = (effect.get("textures") or {}).get(contract["output_route"])
@@ -1047,6 +1159,9 @@ def _scatter_contract_document(contract: dict[str, Any], row: dict[str, Any],
         "source_classification": row["source_classification"],
         "output_abi": row["output_abi"], "dimensionality": contract["dimensionality"],
         "authority_pass": _authority_pass(current_pass),
+        **({"pass_sha256": contract["pass_sha256"],
+            "pass_bindings": _render_scatter_bindings(effect, contract["program_key"])}
+           if "pass_sha256" in contract else {}),
         "reasons": [],
     }
 
@@ -1515,6 +1630,18 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
                    or item.get("adapter") != _SCATTER_CONTRACTS.get(item.get("program_key"), {}).get("adapter")
                    for item in contracts):
         raise CompatibilityError("particle-family scatter contract registration missing or forged")
+    metadata = check_corpus._load_json(check_corpus._corpus_root(repository) / "metadata.json", "metadata")
+    for item in contracts:
+        key = item["program_key"]
+        registered = _SCATTER_CONTRACTS[key]
+        if "pass_sha256" not in registered:
+            continue
+        effect = metadata["effects"].get(key.split(":", 1)[0])
+        if not isinstance(effect, dict):
+            raise CompatibilityError(f"{key}: scatter effect metadata missing")
+        if item.get("pass_sha256") != registered["pass_sha256"] \
+                or item.get("pass_bindings") != _render_scatter_bindings(effect, key):
+            raise CompatibilityError(f"{key}: ordered scatter pass bindings differ from authority")
     if not references or any(not isinstance(item, dict) for item in references):
         raise CompatibilityError("reference pass status closure drift")
     allowed_statuses = {"compatible", "incompatible", "missing", "scatter"}
@@ -1533,7 +1660,10 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         if not isinstance(item.get("reasons"), list):
             raise CompatibilityError("reference pass reasons malformed")
         authority_pass = item.get("authority_pass")
-        if not isinstance(authority_pass, dict) or set(authority_pass) != {"blend", "inputs", "name", "outputs", "repeat", "uniforms"}:
+        required_authority = {"blend", "inputs", "name", "outputs", "repeat", "uniforms"}
+        if (not isinstance(authority_pass, dict)
+                or not required_authority.issubset(authority_pass)
+                or not set(authority_pass).issubset(required_authority | {"defines", "viewport"})):
             raise CompatibilityError("reference authority pass metadata malformed")
         if not isinstance(authority_pass["name"], str) or not isinstance(authority_pass["inputs"], dict) or not isinstance(authority_pass["outputs"], dict) or not isinstance(authority_pass["uniforms"], dict):
             raise CompatibilityError("reference authority pass shape malformed")
@@ -1541,6 +1671,16 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
             raise CompatibilityError("reference authority blend malformed")
         if authority_pass["repeat"] is not None and ((isinstance(authority_pass["repeat"], str) and not authority_pass["repeat"]) or (not isinstance(authority_pass["repeat"], (int, str)) or isinstance(authority_pass["repeat"], bool) or (isinstance(authority_pass["repeat"], int) and authority_pass["repeat"] < 0))):
             raise CompatibilityError("reference authority repeat malformed")
+        if "defines" in authority_pass and (not isinstance(authority_pass["defines"], dict)
+                or not authority_pass["defines"]
+                or any(not isinstance(name, str) or not name or isinstance(value, bool)
+                       or not isinstance(value, int)
+                       for name, value in authority_pass["defines"].items())):
+            raise CompatibilityError("reference authority defines malformed")
+        if "viewport" in authority_pass and (not isinstance(authority_pass["viewport"], dict)
+                or not authority_pass["viewport"]
+                or not set(authority_pass["viewport"]).issubset({"width", "height"})):
+            raise CompatibilityError("reference authority viewport malformed")
         for reason in item["reasons"]:
             if not isinstance(reason, dict) or not isinstance(reason.get("code"), str) \
                     or not isinstance(reason.get("detail"), str):

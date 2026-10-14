@@ -31,7 +31,7 @@ from tools.glslcpp.frontend.typed_ir import (  # noqa: E402
 )
 
 
-REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 KEY = "filter/scanlineError:scanlineError"
 SOURCE = (ROOT / "tools/glslcpp/corpus" / REVISION
           / "sources/filter/scanlineError/scanlineError.glsl")

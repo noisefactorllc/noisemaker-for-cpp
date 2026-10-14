@@ -10,6 +10,7 @@ import pathlib
 import subprocess
 import tempfile
 import unittest
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -58,12 +59,12 @@ LANE_FILES = (
     "tests/test_dsl_corpus_parity.py",
 )
 
-VALID_RECORD = """{
+VALID_RECORD = ("""{
   schema: 'noisemaker-cpp.benchmark-result.v2',
   program: {id:'synth/solid+filter/blur#default',sourceSha256:'a'.repeat(64),planSha256:'b'.repeat(64),width:17,height:11,options:{time:0.25,frame:0,seed:17,oneShot:'ready',renderScale:1}},
   provenance: {
     cpuBehavioralLock:'c'.repeat(64),cpuSourceLockSha256:'d'.repeat(64),upstreamSourceDigest:'e'.repeat(64),
-    upstreamRevision:'5976b7a6b77f69c47c41f4ee296a54d5318e1f9d',upstreamTree:'b0729d2bf429e0e7307ff8f4fffe99422870c059',
+    upstreamRevision:'""" + CORPUS_REVISION + """',upstreamTree:'f5ea13282fd27ea01c94280ae60fcb59bcb5389f',
     catalogPayloadSha256:'1'.repeat(64),compatibilitySha256:'2'.repeat(64),
     expectation:{schema:'noisemaker-cpp.dsl-cpu-expectation.v1',id:'synth/solid+filter/blur#default',rgba8Sha256:'3'.repeat(64),runnerSha256:'4'.repeat(64),cpuBehavioralLock:'c'.repeat(64)}
   },
@@ -85,7 +86,7 @@ VALID_RECORD = """{
     cpuPlan:{effectIds:['synth/solid','filter/blur'],passKeys:['synth/solid:solid','filter/blur:blurH','filter/blur:blurV'],finalSurface:'o0',cpuPlanSha256:'b'.repeat(64)},
     actual:{effectIds:['synth/solid','filter/blur'],passKeys:['synth/solid:solid','filter/blur:blurH','filter/blur:blurV'],finalSurface:'o0',infrastructurePasses:['node_2_write_blit']}
   }}
-}"""
+}""")
 
 
 # The retained 17x11 Solid->Blur case, the lane's oldest end-to-end evidence.
@@ -379,7 +380,7 @@ let document = null;
 try {{ assertUpstreamPinAgreement('0'.repeat(40)); }}
 catch (error) {{ document = error instanceof BenchmarkError ? error.toDocument() : {{raw: String(error)}}; }}
 console.log(JSON.stringify({{
-  agrees: assertUpstreamPinAgreement('5976b7a6b77f69c47c41f4ee296a54d5318e1f9d'),
+  agrees: assertUpstreamPinAgreement('{CORPUS_REVISION}'),
   document,
 }}));
 """
@@ -389,7 +390,7 @@ console.log(JSON.stringify({{
         self.assertTrue(values["agrees"])
         self.assertEqual(values["document"]["schema"], "noisemaker-cpp.benchmark-error.v1")
         self.assertEqual(values["document"]["code"], "ERR_PIN_DRIFT")
-        self.assertEqual(values["document"]["detail"]["benchmark"], "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d")
+        self.assertEqual(values["document"]["detail"]["benchmark"], CORPUS_REVISION)
 
     def test_driver_describes_exact_pinned_platform_contract(self) -> None:
         result = subprocess.run(
@@ -402,8 +403,8 @@ console.log(JSON.stringify({{
         self.assertEqual(result.returncode, 0, result.stderr)
         description = json.loads(result.stdout)
         self.assertEqual(description["schema"], "noisemaker-cpp.benchmark-result.v2")
-        self.assertEqual(description["upstreamRevision"], "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d")
-        self.assertEqual(description["upstreamTree"], "b0729d2bf429e0e7307ff8f4fffe99422870c059")
+        self.assertEqual(description["upstreamRevision"], CORPUS_REVISION)
+        self.assertEqual(description["upstreamTree"], "f5ea13282fd27ea01c94280ae60fcb59bcb5389f")
         self.assertEqual(description["playwrightVersion"], "1.62.1")
         self.assertEqual(description["orientation"], {
             "contract": "top_down",

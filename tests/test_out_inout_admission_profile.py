@@ -400,13 +400,14 @@ class OutInoutPublicSurfaceTests(unittest.TestCase):
     def test_module_exports_the_designed_public_surface(self):
         module = _module()
         self.assertEqual((LIGHTLEAK_KEY, "synth/julia:julia",
-                          MANDELBROT_KEY, KEY), module.KEYS)
+                          MANDELBROT_KEY, KEY, module.FLYTHROUGH_KEY), module.KEYS)
         self.assertEqual({LIGHTLEAK_KEY: LIGHTLEAK_PROFILE,
                           "synth/julia:julia": "out-inout-admission-julia-v1",
                           KEY: PROFILE,
-                          MANDELBROT_KEY: MANDELBROT_PROFILE}, module.PROFILES)
+                          MANDELBROT_KEY: MANDELBROT_PROFILE,
+                          module.FLYTHROUGH_KEY: module.FLYTHROUGH_PROFILE}, module.PROFILES)
         self.assertEqual(frozenset({LIGHTLEAK_KEY, "synth/julia:julia",
-                                    KEY, MANDELBROT_KEY}),
+                                    KEY, MANDELBROT_KEY, module.FLYTHROUGH_KEY}),
                          module.OUT_INOUT_ADMISSION_KEYS)
         self.assertEqual((), module.PREPARED_KEYS)
         self.assertEqual(KEY, module.NEWTON_KEY)
@@ -469,7 +470,7 @@ class OutInoutPublicSurfaceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not an admitted"):
             module.allowed_row_fields("synth/shape:shape")
 
-    def test_live_row_carries_only_lightleaks_landed_field(self):
+    def test_live_rows_carry_exact_out_inout_profiles(self):
         module = _module()
         spec = json.loads(
             (ROOT / "tools/glslcpp/typed_slice.json").read_text(
@@ -477,11 +478,13 @@ class OutInoutPublicSurfaceTests(unittest.TestCase):
         out_carriers = [row for row in spec["programs"]
                         if "out_inout_admission_profile" in row]
         self.assertEqual([LIGHTLEAK_KEY, "synth/julia:julia",
-                          MANDELBROT_KEY, KEY],
+                          MANDELBROT_KEY, KEY,
+                          module.FLYTHROUGH_KEY],
                          [row["program_key"] for row in out_carriers])
         self.assertEqual([LIGHTLEAK_PROFILE,
                           "out-inout-admission-julia-v1",
-                          MANDELBROT_PROFILE, PROFILE],
+                          MANDELBROT_PROFILE, PROFILE,
+                          module.FLYTHROUGH_PROFILE],
                          [row["out_inout_admission_profile"]
                           for row in out_carriers])
 
@@ -2401,7 +2404,7 @@ class MandelbrotOutInoutTests(unittest.TestCase):
         self.assertIn("mandelbrot_df64 out float smoothIter", message)
         self.assertIn("are the sole admitted parameters", message)
 
-    def test_live_row_carries_only_lightleaks_landed_field(self):
+    def test_live_rows_carry_exact_out_inout_profiles(self):
         module = _module()
         spec = json.loads(
             (ROOT / "tools/glslcpp/typed_slice.json").read_text(
@@ -2411,11 +2414,13 @@ class MandelbrotOutInoutTests(unittest.TestCase):
         log_carriers = [row["program_key"] for row in spec["programs"]
                         if "log_admission_profile" in row]
         self.assertEqual([LIGHTLEAK_KEY, "synth/julia:julia",
-                          MANDELBROT_KEY, KEY],
+                          MANDELBROT_KEY, KEY,
+                          module.FLYTHROUGH_KEY],
                          [row["program_key"] for row in out_carriers])
         self.assertEqual([LIGHTLEAK_PROFILE,
                           "out-inout-admission-julia-v1",
-                          MANDELBROT_PROFILE, PROFILE],
+                          MANDELBROT_PROFILE, PROFILE,
+                          module.FLYTHROUGH_PROFILE],
                          [row["out_inout_admission_profile"]
                           for row in out_carriers])
         self.assertEqual([MANDELBROT_KEY], log_carriers)

@@ -32,6 +32,18 @@ def _metadata_defaults(metadata: dict, program_key: str) -> dict[str, int | floa
     return result
 
 
+def _program_defaults(metadata: dict, program_key: str) -> dict[str, int | float | bool]:
+    defaults = _metadata_defaults(metadata, program_key)
+    if program_key == "render/pointsBillboardRender:depthKeys":
+        if __package__ in (None, ""):
+            from tools.glslcpp.corpus_ratchet import depth_keys_pass_defines
+        else:
+            from .corpus_ratchet import depth_keys_pass_defines
+        defaults.update(depth_keys_pass_defines(
+            metadata["effects"]["render/pointsBillboardRender"]))
+    return defaults
+
+
 def _define_variants(metadata: dict) -> tuple[tuple[str, str, str, int | float | bool], ...]:
     """Enumerate one static metadata define override at a time, deterministically."""
     variants: list[tuple[str, str, str, int | float | bool]] = []
@@ -117,7 +129,7 @@ def semantic_report(repository: pathlib.Path | None = None) -> dict:
         key = entry["program_key"]
         try:
             parsed = parse_program((root / entry["source"]).read_text(encoding="utf-8"), key,
-                                   _metadata_defaults(metadata, key))
+                                   _program_defaults(metadata, key))
             typed = analyze_program(parsed, key)
             _validate_typed_ir(typed)
         except (FrontendError, SemanticError, OSError, UnicodeDecodeError) as error:
@@ -151,7 +163,7 @@ def semantic_report(repository: pathlib.Path | None = None) -> dict:
     for effect_key, parameter_name, define, value in variants:
         for entry in programs_by_effect.get(effect_key, ()):
             key = entry["program_key"]
-            defines = _metadata_defaults(metadata, key)
+            defines = _program_defaults(metadata, key)
             defines[define] = value
             try:
                 typed_variant = analyze_program(parse_program((root / entry["source"]).read_text(encoding="utf-8"), key, defines), key)

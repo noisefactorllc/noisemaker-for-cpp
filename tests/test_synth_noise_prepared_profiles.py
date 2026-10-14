@@ -268,6 +268,8 @@ class NoiseRuntimeLoopBoundRecordTests(unittest.TestCase):
                                     # float-uniform-ceil window-radius record.
                                     module.LENIA_KEY,
                                     module.ROLL_KEY,
+                                    module.NOISE3D_KEY,
+                                    module.LANDSCAPE_KEY,
                                     *module.BLUR_KEYS, *module.CF_KEYS}),
                          module.RUNTIME_LOOP_BOUND_KEYS)
         self.assertEqual("synth/roll:roll", module.ROLL_KEY)

@@ -19,6 +19,7 @@ import dataclasses
 import hashlib
 import pathlib
 import unittest
+from unittest import mock
 
 from tools.glslcpp import check_corpus, generate_typed_slice
 from tools.glslcpp import emit_typed_cpp
@@ -26,6 +27,7 @@ from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.loop_proof import (
     SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
 from tools.glslcpp.frontend.semantic import analyze_program
+from tools.glslcpp.frontend.typed_ir import PreprocessorDefine
 
 MODULE = "tools.glslcpp.frontend.fractal3d_log_profile"
 
@@ -34,10 +36,10 @@ CORPUS = ROOT / f"tools/glslcpp/corpus/{check_corpus.REVISION}"
 KEY = "synth3d/fractal3d:precompute"
 PROFILE = "fractal3d-log-admission-v1"
 SOURCE_PATH = "synth3d/fractal3d/precompute.glsl"
-RAW_SHA256 = "8ab3dfe63e16d4406deee719c1f822d405c712bae21bd1348ae5b75b79a14d41"
+RAW_SHA256 = "4bc39fb7920cf0829cc6a6fc4670cdac9f5ea68c5438f569050a4732c1e6de19"
 NORMALIZED_SHA256 = (
-    "bfc4b9e886fa4dc5d642abfd6457c643a47287f2095ccac0f99759ad5ff1d5a6")
-LOG_SPANS = ("93:24-93:30", "55:24-55:30")
+    "3dd80cd8f5a01004ace3df4e3dea95b0861b8e1f191b66958ceabe36f3a8be93")
+LOG_SPANS = ("91:24-91:30", "53:24-53:30")
 LOG_OWNERS = ("juliaBulb", "mandelbulb")
 COUNTED_LOOP_SUMMARY = (4, 0, 1, 20, 80, True)
 LEDGER = 6
@@ -86,7 +88,7 @@ class ModulePresenceTests(unittest.TestCase):
         module = _module()
         self.assertEqual(KEY, module.KEY)
         self.assertEqual(PROFILE, module.PROFILE)
-        self.assertEqual(frozenset({KEY}), module.FRACTAL3D_LOG_KEYS)
+        self.assertEqual(frozenset({KEY, module.FLYTHROUGH_KEY}), module.FRACTAL3D_LOG_KEYS)
 
 
 class FrozenFactTests(unittest.TestCase):
@@ -151,8 +153,8 @@ class AdmissionGreenTests(unittest.TestCase):
                 _foreign(), _hash(FOREIGN_SOURCE), PROFILE)
         self.assertIn(
             f"{PROFILE}: program key is not an admitted fractal3d log "
-            f"admission carrier; {KEY} 93:24 and 55:24 are the sole admitted "
-            "log sites",
+            f"admission carrier; {KEY} has sites 91:24 and 53:24; "
+            f"{module.FLYTHROUGH_KEY} has site 211:25",
             str(raised.exception))
 
     def test_wrong_profile_string_is_refused(self):
@@ -232,11 +234,100 @@ class AuthorityIntegrationTests(unittest.TestCase):
                     SOURCE_GLOBAL_LITERAL_INT_CAPABILITY))
 
 
+class VectorValueCopyTests(unittest.TestCase):
+    def test_four_source_bound_declarations_copy_values(self):
+        module = _module()
+        program = _analyzed()
+        copies = module.authenticate_fractal3d_value_copies(
+            program, RAW_SHA256, PROFILE)
+        pow_nodes = module.authenticate_fractal3d_pow_nan_sites(
+            program, RAW_SHA256, PROFILE)
+        self.assertEqual(4, len(copies))
+        self.assertEqual(4, len(pow_nodes))
+        self.assertEqual((45, 57, 91, 103),
+                         tuple(item.symbol_id for item in copies))
+        emitted = emit_typed_cpp.render_typed_cpp(
+            program, KEY, RAW_SHA256, "typed_test", "bind_test",
+            source_global_literal_int_profile=(
+                SOURCE_GLOBAL_LITERAL_INT_CAPABILITY),
+            fractal3d_log_profile=PROFILE)
+        self.assertEqual(4, emitted.count(
+            "[[maybe_unused]] glsl::Vec3 z = pos;"))
+        self.assertNotIn("[[maybe_unused]] glsl::Vec3& z = pos;", emitted)
+        self.assertEqual(2, emitted.count(
+            "trap = std::isnan(trap) ? trap : (std::isnan(r) ? r :"))
+        self.assertEqual(2, emitted.count(
+            "trap = std::isnan(trap) ? trap : (std::isnan(observed_r)"))
+        self.assertEqual(1, emitted.count(
+            "std::isnan(trap_input) ? trap_input : glsl::clamp"))
+        self.assertEqual(1, emitted.count(
+            "std::isnan(distance_input) ? distance_input : glsl::clamp"))
+        self.assertEqual(4, emitted.count(
+            "std::bit_cast<float>(0x7fc00000U)"))
+        self.assertNotIn("std::isnan(normal[lane])", emitted)
+        with mock.patch.object(emit_typed_cpp,
+                               "CURRENT_AUTHORITY_VALUE_COPIES", False):
+            historical = emit_typed_cpp.render_typed_cpp(
+                program, KEY, RAW_SHA256, "typed_test", "bind_test",
+                source_global_literal_int_profile=(
+                    SOURCE_GLOBAL_LITERAL_INT_CAPABILITY),
+                fractal3d_log_profile=PROFILE)
+        self.assertEqual(4, historical.count(
+            "[[maybe_unused]] glsl::Vec3& z = pos;"))
+        self.assertNotIn("std::isnan(trap_input)", historical)
+        self.assertNotIn("std::isnan(distance_input)", historical)
+        self.assertNotIn("std::bit_cast<float>(0x7fc00000U)", historical)
+
+    def test_source_hash_and_profile_forgery_are_rejected(self):
+        module = _module()
+        program = _analyzed()
+        for source_hash, profile in (("0" * 64, PROFILE),
+                                     (RAW_SHA256, "foreign-profile")):
+            with self.subTest(source_hash=source_hash, profile=profile):
+                with self.assertRaises(ValueError):
+                    module.authenticate_fractal3d_value_copies(
+                        program, source_hash, profile)
+
+    def test_raw_source_and_define_forgery_are_rejected(self):
+        module = _module()
+        program = _analyzed()
+        forged = (
+            dataclasses.replace(program, raw_source=program.raw_source + "\n"),
+            dataclasses.replace(program, preprocessor_defines=(
+                PreprocessorDefine("FAKE", "int", "1"),)),
+        )
+        for item in forged:
+            with self.subTest(item=item.preprocessor_defines):
+                with self.assertRaisesRegex(ValueError, "lock mismatch"):
+                    module.authenticate_fractal3d_value_copies(
+                        item, RAW_SHA256, PROFILE)
+
+    def test_typed_declaration_forgery_is_rejected(self):
+        module = _module()
+        program = _analyzed()
+        functions = list(program.functions)
+        index = next(i for i, item in enumerate(functions)
+                     if item.name == "mandelbulb")
+        owner = functions[index]
+        body = list(owner.body)
+        statement = body[0]
+        declaration = statement.expressions[0]
+        source = declaration.children[0]
+        body[0] = dataclasses.replace(statement, expressions=(
+            dataclasses.replace(declaration, children=(
+                dataclasses.replace(source, symbol_id=0),)),))
+        functions[index] = dataclasses.replace(owner, body=tuple(body))
+        forged = dataclasses.replace(program, functions=tuple(functions))
+        with self.assertRaisesRegex(ValueError, "lock mismatch"):
+            module.authenticate_fractal3d_value_copies(
+                forged, RAW_SHA256, PROFILE)
+
+
 class CorpusCensusTests(unittest.TestCase):
-    def test_fractal3d_is_an_authenticatable_single_key_census(self):
+    def test_fractal3d_and_flythrough_are_the_only_authenticated_log_keys(self):
         """Source-level census: the pinned corpus carries several pending
-        `log(` callers (flythrough3d, noise3d, shapes3d among them), so the
-        authenticatable set must stay frozen at exactly this one key."""
+        `log(` callers (including noise3d and shapes3d), so the
+        authenticatable set stays frozen at these two exact keys."""
         module = _module()
         carriers = set()
         for parent in ("sources", "pending-sources"):
@@ -247,7 +338,8 @@ class CorpusCensusTests(unittest.TestCase):
                     namespace_effect, program = relative.rsplit("/", 1)
                     carriers.add(f"{namespace_effect}:{program}")
         self.assertIn(KEY, carriers)
-        self.assertEqual(frozenset({KEY}), module.FRACTAL3D_LOG_KEYS)
+        self.assertIn(module.FLYTHROUGH_KEY, carriers)
+        self.assertEqual(frozenset({KEY, module.FLYTHROUGH_KEY}), module.FRACTAL3D_LOG_KEYS)
 
 
 if __name__ == "__main__":  # pragma: no cover

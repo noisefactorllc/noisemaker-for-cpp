@@ -178,15 +178,16 @@ class ClassicNoiseIntegrationTests(unittest.TestCase):
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
         self.assertEqual(corpus_census.typed_count(), len(keys))
-        self.assertEqual(13, keys.index(self.KEY))
+        self.assertEqual(corpus_census.ordinal(self.KEY), keys.index(self.KEY))
         self.assertEqual(
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         self.assertEqual(
             {"defines": self.DEFINES,
              "noise_frontend_profile": self.PROFILE,
-             "program_key": self.KEY},
-            spec["programs"][13])
+             "program_key": self.KEY,
+             "runtime_define_profile": "runtime-defines-generic-v1"},
+            spec["programs"][keys.index(self.KEY)])
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
@@ -202,7 +203,7 @@ class ClassicNoiseIntegrationTests(unittest.TestCase):
         self.assertEqual(1, generated.count("// Typed IR program: " + self.KEY))
         start = generated.index("// Typed IR program: " + self.KEY)
         end = generated.index("// Typed IR program:", start + 1)
-        self.assertIn("namespace typed_13 {", generated[start:end])
+        self.assertIn(f"namespace typed_{keys.index(self.KEY)} {{", generated[start:end])
         catalog = (REPOSITORY / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_classicNoisedeck_noise_noise"))
@@ -658,7 +659,7 @@ class TypedGeneratorTests(unittest.TestCase):
         self.assertTrue(oracle_path.is_file(), "Task 25 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "09d8d8a9667fe3b3b90cd582e501b7c0a61d2a41e65ea2d175771a105e32e116",
+            "07dc613d9e251764b81a42cef6cc2e7cd712f11c6bc68e14aaa8de0a0f253613",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
@@ -3097,7 +3098,7 @@ and item["program_key"] != "filter/wobble:wobble"
         frozen_sensitivity = json.dumps(
             sensitivity, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(
-            "df29ceac2f2df56b9e73fe8fa92842b39dee48e0f0482367f2bb6ec56d5bccca",
+            "9020e4420e0c0f082548a8f778d1c86e9ea4182b079c2e9212a6a86f73ebedd4",
             hashlib.sha256(frozen_sensitivity).hexdigest())
 
         # name, key, owner, target, mutation kind, before shape/value,
@@ -3121,7 +3122,7 @@ and item["program_key"] != "filter/wobble:wobble"
             ("strokes-global-bound-24-to-8", "filter/strokes:stkSmear", None,
              "MAX_TAPS", "global", 24, "8", 8),
             ("strokes-field-selection-forced-135", "filter/strokes:stkSmear", "main",
-             "side", "local", ("builtin", "float", "smoothstep", None, 196, 18),
+             "side", "local", ("builtin", "float", "smoothstep", None, 214, 18),
              "0.0", 0.0),
             ("vaseline-global-bound-32-to-8", "filter/vaseline:upsample", None,
              "TAP_COUNT", "global", 32, "8", 8),
@@ -3394,6 +3395,37 @@ and item["program_key"] != "filter/wobble:wobble"
             emitter.current_function_name = None
             emitter.current_function_signature_id = None
             emitter._validate_source_globals()
+            if program.key == "filter/strokes:stkSmear":
+                # The production boundaries above reject the changed tree.
+                # Admit its unchanged degrees site only in this counterfactual
+                # emitter, so the native sensitivity check can render it.
+                def expressions(value):
+                    yield value
+                    for child in value.children:
+                        yield from expressions(child)
+
+                def statements(value):
+                    for expression in value.expressions:
+                        yield from expressions(expression)
+                    for child in value.children:
+                        yield from statements(child)
+
+                degrees_sites = tuple(
+                    node for function in program.functions
+                    for statement in function.body
+                    for node in statements(statement)
+                    if node.kind == "builtin" and node.callee == "degrees")
+                self.assertEqual(1, len(degrees_sites))
+
+                def admitted_degrees(candidate, candidate_hash):
+                    self.assertIs(program, candidate)
+                    self.assertEqual(source_hash, candidate_hash)
+                    return degrees_sites
+
+                with mock.patch(
+                        "tools.glslcpp.frontend.hatch_degrees_profile.authenticate",
+                        side_effect=admitted_degrees):
+                    return "\n".join(emitter.render_body(namespace, factory)) + "\n"
             return "\n".join(emitter.render_body(namespace, factory)) + "\n"
 
         rendered_mutations = []
@@ -5417,17 +5449,32 @@ and item["program_key"] != "filter/wobble:wobble"
         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
         programs = check_corpus._validate_manifest(manifest)
         self.assertEqual(corpus_census.vendored_count(), len(programs))
+        effects_key = "classicNoisedeck/effects:effects"
+        effects_row = next(item for item in generate_typed_slice.load_slice(REPOSITORY)["programs"]
+                           if item["program_key"] == effects_key)
+        self.assertEqual("runtime-defines-generic-v1",
+                         effects_row["runtime_define_profile"])
         attached = []
         for entry in programs:
             key = entry["program_key"]
             raw = (root / entry["source"]).read_text()
+            runtime_effects = key == effects_key
+            parse_source = (generate_typed_slice.transform_generic_dynamic_source(raw, key)
+                            if runtime_effects else raw)
+            defines = (generate_typed_slice.GENERIC_DYNAMIC_DEFINE_TYPES[key]
+                       if runtime_effects else generate_typed_slice._defaults(REPOSITORY, key))
+            parsed = parse_program(parse_source, key, defines)
+            if runtime_effects:
+                parsed["raw_source"] = raw
             analyzed = analyze_program(
-                parse_program(raw, key,
-                              generate_typed_slice._defaults(REPOSITORY, key)),
-                key)
+                parsed, key)
             if key == "classicNoisedeck/refract:refract":
                 analyzed = apply_refract_vector_conditional_keeps(analyzed)
             typed = attach_fixed_array_in_parameter_proof(analyzed)
+            if runtime_effects:
+                self.assertIsNotNone(typed.fixed_array_in_parameter_proof)
+                self.assertEqual("dynamic-kernel9-live-v1",
+                                 typed.fixed_array_in_parameter_proof.source_profile)
             if typed.fixed_array_in_parameter_proof is not None:
                 attached.append(key)
             else:
@@ -5440,9 +5487,8 @@ and item["program_key"] != "filter/wobble:wobble"
                         # witness for this census's move from two keys to
                         # three (kaleido-design §4.4.1).
                         "classicNoisedeck/kaleido:kaleido",
-                        # effects joined at row 188
-                        # (`effects-convolve-v1`, the seven-array record);
-                        # the named witness for the move to four.
+                        # Effects is the fourth convolve witness. Its current
+                        # source requires the exact runtime Kernel9 proof.
                         "classicNoisedeck/effects:effects"))
         self.assertEqual(
             ("classicNoisedeck/cellRefract:cellRefract",
@@ -8016,6 +8062,12 @@ and item["program_key"] != "filter/wobble:wobble"
                       if program["program_key"] == "filter/emboss:emboss")
         self.assertEqual("emboss-color-style-v1",
                          emboss["emboss_color_style_profile"])
+        shapes3d = next(program for program in manifest["programs"]
+                        if program["program_key"] ==
+                        "classicNoisedeck/shapes3d:shapes3d")
+        self.assertEqual(
+            ("runtime-int", {"BLEND_MODE": 10, "SHAPE_A": 30, "SHAPE_B": 10}),
+            (shapes3d["define_contract"], shapes3d["defines"]))
         shape_mixer = next(
             program for program in manifest["programs"]
             if program["program_key"] ==
@@ -8030,32 +8082,32 @@ and item["program_key"] != "filter/wobble:wobble"
                                  "INTERP": 0, "MASK_COLOR_SCHEME": 1,
                                  "MASK_FORMULA": 10, "MODE": 1}),
             "classicNoisedeck/caustic:caustic": (
-                "default-only", {"NOISE_TYPE": 10}),
+                "runtime-int", {"NOISE_TYPE": 10}),
             "classicNoisedeck/cellRefract:cellRefract": (
-                "default-only", {"KERNEL": 0, "SHAPE": 1}),
+                "runtime-int", {"KERNEL": 0, "SHAPE": 1}),
             "classicNoisedeck/kaleido:kaleido": (
-                "default-only", {"DIRECTION": 2, "KERNEL": 0,
+                "runtime-int", {"DIRECTION": 2, "KERNEL": 0,
                                  "LOOP_OFFSET": 10, "METRIC": 0}),
             "classicNoisedeck/effects:effects": (
-                "default-only", {"EFFECT": 0, "FLIP": 0}),
+                "runtime-int", {"EFFECT": 0, "FLIP": 0}),
             "classicNoisedeck/moodscape:moodscape": (
-                "default-only", {"COLOR_MODE": 2, "NOISE_TYPE": 10}),
+                "runtime-int", {"COLOR_MODE": 2, "NOISE_TYPE": 10}),
             "classicNoisedeck/noise:noise": (
-                "default-only", {"COLOR_MODE": 6, "LOOP_OFFSET": 300,
+                "runtime-int", {"COLOR_MODE": 6, "LOOP_OFFSET": 300,
                                   "METRIC": 0, "NOISE_TYPE": 10,
                                   "REFRACT_MODE": 2}),
             "filter/emboss:emboss": (
-                "default-only", {"STYLE": 0}),
+                "runtime-int", {"STYLE": 0}),
             "filter/median:median": (
                 "default-only", {"RADIUS": 2}),
             "classicNoisedeck/shapeMixer:shapeMixer": (
                 "runtime-int", {"LOOP_OFFSET": 10}),
             "classicNoisedeck/shapes:shapes": (
-                "default-only", {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}),
+                "runtime-int", {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}),
             "synth/shape:shape": (
-                "default-only", {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}),
+                "runtime-int", {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}),
             "filter/extrude:extrude": (
-                "default-only", {"DEPTH_SOURCE": 0, "EXTRUDE_TYPE": 0}),
+                "runtime-int", {"DEPTH_SOURCE": 0, "EXTRUDE_TYPE": 0}),
             # Generic runtime-int contract (GENERIC_DYNAMIC_DEFINE_TYPES): the
             # defines stay recorded at their catalog defaults but reach the
             # kernel as bound uniforms; see also lensFlare, morphology,
@@ -8066,11 +8118,11 @@ and item["program_key"] != "filter/wobble:wobble"
             # These reach the kernel as bound uniforms, not preprocessor
             # substitutions: the JS reference has no preprocessor and its
             # factories read $bindings["MODE"] at runtime.
-            "filter/halftone:halftone": ("default-only", {"MODE": 0, "PATTERN": 0}),
+            "filter/halftone:halftone": ("runtime-int", {"MODE": 0, "PATTERN": 0}),
             "filter/pondRipples:pondRipples": ("runtime-int", {"STYLE": 2, "WRAP": 0}),
             "filter/stipple:stipple": ("runtime-int", {"MODE": 0}),
             "filter/lensFlare:lensFlare": ("runtime-int", {"LENS_TYPE": 0}),
-            "filter/lowPoly:lowPoly": ("default-only", {"LP_BORDER": 0, "LP_LIGHT": 0}),
+            "filter/lowPoly:lowPoly": ("runtime-int", {"LP_BORDER": 0, "LP_LIGHT": 0}),
             "filter/morphology:morphA": ("runtime-int", {"SHAPE": 0}),
             "filter/morphology:morphB": ("runtime-int", {"SHAPE": 0}),
             "filter/mosaicTiles:mosaicTiles": ("runtime-int", {"MODE": 0}),
@@ -8082,13 +8134,13 @@ and item["program_key"] != "filter/wobble:wobble"
             "filter/scatter:scatterJitter": ("runtime-int", {"MODE": 0}),
             "filter/scatter:scatterSmooth": ("runtime-int", {"MODE": 0}),
             "filter/strokes:stkPost": ("runtime-int", {"MODE": 0}),
-            "filter/strokes:stkSmear": ("default-only", {"MODE": 0}),
-            "filter/texture:texture": ("default-only", {"MODE": 3}),
+            "filter/strokes:stkSmear": ("runtime-int", {"MODE": 0}),
+            "filter/texture:texture": ("runtime-int", {"MODE": 3}),
             "filter/wind:wind": ("runtime-int", {"METHOD": 1}),
-            "filter/hatch:hatch": ("default-only", {"MODE": 0}),
+            "filter/hatch:hatch": ("runtime-int", {"MODE": 0}),
             "synth/noise:noise": (
                 "runtime-int", {"LOOP_OFFSET": 300, "NOISE_TYPE": 10}),
-            "synth/perlin:perlin": ("default-only", {"DIMENSIONS": 2}),
+            "synth/perlin:perlin": ("runtime-int", {"DIMENSIONS": 2}),
         }, defined)
         transformed = {program["program_key"]: program["compatibility_transform"]
                        for program in manifest["programs"]
@@ -9460,9 +9512,11 @@ and item["program_key"] != "filter/wobble:wobble"
                          slice_spec["compatibility_transforms"])
         self.assertNotIn("filter/degauss:degauss",
                          slice_spec["numeric_literal_contracts"])
-        self.assertEqual("f515a7ac409c98fc420d9fa9a7e460eb37018b34e3be40419191fc7655a29c38",
+        self.assertEqual("canonicalFactory43",
+                         generate_typed_slice.DEGAUSS_CANONICAL_FACTORY)
+        self.assertEqual("2dc66240984430c10a2a417e891517094371b3f2a03574931f50be929399f776",
                          generate_typed_slice.DEGAUSS_CANONICAL_FACTORY_TEXT_SHA256)
-        self.assertEqual("e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+        self.assertEqual("de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
                          generate_typed_slice.DEGAUSS_CANONICAL_RUNTIME_SHA256)
 
         vocabulary = {
@@ -9858,7 +9912,7 @@ and item["program_key"] != "filter/wobble:wobble"
             raw, "crt-metal-sine-v1")
 
         self.assertEqual(
-            "1b67fa6d01135e98434bc9e6a4627f0d23565c81fa1e17cbdba10082e23e37a3",
+            "2589ec4675c5be60e5a532adc3bbc59bb305ad1b56979c39245149cdcc008441",
             hashlib.sha256(repr(transformed.functions).encode()).hexdigest())
         whole = (
             transformed.key, transformed.source, transformed.raw_source,
@@ -9870,7 +9924,7 @@ and item["program_key"] != "filter/wobble:wobble"
             transformed.preprocessor_defines,
         )
         self.assertEqual(
-            "7aa853a51316b1122750af1155411a5ca8c1e11cf02688a33d9ef6fcace5f6a2",
+            "a413e4f6016072d3e6e2a94c9ea9debacfc3b04192c0aba64769f54e1f546195",
             hashlib.sha256(repr(whole).encode()).hexdigest())
 
         sin_expected = {
@@ -9878,8 +9932,8 @@ and item["program_key"] != "filter/wobble:wobble"
             (105, 278, 18): "7b805551b3f93876e1bd5ecf76a76efea15276160a8aa7bad7a570ba5da70457",
             (111, 61, 12): "37e92090742c393c51e58b0e243ed94b7c496d81713c72f50a81965ab65d0906",
             (114, 32, 18): "ebf5806ccb5844082b4824ae98be478a0ccbbedcc446d11e1f782a05a5259fb7",
-            (118, 38, 15): "d86ca37ad7e92a214a0aa669208b860c8c2691623ef830abe7275b6f83a99034",
-            (118, 39, 18): "13a34f969f04eca11820a7aadee45a56f11e5ae369dfac59e02cb88e78673746",
+            (118, 38, 15): "80f45aa248818d6cc3b6ad7f3768c648ccb9fadcee66a8fb8be27129dc5d07b7",
+            (118, 39, 18): "4747a4ab6908652cf25e0f1c79cbfced604537935437be4e69e397adf24ca584",
         }
         sin_actual = {}
         for function in transformed.functions:
@@ -9914,7 +9968,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual(sin_expected, sin_actual)
 
         cos_expected = {
-            (118, 37, 15): "d73adbb7e0f3b9c5cb4eb121ac454f08d16cd19bb651b9b3bfb6ddf352fae17a",
+            (118, 37, 15): "61d2339d95471169bf633d969e8af50d8ee44b85bce20c6f504b47ad7b430feb",
             (91, 198, 20): "aa8a39a243601c48cdaa3b328c2aeb5ee045908c55f154e1c7ba69058d29966e",
             (98, 257, 25): "9c88ea057347d9c9f968a43c5b9d0a289a689cf6166b8f19a8c7ff1586e64bd9",
             (94, 329, 27): "f9a0165495911c862940e37195b8d97eba9709c3b6e42ce42b5822e4f152c95d",
@@ -10596,7 +10650,7 @@ and item["program_key"] != "filter/wobble:wobble"
         semantic_candidates["output-alpha-route"] = mutate_expression(
             typed,
             lambda value: (value.kind == "swizzle" and value.member == "w"
-                           and value.span.start_line == 603),
+                           and value.span.start_line == 604),
             lambda value: dataclasses.replace(value, member="x"))
         local_alpha_symbols = []
         def collect_local_alpha(value):
@@ -10613,7 +10667,7 @@ and item["program_key"] != "filter/wobble:wobble"
         semantic_candidates["dead-local-alpha-used"] = mutate_expression(
             typed,
             lambda value: (value.kind == "swizzle" and value.member == "w"
-                           and value.span.start_line == 603),
+                           and value.span.start_line == 604),
             lambda value: dataclasses.replace(
                 value, kind="id", children=(), member=None, symbol_id=205,
                 symbol=local_alpha_symbols[0],
@@ -10712,10 +10766,10 @@ and item["program_key"] != "filter/wobble:wobble"
             "synth/sacredGeometry:sacredGeometry":
                 "sacred-star-number-division-v1",
         }, spec["compatibility_transforms"])
-        self.assertEqual("canonicalFactory44",
+        self.assertEqual("canonicalFactory42",
                          generate_typed_slice.CRT_CANONICAL_FACTORY)
         self.assertEqual(
-            "6d65f4984f8749ca7cdfec976e082662d3a7ad614aabb15ce8a168fca7d8e303",
+            "2420fa0eecb9e48c1192c1f029ab7c547888a9f9ca68cf26e145dd6762695cb6",
             generate_typed_slice.CRT_CANONICAL_FACTORY_TEXT_SHA256)
         self.assertEqual("crtFactory", generate_typed_slice.CRT_PUBLIC_FACTORY)
         self.assertEqual(
@@ -10725,7 +10779,7 @@ and item["program_key"] != "filter/wobble:wobble"
             "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
             generate_typed_slice.CRT_PUBLIC_ADAPTER_SHA256)
         self.assertEqual(
-            "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+            "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
             generate_typed_slice.CRT_CANONICAL_RUNTIME_SHA256)
         inv_tau = 0.15915493667125702
         self.assertEqual(0x3E22F983, generate_typed_slice.CRT_INV_TAU_F32_BITS)
@@ -11577,7 +11631,7 @@ synth/subdivide:subdivide""".splitlines())
         # Scale, and adds the 8ae8e2a current-authority capture table. 5b686a4
         # re-captures the Life matrix under the authority's LCG hash routing.
         self.assertEqual(
-            "8de83fbbe9bcb91400b6b8079dfa36780d329d8323198aadbb401968d6bbfb7d",
+            "322516c840f060c13948c65af3f79092fcb4ee96404521ff6640d3c32588a31c",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -11673,6 +11727,24 @@ synth/subdivide:subdivide""".splitlines())
                 and item["program_key"] != "classicNoisedeck/moodscape:moodscape"
                 and item["program_key"] != "classicNoisedeck/noise:noise"]
         self.assertEqual(123, len(task24["programs"]))
+        # These three programs gained runtime-define carriers after Task 24.
+        # Restore only those carriers so the current loader reaches the lane
+        # profile boundary that this test measures.
+        later_runtime_keys = {
+            "filter/hatch:hatch", "filter/lowPoly:lowPoly",
+            "filter/strokes:stkSmear",
+        }
+        self.assertEqual(later_runtime_keys, {
+            item["program_key"] for item in task24["programs"]
+            if item["program_key"] in generate_typed_slice.GENERIC_DYNAMIC_DEFINE_TYPES
+            and "runtime_define_profile" not in item
+        })
+        current_rows = {item["program_key"]: item for item in current["programs"]}
+        for item in task24["programs"]:
+            if item["program_key"] in later_runtime_keys:
+                self.assertEqual("runtime-defines-generic-v1",
+                                 current_rows[item["program_key"]]["runtime_define_profile"])
+                item["runtime_define_profile"] = "runtime-defines-generic-v1"
         self.assertFalse(any("literal_vec3_lane_index_profile" in item
                              for item in task24["programs"]))
         with tempfile.TemporaryDirectory() as temporary:
@@ -15128,7 +15200,7 @@ class Task27PerlinTests(unittest.TestCase):
         oracle_bytes = pathlib.Path(
             REPOSITORY / "tests/oracles/task-27-oracles.json").read_bytes()
         self.assertEqual(
-            "27e12edfdec79a9f1ad9c07d3d076da2553e36f63d8c9a5ac43c1bc1592bcc54",
+            "5afda4f241cca6f6052de86f35eb9fe1583941f6145ae2cccc8f6d61a86178ff",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
         cpp = (REPOSITORY / "tests/test_generated_kernels.cpp").read_text()
@@ -16855,7 +16927,8 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         self.assertEqual((
             "filter/wormhole:deposit", "filter3d/flow3d:deposit",
             "points/dla:depositGrid", "points/lenia:deposit",
-            "points/physarum:deposit", "render/meshRender:render"),
+            "points/physarum:deposit", "render/meshRender:render",
+            "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -17654,7 +17727,8 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         self.assertEqual((
             "filter/wormhole:deposit", "filter3d/flow3d:deposit",
             "points/dla:depositGrid", "points/lenia:deposit",
-            "points/physarum:deposit", "render/meshRender:render"),
+            "points/physarum:deposit", "render/meshRender:render",
+            "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -17671,6 +17745,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
             "defines": {"DEPTH_SOURCE": 0, "EXTRUDE_TYPE": 0},
             "extrude_bvec2_relational_reduction_profile": PROFILE,
             "program_key": EXTRUDE_KEY,
+            "runtime_define_profile": "runtime-defines-generic-v1",
         }], [item for item in spec["programs"]
              if "extrude_bvec2_relational_reduction_profile" in item])
 
@@ -18678,7 +18753,8 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         self.assertEqual((
             "filter/wormhole:deposit", "filter3d/flow3d:deposit",
             "points/dla:depositGrid", "points/lenia:deposit",
-            "points/physarum:deposit", "render/meshRender:render"),
+            "points/physarum:deposit", "render/meshRender:render",
+            "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -18727,7 +18803,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         self.assertTrue(oracle_path.is_file(), "Task 31 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "dc992d217dda4e908b33826dde6da744347a9ff5c5a7a7befd3a43c96949001c",
+            "e15321a8c3510f857e620c3a7a6f089b3c563d93ba01b09fb2ae50f2c05e81d9",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
         self.assertEqual(CURL_KEY, oracle["program"]["key"])
@@ -19976,8 +20052,8 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
         # This is a live census even though the test name preserves the
-        # original 152-program milestone. The two non-typed adapter routes
-        # remain outside the typed/public fragment catalog.
+        # original 152-program milestone. The adapter and whole-pass routes
+        # below remain outside the typed/public fragment catalog.
         self.assertEqual(
             (corpus_census.typed_count(), corpus_census.typed_count(),
              corpus_census.vendored_count()),
@@ -19985,7 +20061,8 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         self.assertEqual((
             "filter/wormhole:deposit", "filter3d/flow3d:deposit",
             "points/dla:depositGrid", "points/lenia:deposit",
-            "points/physarum:deposit", "render/meshRender:render"),
+            "points/physarum:deposit", "render/meshRender:render",
+            "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -20007,20 +20084,25 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
             item for item in manifest["programs"]
             if "derivative_admission_profile" in item]
         self.assertEqual(17, len(derivative_manifest_rows))
+        self.assertEqual({"filter/lowPoly:lowPoly", "mixer/distortion:distortion"}, {
+            item["program_key"] for item in manifest["programs"]
+            if item["typed_abi"]["uses_derivatives"]
+            and "derivative_admission_profile" not in item
+        })
 
         current_cpp = current_outputs["src/typed_generated/typed_slice.cpp"].decode()
         for name in ("dFdx", "dFdy", "fwidth"):
             self.assertGreater(current_cpp.count(f"glsl::{name}(context, "), 0)
-        # Exactly one BoundKernel construction site per admitted program
-        # passes the third (uses_derivatives) argument as `true`.
-        self.assertEqual(18, current_cpp.count("::pixel, true);"))
+        # Every derivatives-enabled route has one BoundKernel construction
+        # site that passes the third (uses_derivatives) argument as `true`.
+        self.assertEqual(19, current_cpp.count("::pixel, true);"))
 
         # The oracle vendored for the native fixture.
         oracle_path = REPOSITORY / "tests/oracles/task-33-oracles.json"
         self.assertTrue(oracle_path.is_file(), "Task 33 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "b3f3db2d7c2bdc970ba799db71e702974628fbd6e2a5a5a787b073882f4855c3",
+            "0e3cc17f6d2f3b2e33eeed48dfb430d93765dcaf8a6ba3444d63a4112db85742",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
         self.assertEqual(15, len(oracle["programs"]))
@@ -20102,6 +20184,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         "defines": DEFINES,
         "mutable_global_frame_profile": PROFILE,
         "program_key": KEY,
+        "runtime_define_profile": "runtime-defines-generic-v1",
         "scalar_uint_xor_profile": XOR,
     }
     # The pre-change 183-row state, recovered by removing only the new row.
@@ -20207,7 +20290,8 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
              "points/dla:depositGrid", "points/lenia:deposit",
-             "points/physarum:deposit", "render/meshRender:render"},
+             "points/physarum:deposit", "render/meshRender:render",
+             "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -20218,7 +20302,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         self.assertEqual(self.PROFILE, row["mutable_global_frame_profile"])
         self.assertEqual(self.XOR, row["scalar_uint_xor_profile"])
         self.assertEqual(self.DEFINES, row["defines"])
-        self.assertEqual("default-only", row["define_contract"])
+        self.assertEqual("runtime-int", row["define_contract"])
         self.assertEqual("bind_synth_shape_shape", row["factory"])
         self.assertEqual(self.SOURCE_SHA256, row["source_sha256"])
         self.assertEqual("sources/synth/shape/shape.glsl", row["source"])
@@ -20408,7 +20492,11 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
 
         # An ALLOWLIST, not a denylist: `set(item) != expected` is exact set
         # equality, so "every other profile absent" follows by construction.
-        self.assertEqual(frozenset(self.ROW), allowed_row_fields(self.KEY))
+        self.assertEqual("runtime-defines-generic-v1",
+                         self.ROW["runtime_define_profile"])
+        self.assertEqual(frozenset(self.ROW),
+                         allowed_row_fields(self.KEY) |
+                         {"runtime_define_profile"})
         self.assertEqual(
             frozenset({"defines", "program_key", "scalar_uint_xor_profile",
                        "mutable_global_frame_profile"}),
@@ -20954,7 +21042,8 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
              "points/dla:depositGrid", "points/lenia:deposit",
-             "points/physarum:deposit", "render/meshRender:render"},
+             "points/physarum:deposit", "render/meshRender:render",
+             "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -22041,6 +22130,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         "defines": DEFINES,
         "mutable_global_array_profile": PROFILE,
         "program_key": KEY,
+        "runtime_define_profile": "runtime-defines-generic-v1",
     }
     SOURCE_SHA256 = (
         "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70")
@@ -22310,7 +22400,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         from tools.glslcpp.frontend.mutable_global_array_profile import (
             allowed_row_fields)
 
-        self.assertEqual(frozenset(self.ROW), allowed_row_fields(self.KEY))
+        self.assertEqual("runtime-defines-generic-v1",
+                         self.ROW["runtime_define_profile"])
+        self.assertEqual(frozenset(self.ROW),
+                         allowed_row_fields(self.KEY) |
+                         {"runtime_define_profile"})
         self.assertEqual(
             frozenset({"defines", "program_key",
                        "mutable_global_array_profile"}),
@@ -22684,7 +22778,8 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
              "points/dla:depositGrid", "points/lenia:deposit",
-             "points/physarum:deposit", "render/meshRender:render"},
+             "points/physarum:deposit", "render/meshRender:render",
+             "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -22694,7 +22789,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["mutable_global_array_profile"])
         self.assertEqual(self.DEFINES, row["defines"])
-        self.assertEqual("default-only", row["define_contract"])
+        self.assertEqual("runtime-int", row["define_contract"])
         self.assertEqual("bind_classicNoisedeck_cellRefract_cellRefract",
                          row["factory"])
         self.assertEqual(self.SOURCE_SHA256, row["source_sha256"])
@@ -22713,21 +22808,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 283-program tree at the current CPU authority, QUOTED FROM
+        # The four artifacts of the LIVE 300-program tree at the current CPU authority, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39809,
-                "4ac2c7be3d474aaa5d1c96e04e86205cd9ac97ff862f5a9eab4967b4ffb1d69f"),
+                42755,
+                "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3386528,
-                "22d517add6331084d9157a4609930e733cc60631e11f6685918f7f8afb13c068"),
+                3854138,
+                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
             "src/typed_generated/typed_manifest.json": (
-                881833,
-                "65458283f9aafee6d95260ffbfb5ee88619edb4d30df3c5abc06a6461fffd851"),
+                923284,
+                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
             "include/noisemaker/generated/catalog.hpp": (
-                28385,
-                "cfb8e44f8658a7ce1eef8c0ec3924237caa0751835080ddea773282f609673f9"),
+                29472,
+                "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -22896,6 +22991,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         "defines": DEFINES,
         "mutable_global_array_profile": PROFILE,
         "program_key": KEY,
+        "runtime_define_profile": "runtime-defines-generic-v1",
         "scalar_uint_xor_profile": XOR_PROFILE,
     }
     SOURCE_SHA256 = (
@@ -23150,7 +23246,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         from tools.glslcpp.frontend.mutable_global_array_profile import (
             REQUIRED_COMPANION_PROFILES, allowed_row_fields)
 
-        self.assertEqual(frozenset(self.ROW), allowed_row_fields(self.KEY))
+        self.assertEqual("runtime-defines-generic-v1",
+                         self.ROW["runtime_define_profile"])
+        self.assertEqual(frozenset(self.ROW),
+                         allowed_row_fields(self.KEY) |
+                         {"runtime_define_profile"})
         self.assertEqual(
             frozenset({"defines", "program_key",
                        "mutable_global_array_profile",
@@ -23463,7 +23563,8 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
              "points/dla:depositGrid", "points/lenia:deposit",
-             "points/physarum:deposit", "render/meshRender:render"},
+             "points/physarum:deposit", "render/meshRender:render",
+             "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -23474,7 +23575,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         self.assertEqual(self.PROFILE, row["mutable_global_array_profile"])
         self.assertEqual(self.XOR_PROFILE, row["scalar_uint_xor_profile"])
         self.assertEqual(self.DEFINES, row["defines"])
-        self.assertEqual("default-only", row["define_contract"])
+        self.assertEqual("runtime-int", row["define_contract"])
         self.assertEqual("bind_classicNoisedeck_kaleido_kaleido",
                          row["factory"])
         self.assertEqual(self.SOURCE_SHA256, row["source_sha256"])
@@ -23495,21 +23596,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 283-program tree at the current CPU authority, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 300-program tree at the current CPU authority, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39809,
-                "4ac2c7be3d474aaa5d1c96e04e86205cd9ac97ff862f5a9eab4967b4ffb1d69f"),
+                42755,
+                "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3386528,
-                "22d517add6331084d9157a4609930e733cc60631e11f6685918f7f8afb13c068"),
+                3854138,
+                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
             "src/typed_generated/typed_manifest.json": (
-                881833,
-                "65458283f9aafee6d95260ffbfb5ee88619edb4d30df3c5abc06a6461fffd851"),
+                923284,
+                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
             "include/noisemaker/generated/catalog.hpp": (
-                28385,
-                "cfb8e44f8658a7ce1eef8c0ec3924237caa0751835080ddea773282f609673f9"),
+                29472,
+                "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23679,9 +23780,12 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         "glitch_mat4_chain_profile": "mat4-bicubic-chain-effects-v1",
         "mutable_global_array_profile": "mutable-global-nine-array-effects-v1",
         "program_key": "classicNoisedeck/effects:effects",
+        "runtime_define_profile": "runtime-defines-generic-v1",
     }
     SOURCE_SHA256 = (
-        "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457")
+        "1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90")
+    CURRENT_SOURCE_SHA256 = (
+        "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316")
     FIELDS = ("emboss", "sharpen", "blur", "edge", "edge2", "edge3",
               "sharpenBlur")
     WRITER = "loadKernels"
@@ -23701,10 +23805,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
             attach_fixed_array_in_parameter_proof)
         from tools.glslcpp.generate_typed_slice import _defaults
 
-        root = check_corpus._corpus_root(REPOSITORY)
+        # This suite checks the original EFFECT=0 frozen proof. The current
+        # runtime row uses the newer 6cb source and is checked separately.
+        root = (REPOSITORY / "tools/glslcpp/corpus"
+                / "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15")
         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
-        entries = {item["program_key"]: item
-                   for item in check_corpus._validate_manifest(manifest)}
+        with mock.patch.object(check_corpus, "REVISION", root.name):
+            entries = {item["program_key"]: item
+                       for item in check_corpus._validate_manifest(manifest)}
         source = (root / entries[key]["source"]).read_text()
         # The corpus metadata pins EFFECT=0/FLIP=0 for this program; the slice
         # row repeats the same frozen set. `EFFECT=0` collapses
@@ -23763,7 +23871,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                                return_value=impostor):
             with self.assertRaisesRegex(
                     generate_typed_slice.GeneratorError,
-                    r"31:1: unsupported global declaration"):
+                    r"38:1: unsupported global declaration"):
                 generate_typed_slice.validate_capabilities(
                     exact, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=source_hash, **self.CARRIERS)
@@ -23889,7 +23997,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         from tools.glslcpp.frontend.mutable_global_array_profile import (
             REQUIRED_COMPANION_PROFILES, allowed_row_fields)
 
-        self.assertEqual(frozenset(self.ROW), allowed_row_fields(self.KEY))
+        self.assertEqual("runtime-defines-generic-v1",
+                         self.ROW["runtime_define_profile"])
+        self.assertEqual(frozenset(self.ROW),
+                         allowed_row_fields(self.KEY) |
+                         {"runtime_define_profile"})
         # Both companions are the closure's own frozen contract: present and
         # exact for this key, and there is no other mapped key.
         self.assertEqual(
@@ -24025,7 +24137,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 stood_down.enter_context(patch)
             with self.assertRaisesRegex(
                     TypedEmissionError,
-                    "only typed assignments are admitted"):
+                    "typed function fingerprint drift"):
                 render_typed_cpp(mutated, mutated.key, source_hash,
                                  **self.CARRIERS)
 
@@ -24099,7 +24211,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # (28 functions less main and the writer), declared and defined.
         self.assertEqual(
             2 * len([function for function in exact.functions
-                     if function.name not in ("main", self.WRITER)]),
+                     if function.name not in ("main", self.WRITER, "zoomBlur")]),
             emitted.count("[[maybe_unused]] const Frame& frame"))
         # The 63 stores, in the literal table-store form -- the first five
         # tables byte-identical to the family's, `edge3`/`sharpenBlur` new.
@@ -24125,9 +24237,9 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         self.assertIsNotNone(proof)
         self.assertEqual("effects-convolve-v1", proof.source_profile)
         self.assertEqual("const Kernel9&", proof.parameter.native_abi)
-        self.assertEqual(((41, "uv", "vec2", "in"),
-                          (42, "kernel", "float[9]", "in"),
-                          (43, "divide", "bool", "in")),
+        self.assertEqual(((43, "uv", "vec2", "in"),
+                          (44, "kernel", "float[9]", "in"),
+                          (45, "divide", "bool", "in")),
                          tuple((item.id, item.name, item.type.display(),
                                 item.direction)
                                for item in next(
@@ -24137,7 +24249,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # product, and the `dot(tv * A, uv)` return route inside bicubic.
         self.assertEqual(4, emitted.count("glsl::Mat4 "))
         self.assertIn("((T * Q) * S)", emitted)
-        self.assertIn("return glsl::dot((tv * A), uv);", emitted)
+        self.assertIn("return glsl::dot(glsl::Vec4(glsl::dot(tv, A[0]), glsl::dot(tv, A[1]), glsl::dot(tv, A[2]), glsl::dot(tv, A[3])), uv);", emitted)
         # The ceil sites lower through the existing builtin arm.
         self.assertEqual(2, emitted.count("glsl::ceil("))
         # Both §17 rvalue compound assigns lower through the vector form.
@@ -24227,7 +24339,8 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
              "points/dla:depositGrid", "points/lenia:deposit",
-             "points/physarum:deposit", "render/meshRender:render"},
+             "points/physarum:deposit", "render/meshRender:render",
+             "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -24238,10 +24351,10 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         self.assertEqual(self.PROFILE, row["mutable_global_array_profile"])
         self.assertEqual(self.MAT4_PROFILE, row["glitch_mat4_chain_profile"])
         self.assertEqual(self.DEFINES, row["defines"])
-        self.assertEqual("default-only", row["define_contract"])
+        self.assertEqual("runtime-int", row["define_contract"])
         self.assertEqual("bind_classicNoisedeck_effects_effects",
                          row["factory"])
-        self.assertEqual(self.SOURCE_SHA256, row["source_sha256"])
+        self.assertEqual(self.CURRENT_SOURCE_SHA256, row["source_sha256"])
         self.assertEqual("sources/classicNoisedeck/effects/effects.glsl",
                          row["source"])
 
@@ -24257,21 +24370,21 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 283-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 300-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39809,
-                "4ac2c7be3d474aaa5d1c96e04e86205cd9ac97ff862f5a9eab4967b4ffb1d69f"),
+                42755,
+                "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3386528,
-                "22d517add6331084d9157a4609930e733cc60631e11f6685918f7f8afb13c068"),
+                3854138,
+                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
             "src/typed_generated/typed_manifest.json": (
-                881833,
-                "65458283f9aafee6d95260ffbfb5ee88619edb4d30df3c5abc06a6461fffd851"),
+                923284,
+                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
             "include/noisemaker/generated/catalog.hpp": (
-                28385,
-                "cfb8e44f8658a7ce1eef8c0ec3924237caa0751835080ddea773282f609673f9"),
+                29472,
+                "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24768,7 +24881,8 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
              "points/dla:depositGrid", "points/lenia:deposit",
-             "points/physarum:deposit", "render/meshRender:render"},
+             "points/physarum:deposit", "render/meshRender:render",
+             "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -24795,21 +24909,21 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 283-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 300-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39809,
-                "4ac2c7be3d474aaa5d1c96e04e86205cd9ac97ff862f5a9eab4967b4ffb1d69f"),
+                42755,
+                "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3386528,
-                "22d517add6331084d9157a4609930e733cc60631e11f6685918f7f8afb13c068"),
+                3854138,
+                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
             "src/typed_generated/typed_manifest.json": (
-                881833,
-                "65458283f9aafee6d95260ffbfb5ee88619edb4d30df3c5abc06a6461fffd851"),
+                923284,
+                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
             "include/noisemaker/generated/catalog.hpp": (
-                28385,
-                "cfb8e44f8658a7ce1eef8c0ec3924237caa0751835080ddea773282f609673f9"),
+                29472,
+                "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25369,7 +25483,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
              "points/dla:depositGrid", "points/lenia:deposit",
-             "points/physarum:deposit", "render/meshRender:render"},
+             "points/physarum:deposit", "render/meshRender:render",
+             "render/pointsBillboardRender:deposit", "render/pointsRender:deposit"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -25397,21 +25512,21 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 283-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 300-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39809,
-                "4ac2c7be3d474aaa5d1c96e04e86205cd9ac97ff862f5a9eab4967b4ffb1d69f"),
+                42755,
+                "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3386528,
-                "22d517add6331084d9157a4609930e733cc60631e11f6685918f7f8afb13c068"),
+                3854138,
+                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
             "src/typed_generated/typed_manifest.json": (
-                881833,
-                "65458283f9aafee6d95260ffbfb5ee88619edb4d30df3c5abc06a6461fffd851"),
+                923284,
+                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
             "include/noisemaker/generated/catalog.hpp": (
-                28385,
-                "cfb8e44f8658a7ce1eef8c0ec3924237caa0751835080ddea773282f609673f9"),
+                29472,
+                "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25679,14 +25794,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         source_path = pathlib.Path(
             f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
-            "pending-sources/classicNoisedeck/shapes3d/shapes3d.glsl")
+            "sources/classicNoisedeck/shapes3d/shapes3d.glsl")
         raw = source_path.read_text(encoding="utf-8")
         self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(), landed["raw"])
 
-        pending = _json.loads(pathlib.Path(
+        metadata = _json.loads(pathlib.Path(
             f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
-            "pending.json").read_text(encoding="utf-8"))
-        effect = pending["effects"]["classicNoisedeck/shapes3d"]
+            "metadata.json").read_text(encoding="utf-8"))
+        effect = metadata["effects"]["classicNoisedeck/shapes3d"]
         defaults = check_semantics._metadata_defaults(
             {"effects": {"classicNoisedeck/shapes3d": effect}}, key)
 
@@ -25740,19 +25855,19 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # write-proof (`_never_rewritten_literal_locals`) admits it: no
         # statement in rayMarch ever stores to maxSteps, so the literal stays
         # exact for the whole function and the 100-trip march loop is proved.
-        # The program's frontier then advances to its next authentic blocker
-        # (the `const mat2 myt` global declaration at 70:1).
+        # The current source is vendored. Keep the exact loop proof and the
+        # local-write rejection cases below after that promotion.
         key = "classicNoisedeck/noise3d:noise3d"
         source_path = pathlib.Path(
             f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
-            "pending-sources/classicNoisedeck/noise3d/noise3d.glsl")
+            "sources/classicNoisedeck/noise3d/noise3d.glsl")
         raw = source_path.read_text(encoding="utf-8")
-        pending = _json.loads(pathlib.Path(
+        metadata = _json.loads(pathlib.Path(
             f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
-            "pending.json").read_text(encoding="utf-8"))
+            "metadata.json").read_text(encoding="utf-8"))
         from tools.glslcpp import check_semantics
         defaults = check_semantics._metadata_defaults(
-            {"effects": {"classicNoisedeck/noise3d": pending["effects"]["classicNoisedeck/noise3d"]}},
+            {"effects": {"classicNoisedeck/noise3d": metadata["effects"]["classicNoisedeck/noise3d"]}},
             key)
         typed = analyze_program(parse_program(raw, key, defaults), key)
         summary = typed.counted_loop_proof
@@ -25761,11 +25876,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             (summary.loop_count, summary.unproved_loop_count,
              summary.max_effective_depth, summary.max_lexical_product,
              summary.entrypoint_charge, summary.call_graph_acyclic))
-        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
-            generate_typed_slice.validate_capabilities(
-                typed, generate_typed_slice.APPROVED_CAPABILITIES,
-                source_hash=hashlib.sha256(raw.encode("utf-8")).hexdigest())
-        self.assertIn("70:1: unsupported global declaration", str(ctx.exception))
+        generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=hashlib.sha256(raw.encode("utf-8")).hexdigest())
 
         # The write-proof's boundary: the same literal local REWRITTEN
         # anywhere in the enclosing function (assignment target, ++/-- operand,
@@ -25999,10 +26112,10 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
              {"default": 10, "max": 20, "min": 1, "type": "int",
               "uniform": "iterations"}),
             landed["parameter_uniform"])
-        self.assertEqual((("mandelbulb", 42, 17, "maxIter", 2),
-                          ("juliaBulb", 39, 22, "maxIter", 3),
-                          ("mandelcube", 43, 28, "maxIter", 2),
-                          ("juliaCube", 40, 33, "maxIter", 3)),
+        self.assertEqual((("mandelbulb", 40, 15, "maxIter", 2),
+                          ("juliaBulb", 37, 20, "maxIter", 3),
+                          ("mandelcube", 41, 26, "maxIter", 2),
+                          ("juliaCube", 38, 31, "maxIter", 3)),
                          landed["parameters"])
         source_path = corpus / "sources/synth3d/fractal3d/precompute.glsl"
         raw = source_path.read_text(encoding="utf-8")
@@ -26105,7 +26218,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         profiled_functions = typed.functions
         calls = [e for f in profiled_functions for s in f.body
                  for e in loop_proof._walk_statement_expressions(s)
-                 if e.kind == "call" and e.signature_id == 42]
+                 if e.kind == "call" and e.signature_id == 40]
         self.assertEqual(1, len(calls))
         self.assertEqual("iterations", calls[0].children[2].symbol.name)
 
@@ -26134,11 +26247,12 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # deliberately: the cross profile is re-locked to the seed-attached
         # post-proof tree, so the two authentications cannot bind different
         # trees. The program also carries the FractalResult struct
-        # declaration, which is the next authentic frontier -- no promotion.
+        # declaration, whose carrier remains required in this isolated proof.
         key = "synth3d/flythrough3d:precompute"
         corpus = pathlib.Path(
             f"tools/glslcpp/corpus/{CORPUS_REVISION}")
-        pending = _json.loads((corpus / "pending.json").read_text(encoding="utf-8"))
+        manifest = _json.loads((corpus / "manifest.json").read_text(encoding="utf-8"))
+        metadata = _json.loads((corpus / "metadata.json").read_text(encoding="utf-8"))
         self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
         self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
         self.assertIn(key, generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
@@ -26151,15 +26265,15 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertEqual((("mandelbulb", 62, 38, "maxIter", 2),
                           ("mandelbox", 61, 44, "maxIter", 2)),
                          landed["parameters"])
-        source_path = corpus / "pending-sources/synth3d/flythrough3d/precompute.glsl"
+        source_path = corpus / "sources/synth3d/flythrough3d/precompute.glsl"
         raw = source_path.read_text(encoding="utf-8")
         self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(),
                          landed["raw"])
-        record = next(item for item in pending["pending"]
+        record = next(item for item in manifest["programs"]
                       if item["program_key"] == key)
         self.assertEqual(record["raw_sha256"], landed["raw"])
 
-        effect = pending["effects"]["synth3d/flythrough3d"]
+        effect = metadata["effects"]["synth3d/flythrough3d"]
         defaults = check_semantics._metadata_defaults(
             {"effects": {"synth3d/flythrough3d": effect}}, key)
 
@@ -26177,7 +26291,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             generate_typed_slice.validate_capabilities(
                 typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=landed["raw"])
-        self.assertIn("exact source-global literal-int carrier required",
+        self.assertIn("exact fractal3d log admission profile carrier required",
                       str(ctx.exception))
 
         # With the seed carrier both march loops prove (one per carrier
@@ -26198,6 +26312,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             generate_typed_slice.validate_capabilities(
                 typed, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=landed["raw"],
+                fractal3d_log_profile="fractal3d-log-flythrough3d-v1",
+                out_inout_admission_profile="out-inout-admission-flythrough3d-v1",
                 source_global_literal_int_profile=
                 loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
         self.assertIn("exact cross builtin admission profile carrier required",
@@ -26215,12 +26331,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 landed["raw"], CROSS_PROFILE)
         self.assertIn("mismatch", str(ctx.exception))
 
-        # With both carriers the frontier is the FractalResult `out`
-        # parameter (the program's next authentic blocker); no promotion.
+        # With these carriers but without the struct carrier, the validator
+        # rejects the FractalResult declaration in this isolated proof.
         with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
             generate_typed_slice.validate_capabilities(
                 typed, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=landed["raw"],
+                fractal3d_log_profile="fractal3d-log-flythrough3d-v1",
+                out_inout_admission_profile="out-inout-admission-flythrough3d-v1",
                 source_global_literal_int_profile=
                 loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
                 cross_builtin_profile=CROSS_PROFILE)
@@ -26592,6 +26710,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             PROFILE,
             HASH_SCALAR_UINT_XOR_KEYS,
         )
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import (
+            PROFILE as RUNTIME_LOOP_PROFILE, apply_runtime_loop_bound)
+        from tools.glslcpp.frontend.dynamic_define_hoist import transform_source
 
         key = "synth3d/noise3d:precompute"
         rel = "synth3d/noise3d/precompute.glsl"
@@ -26609,21 +26730,30 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
         defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
 
-        ast = parse_program(raw, key, defaults)
+        dynamic_defines = {"COLOR_MODE": "int", "OCTAVES": "int", "RIDGES": "bool"}
+        ast = parse_program(transform_source(raw, key), key, dynamic_defines)
+        ast["raw_source"] = raw
         typed = analyze_program(ast, key)
 
-        # Without profile, validate_capabilities must reject with unsupported binary operator ^
+        # The runtime loop proof is required before the XOR proof is checked.
         with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
             generate_typed_slice.validate_capabilities(
                 typed, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=shash
             )
+        self.assertIn("exact runtime-loop-bound carrier required", str(ctx.exception))
+        typed = apply_runtime_loop_bound(typed, shash, RUNTIME_LOOP_PROFILE)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash, runtime_loop_bound_profile=RUNTIME_LOOP_PROFILE)
         self.assertIn("unsupported binary operator ^", str(ctx.exception))
 
         # With profile, validate_capabilities passes
         generate_typed_slice.validate_capabilities(
             typed, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=shash,
+            runtime_loop_bound_profile=RUNTIME_LOOP_PROFILE,
             hash_scalar_uint_xor_profile=PROFILE
         )
 
@@ -26631,13 +26761,40 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         factory = "bind_" + key.replace("/", "_").replace(":", "_")
         cpp = emit_typed_cpp.render_typed_cpp(
             typed, key, shash, "pixel", factory,
+            runtime_loop_bound_profile=RUNTIME_LOOP_PROFILE,
             hash_scalar_uint_xor_profile=PROFILE
         )
         self.assertIn("(((glsl::swizzle<0>(q) ^ glsl::swizzle<1>(q)) ^ glsl::swizzle<2>(q)) ^ glsl::swizzle<3>(q))", cpp)
+        grad4 = cpp.rsplit("glsl::Vec4 grad4(", 1)[1].split("double hash4(", 1)[0]
+        self.assertEqual(grad4.count("hash4(state, context,"), 4)
+        self.assertNotIn("std::array<double, 4> q", grad4)
+        self.assertIn("glsl::detail::js_to_int32(static_cast<double>(scaled[lane]))", cpp)
+        self.assertIn("+ std::uint32_t{65536}; return result; }(glsl::Vec4(", cpp)
+        self.assertNotIn("glsl::UVec4((glsl::IVec4(glsl::Vec4(", cpp)
+        self.assertIn("double seed_value", cpp)
+        self.assertIn('bindings.get_number("seed")', cpp)
+        self.assertIn("static_cast<double>(state.seed)", cpp)
+        self.assertIn("std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);", cpp)
+        from unittest import mock
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False):
+            historical_cpp = emit_typed_cpp.render_typed_cpp(
+                typed, key, shash, "pixel", factory,
+                runtime_loop_bound_profile=RUNTIME_LOOP_PROFILE,
+                hash_scalar_uint_xor_profile=PROFILE)
+        historical_grad4 = historical_cpp.rsplit("glsl::Vec4 grad4(", 1)[1].split("double hash4(", 1)[0]
+        self.assertEqual(historical_grad4.count("std::array<double, 4> q"), 4)
+        self.assertNotIn("hash4(state, context,", historical_grad4)
+        self.assertIn(
+            "glsl::UVec4((glsl::IVec4((ps * static_cast<float>(1000.0))) + std::int32_t(65536)))",
+            historical_cpp)
+        self.assertIn("double z = (static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize));", historical_cpp)
         # A caller-supplied source hash cannot authorize changes outside the
         # XOR nodes, including the Number-array helper and fractional z sites.
         for original, replacement in (
                 ("q.x += q.y * q.z;", "q.x += q.y + q.z;"),
+                ("uvec4 q = uvec4(ivec4(ps * 1000.0) + 65536);",
+                 "uvec4 q = uvec4(ivec4(ps * 1000.0) + 65535);"),
+                ("float(seed) * 0.1", "float(seed + 1) * 0.1"),
                 ("int z = pixelCoord.y / volSize;", "int z = pixelCoord.y + volSize;")):
             altered = raw.replace(original, replacement, 1)
             self.assertNotEqual(raw, altered)
@@ -26645,6 +26802,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             with self.assertRaises(emit_typed_cpp.TypedEmissionError):
                 emit_typed_cpp.render_typed_cpp(
                     forged, key, shash, "pixel", factory,
+                    runtime_loop_bound_profile=RUNTIME_LOOP_PROFILE,
                     hash_scalar_uint_xor_profile=PROFILE)
 
     def test_hash_scalar_uint_xor_pending_candidates_advancement(self) -> None:
@@ -27650,6 +27808,10 @@ void main() {
                  loop_proof_module.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY}
                 if key in loop_proof_module.SOURCE_GLOBAL_LITERAL_INT_KEYS else {})
             typed = analyze_program(ast, key, **seed_kwargs)
+            prior_profiles = (
+                {"fractal3d_log_profile": "fractal3d-log-flythrough3d-v1",
+                 "out_inout_admission_profile": "out-inout-admission-flythrough3d-v1"}
+                if key == "synth3d/flythrough3d:precompute" else {})
 
             # 1. Direct authentication
             nodes = authenticate_cross_sites(typed, shash, CROSS_PROFILE)
@@ -27689,6 +27851,7 @@ void main() {
                     typed, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=shash,
                     **seed_kwargs,
+                    **prior_profiles,
                 )
             self.assertIn(
                 "exact cross builtin admission profile carrier required",
@@ -27707,6 +27870,7 @@ void main() {
                     source_hash=shash,
                     cross_builtin_profile=CROSS_PROFILE,
                     **seed_kwargs,
+                    **prior_profiles,
                 )
             self.assertIn(
                 (("exact any-relational admission profile carrier required"
@@ -27723,8 +27887,9 @@ void main() {
             # requirement fires first, so admission is fail-closed either
             # way and glsl::cross lowering becomes observable only after the
             # struct declarations land.
-            for profile_kwargs in (dict(cross_builtin_profile=CROSS_PROFILE, **seed_kwargs),
-                                   dict(seed_kwargs)):
+            for profile_kwargs in (dict(cross_builtin_profile=CROSS_PROFILE, **seed_kwargs,
+                                        **prior_profiles),
+                                   dict(seed_kwargs, **prior_profiles)):
                 with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
                     emit_typed_cpp.render_typed_cpp(
                         typed, key, shash, "pixel",

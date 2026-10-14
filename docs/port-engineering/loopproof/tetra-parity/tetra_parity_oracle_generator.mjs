@@ -1,27 +1,28 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-import {
-  canonicalAdapterFactories,
-  canonicalKernelFactories,
-  kernelFactories,
-} from '../../../../../noisemaker-for-cpu/src/effects/catalog.js'
-import { effectRecords, UPSTREAM_REVISION } from '../../../../../noisemaker-for-cpu/src/effects/generated/upstream-snapshot.js'
-import { createCanonicalBindings } from '../../../../../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { bindGlslKernel } from '../../../../../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-import { runPass } from '../../../../../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../../../../../noisemaker-for-cpu/src/runtime/surface.js'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const platformRoot = path.resolve(here, '../../../../..')
 const cppRoot = path.join(platformRoot, 'noisemaker-for-cpp')
-const cpuRoot = path.join(platformRoot, 'noisemaker-for-cpu')
+const cpuRoot = process.env.NOISEMAKER_FOR_CPU || path.join(platformRoot, 'noisemaker-for-cpu')
+
+const {
+  canonicalAdapterFactories,
+  canonicalKernelFactories,
+  kernelFactories,
+} = await import(pathToFileURL(path.join(cpuRoot, 'src/effects/catalog.js')).href)
+const { effectRecords, UPSTREAM_REVISION } = await import(pathToFileURL(path.join(cpuRoot, 'src/effects/generated/upstream-snapshot.js')).href)
+const { createCanonicalBindings } = await import(pathToFileURL(path.join(cpuRoot, 'src/csl/glsl-kernel.js')).href)
+const { bindGlslKernel } = await import(pathToFileURL(path.join(cpuRoot, 'src/csl/glsl-runtime.js')).href)
+const { runPass } = await import(pathToFileURL(path.join(cpuRoot, 'src/runtime/pass-runner.js')).href)
+const { Surface } = await import(pathToFileURL(path.join(cpuRoot, 'src/runtime/surface.js')).href)
+
 const outputPath = path.join(here, 'tetra-parity-oracles.json')
 const reportPath = path.join(here, 'tetra-parity-oracle-report.md')
 const programKey = 'filter/tetraColorArray:tetraColorArray'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const corpusRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/filter/tetraColorArray/tetraColorArray.glsl')
 const f = Math.fround
 
@@ -90,12 +91,12 @@ function compareRgba8Buffers(reference, candidate) {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  adapter_index: ['src/effects/adapters/index.js', '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936'],
-  glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -112,8 +113,8 @@ if (sourceBytes.length !== 9754 || sha256(sourceBytes) !== '68c7cabce311a0a05ba1
 
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
-if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory158') throw new Error('canonical factory identity drift')
-if (Buffer.byteLength(canonicalFactory.toString()) !== 10795 || sha256(canonicalFactory.toString()) !== '839315b44a68ea9c712dca226754ea55c2283f6ea0ef30d4c79cd831f97036ff') {
+if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory155') throw new Error('canonical factory identity drift')
+if (Buffer.byteLength(canonicalFactory.toString()) !== 10858 || sha256(canonicalFactory.toString()) !== 'd2d918b2198dc3f33486619dd3bb663e7443b200bb0b06d66af3fa43f3977d20') {
   throw new Error('canonical factory body drift')
 }
 if (publicFactory !== canonicalFactory) throw new Error('public catalog factory is not the canonical factory identity')

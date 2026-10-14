@@ -18,13 +18,13 @@ Every case passes exact repeated-render identity, input immutability, finite-out
 | Case | Mode | Count | Positions | Smoothness | Alpha | Wrap seam | Float32 SHA-256 | RGBA8 SHA-256 |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- | --- |
 | count2-rgb-auto-hard-alpha0 | 0 | 2 | auto | 0 | 0 | false | `3dcff2fb3dd719685b5dace289a83c43e26ce71864629731ba1b16050efa7d59` | `fa791a7ffb1b338671bd88b623129369ae3d851d8ea22010b55460a713f9c40b` |
-| count2-hsv-manual-wrap-alpha1 | 1 | 2 | manual | 0.8 | 1 | true | `21820ad3eeec664df6e39a4811a492ec5df321987d40de9074efdafbdc6c2196` | `5f0ab6f8bdac32ef8a7452e5193123dd89e4844c8d38d0e4899ca6d3c919ab0d` |
-| count3-oklab-auto-smooth-alpha1 | 2 | 3 | auto | 0.55 | 1 | true | `7f6dd145d388035d887ab8f7354ea5f8ac112308ab2af4cd450acfb9109952f7` | `b093599bf67fbec5910b217f3a5e21b3eb3d45df0675fb81ea366444165f9abe` |
-| count4-oklch-manual-smooth-alpha-half | 3 | 4 | manual | 0.6 | 0.5 | false | `7bfa0f3bb354a40e96ac684b626f9297372099758275fc3b68c8e4b5e15e3497` | `84e3a53f2b74c8e0ad8ceb1eb56dd676dce0e362c5a7b2d178c18e5dcfce2204` |
+| count2-hsv-manual-wrap-alpha1 | 1 | 2 | manual | 0.8 | 1 | true | `58ad952052eda4ebadfb8b4fc3c1c3014233726326120a14a5495405bb63d586` | `5f0ab6f8bdac32ef8a7452e5193123dd89e4844c8d38d0e4899ca6d3c919ab0d` |
+| count3-oklab-auto-smooth-alpha1 | 2 | 3 | auto | 0.55 | 1 | true | `2ae126152d9abecf4b9cac72a65e1d165dbb3b6c4b9304ce536758d0654fc8f6` | `b093599bf67fbec5910b217f3a5e21b3eb3d45df0675fb81ea366444165f9abe` |
+| count4-oklch-manual-smooth-alpha-half | 3 | 4 | manual | 0.6 | 0.5 | false | `6c4e50071ae170f10dd0a77233bb9be2007a4ac6f9428637b70105628ee5e35c` | `84e3a53f2b74c8e0ad8ceb1eb56dd676dce0e362c5a7b2d178c18e5dcfce2204` |
 | count6-rgb-manual-hard-alpha1 | 0 | 6 | manual | 0 | 1 | false | `6ae31270aefed639e9a3d991343814acea31aefef0402195b0176c7e464a560e` | `9cfbaf480e5c6e50bff9b9532e44024e05d456986554ada3b58874c914362e88` |
-| count6-oklch-auto-wrap-alpha1 | 3 | 6 | auto | 0.9 | 1 | true | `86af3fa97c866fe0a27ebf45fd4c42be707cdff39c4c794b8599efd4b1602df4` | `faaa9d3df47b396be35a389966886f5dfee0f1baf5d0c8204089a24b429b82e3` |
-| count8-hsv-auto-wrap-alpha1 | 1 | 8 | auto | 1 | 1 | true | `b8564076387d982b669758eb32157354426136d75960178737a23d7a0be44acd` | `b0a1523f18451dae0757764e66b7db512a4d0dc3e8611aeb57047736fc09b164` |
-| count8-oklab-manual-wrap-alpha065 | 2 | 8 | manual | 0.5 | 0.65 | true | `80ce433ab64d14a0d0caaae7623bb087e8480937004565adeb777465afd0c008` | `185fcc2dcec8bac35addd0dcc7797a31d6e356ec1ae0fc45f590a0cb015fe9e9` |
+| count6-oklch-auto-wrap-alpha1 | 3 | 6 | auto | 0.9 | 1 | true | `dfcf4cf557445c5df92a66d97aeeb29a8adacad83bf5e28fb865938ea371efdd` | `faaa9d3df47b396be35a389966886f5dfee0f1baf5d0c8204089a24b429b82e3` |
+| count8-hsv-auto-wrap-alpha1 | 1 | 8 | auto | 1 | 1 | true | `e2c7a60c5af545b921e2174a25d3d26d237691d3f3572003e60458eab8faaa38` | `b0a1523f18451dae0757764e66b7db512a4d0dc3e8611aeb57047736fc09b164` |
+| count8-oklab-manual-wrap-alpha065 | 2 | 8 | manual | 0.5 | 0.65 | true | `a8187be8b9bb947b21bebd3348a80261b65743587ba4abde4fb8f6345b1acda2` | `185fcc2dcec8bac35addd0dcc7797a31d6e356ec1ae0fc45f590a0cb015fe9e9` |
 
 ## Probe and determinism contract
 
@@ -35,8 +35,8 @@ Every case passes exact repeated-render identity, input immutability, finite-out
 
 ## Reference provenance
 
-- Upstream snapshot revision: `c51037ad9e60850b74490c01a9eecf08c7d28e8c`
-- Corpus revision: `a024dc3a960cc44af454abc7aebce50456c194e6`
+- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - GLSL source SHA-256: `68c7cabce311a0a05ba116ce8d34bd5e70e0c09bfb8eab06c93f4f9e01fa5438`
-- Canonical factory SHA-256: `839315b44a68ea9c712dca226754ea55c2283f6ea0ef30d4c79cd831f97036ff`
-- Node reference engine used to freeze this file: `v24.7.0`
+- Canonical factory SHA-256: `d2d918b2198dc3f33486619dd3bb663e7443b200bb0b06d66af3fa43f3977d20`
+- Node reference engine used to freeze this file: `v26.0.0`

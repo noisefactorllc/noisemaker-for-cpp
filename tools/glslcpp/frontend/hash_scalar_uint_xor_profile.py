@@ -191,6 +191,25 @@ _PROFILES = {
 }
 
 
+_FLOW3D_DYNAMIC_PROFILE = {
+    **_PROFILES[FLOW3D_AGENT_KEY],
+    "norm_bytes": 7343,
+    "norm_sha256": "ae17b10b719181a4d613ebcb0b94b433f6fb9bbf834d3e48af88f58e93f327ac",
+    "functions_sha256": "c86c927f2fb8bf59b6c792a46c515059f8c0b59e4b8bb8bfc673c2e775e02b40",
+    "whole_sha256": "4c4b20021fac2c8676319378ec9bbcda8b134e909341fb674b3de21a254162cf",
+    "interface_sha256": "fd22dc46e80d2bc1fc46fd94322484a52668d588ff0271a6f531c8e2e3632142",
+}
+
+_NOISE3D_DYNAMIC_PROFILE = {
+    **_PROFILES[NOISE3D_PRECOMPUTE_KEY],
+    "norm_bytes": 5507,
+    "norm_sha256": "d50f37ea41e0877bfac3f59ca07b5ec1dac79d67f797c32a69c07d6748962ee0",
+    "functions_sha256": "ef0224f773e78e84d8cb306a5580bc8a97f915ad97d678d2fd72df279abb71e0",
+    "whole_sha256": "f2dfe686b09c651adb1eae82062bf9e99cb87d5b3ee3804bc9b8e65e80b36039",
+    "interface_sha256": "d629b2f6836f6a81379deed6c7ab772e3f700f695875d0db2e7c6bd60c46b333",
+}
+
+
 def _sha(value: object) -> str:
     return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
 
@@ -232,7 +251,17 @@ def authenticate_hash_scalar_uint_xor(
         raise ValueError(f"{PROFILE}: exact profile carrier required")
     if program.key not in HASH_SCALAR_UINT_XOR_KEYS:
         raise ValueError(f"{PROFILE}: program key {program.key} not in {HASH_SCALAR_UINT_XOR_KEYS}")
-    expected = _PROFILES[program.key]
+    defines = tuple((item.name, item.kind, item.canonical_value)
+                    for item in program.preprocessor_defines)
+    expected = (_FLOW3D_DYNAMIC_PROFILE
+                if program.key == FLOW3D_AGENT_KEY
+                and defines == (("BEHAVIOR", "str", "int"),)
+                else _NOISE3D_DYNAMIC_PROFILE
+                if program.key == NOISE3D_PRECOMPUTE_KEY
+                and defines == (("COLOR_MODE", "str", "int"),
+                                ("OCTAVES", "str", "int"),
+                                ("RIDGES", "str", "bool"))
+                else _PROFILES[program.key])
     if source_hash != expected["raw_sha256"]:
         raise ValueError(f"{PROFILE}: {program.key} caller source hash mismatch")
 
@@ -272,4 +301,3 @@ def apply_hash_scalar_uint_xor(
     """Validate profile and return program untouched (identity carrier)."""
     authenticate_hash_scalar_uint_xor(program, source_hash, profile)
     return program
-

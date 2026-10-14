@@ -20,6 +20,7 @@ from .typed_ir import TypedExpression, TypedProgram, TypedStatement
 
 
 PROFILE = "cross-builtin-admission-v1"
+RENDER_DYNAMIC_PROFILE = "cross-builtin-render3d-dynamic-v1"
 
 RENDER_3D_KEY = "render/render3d:render3d"
 RENDER_LIT_3D_KEY = "render/renderLit3d:renderLit3d"
@@ -33,31 +34,31 @@ CROSS_KEYS = frozenset({
 
 _PROFILES = {
     RENDER_3D_KEY: {
-        "raw_bytes": 14169,
-        "raw_sha256": "5ff6fc621924c7c53425c2f18202e549ace6a4ff8a96f9e908ad26bba6e0c7e2",
-        "norm_bytes": 10945,
-        "norm_sha256": "0fde47a6fd4d39a0cd085a5af72e87de5f3fdf2456c24c2c11667318866dcffb",
+        "raw_bytes": 14393,
+        "raw_sha256": "138d3e0daa247100fe3553b2699bce3f302e77fce25d9d4fb507868d31a84a30",
+        "norm_bytes": 10963,
+        "norm_sha256": "a211ec112f89ccea8cabeee2bd7f45a896b9c54812b49ff4a6091e9629aa3f53",
         # Re-locked to the seed-attached post-proof tree: this key is also a
         # source-global-literal-int-v1 carrier (MAX_STEPS=256 march bound),
         # and the attached counted-loop proofs change the functions and
         # whole-program identity authenticated below. Pre-re-lock values were
         # functions 166c56ce… / whole a72dd52f… (the pre-proof tree); the
         # interface identity is unchanged (it never folds in the proofs).
-        "functions_sha256": "f6bbb586902c4a17f95866f17f1696059021943a1af07e404d398833942d0d84",
-        "whole_sha256": "00dfc79804df55b1d20d681fc67ad5da40e6f5effa37c38f26a212063221a744",
-        "interface_sha256": "33bbe0c8346497495b7d0bab56b40840854e27a6e56ec14e876000d716e101e6",
+        "functions_sha256": "f658d31e5a1ba348713e862f9016ece193419831f58da04b035a4c7bb0faba37",
+        "whole_sha256": "8de2584a45895b30fec34b527112c52c3b0688f041c299a42bdeac879e493838",
+        "interface_sha256": "4f1eb4b5aea7ad075a5756dfa748d88f83705993085f1446c427d9d4e09cb3fe",
         "cross_count": 2,
     },
     RENDER_LIT_3D_KEY: {
-        "raw_bytes": 12143,
-        "raw_sha256": "77460fb4a9e53f7776d7a3d73cb3fcc1840dce577c6f0989354eeb540011529f",
-        "norm_bytes": 9504,
-        "norm_sha256": "cc72ea7149272c38ff05fb6842a4f7f720ea05c4065b2e6900edb7f1885ec980",
+        "raw_bytes": 12406,
+        "raw_sha256": "ea309e7e9c4bcb13fd96bf05f0e587bfd25557b7184872b32aabc160df49b627",
+        "norm_bytes": 9486,
+        "norm_sha256": "436cdf22da60272b948b145b0dabc113d65bc1b9006659517e07dcd80ba48b62",
         # Re-locked to the seed-attached post-proof tree (see the render3d
         # note above). Pre-re-lock: functions 53177f75… / whole 45ddfc7d….
-        "functions_sha256": "82752b9a047ff5613dbf7073aad1a4358ed83b46cb93b406aa5b4f78c9cdb11c",
-        "whole_sha256": "a7553f3dcf3c0ff6bf74e8d55bb6976c8c70dff4bda014fb3cdd59db50b4450c",
-        "interface_sha256": "ec6d329d5512d28f68ce1ea7b2bd102a7ef1985fe5e72d8ed6cf3c11b918ca49",
+        "functions_sha256": "d6c4f6bbf5a4cd19ca2006fd1b997fde798c280a51039246be9e1c423cc41e38",
+        "whole_sha256": "2688f3be3bed47ff1facee122dd2e7da11501f21044bda9206c847efaf077ac0",
+        "interface_sha256": "e3f61fcd73cd0441cf76d4a119f618bd6fad0515ec6b588d074ccc2751e87b86",
         "cross_count": 2,
     },
     FLYTHROUGH_3D_PRECOMPUTE_KEY: {
@@ -80,6 +81,17 @@ _PROFILES = {
         "interface_sha256": "45e03760bdc51c6217d746b5fb329fe8c67e9f2b5301fb88660c79db93f32c8a",
         "cross_count": 7,
     },
+}
+
+_RENDER_DYNAMIC_PROFILE = {
+    "raw_bytes": 14393,
+    "raw_sha256": "138d3e0daa247100fe3553b2699bce3f302e77fce25d9d4fb507868d31a84a30",
+    "norm_bytes": 11017,
+    "norm_sha256": "001cda0e746f30bfd3c0d407ebc5b057cbbca5f7d359cae71bec196e37292b57",
+    "functions_sha256": "5dcdd99853125e9f83aab78cd0fb2bfbeef19488832897e0d5d9f7bb0d735af9",
+    "whole_sha256": "1bc8d1107edcc33329aac2d5ff524f9ddc26a1e98fd1eb3486bfb438caff5a86",
+    "interface_sha256": "7a3699a10686d022f30a5b40aac40f164b022bc7203508f875949f8f5c87cf31",
+    "cross_count": 2,
 }
 
 
@@ -120,16 +132,22 @@ def authenticate_cross_sites(
         program: TypedProgram, source_hash: str | None,
         profile: str | None) -> tuple[TypedExpression, ...]:
     """Authenticate every ``cross`` builtin site and return the exact AST nodes."""
-    if profile != PROFILE:
+    dynamic_render = program.key == RENDER_3D_KEY and profile == RENDER_DYNAMIC_PROFILE
+    if profile != PROFILE and not dynamic_render:
         raise ValueError(f"{PROFILE}: exact profile carrier required")
     if program.key not in CROSS_KEYS:
         raise ValueError(f"{PROFILE}: program key {program.key} not in {CROSS_KEYS}")
-    expected = _PROFILES[program.key]
+    expected = _RENDER_DYNAMIC_PROFILE if dynamic_render else _PROFILES[program.key]
     if source_hash != expected["raw_sha256"]:
         raise ValueError(f"{PROFILE}: {program.key} caller source hash mismatch")
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
+    if dynamic_render and tuple((item.name, item.kind, item.canonical_value)
+                                for item in program.preprocessor_defines) != (
+                                    ("FILTERING", "str", "int"),
+                                    ("INVERT", "str", "bool")):
+        raise ValueError(f"{RENDER_DYNAMIC_PROFILE}: runtime define identity mismatch")
     if (len(raw) != expected["raw_bytes"]
             or hashlib.sha256(raw).hexdigest() != expected["raw_sha256"]
             or len(normalized) != expected["norm_bytes"]

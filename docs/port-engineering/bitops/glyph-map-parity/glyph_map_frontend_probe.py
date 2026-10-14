@@ -32,16 +32,16 @@ from tools.glslcpp.frontend.typed_ir import (  # noqa: E402
 )
 
 
-REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 KEY = "filter/glyphMap:glyphMap"
 PROFILE = "glyph-map-nonnegative-int-shift-v1"
 SOURCE = (ROOT / "tools/glslcpp/corpus" / REVISION
           / "sources/filter/glyphMap/glyphMap.glsl")
-RAW_SHA256 = "853c3c15f300cf56ba3c11d5613cb91bfcb14b8b2f1be6bb5193e71397fdcea1"
-NORMALIZED_SHA256 = "03e74590b109c90a3c31ad003e62e9448a503a15afe68c18ec4a9de8d1bc2c8f"
-FUNCTIONS_SHA256 = "96ad0a2ebb84546c658d4526dcd62b31768f7f8abb2157760beaa2d61f1feb73"
-WHOLE_SHA256 = "837cf0f8548c8e39960c3aa0cc55f92d2aab0bf4aae1e878c0857679322b8d69"
-INTERFACE_SHA256 = "de5f9e502fa19dfd21b54cf8256f9d12f6d4989d826f7fe99a3d7427b9a568f7"
+RAW_SHA256 = "dc0af9a6a6fb4d0cd62ea25c4508a714a36a1dc66923f5578d91ac190d9f4dd6"
+NORMALIZED_SHA256 = "1e0aa0b503cb7fd14b614a78ef475746f2105493ad787bfbdeff8883ce00e18f"
+FUNCTIONS_SHA256 = "d5bc950de06944d7ed4ea48b5cc27b20172f0b0e15f4d41d145ec2fab4a9bca0"
+WHOLE_SHA256 = "83db28647014ef2a91bf062634ab55864ed1af687f4d4535136961a5f4eb21eb"
+INTERFACE_SHA256 = "b430c360f715e4e63260a7042b8b4df79d4f9fbef3edb614cc257cd271dc9293"
 
 CAPTURED_PRE_ADMISSION_FRONTIER = {
     "typed_slice_programs": 174,
@@ -285,9 +285,9 @@ def identity_accepts(program: TypedProgram, *, key: str, raw_hash: str,
         profile == PROFILE,
         key == KEY,
         raw_hash == RAW_SHA256,
-        len(program.raw_source.encode()) == 7838,
+        len(program.raw_source.encode()) == 8145,
         hashlib.sha256(program.raw_source.encode()).hexdigest() == RAW_SHA256,
-        len(program.source.encode()) == 4939,
+        len(program.source.encode()) == 4967,
         hashlib.sha256(program.source.encode()).hexdigest() == NORMALIZED_SHA256,
         sha(program.functions) == FUNCTIONS_SHA256,
         whole(program) == WHOLE_SHA256,
@@ -333,18 +333,18 @@ def identity_accepts(program: TypedProgram, *, key: str, raw_hash: str,
         tuple(sorted({item[1].children[1].literal_value
                       for item in assignments}))
         == (4, 9, 10, 11, 14, 16, 17, 19, 21, 22, 23, 25, 26, 27, 31),
-        span(clamps[0][1]) == "309:10-309:25",
-        sha(clamps[0][1]) == "d702374ee3b6f495c76840d0ed5858954b19fade833fa56c44acbfeb2c4dd81c",
+        span(clamps[0][1]) == "313:10-313:25",
+        sha(clamps[0][1]) == "742fb5ac014f8a3578571fcc55ad6005faf0c3d396bae9d762f64d44e40b0ba8",
         tuple(child.literal_value for child in clamps[0][1].children[1:])
         == (0, 4),
-        span(calls[0][1]) == "331:22-331:50",
-        sha(calls[0][1]) == "b9b6b899ee459bfca7d0eb1fc1ab9a621d5ad134d0624aa987b5b65dc274d6d1",
+        span(calls[0][1]) == "334:22-334:50",
+        sha(calls[0][1]) == "989e0a0f53ec1b2570f46857af888dde97a7fce9aa85c7629d48268a783cb948",
         tuple(getattr(child.symbol, "id", None)
               for child in calls[0][1].children) == (37, 31, 32),
         span(conversions[0][1]) == "288:12-288:22",
         sha(conversions[0][1]) == "9a729fd6e0b5e130b90ed981a2d5c1e0b9f9f7346cefec23f51640c0075e987a",
         tuple(span(item[1]) for item in reads)
-        == ("319:43-319:54", "320:35-320:46", "325:52-325:63"),
+        == ("322:43-322:54", "323:35-323:46", "328:52-328:63"),
     ))
 
 

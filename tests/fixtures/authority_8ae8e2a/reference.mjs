@@ -1,14 +1,14 @@
-import {readFile, mkdtemp, mkdir, writeFile, rm} from 'node:fs/promises';
+import {readFile, lstat, mkdtemp, mkdir, writeFile, rm} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 // The complete relative-import closure of the four modules this capture drives,
-// at noisemaker-for-cpu 8ae8e2a.
+// at noisemaker-for-cpu 4307ca9f26fc415e4fc5e75227d429d35cc741cd.
 const hashes = {
-  'src/effects/generated/canonical-kernels.js': 'f4f3c23286da0d72032a6156ed1bd641b93a39d54a6e1812079280d2d3243e70',
-  'src/csl/glsl-kernel.js': 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa',
-  'src/csl/glsl-runtime.js': 'a1ceb0e4580ba989ecebf8c06ceca81847434623c040deaa143a3014ea1fd9e5',
+  'src/effects/generated/canonical-kernels.js': 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  'src/csl/glsl-kernel.js': 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
+  'src/csl/glsl-runtime.js': 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1',
   'src/runtime/pass-runner.js': 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   'src/runtime/sampler.js': '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328',
   'src/runtime/surface.js': '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
@@ -21,7 +21,10 @@ try {
   // Import only an authenticated, regular-file copy of the complete closure.
   await writeFile(resolve(scratch, 'package.json'), '{"type":"module"}');
   for (const [name, digest] of Object.entries(hashes)) {
-    const bytes = await readFile(resolve(cpuRoot, name));
+    const sourcePath = resolve(cpuRoot, name);
+    const stat = await lstat(sourcePath);
+    if (stat.isSymbolicLink() || !stat.isFile()) throw new Error(`CPU source must be a regular file: ${name}`);
+    const bytes = await readFile(sourcePath);
     if (sha(bytes) !== digest) throw new Error(`CPU source hash mismatch: ${name}`);
     await mkdir(dirname(resolve(scratch, name)), {recursive: true});
     await writeFile(resolve(scratch, name), bytes);
@@ -63,5 +66,5 @@ try {
     for (let i = 0; i < words.length; ++i) bytes.writeUInt32LE(words[i], i * 4);
     results.push({name: test.name, float32_sha256: sha(bytes), rgba8_sha256: sha(destination.toRgba8())});
   }
-  console.log(JSON.stringify({cpu_revision: '8ae8e2ae97812952db49246a87b04d7e5a480494', source_hashes: hashes, results}));
+  console.log(JSON.stringify({cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', source_hashes: hashes, results}));
 } finally { await rm(scratch, {recursive: true, force: true}); }

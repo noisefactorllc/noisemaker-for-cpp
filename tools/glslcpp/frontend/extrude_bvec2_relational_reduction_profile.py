@@ -167,6 +167,9 @@ def authenticate_extrude_bvec2_relational_reduction(
     """Authenticate Extrude and return only candidate-owned exact objects."""
     if profile != PROFILE:
         raise _fail("exact profile carrier required")
+    if tuple((item.name, item.kind, item.canonical_value)
+             for item in program.preprocessor_defines) == _DYNAMIC_DEFINES:
+        return _authenticate_dynamic_extrude(program, source_hash)
     if _sha(_profile_tuple()) != _PROFILE_SHA256:
         raise _fail("internal frozen profile tuple mismatch")
     if program.key != EXTRUDE_KEY or source_hash != _RAW_SHA256:
@@ -319,3 +322,144 @@ def is_authenticated_reduction_node(
         node: TypedExpression) -> bool:
     """True only for the exact authenticated ``all`` objects."""
     return any(node is item for item in proof.reductions)
+
+
+# Runtime define admission is a separate exact tree. The default proof above
+# keeps its original literals and rejection matrix.
+_DYNAMIC_DEFINES = (('DEPTH_SOURCE', 'str', 'int'),
+                    ('EXTRUDE_TYPE', 'str', 'int'))
+_DYNAMIC_IDENTITY = (6824,
+ '41ebd256358fff6505ea3e9ad06affdd4359c1bfc796d8b4dba25bb48e040647',
+ 'b836196d9b50e75d666117917fc994719f24d1248938331e25f4e67d69573603',
+ '82b7f8a9c0eafe8345bad0a20520f70fa8237c3dc1df7cddb3e9e3baac985e1c',
+ '9036ae0087a1743136d4e10956087e3ffc942fd1657b59f43d8751debdda1283',
+ (('DEPTH_SOURCE', 'str', 'int'), ('EXTRUDE_TYPE', 'str', 'int')),
+ 3,
+ 0,
+ 3,
+ 9,
+ 90,
+ True,
+ (38, 'main', 'void', 0, 16, '133:1-250:2'))
+_DYNAMIC_SITES = (('all',
+  (12, 's1', 's6', 's1', 's2', 'e0', 0),
+  '177:23-177:72',
+  'bool',
+  '9b72548629d6aff8d740f625e7f856922bc3e16713f4976141e54a779ae2be76',
+  'declaration',
+  ('bvec2',),
+  ('9efafc9a179f150e5e09aef0dcf98a131f41c70c349b49a78afeebdd95e20fac',),
+  ('for', 'block', 'if', 'block', 'decl'),
+  ('149:5-192:6', '149:33-192:6', '160:1-189:2', '171:8-189:2', '177:9-177:73')),
+ ('lessThanEqual',
+  (12, 's1', 's6', 's1', 's2', 'e0', 0, 0),
+  '177:27-177:71',
+  'bvec2',
+  '9efafc9a179f150e5e09aef0dcf98a131f41c70c349b49a78afeebdd95e20fac',
+  'builtin',
+  ('vec2', 'vec2'),
+  ('e27f3697b4aca0ae5ef005935cf1b09e8ebc88b609c4fdaed746d16618f16867',
+   '040ac387dc9474554f6a3b02ce7d8fe5c6f92a40d0a28e2534445c2c6a5f7e75'),
+  ('for', 'block', 'if', 'block', 'decl'),
+  ('149:5-192:6', '149:33-192:6', '160:1-189:2', '171:8-189:2', '177:9-177:73')),
+ ('all',
+  (12, 's1', 's6', 's1', 's3', 'e0', 0, 1),
+  '178:37-178:81',
+  'bool',
+  '427f95c03dc26e6dd1654cec7830872103796e4bc3064998f63ee80837990c5d',
+  'binary',
+  ('bvec2',),
+  ('d41b660fdc6ffe840f8621a4e999c121868d1ff181205f6034ab4979c34dcaed',),
+  ('for', 'block', 'if', 'block', 'decl'),
+  ('149:5-192:6', '149:33-192:6', '160:1-189:2', '171:8-189:2', '178:9-178:82')),
+ ('lessThanEqual',
+  (12, 's1', 's6', 's1', 's3', 'e0', 0, 1, 0),
+  '178:41-178:80',
+  'bvec2',
+  'd41b660fdc6ffe840f8621a4e999c121868d1ff181205f6034ab4979c34dcaed',
+  'builtin',
+  ('vec2', 'vec2'),
+  ('76d115e8cbaf53f5da44952af9f3b08091d7eee4f28d1ff09e25490ae4010c46',
+   'f7eb2ddbbd68b2d2ce7a4c17bbe51ffc41cef1b7432e24c05d1fb317e70f46e4'),
+  ('for', 'block', 'if', 'block', 'decl'),
+  ('149:5-192:6', '149:33-192:6', '160:1-189:2', '171:8-189:2', '178:9-178:82')))
+_DYNAMIC_RECORD_SHA256 = 'faf1e4932c0e88ac65b01b9ea7650f29e0f97b5b78a694dbd447dab99b7a719d'
+
+
+def _authenticate_dynamic_extrude(
+        program: TypedProgram, source_hash: str | None,
+) -> ExtrudeBvec2RelationalReductionProof:
+    if (_sha((_DYNAMIC_IDENTITY, _DYNAMIC_SITES)) != _DYNAMIC_RECORD_SHA256
+            or program.key != EXTRUDE_KEY or source_hash != _RAW_SHA256
+            or len(program.raw_source.encode('utf-8')) != _RAW_BYTES
+            or hashlib.sha256(program.raw_source.encode('utf-8')).hexdigest()
+            != _RAW_SHA256 or program.body_status != 'analyzed'):
+        raise _fail('dynamic record, source, or program status mismatch')
+    loop = program.counted_loop_proof
+    if loop is None:
+        raise _fail('dynamic loop proof is absent')
+    main = next((item for item in program.functions if item.name == 'main'), None)
+    if main is None:
+        raise _fail('dynamic main is absent')
+    identity = (
+        len(program.source.encode('utf-8')),
+        hashlib.sha256(program.source.encode('utf-8')).hexdigest(),
+        _sha(program.functions), _whole(program), _interface(program),
+        tuple((item.name, item.kind, item.canonical_value)
+              for item in program.preprocessor_defines),
+        loop.loop_count, loop.unproved_loop_count, loop.max_effective_depth,
+        loop.max_lexical_product, loop.entrypoint_charge, loop.call_graph_acyclic,
+        (main.id, main.name, main.return_type.display(), len(main.parameters),
+         len(main.body), _span(main)))
+    if identity != _DYNAMIC_IDENTITY or program.structs or program.uniform_blocks:
+        raise _fail('dynamic function, whole tree, interface, or loop mismatch')
+    if any(getattr(program, field, None) is not None
+           for field in _OPTIONAL_PROOF_FIELDS):
+        raise _fail('unrelated proof carrier is present')
+    if ((program.resources.uniforms, program.resources.samplers,
+         program.resources.outputs, program.resources.uses_texture,
+         program.resources.uses_derivatives) !=
+            (('DEPTH_SOURCE', 'EXTRUDE_TYPE', 'inputTex', 'resolution',
+              'tileOffset', 'fullResolution', 'size', 'depth', 'solidFront'),
+             ('inputTex',), ('fragColor',), True, False)):
+        raise _fail('dynamic binding signature mismatch')
+    located = []
+    bvec_nodes = []
+    for function in program.functions:
+        for index, statement in enumerate(function.body):
+            for node, parent, path, chain in _walk_statement(statement, (index,)):
+                if node.type is not None and node.type.display().startswith('bvec'):
+                    bvec_nodes.append(node)
+                if node.kind == 'builtin' and node.callee in ('all', 'lessThanEqual'):
+                    if function is not main:
+                        raise _fail('dynamic closure outside main')
+                    located.append((node, parent, path, chain))
+    actual = tuple((node.callee, path, _span(node), node.type.display(),
+                    _sha(node), None if parent is None else parent.kind,
+                    tuple(child.type.display() for child in node.children),
+                    tuple(_sha(child) for child in node.children),
+                    tuple(item.kind for item in chain),
+                    tuple(_span(item) for item in chain))
+                   for node, parent, path, chain in located)
+    if actual != _DYNAMIC_SITES or len(located) != 4:
+        raise _fail('dynamic closure site or ancestry mismatch')
+    reductions = (located[0][0], located[2][0])
+    relationals = (located[1][0], located[3][0])
+    if len(bvec_nodes) != 2 or any(
+            not any(node is relational for relational in relationals)
+            for node in bvec_nodes):
+        raise _fail('dynamic bvec2 value escapes its reduction')
+    for reduction, relational, (_, parent, _, _) in zip(
+            reductions, relationals, (located[1], located[3])):
+        if (reduction.children != (relational,) or parent is not reduction
+                or len(relational.children) != 2):
+            raise _fail('dynamic relational parent identity mismatch')
+    parents = (located[0][1], located[2][1])
+    if any(parent is None for parent in parents):
+        raise _fail('dynamic reduction parent is absent')
+    result = ExtrudeBvec2RelationalReductionProof(
+        main, reductions, relationals, parents,
+        (located[0][3], located[2][3]))
+    if len(result.consumed_objects) != 13:
+        raise _fail('dynamic consumed-object census mismatch')
+    return result

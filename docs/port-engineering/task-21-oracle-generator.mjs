@@ -1,29 +1,36 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
 
-import { canonicalKernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) {
+  throw new Error('usage: task-21-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
+}
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalKernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outputPath = path.join(here, 'task-21-oracles.json')
-const cpuRoot = '../noisemaker-for-cpu'
 const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const corpusRevision = EXPECTED.upstreamRevision
 const corpus = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision)
 const canonicalKernelsPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const key = 'filter/degauss:degauss'
 const source = 'sources/filter/degauss/degauss.glsl'
-const expectedRawBytes = 10803
-const expectedRawSha256 = '915f208e47a5bf012a3e0583e03a7ee888b7103d5834b386d32c916b8715050c'
-const expectedNormalizedSha256 = '7d413b240236506511f405319025281a92eb1108c6193ef26a6d0d7bcbae7560'
-const expectedCanonicalKernelsSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
-const expectedFactorySha256 = 'f515a7ac409c98fc420d9fa9a7e460eb37018b34e3be40419191fc7655a29c38'
-const expectedFunctionTupleFingerprint = 'f68d742e44e341c1332f8c37ac8544aaa8c5bef979e496a27d45ac28ba48f95a'
-const expectedWholeProgramFingerprint = '73e7e3e3b5e0b7ee9b4e1558d51fc14a01e9820c89674a0b5e42e568bec8d13d'
+const expectedRawBytes = 11490
+const expectedRawSha256 = 'cfefff702ef78db421c088a3b679da2c576b7f4484c777f1d414c66aef0c1a1a'
+const expectedNormalizedSha256 = 'a0a42b0db6bae308295657d5540989bba939ec7cc99f121d97e5d98fd3cca304'
+const expectedCanonicalKernelsSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
+const expectedFactorySha256 = '2dc66240984430c10a2a417e891517094371b3f2a03574931f50be929399f776'
+const expectedFunctionTupleFingerprint = 'b806b6ce4f98eae3438bc0b01ed3fe0a3aa1f1d1c9a6186c8d18da0675c878d0'
+const expectedWholeProgramFingerprint = '3079146057f6cc68f832636748032e32777c84b0d2e36a6843ea9c2a0542d3f6'
 
 const f = Math.fround
 const frame = 17
@@ -61,7 +68,7 @@ if (rawSource.byteLength !== expectedRawBytes || sha256(rawSource) !== expectedR
 const canonicalKernels = fs.readFileSync(canonicalKernelsPath)
 if (sha256(canonicalKernels) !== expectedCanonicalKernelsSha256) throw new Error('pinned canonical-kernels.js drift')
 const canonicalFactory = canonicalKernelFactories[key]
-if (typeof canonicalFactory !== 'function' || canonicalFactory.name !== 'canonicalFactory45') throw new Error(`missing pinned canonical factory ${key}`)
+if (typeof canonicalFactory !== 'function' || canonicalFactory.name !== 'canonicalFactory43') throw new Error(`missing pinned canonical factory ${key}`)
 const canonicalFactoryText = canonicalFactory.toString()
 if (sha256(Buffer.from(canonicalFactoryText, 'utf8')) !== expectedFactorySha256) throw new Error('pinned Degauss factory drift')
 for (const name of sourceFunctions) {
@@ -440,6 +447,8 @@ function build() {
     corpus_revision: corpusRevision,
     provenance: {
       node: process.version,
+      cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+      cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
       api: 'canonicalKernelFactories+bindCanonicalKernel+runPass+Surface',
       canonical_kernels_path: 'src/effects/generated/canonical-kernels.js',
       canonical_kernels_sha256: expectedCanonicalKernelsSha256,
@@ -485,15 +494,15 @@ function build() {
 }
 
 const expected = build()
-if (process.argv.length === 2) {
+if (!process.argv.includes('--check') && !process.argv.includes('--write')) {
   process.stdout.write(expected)
-} else if (process.argv.length === 3 && process.argv[2] === '--write') {
+} else if (process.argv.includes('--write') && !process.argv.includes('--check')) {
   fs.writeFileSync(outputPath, expected, 'utf8')
   process.stdout.write(`wrote ${path.basename(outputPath)}\n`)
-} else if (process.argv.length === 3 && process.argv[2] === '--check') {
+} else if (process.argv.includes('--check') && !process.argv.includes('--write')) {
   const actual = fs.readFileSync(outputPath, 'utf8')
   if (actual !== expected) throw new Error(`${outputPath} is not the exact frozen canonical oracle output`)
   process.stdout.write(`ok ${path.basename(outputPath)}\n`)
 } else {
-  throw new Error('usage: node task-21-oracle-generator.mjs [--write|--check]')
+  throw new Error('usage: task-21-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
 }

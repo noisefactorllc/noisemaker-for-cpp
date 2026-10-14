@@ -49,7 +49,10 @@ const canonicalAdapterKeys = Object.freeze([
 ])
 const corpusAdapterKeysExpected = Object.freeze([
   'classicNoisedeck/fractal:fractal', 'filter/historicPalette:historicPalette',
-  'filter/palette:palette', 'synth/julia:julia', 'synth/remap:remap',
+  'filter/palette:palette', 'filter3d/flow3d:deposit',
+  'points/dla:depositGrid', 'points/lenia:deposit',
+  'points/physarum:deposit', 'render/pointsBillboardRender:deposit',
+  'render/pointsRender:deposit', 'synth/julia:julia', 'synth/remap:remap',
 ])
 // Complete authority closure. Every transitive runtime dependency is pinned;
 // recording hashes discovered from the candidate directory would authenticate

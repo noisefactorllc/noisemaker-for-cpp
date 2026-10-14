@@ -35,7 +35,7 @@ class CMakePackageTests(unittest.TestCase):
                 environment,
             )
             self._run(
-                ["cmake", "--build", str(build_root), "--target", "noisemaker-cpu", "--parallel"],
+                ["cmake", "--build", str(build_root), "--target", "noisemaker-cpu", "--parallel", "2"],
                 environment,
             )
             self._run(["cmake", "--install", str(build_root)], environment)
@@ -59,7 +59,7 @@ class CMakePackageTests(unittest.TestCase):
                 ],
                 environment,
             )
-            self._run(["cmake", "--build", str(consumer_build_root), "--parallel"], environment)
+            self._run(["cmake", "--build", str(consumer_build_root), "--parallel", "2"], environment)
             self._run([str(consumer_build_root / "noisemaker-package-consumer")], environment)
 
     @staticmethod

@@ -61,6 +61,7 @@ class TestPatternEmitterProofBridge(unittest.TestCase):
             {},
             {"testpattern_frontend_proof": proof._replace(program_key="foreign")},
             {"testpattern_frontend_proof": proof._replace(round_node=program.functions[0])},
+            {"testpattern_frontend_proof": proof._replace(digit_division=program.functions[0])},
             {"testpattern_frontend_proof": proof._replace(dynamic_indexes=(None,))},
         )
         for kwargs in cases:

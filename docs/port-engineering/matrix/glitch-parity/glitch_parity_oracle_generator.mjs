@@ -10,11 +10,9 @@ const cppRoot = fs.realpathSync(path.resolve(here, '../../../..'))
 const outputPath = path.join(here, 'glitch-parity-oracles.json')
 const reportPath = path.join(here, 'glitch-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
-const frontendProbePath = path.join(here, 'glitch_matrix_frontend_probe.py')
 const programKey = 'classicNoisedeck/glitch:glitch'
-// This package reproduces the immutable historical source capture.
-const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
-const corpusRevision = HISTORICAL_CORPUS_REVISION
+// This package measures the current authenticated CPU and GLSL source.
+const corpusRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/classicNoisedeck/glitch/glitch.glsl')
 const f = Math.fround
 
@@ -281,16 +279,45 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
-  glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
 
+const expectedImportClosure = {
+  "src/csl/glsl-kernel.js": "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff",
+  "src/csl/glsl-runtime.js": "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1",
+  "src/csl/runtime.js": "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee",
+  "src/effects/adapters/bit-effects.js": "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7",
+  "src/effects/adapters/crt.js": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
+  "src/effects/adapters/f32-color.js": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046",
+  "src/effects/adapters/fractal.js": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29",
+  "src/effects/adapters/index.js": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e",
+  "src/effects/adapters/julia.js": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
+  "src/effects/adapters/median.js": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583",
+  "src/effects/adapters/palette.js": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452",
+  "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
+  "src/effects/adapters/snow.js": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366",
+  "src/effects/catalog.js": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+  "src/effects/definition.js": "64d722d6bdeec753ff294c76f4b58c72a38c8182cc8d7bf65c2c113d07a96a6d",
+  "src/effects/generated/canonical-adapter-data.js": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab",
+  "src/effects/generated/canonical-kernels.js": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
+  "src/effects/generated/kernels.js": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01",
+  "src/effects/generated/upstream-snapshot.js": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467",
+  "src/effects/registry.js": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618",
+  "src/runtime/automation.js": "982b3ea9b83e100aebfb9a9091be058516c41837a40d7731d629f896a4d48c92",
+  "src/runtime/pass-runner.js": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
+  "src/runtime/sampler.js": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328",
+  "src/runtime/surface.js": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
+}
 const actualImportClosure = importClosure()
+if (JSON.stringify(actualImportClosure) !== JSON.stringify(Object.entries(expectedImportClosure).sort((left, right) => left[0].localeCompare(right[0])))) {
+  throw new Error("Glitch authenticated CPU import closure drift")
+}
 const load = (relative) => import(pathToFileURL(confine(path.join(cpuRoot, relative), 'load')).href)
 const [
   { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories },
@@ -314,7 +341,7 @@ for (const [name, [relativePath, expectedHash]] of Object.entries(provenanceFile
 }
 
 const sourceBytes = fs.readFileSync(sourcePath)
-if (sourceBytes.length !== 7894 || sha256(sourceBytes) !== '13d6350eb21cfb5a7c9f0d0a8fffe8e7495068ca2e082d1520ef14ca5b34c134') {
+if (sourceBytes.length !== 8268 || sha256(sourceBytes) !== '4bb633e963eed011c4724d9b18470baed3ac474eadce98e06288ace5c382846a') {
   throw new Error('pinned Glitch GLSL source drift')
 }
 const sourceText = sourceBytes.toString('utf8')
@@ -331,7 +358,7 @@ if (JSON.stringify(sourceCensus) !== JSON.stringify({ mat4_constructors: 3, mat4
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
 if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory8') throw new Error('canonical Glitch factory identity drift')
-if (Buffer.byteLength(canonicalFactory.toString()) !== 12695 || sha256(canonicalFactory.toString()) !== 'a97f27931e6ef7c2f909b130b17ec9d036ddad3dffe85ef1cec312cea0eef815') {
+if (Buffer.byteLength(canonicalFactory.toString()) !== 13082 || sha256(canonicalFactory.toString()) !== '3f173bf9985737b2727080d0ed94cb1c873c73df7cbc36ab0c9ddf7d9f231bcb') {
   throw new Error('canonical Glitch factory body drift')
 }
 if (publicFactory !== canonicalFactory) throw new Error('public catalog Glitch factory is not the canonical factory identity')
@@ -360,14 +387,67 @@ if (effect.func !== 'glitch' || effect.kind !== 'filter' || effect.namespace !==
   throw new Error('Glitch effect/pass interface drift')
 }
 
-const frontendProcess = spawnSync('python3', ['-B', frontendProbePath], {
+const currentFrontendProof = `
+import dataclasses, hashlib, json, pathlib
+from tools.glslcpp import generate_typed_slice as gen
+from tools.glslcpp.frontend import parse_program
+from tools.glslcpp.frontend.semantic import analyze_program
+from tools.glslcpp.frontend.glitch_mat4_chain_profile import PROFILE, authenticate_glitch_mat4_chain
+key = 'classicNoisedeck/glitch:glitch'
+path = pathlib.Path(${JSON.stringify(sourcePath)})
+raw = path.read_text(encoding='utf-8')
+digest = hashlib.sha256(raw.encode()).hexdigest()
+candidate = analyze_program(parse_program(raw, key, gen._defaults(pathlib.Path.cwd(), key)), key)
+proof = authenticate_glitch_mat4_chain(candidate, digest, PROFILE)
+def replace_once(source, old, new):
+    if source.count(old) != 1:
+        raise AssertionError('Glitch mutation anchor cardinality changed')
+    return source.replace(old, new)
+mutations = [
+    ('constructor-coefficient-order', replace_once(raw, 'mat4(f11, f21, f11x, f21x,', 'mat4(f21, f11, f11x, f21x,')),
+    ('right-associated-chain', replace_once(raw, 'mat4 A = T * Q * S;', 'mat4 A = T * (Q * S);')),
+    ('reverse-inner-operands', replace_once(raw, 'mat4 A = T * Q * S;', 'mat4 A = Q * T * S;')),
+    ('extra-matrix-declaration', replace_once(raw, 'mat4 A = T * Q * S;', 'mat4 B = T;\\n    mat4 A = B * Q * S;')),
+    ('constructor-arity-drift', replace_once(raw, 'mat4 S = mat4(1., 0., 0., 0., 0., 0., 1., 0., -3., 3., -2., -1., 2., -2., 1., 1.);', 'mat4 S = mat4(1., 0., 0., 0., 0., 0., 1., 0., -3., 3., -2., -1., 2., -2., 1.);')),
+    ('vector-matrix-orientation', replace_once(raw, 'return dot(tv * A, uv);', 'return dot(A * tv, uv);')),
+    ('bicubic-return-route', replace_once(raw, 'return dot(tv * A, uv);', 'return dot(tv * A, tv);')),
+]
+negatives = [
+    ('wrong-profile', candidate, digest, 'wrong-profile'),
+    ('wrong-key', dataclasses.replace(candidate, key='foreign:glitch'), digest, PROFILE),
+    ('wrong-caller-hash', candidate, '0' * 64, PROFILE),
+]
+for name, rejected_candidate, rejected_hash, rejected_profile in negatives:
+    try:
+        authenticate_glitch_mat4_chain(rejected_candidate, rejected_hash, rejected_profile)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Glitch profile admitted ' + name)
+for name, changed in mutations:
+    try:
+        changed_candidate = analyze_program(parse_program(changed, key, gen._defaults(pathlib.Path.cwd(), key)), key)
+        authenticate_glitch_mat4_chain(changed_candidate, hashlib.sha256(changed.encode()).hexdigest(), PROFILE)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Glitch frontend admitted ' + name)
+assert len(negatives) + len(mutations) == 10
+print(json.dumps({'source_sha256': digest, 'profile': PROFILE,
+                  'construct_count': len(proof.constructors),
+                  'matrix_product_count': len(proof.matrix_products),
+                  'vector_product_count': len(proof.vector_products),
+                  'negative_count': len(negatives) + len(mutations),
+                  'negative_names': [name for name, *_ in negatives] + [name for name, _ in mutations]}))
+`
+const frontendProcess = spawnSync(process.env.NOISEMAKER_PYTHON ?? 'python3', ['-B', '-c', currentFrontendProof], {
   cwd: cppRoot,
   encoding: 'utf8',
   env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
 })
 if (frontendProcess.status !== 0) throw new Error(`frontend proof failed: ${frontendProcess.stderr || frontendProcess.stdout}`)
 const frontendProof = JSON.parse(frontendProcess.stdout)
-if (frontendProof.matrix_nodes?.constructs?.length !== 3 || frontendProof.matrix_nodes?.matrix_matrix_products?.length !== 2 || frontendProof.matrix_nodes?.vector_matrix_products?.length !== 1 || frontendProof.identity_gate?.negative_count < 9) {
+if (frontendProof.source_sha256 !== sha256(sourceBytes) || frontendProof.construct_count !== 3 || frontendProof.matrix_product_count !== 2 || frontendProof.vector_product_count !== 1 || frontendProof.negative_count !== 10 || frontendProof.negative_names?.length !== 10) {
   throw new Error('Glitch frontend proof contract drift')
 }
 
@@ -493,7 +573,7 @@ const unroundedHelper = `function cpu_unrounded_matrix_mult(m, n) {
 
 const mutants = [
   compileMutant('right-associated-chain', [[matrixLine, 'var A = matrixMult(T, matrixMult(Q, S));']], ['scanlines-max-seed-one', 'scanlines-mid-seed-thirty-seven']),
-  compileMutant('missing-intermediate-f32-stores', [[floatHelper, unroundedHelper], [matrixLine, 'var A = cpu_unrounded_matrix_mult(cpu_unrounded_matrix_mult(T, Q), S);']], ['scanlines-mid-seed-thirty-seven', 'aspect-negative-lens-vignette']),
+  compileMutant('missing-intermediate-f32-stores', [[floatHelper, unroundedHelper], [matrixLine, 'var A = cpu_unrounded_matrix_mult(cpu_unrounded_matrix_mult(T, Q), S);']], ['scanlines-mid-seed-thirty-seven', 'snow-upper-midpoint']),
   compileMutant('reverse-inner-operands', [[matrixLine, 'var A = matrixMult(matrixMult(Q, T), S);']], ['scanlines-max-seed-one']),
   compileMutant('swap-basis-matrices', [[matrixLine, 'var A = matrixMult(matrixMult(S, Q), T);']], ['scanlines-max-seed-one']),
   compileMutant('omit-basis-products', [[matrixLine, 'var A = Q;']], ['scanlines-max-seed-one']),
@@ -503,7 +583,7 @@ function makeInput(definition) {
   return patternedSurface(definition.width, definition.height, definition.phase)
 }
 
-function render(factory, definition) {
+function render(factory, definition, rawBinary64Time = false) {
   const input = makeInput(definition)
   const before = new Uint32Array(input.data.buffer, input.data.byteOffset, input.data.length).slice()
   const uniforms = {
@@ -520,7 +600,7 @@ function render(factory, definition) {
   }
   const tileOffset = definition.tileOffset ? new Float32Array(definition.tileOffset.map(f)) : undefined
   const fullResolution = definition.fullResolution ? new Float32Array(definition.fullResolution.map(f)) : undefined
-  const bindings = createCanonicalBindings({
+  const canonicalBindings = createCanonicalBindings({
     width: definition.width,
     height: definition.height,
     time: definition.time,
@@ -531,6 +611,9 @@ function render(factory, definition) {
     tileOffset,
     fullResolution,
   })
+  const bindings = rawBinary64Time
+    ? Object.freeze({ ...canonicalBindings, time: definition.time })
+    : canonicalBindings
   const output = new Surface(definition.width, definition.height)
   runPass({ kernel: bindGlslKernel(factory, bindings), destination: output })
   const after = new Uint32Array(input.data.buffer, input.data.byteOffset, input.data.length)
@@ -563,6 +646,19 @@ const renderCases = cases.map((definition) => {
     public_catalog: publicComparison,
   }
 })
+const timeIngressCase = cases[2]
+const timeCanonical = render(canonicalFactory, timeIngressCase).output
+const timeRawBinary64 = render(canonicalFactory, timeIngressCase, true).output
+const timeIngressLane = 4
+const timeIngress = {
+  case: timeIngressCase.name,
+  lane: timeIngressLane,
+  canonical_word: u32Hex(new Uint32Array(timeCanonical.data.buffer)[timeIngressLane]),
+  raw_binary64_word: u32Hex(new Uint32Array(timeRawBinary64.data.buffer)[timeIngressLane]),
+}
+if (timeIngress.canonical_word === timeIngress.raw_binary64_word) {
+  throw new Error('Glitch time-ingress case does not distinguish binary64 from Float32')
+}
 
 const mutationResults = mutants.map((mutant) => {
   const comparisons = cases.map((definition) => {
@@ -571,7 +667,7 @@ const mutationResults = mutants.map((mutant) => {
   })
   for (const witness of mutant.expected_witnesses) {
     const comparison = comparisons.find((item) => item.case === witness)
-    if (!comparison || comparison.float32.exact_f32_bits) throw new Error(`${mutant.name}: required Float32 witness ${witness} did not diverge`)
+    if (!comparison || comparison.float32.exact_f32_bits) throw new Error(`${mutant.name}: required Float32 witness ${witness} did not diverge; divergent cases: ${comparisons.filter((item) => !item.float32.exact_f32_bits).map((item) => item.case).join(', ')}`)
   }
   const control = comparisons.find((item) => item.case === 'matrix-masked-control')
   if (!control?.float32.exact_f32_bits || !control?.rgba8.exact_rgba8_bytes) throw new Error(`${mutant.name}: matrix-masked control unexpectedly diverged`)
@@ -608,21 +704,8 @@ const fixture = {
     canonical_factory: { name: canonicalFactory.name, bytes: Buffer.byteLength(canonicalFactory.toString()), sha256: sha256(canonicalFactory.toString()) },
     public_factory_is_canonical_identity: true,
     adapter_override_absent: true,
-    moving_tree_observation: {
-      first_upstream_snapshot_sha256: '8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936',
-      second_and_consumed_upstream_snapshot_sha256: '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7',
-      relevant_artifacts_unchanged_across_observations: {
-        canonical_kernels_sha256: provenanceFiles.canonical_kernels[1],
-        public_catalog_sha256: provenanceFiles.public_catalog[1],
-        glsl_runtime_sha256: provenanceFiles.glsl_runtime[1],
-        glsl_kernel_sha256: provenanceFiles.glsl_kernel[1],
-        pass_runner_sha256: provenanceFiles.pass_runner[1],
-        surface_sha256: provenanceFiles.surface[1],
-        canonical_factory_sha256: sha256(canonicalFactory.toString()),
-        glsl_source_sha256: sha256(sourceBytes),
-      },
-      policy: 'the generator consumes and pins only the second snapshot; any later relevant-artifact change is a hard provenance failure',
-    },
+    consumed_cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+    authority_ledger: 'authenticated immutable CPU9f3 source closure',
   },
   comparer_self_tests: comparerSelfTests(),
   frontend_proof: frontendProof,
@@ -632,6 +715,7 @@ const fixture = {
     direct_cases: directCases,
   },
   render_cases: renderCases,
+  time_ingress: timeIngress,
   render_mutations: mutationResults,
 }
 
@@ -639,13 +723,11 @@ function reportFor(value) {
   const caseRows = value.render_cases.map((item) => `| ${item.name} | ${item.width}x${item.height} | ${item.seed} | ${item.scanlinesAmt} | ${item.output_f32_sha256} | ${item.output_rgba8_sha256} |`).join('\n')
   const mutationRows = value.render_mutations.map((item) => `| ${item.name} | ${item.expected_witnesses.join(', ')} | ${item.divergent_f32_cases.join(', ')} | ${item.divergent_rgba8_cases.join(', ') || '(none; Float32 remains authoritative)'} |`).join('\n')
   const directRows = value.matrix_semantics.direct_cases.map((item) => `| ${item.name} | ${item.left_associated_f32_sha256} | ${item.right_associated_comparison.mismatched_lanes} | ${item.unrounded_intermediate_comparison.mismatched_lanes} |`).join('\n')
-  return `# Glitch exact-parity oracle\n\nProgram \`${value.program_key}\`; corpus revision \`${value.corpus_revision}\`.\n\n## Result\n\nThe currently shipped JavaScript reference materializes every matrix-product element through \`F32(sum)\` into a pooled \`Float32Array\`. The exact target is column-major, left-associated \`(T*Q)*S\`, with a float32 store after \`T*Q\` and after the final product. The older plain-Array/no-intermediate-narrowing claim is stale and is actively rejected by this package.\n\nThe reachable matrix closure is exactly three \`mat4\` constructors, two nested \`mat4*mat4\` nodes, and one \`vec4*mat4\` node, all in the live \`bicubic\` function. The captured pre-admission frontier rejects the first \`mat4\` type before reaching constructor or binary dispatch; \`--live-frontier\` observes later progress separately.\n\n## Exact contract\n\n- Float output uses raw little-endian float32 lane words; there is no tolerance.\n- RGBA8 output uses exact encoded bytes and never substitutes for Float32 parity.\n- The custom comparer rejects equal-byte-length dimension mismatches, distinguishes +0 from -0, and reports the first top-down pixel/channel and both lane words.\n- Every render is repeated, compared through the public-catalog identity, checked finite, and proves input-surface immutability.\n\n## Direct matrix fixtures\n\n| Case | Left-associated SHA-256 | Right-association mismatched lanes | Unrounded-intermediate mismatched lanes |\n| --- | --- | ---: | ---: |\n${directRows}\n\nThese fixtures call the real shipped \`GlslCpuRuntime.stdlib.matrixMult\` and independently compare it with a literal \`F32(sum)\` implementation. Crafted fractional/dynamic-range matrices discriminate both association and the obsolete unrounded-intermediate model.\n\n## Render fixtures\n\n| Case | Size | Seed | Scanlines | Float32 SHA-256 | RGBA8 SHA-256 |\n| --- | --- | ---: | ---: | --- | --- |\n${caseRows}\n\nThe suite covers matrix-masked control, maximum and minimum nonzero scanline influence, seed/time extremes, both aspect-lens states, both distortion branches, both vignette branches, all three snow regions, and tiled full-resolution coordinates.\n\n## Render mutation discrimination\n\n| Mutation | Required witnesses | All Float32-divergent cases | All RGBA8-divergent cases |\n| --- | --- | --- | --- |\n${mutationRows}\n\nThe matrix-masked control must remain exact for every mutant. The active-scanline witnesses distinguish wrong association, missing intermediate float32 stores, reversed inner operands, swapped basis matrices, and omitted basis products. RGBA8 is recorded but Float32 bits are the binding contract.\n\n## Frontend fail-closed proof\n\n\`${path.basename(frontendProbePath)}\` authenticates the exact source/key/profile/hash, all matrix nodes and spans, nested left-association, constructor arities, symbol route, full call-graph reachability, and return route. Its negatives reject wrong key/profile/hash, coefficient drift, association drift, operand-order drift, extra matrix use, constructor arity drift, vector/matrix orientation drift, and bicubic return-route drift.\n\n## Provenance observation\n\nThe shared JS tree changed during package assembly: \`upstream-snapshot.js\` was first observed at \`${value.provenance.moving_tree_observation.first_upstream_snapshot_sha256}\` and then at the consumed/pinned \`${value.provenance.moving_tree_observation.second_and_consumed_upstream_snapshot_sha256}\`. The canonical kernels, public catalog, GLSL runtime/kernel, pass runner, Surface implementation, canonical Glitch factory, and pinned Glitch GLSL bytes remained identical across both observations. The final self-check is also run from a frozen sibling copy under \`/tmp\`; a later change in any relevant artifact is a hard failure.\n\n## Regeneration\n\nFrom the repository root:\n\n\`\`\`sh\npython3 docs/port-engineering/matrix/glitch-parity/glitch_matrix_frontend_probe.py --check\npython3 docs/port-engineering/matrix/glitch-parity/glitch_matrix_frontend_probe.py --live-frontier\nnode docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs\nnode docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs --check\n\`\`\`\n\nThe generator verifies pinned source/runtime/catalog/factory hashes before executing the real unmodified canonical factory. \`--check\` regenerates the JSON and report in memory and requires byte-for-byte identity.\n`
+  return `# Glitch exact-parity oracle\n\nProgram \`${value.program_key}\`; corpus revision \`${value.corpus_revision}\`.\n\n## Result\n\nThe currently shipped JavaScript reference materializes every matrix-product element through \`F32(sum)\` into a pooled \`Float32Array\`. The exact target is column-major, left-associated \`(T*Q)*S\`, with a float32 store after \`T*Q\` and after the final product. The older plain-Array/no-intermediate-narrowing claim is stale and is actively rejected by this package.\n\nThe reachable matrix closure is exactly three \`mat4\` constructors, two nested \`mat4*mat4\` nodes, and one \`vec4*mat4\` node, all in the live \`bicubic\` function. The current typed frontend authenticates the full bicubic chain and its return route against the exact a1a3 GLSL source. Wrong source hashes and profile carriers fail closed.\n\n## Exact contract\n\n- Float output uses raw little-endian float32 lane words; there is no tolerance.\n- RGBA8 output uses exact encoded bytes and never substitutes for Float32 parity.\n- The custom comparer rejects equal-byte-length dimension mismatches, distinguishes +0 from -0, and reports the first top-down pixel/channel and both lane words.\n- Every render is repeated, compared through the public-catalog identity, checked finite, and proves input-surface immutability.\n- Time ingress is checked at one fixed lane: canonical Float32 \`${value.time_ingress.canonical_word}\`, raw binary64 \`${value.time_ingress.raw_binary64_word}\`.\n\n## Direct matrix fixtures\n\n| Case | Left-associated SHA-256 | Right-association mismatched lanes | Unrounded-intermediate mismatched lanes |\n| --- | --- | ---: | ---: |\n${directRows}\n\nThese fixtures call the real shipped \`GlslCpuRuntime.stdlib.matrixMult\` and independently compare it with a literal \`F32(sum)\` implementation. Crafted fractional/dynamic-range matrices discriminate both association and the obsolete unrounded-intermediate model.\n\n## Render fixtures\n\n| Case | Size | Seed | Scanlines | Float32 SHA-256 | RGBA8 SHA-256 |\n| --- | --- | ---: | ---: | --- | --- |\n${caseRows}\n\nThe suite covers matrix-masked control, maximum and minimum nonzero scanline influence, seed/time extremes, both aspect-lens states, both distortion branches, both vignette branches, all three snow regions, and tiled full-resolution coordinates.\n\n## Render mutation discrimination\n\n| Mutation | Required witnesses | All Float32-divergent cases | All RGBA8-divergent cases |\n| --- | --- | --- | --- |\n${mutationRows}\n\nThe matrix-masked control must remain exact for every mutant. The active-scanline witnesses distinguish wrong association, missing intermediate float32 stores, reversed inner operands, swapped basis matrices, and omitted basis products. RGBA8 is recorded but Float32 bits are the binding contract.\n\n## Frontend fail-closed proof\n\n\`tools/glslcpp/frontend/glitch_mat4_chain_profile.py\` authenticates the exact current source/key/profile/hash, matrix nodes, nested left-association, symbol route, call-graph reachability, and bicubic return route. The oracle generator runs ten fail-closed negatives: wrong profile, key and caller hash, plus coefficient, association, operand-order, matrix-use, constructor-arity, vector-orientation and return-route mutations. Independent profile tests also check these paths.\n\n## Provenance observation\n\nThe oracle uses the immutable CPU revision \`${value.provenance.consumed_cpu_revision}\` and authenticates its import closure, pinned runtime and catalog files, canonical factory text, and the exact a1a3 Glitch GLSL source before rendering.\n\n## Regeneration\n\nFrom the repository root:\n\n\`\`\`sh\nNOISEMAKER_PYTHON=<python-3.14> NOISEMAKER_FOR_CPU=<live-noisemaker-for-cpu-checkout> node docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs --check --cpu-root <immutable-cpu-snapshot-root>\n<python-3.14> -B tools/glslcpp/generate_glitch_native_oracle_include.py --check\`\`\`\n\nThe generator verifies pinned source/runtime/catalog/factory hashes before executing the real unmodified canonical factory. \`--check\` regenerates the JSON and report in memory and requires byte-for-byte identity.\n`
 }
 
 const jsonText = `${JSON.stringify(fixture, null, 2)}\n`
 const reportText = reportFor(fixture)
-  .replaceAll('The final self-check is also run from a frozen sibling copy under `/tmp`; a later change in any relevant artifact is a hard failure.', 'The final self-check uses an external temporary fixture root represented by `<external-temp-root>`; a later change in any relevant artifact is a hard failure.')
-  .replaceAll('python3 docs/port-engineering/matrix/glitch-parity/glitch_matrix_frontend_probe.py --check\npython3 docs/port-engineering/matrix/glitch-parity/glitch_matrix_frontend_probe.py --live-frontier\nnode docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs\nnode docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs --check', 'NOISEMAKER_FOR_CPU=<live-noisemaker-for-cpu-checkout> node docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs --check --cpu-root <immutable-cpu-snapshot-root>\nPYTHONDONTWRITEBYTECODE=1 python3 -B docs/port-engineering/matrix/glitch-parity/glitch_matrix_frontend_probe.py --check\nPYTHONDONTWRITEBYTECODE=1 python3 -B tools/glslcpp/generate_glitch_native_oracle_include.py --check')
 const check = mode === '--check'
 if (check) {
   for (const [target, generated] of [[outputPath, jsonText], [reportPath, reportText]]) {

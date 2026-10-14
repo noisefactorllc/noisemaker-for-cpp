@@ -9,12 +9,22 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { CaseWriter, loadAuthority, makeSurfaceData, mulberry32, randomInt, randomUniform } from './common.mjs'
+import { CaseWriter, makeSurfaceData, mulberry32, randomInt, randomUniform } from './common.mjs'
+import { authenticateCpuRoot, EXPECTED } from '../../../../tools/dsl/corpus_authority.mjs'
 
-const { flow3dDepositAdapter } = await loadAuthority('src/effects/cpu/flow3d-deposit.js')
-const { Surface } = await loadAuthority('src/runtime/surface.js')
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] ||
+    (ledgerIndex >= 0 && !process.argv[ledgerIndex + 1])) {
+  throw new Error('usage: flow3d_oracle_generator.mjs --cpu-root ROOT [--ledger FILE] [--fuzz-count=N]')
+}
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1],
+  ledgerIndex < 0 ? null : process.argv[ledgerIndex + 1])
+const load = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { flow3dDepositAdapter } = await load('src/effects/cpu/flow3d-deposit.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'flow3d-oracles.json')
@@ -129,7 +139,14 @@ function main() {
     expectedOutputHex: toHex(c.outputData),
     expectedOutputSha256: sha256(Buffer.from(c.outputData.buffer, c.outputData.byteOffset, c.outputData.byteLength)),
   }))
-  fs.writeFileSync(jsonPath, JSON.stringify({ adapter: 'filter3d/flow3d:deposit', cases: jsonCases }, null, 2))
+  fs.writeFileSync(jsonPath, JSON.stringify({
+    adapter: 'filter3d/flow3d:deposit',
+    authority: {
+      upstreamRevision: EXPECTED.upstreamRevision,
+      behavioralLockSha256: EXPECTED.behavioralLockSha256,
+    },
+    cases: jsonCases,
+  }, null, 2))
   fs.writeFileSync(
     reportPath,
     ['# filter3d/flow3d:deposit oracle', '', `Cases: ${cases.length} (curated, see flow3d-oracles.json).`, `Fuzz sweep: ${FUZZ_COUNT} cases in flow3d-fuzz.bin.`, ''].join('\n')

@@ -22,13 +22,13 @@ compatibility issue.
 | --- | --- |
 | Key | `filter/degauss:degauss` |
 | Source | `sources/filter/degauss/degauss.glsl` |
-| Corpus revision | `a024dc3a960cc44af454abc7aebce50456c194e6` |
-| Raw source | 10,803 bytes; SHA-256 `915f208e47a5bf012a3e0583e03a7ee888b7103d5834b386d32c916b8715050c` |
-| Normalized source SHA-256 | `7d413b240236506511f405319025281a92eb1108c6193ef26a6d0d7bcbae7560` |
+| Corpus revision | `a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15` |
+| Raw source | 11,490 bytes; SHA-256 `cfefff702ef78db421c088a3b679da2c576b7f4484c777f1d414c66aef0c1a1a` |
+| Normalized source SHA-256 | `a0a42b0db6bae308295657d5540989bba939ec7cc99f121d97e5d98fd3cca304` |
 | Defines / numeric literals | `{}` / `glsl-f32` |
-| Canonical factory | `canonicalFactory45`; `Function.prototype.toString()` SHA-256 `f515a7ac409c98fc420d9fa9a7e460eb37018b34e3be40419191fc7655a29c38` |
-| Canonical generated runtime | SHA-256 `e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56` |
-| Typed fingerprints | function tuple `f68d742e44e341c1332f8c37ac8544aaa8c5bef979e496a27d45ac28ba48f95a`; whole program `73e7e3e3b5e0b7ee9b4e1558d51fc14a01e9820c89674a0b5e42e568bec8d13d` |
+| Canonical factory | `canonicalFactory43`; `Function.prototype.toString()` SHA-256 `2dc66240984430c10a2a417e891517094371b3f2a03574931f50be929399f776` |
+| Canonical generated runtime | SHA-256 `80b2e701426a5003d9ef44dce09de1f601f4c8cd1e4bff1f0c4d2b607e95e91c` |
+| Typed fingerprints | function tuple `b806b6ce4f98eae3438bc0b01ed3fe0a3aa1f1d1c9a6186c8d18da0675c878d0`; whole program `3079146057f6cc68f832636748032e32777c84b0d2e36a6843ea9c2a0542d3f6` |
 | Typed shape | 17 source functions, zero loops, acyclic call graph |
 | Compatibility transform | none |
 
@@ -62,14 +62,14 @@ bytes, including all 50 out-of-range alpha pixels.
 | Case | Main distinction | Output F32 SHA-256 | Output RGBA8 SHA-256 |
 | --- | --- | --- | --- |
 | displacement-zero-exact-copy-tiled | exact-copy return; nonzero tile/full context | `daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687` | `5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3` |
-| default-landscape-untiled-center-mask | all defaults; landscape; untiled; exact center mask zero | `c6bf433ea90b0c82d842724d8f633fefb8cded8e34ad83b9d3480d98a7051c71` | `9e02468af87d81a5d0a558ac965dd9e4f78b07a768b855e157d5769bcbd3ee98` |
-| nondefault-landscape-tiled-negative-direction | both noise evaluations; negative direction; seed 37 | `08dbc2988787474877268f9661bbeccbdc88dbd9f43bbfc3240e58120cf363f1` | `16267b09be48cdb9b967ad1e4c203cd2170b940639975ee1cbba75309765db2c` |
-| nondefault-portrait-tiled-positive-direction | portrait; direction +180; seed 100 | `86b32d32e970fffccc7049bf9c091f5e8b5e9139af7afd6f7bee6d315636a37f` | `d2aca58372b68e20691c89a7ab278aebf97ffe85ffa35eb3d4bb6414016803d7` |
-| speed-zero-nonzero-time | base noise only through `speed == 0` | `2bd1aa43c71d4eaab6298492b9edafd35978cd439eeae2a270968f6210128f37` | `7788b9151bca2f493a0af156b38cc636e14b5f27d4bbed16ed60c4942513dc22` |
-| time-zero-positive-speed | base noise only through `time == 0` | `c2f6253b9491350f176470a5be560068fb634e31432d524360d58ee03ed0586f` | `710ce156f4b71dae2d487ac6a78fee5e58ee044fe400eb24740764c1784039b6` |
-| full-resolution-zero-fallback-landscape | `fullResolution.x <= 0` fallback; untiled | `15401d32e6befb161651150f044f35496bf741be49872b3869716689131453ff` | `96cbb763c8daf83c9ef99c2972993148a5c2e5231436ebe9c4d4cb581c473a32` |
-| square-frequency-equality | exact square branch; direction -180 | `8c09129cc2a75ca01f8a3d774307128cb1c44721c884821f6b22b7cff67e2948` | `8e456f5906aca7993075834d2f3ad09f358f9acaffbfcc4dbc0f113ed4fd94c6` |
-| untiled-over-cap-binding-domain-diagnostic | direct displacement 1.75 clamps to 1.0 | `c7983e127a9bc4ed938cff5c316d71ed50f2dfb2126b54718901efd80aae705f` | `40d20fde4f5aab0e0e42a0371d373dbfdb66f62644650bef511ff8ffa3592bda` |
+| default-landscape-untiled-center-mask | all defaults; landscape; untiled; exact center mask zero | `f866f3855885250a78169a56f32f59b15379152d47eebf1d4e6cec20a0e53b6f` | `9e02468af87d81a5d0a558ac965dd9e4f78b07a768b855e157d5769bcbd3ee98` |
+| nondefault-landscape-tiled-negative-direction | both noise evaluations; negative direction; seed 37 | `361ac1ef7266451f4e3a4b74f9c1360c4dd9055ca9114877de0d5197614c1dda` | `5dced19d2b93c865bee67ba5833da21085b56d27070dc0c996933582892166ec` |
+| nondefault-portrait-tiled-positive-direction | portrait; direction +180; seed 100 | `cb1aa9143d7f05a1d3992467b343d2ff5da4fa546946b4ac33728dca22e3a21c` | `02e75af7adc002d125c875129923831a3db7fbaede316260a3f12176b7b6a5b6` |
+| speed-zero-nonzero-time | base noise only through `speed == 0` | `bfe2405b610d0a83dde7ac8a767936da729a0fc404d24b5c5e7f0e125f8e684f` | `3d9e5456a005805257dc4d9dd34d02b25b3278da12abeb67c3066316edcda8d6` |
+| time-zero-positive-speed | base noise only through `time == 0` | `350d07667e2df6a2c3eb09b70e17e355072d114bd88a99b01160ffe1ae32974e` | `8bc8e7027373b0ef49c9b26adffe1b6a4958402e50e62494247a12b913e2785d` |
+| full-resolution-zero-fallback-landscape | `fullResolution.x <= 0` fallback; untiled | `d14147fa42ecf04d6bcfe69421629d139b0da9e733a0d9bdaee19dc6c86bb534` | `21887cecda8086b36c4f4de752944d228f5abb50f677745a17cb79d82957394f` |
+| square-frequency-equality | exact square branch; direction -180 | `bba736cff27c6ad6dadd18a954a08c4b4369032feb596d064f57f1751ab86e8d` | `cb38bf280658b38f4826f8315f6d56c6459d9ab4108d44b875ca72115d8c1ca5` |
+| untiled-over-cap-binding-domain-diagnostic | direct displacement 1.75 clamps to 1.0 | `8f70a5e03d90c93dbc18ff768108a638b938781cd464418b5d07dff674a1e55f` | `ee597e5fc86137977db87fc32f06b81e8423820457b5a96f7d8efe5f918bb412` |
 
 The last case is intentionally outside the metadata UI range. It is a direct
 binding-domain branch diagnostic, not a metadata-valid preset. Disabling the
@@ -109,10 +109,10 @@ zero RGBA8 bytes because RGBA8 conversion clamps the same out-of-range values.
 
 ## Reproduction and acceptance
 
-Run from any directory:
+Run from the repository root with an authenticated CPU root and matching ledger:
 
 ```sh
-node docs/port-engineering/task-21-oracle-generator.mjs --check
+node docs/port-engineering/task-21-oracle-generator.mjs --cpu-root "$CPU_ROOT" --ledger "$CPU_LEDGER" --check
 ```
 
 `--check` regenerates every canonical case and mutation in memory, repeats each
@@ -123,5 +123,5 @@ image, and no repository file is modified.
 
 At freeze time:
 
-- generator SHA-256: `0c1f12904e1c17a39c61055596be9f0d46ecded252a9d5c7cf1339653472c5c9`
-- oracle JSON SHA-256: `bddb1ca8f8b7a8b905412318c48414594736ca4a972c440da7e8c3525b31bb38`
+- generator SHA-256: `cb1c751b687b6fa4c9a4cadcc780efb7ee85f40bcb70f04b3a03bde5445155b0`
+- oracle JSON SHA-256: `ae38195e3d2977f7580f71c4a83310a5265694b1bfce8148131135ab7ed128b2`

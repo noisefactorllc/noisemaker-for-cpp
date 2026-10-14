@@ -1,6 +1,6 @@
 """Strict A/L publication-root contracts for the Parallax and Glitch oracles."""
 
-from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.historical_cpu import current_cpu_root, current_run, historical_cpu_root, historical_run
 from tests.simulated_links import simulate_symlink
 
 import os
@@ -10,12 +10,17 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-# No defaults: the frozen CPU authority and the live checkout live outside
+# No defaults: both CPU authorities and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
+HISTORICAL_AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
+CURRENT_AUTHORITY = Path(current_cpu_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 PARALLAX = ROOT / "docs/port-engineering/counted-for-parity/parallax190_oracle_generator.mjs"
 GLITCH = ROOT / "docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs"
+
+
+def authority_for(generator):
+    return CURRENT_AUTHORITY if generator == GLITCH else HISTORICAL_AUTHORITY
 
 
 def run(generator, *args, env=None):
@@ -23,7 +28,8 @@ def run(generator, *args, env=None):
     child_env.pop("NOISEMAKER_FOR_CPU", None)
     if env:
         child_env.update(env)
-    return historical_run(
+    runner = current_run if generator == GLITCH else historical_run
+    return runner(
         ["node", str(generator), *args],
         cwd=ROOT,
         env=child_env,
@@ -34,8 +40,8 @@ def run(generator, *args, env=None):
 
 class PublicationRootContractTests(unittest.TestCase):
     def setUp(self) -> None:
-        if not AUTHORITY.is_dir() or not LIVE.is_dir():
-            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT and NOISEMAKER_FOR_CPU are required")
+        if not HISTORICAL_AUTHORITY.is_dir() or not CURRENT_AUTHORITY.is_dir() or not LIVE.is_dir():
+            self.skipTest("historical and current CPU authorities and NOISEMAKER_FOR_CPU are required")
 
     def test_both_generators_accept_only_explicit_a_and_l(self):
         for generator in (PARALLAX, GLITCH):
@@ -43,43 +49,42 @@ class PublicationRootContractTests(unittest.TestCase):
                 generator,
                 "--check",
                 "--cpu-root",
-                str(AUTHORITY),
+                str(authority_for(generator)),
                 env={"NOISEMAKER_FOR_CPU": str(LIVE)},
             )
             self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_missing_live_root_is_not_ignored(self):
         for generator in (PARALLAX, GLITCH):
-            result = run(generator, "--check", "--cpu-root", str(AUTHORITY))
+            result = run(generator, "--check", "--cpu-root", str(authority_for(generator)))
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("NOISEMAKER_FOR_CPU", result.stderr)
 
     def test_invalid_same_and_symlink_live_roots_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             temporary_root = Path(temporary)
-            cases = [
-                ("missing", temporary_root / "missing-live"),
-                ("same", AUTHORITY),
-            ]
             symlink = temporary_root / "live-link"
             simulate_symlink(symlink, LIVE, target_is_directory=True)
-            cases.append(("symlink", symlink))
             for generator in (PARALLAX, GLITCH):
+                authority = authority_for(generator)
+                cases = (("missing", temporary_root / "missing-live"),
+                         ("same", authority), ("symlink", symlink))
                 for label, live in cases:
                     result = run(
                         generator,
                         "--check",
                         "--cpu-root",
-                        str(AUTHORITY),
+                        str(authority),
                         env={"NOISEMAKER_FOR_CPU": str(live)},
                     )
                     self.assertNotEqual(result.returncode, 0, f"{generator} accepted {label}")
 
     def test_authority_symlink_and_cpp_containment_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
-            symlink = Path(temporary) / "authority-link"
-            simulate_symlink(symlink, AUTHORITY, target_is_directory=True)
             for generator in (PARALLAX, GLITCH):
+                authority = authority_for(generator)
+                symlink = Path(temporary) / ("current-authority-link" if generator == GLITCH else "historical-authority-link")
+                simulate_symlink(symlink, authority, target_is_directory=True)
                 linked = run(
                     generator,
                     "--check",
@@ -100,19 +105,20 @@ class PublicationRootContractTests(unittest.TestCase):
                     generator,
                     "--check",
                     "--cpu-root",
-                    str(AUTHORITY),
+                    str(authority),
                     env={"NOISEMAKER_FOR_CPU": str(ROOT)},
                 )
                 self.assertNotEqual(live_cpp.returncode, 0)
 
     def test_modes_and_options_are_strict(self):
         for generator in (PARALLAX, GLITCH):
-            base = ("--cpu-root", str(AUTHORITY))
+            authority = authority_for(generator)
+            base = ("--cpu-root", str(authority))
             for args in (
                 ("--self-test", *base),
                 ("--check", "--write", *base),
                 ("--check", "--check", *base),
-                ("--check", *base, "--cpu-root", str(AUTHORITY)),
+                ("--check", *base, "--cpu-root", str(authority)),
                 ("--check", *base, "--unknown"),
             ):
                 result = run(generator, *args, env={"NOISEMAKER_FOR_CPU": str(LIVE)})
@@ -127,7 +133,8 @@ class PublicationRootContractTests(unittest.TestCase):
         )
         for artifact in artifacts:
             text = artifact.read_text()
-            self.assertNotIn(str(AUTHORITY), text)
+            self.assertNotIn(str(HISTORICAL_AUTHORITY), text)
+            self.assertNotIn(str(CURRENT_AUTHORITY), text)
             self.assertNotIn(str(LIVE), text)
             self.assertNotIn("platform/noisemaker-for-cpu", text)
             self.assertIn("<immutable-cpu-snapshot-root>", text)

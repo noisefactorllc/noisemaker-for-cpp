@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.historical_cpu import current_cpu_root, current_run
 from tests.simulated_links import simulate_symlink
 
 import copy
@@ -24,9 +24,9 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_moodscape_native_oracle_include.py
 ORACLE = PACKAGE / "moodscape-oracles.json"
 REPORT = PACKAGE / "moodscape-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/moodscape_expected.inc"
-# No defaults: the frozen CPU authority and the live checkout live outside
+# No defaults: the current CPU authority and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
+AUTHORITY = Path(current_cpu_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/moodscape/moodscape.glsl"
 
@@ -46,7 +46,7 @@ def run_generator(*args, cpu_root=AUTHORITY, live=LIVE):
         env.pop("NOISEMAKER_FOR_CPU", None)
     else:
         env["NOISEMAKER_FOR_CPU"] = str(live)
-    return historical_run(
+    return current_run(
         ["node", str(GENERATOR), *args, "--cpu-root", str(cpu_root)],
         cwd=ROOT, env=env, text=True, capture_output=True,
     )
@@ -79,12 +79,12 @@ class MoodscapeOracleTests(unittest.TestCase):
                           "refractAmt": "float", "speed": "float", "hueRotation": "float",
                           "hueRange": "float", "intensity": "float", "ridges": "bool"},
                          document["source_uniform_abi"])
-        self.assertEqual(23, document["authority"]["closure_cardinality"])
-        self.assertEqual(23, len(document["authority"]["import_closure"]))
+        self.assertEqual(24, document["authority"]["closure_cardinality"])
+        self.assertEqual(24, len(document["authority"]["import_closure"]))
         self.assertEqual(6, len(document["render_cases"]))
         self.assertEqual(5, len(document["mutation_ledger"]))
         self.assertEqual("canonicalFactory11", document["factory"]["name"])
-        self.assertEqual("70db1168604045e22ac0c74f4b58a96d5e4ed2c6e107ec2fe3b2beab08ca479d",
+        self.assertEqual("1ed6bdafbced57679854e7502909d052875c5a9814a2e49fa4e86bd56abc1516",
                          document["factory"]["text_sha256"])
         self.assertEqual(19559, document["provenance"]["source"]["bytes"])
         self.assertEqual("a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44",
@@ -225,7 +225,7 @@ class MoodscapeOracleTests(unittest.TestCase):
     @full_run_only
     def test_materializer_modes_and_cxx20_include_smoke_compile(self):
         for args in (("--self-test",), ("--check",)):
-            result = historical_run(
+            result = current_run(
                 [sys.executable, "-B", str(MATERIALIZER), *args], cwd=ROOT,
                 env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
                 text=True, capture_output=True)
@@ -240,11 +240,11 @@ class MoodscapeOracleTests(unittest.TestCase):
                 "int main() {\n"
                 "  static_assert(noisemaker_moodscape_oracle::kCases.size() == 6);\n"
                 "  static_assert(noisemaker_moodscape_oracle::kRuntimeBindings.size() == 15);\n"
-                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 23);\n"
+                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 24);\n"
                 "  static_assert(noisemaker_moodscape_oracle::kMutations.size() == 5);\n"
                 "  return 0;\n}\n"
             )
-            result = historical_run(
+            result = current_run(
                 [compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)

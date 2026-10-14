@@ -14,7 +14,6 @@ import unittest
 from tests import corpus_census
 from unittest import mock
 
-from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -25,8 +24,8 @@ from tests.gate import full_run_only
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/glyphMap:glyphMap"
 PROFILE = "glyph-map-nonnegative-int-shift-v1"
-RAW_SHA256 = "853c3c15f300cf56ba3c11d5613cb91bfcb14b8b2f1be6bb5193e71397fdcea1"
-SOURCE = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
+RAW_SHA256 = "35804656234712aab4ee62aad97399d287e3d2d2d566a00afe8630272a333abe"
+SOURCE = (ROOT / "tools/glslcpp/corpus/a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15"
           / "sources/filter/glyphMap/glyphMap.glsl")
 MODULE = "tools.glslcpp.frontend.glyph_map_nonnegative_int_shift_profile"
 

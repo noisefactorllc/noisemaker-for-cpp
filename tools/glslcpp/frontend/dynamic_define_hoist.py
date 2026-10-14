@@ -100,8 +100,8 @@ _KALEIDO = _Profile(
 # multires()'s -- GLSL/the typed IR scope these independently per function
 # and per brace block, so the two same-named locals never collide).
 _NOISE = _Profile(
-    raw_sha256="e8eeb7d9134b7c08901df12f041767151b26b23ee534d038d1b71b6e47f69586",
-    raw_bytes=31461,
+    raw_sha256="d86306e285a2f80dae86fe79cde92ceb89ec898ef78e6a15d140bfdf0e030bb2",
+    raw_bytes=32527,
     hoists=(
         _Hoist("vec2", "nominalFreq", "#if NOISE_TYPE == 11", 1, 3),
         _Hoist("float", "baseLoop", "#if NOISE_TYPE == 11", 3, 3),
@@ -225,6 +225,15 @@ def _matching_endif(lines: list[str], if_index: int) -> int:
 def transform_source(source: str, program_key: str) -> str:
     """Apply every authenticated hoist for `program_key`, or return `source`
     unchanged if it carries none."""
+    if program_key == "render/pointsBillboardRender:depthKeys":
+        raw = source.encode("utf-8")
+        if (len(raw) != 1161 or hashlib.sha256(raw).hexdigest()
+                != "70435ced4eaad1f78853ff17996a72d3b212330f3c95dc32503221f061f44fa9"
+                or source.count("const int viewMode = VIEW_MODE;") != 1
+                or source.count("if (viewMode == 1") != 1):
+            raise HoistError(f"{program_key}: pinned pass-define source mismatch")
+        return (source.replace("const int viewMode = VIEW_MODE;", "", 1)
+                .replace("if (viewMode == 1", "if (VIEW_MODE == 1", 1))
     profile = PROFILES.get(program_key)
     if profile is None:
         return source

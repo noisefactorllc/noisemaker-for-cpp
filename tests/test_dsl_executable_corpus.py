@@ -177,8 +177,9 @@ console.log(JSON.stringify(records));
         self.assertEqual(len(bytes.fromhex(mesh_data["positionRgba32f"])), 64)
         self.assertEqual(len(bytes.fromhex(mesh_data["normalRgba32f"])), 64)
         feedback = next(r for r in records if r["effectId"] == "filter/feedback")
-        self.assertEqual(feedback["recordKind"], "excluded")
-        self.assertEqual(feedback["firstFailure"]["code"], "unsupported_pass")
+        self.assertEqual(feedback["recordKind"], "admitted")
+        self.assertEqual(feedback["plan"]["passKeys"],
+                         ["filter/feedback:feedback", "filter/feedback:copy"])
         for record in records:
             self.assertEqual(record["sourceSha256"], hashlib.sha256(record["source"].encode()).hexdigest())
             self.assertEqual(record["options"]["width"], 17)

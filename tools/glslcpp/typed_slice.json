@@ -106,7 +106,8 @@
       "defines": {
         "NOISE_TYPE": 10
       },
-      "program_key": "classicNoisedeck/caustic:caustic"
+      "program_key": "classicNoisedeck/caustic:caustic",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -119,7 +120,8 @@
         "SHAPE": 1
       },
       "mutable_global_array_profile": "mutable-global-nine-array-cellrefract-v1",
-      "program_key": "classicNoisedeck/cellRefract:cellRefract"
+      "program_key": "classicNoisedeck/cellRefract:cellRefract",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -142,7 +144,8 @@
       },
       "glitch_mat4_chain_profile": "mat4-bicubic-chain-effects-v1",
       "mutable_global_array_profile": "mutable-global-nine-array-effects-v1",
-      "program_key": "classicNoisedeck/effects:effects"
+      "program_key": "classicNoisedeck/effects:effects",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -163,7 +166,8 @@
       },
       "mutable_global_array_profile": "mutable-global-nine-array-kaleido-v1",
       "program_key": "classicNoisedeck/kaleido:kaleido",
-      "scalar_uint_xor_profile": "scalar-uint-xor-v1"
+      "scalar_uint_xor_profile": "scalar-uint-xor-v1",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -175,8 +179,16 @@
         "COLOR_MODE": 2,
         "NOISE_TYPE": 10
       },
-      "moodscape_frontend_profile": "moodscape-frontend-admission-v1",
-      "program_key": "classicNoisedeck/moodscape:moodscape"
+      "moodscape_frontend_profile": "moodscape-runtime-frontend-v1",
+      "program_key": "classicNoisedeck/moodscape:moodscape",
+      "runtime_define_profile": "runtime-defines-generic-v1"
+    },
+    {
+      "defines": {
+        "NOISE_TYPE": 12
+      },
+      "program_key": "classicNoisedeck/noise3d:noise3d",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {
@@ -187,7 +199,8 @@
         "REFRACT_MODE": 2
       },
       "noise_frontend_profile": "classic-noise-frontend-admission-v1",
-      "program_key": "classicNoisedeck/noise:noise"
+      "program_key": "classicNoisedeck/noise:noise",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -204,11 +217,21 @@
     },
     {
       "defines": {
+        "BLEND_MODE": 10,
+        "SHAPE_A": 30,
+        "SHAPE_B": 10
+      },
+      "program_key": "classicNoisedeck/shapes3d:shapes3d",
+      "runtime_define_profile": "runtime-defines-generic-v1"
+    },
+    {
+      "defines": {
         "LOOP_A_OFFSET": 40,
         "LOOP_B_OFFSET": 30
       },
       "linear_srgb_lane_index_profile": "linear-srgb-shapes-lane-index-v1",
       "program_key": "classicNoisedeck/shapes:shapes",
+      "runtime_define_profile": "runtime-defines-generic-v1",
       "scalar_uint_xor_profile": "scalar-uint-xor-v1",
       "shapes_float_bits_ingress_profile": "shapes-float-bits-ingress-v1",
       "shapes_rvalue_assign_profile": "shapes-rvalue-assign-v1"
@@ -347,7 +370,8 @@
         "STYLE": 0
       },
       "emboss_color_style_profile": "emboss-color-style-v1",
-      "program_key": "filter/emboss:emboss"
+      "program_key": "filter/emboss:emboss",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {
@@ -355,11 +379,16 @@
         "EXTRUDE_TYPE": 0
       },
       "extrude_bvec2_relational_reduction_profile": "extrude-bvec2-relational-reduction-v1",
-      "program_key": "filter/extrude:extrude"
+      "program_key": "filter/extrude:extrude",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
       "program_key": "filter/feedback:copy"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/feedback:feedback"
     },
     {
       "defines": {},
@@ -436,13 +465,15 @@
         "PATTERN": 0
       },
       "derivative_admission_profile": "derivative-admission-v1",
-      "program_key": "filter/halftone:halftone"
+      "program_key": "filter/halftone:halftone",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/hatch:hatch"
+      "program_key": "filter/hatch:hatch",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -497,7 +528,8 @@
         "LP_BORDER": 0,
         "LP_LIGHT": 0
       },
-      "program_key": "filter/lowPoly:lowPoly"
+      "program_key": "filter/lowPoly:lowPoly",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {
@@ -876,11 +908,16 @@
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/strokes:stkSmear"
+      "program_key": "filter/strokes:stkSmear",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
       "program_key": "filter/temporalAberration:delayShift"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/temporalAberration:temporalAberration"
     },
     {
       "defines": {},
@@ -900,7 +937,8 @@
         "MODE": 3
       },
       "program_key": "filter/texture:texture",
-      "texture_frontend_profile": "texture-frontend-admission-v1"
+      "texture_frontend_profile": "texture-frontend-admission-v1",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -997,7 +1035,8 @@
       },
       "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
       "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
-      "program_key": "filter3d/flow3d:agent"
+      "program_key": "filter3d/flow3d:agent",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {
@@ -1016,6 +1055,10 @@
         "BEHAVIOR": 1
       },
       "program_key": "filter3d/flow3d:diffuse"
+    },
+    {
+      "defines": {},
+      "program_key": "filter3d/palette3d:palette3d"
     },
     {
       "defines": {},
@@ -1255,6 +1298,17 @@
       "program_key": "render/pointsBillboardRender:copy"
     },
     {
+      "defines": {
+        "VIEW_MODE": 1
+      },
+      "program_key": "render/pointsBillboardRender:depthKeys",
+      "runtime_define_profile": "runtime-defines-generic-v1"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsBillboardRender:depthMerge"
+    },
+    {
       "defines": {},
       "program_key": "render/pointsBillboardRender:diffuse"
     },
@@ -1296,18 +1350,29 @@
         "FILTERING": 0,
         "INVERT": false
       },
-      "program_key": "render/render3d:render3d"
+      "program_key": "render/render3d:render3d",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {
         "FILTERING": 0,
         "INVERT": false
       },
-      "program_key": "render/renderCubemap3d:renderCubemap3d"
+      "program_key": "render/renderCubemap3d:renderCubemap3d",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
       "program_key": "render/renderCubemapSurface:renderCubemapSurface"
+    },
+    {
+      "defines": {
+        "FILTERING": 1,
+        "VIEW_MODE": 1
+      },
+      "program_key": "render/renderLandscape3d:landscape",
+      "runtime_define_profile": "runtime-defines-generic-v1",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1"
     },
     {
       "any_relational_profile": "any-relational-admission-v1",
@@ -1409,6 +1474,10 @@
     },
     {
       "defines": {},
+      "program_key": "synth/navierStokes:nsSmooth"
+    },
+    {
+      "defines": {},
       "program_key": "synth/navierStokes:nsSplat"
     },
     {
@@ -1441,7 +1510,8 @@
         "DIMENSIONS": 2
       },
       "perlin_scalar_uint_xor_profile": "perlin-scalar-uint-xor-v1",
-      "program_key": "synth/perlin:perlin"
+      "program_key": "synth/perlin:perlin",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -1486,6 +1556,7 @@
       },
       "mutable_global_frame_profile": "mutable-global-frame-shape-v1",
       "program_key": "synth/shape:shape",
+      "runtime_define_profile": "runtime-defines-generic-v1",
       "scalar_uint_xor_profile": "scalar-uint-xor-v1"
     },
     {
@@ -1511,6 +1582,16 @@
     },
     {
       "defines": {},
+      "program_key": "synth3d/cellularAutomata3d:simulate"
+    },
+    {
+      "defines": {},
+      "fractal3d_log_profile": "fractal3d-log-flythrough3d-v1",
+      "out_inout_admission_profile": "out-inout-admission-flythrough3d-v1",
+      "program_key": "synth3d/flythrough3d:precompute"
+    },
+    {
+      "defines": {},
       "fractal3d_log_profile": "fractal3d-log-admission-v1",
       "program_key": "synth3d/fractal3d:precompute"
     },
@@ -1526,7 +1607,9 @@
         "RIDGES": false
       },
       "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
-      "program_key": "synth3d/noise3d:precompute"
+      "program_key": "synth3d/noise3d:precompute",
+      "runtime_define_profile": "runtime-defines-generic-v1",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1"
     },
     {
       "defines": {},
@@ -1537,7 +1620,7 @@
       "program_key": "synth3d/shape3d:precompute"
     }
   ],
-  "revision": "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d",
+  "revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "schema": 1,
   "types": [
     "bool",

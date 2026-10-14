@@ -1,3 +1,4 @@
+import {authenticateCpuRoot} from '../../../tools/dsl/corpus_authority.mjs';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
@@ -12,6 +13,10 @@ const modules = {};
 for (const [path, hash] of Object.entries(sourceHashes)) {
   const bytes = await readFile(resolve(cpuRoot, path));
   if (createHash('sha256').update(bytes).digest('hex') !== hash) throw new Error(`CPU source hash mismatch: ${path}`);
+  modules[path] = bytes;
+}
+authenticateCpuRoot(cpuRoot);
+for (const [path, bytes] of Object.entries(modules)) {
   modules[path] = await import(`data:text/javascript;base64,${bytes.toString('base64')}`);
 }
 const {meshRenderTrianglesAdapter} = modules['src/effects/cpu/mesh-render.js'];
@@ -27,4 +32,4 @@ const results = cases.map(test => {
     destination, externalInputs: {meshData}});
   return {name: test.name, pixels, words: Array.from(new Uint32Array(destination.data.buffer)), rgba8: Array.from(destination.toRgba8())};
 });
-console.log(JSON.stringify({cpu_revision: '5b686a45b5c56329adf0c63cbcf572eb6f23fad1', source_hashes: sourceHashes, results}));
+console.log(JSON.stringify({cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', source_hashes: sourceHashes, results}));

@@ -378,11 +378,11 @@ TEST(typed_slice_five_kernel_external_oracles_are_repeatable_and_top_down) {
   const noisemaker::Surface bc = render_bc(a);
   require_oracle("bc", bc, "17e28b5ca13d1a21234aaaf6d3a2fc2f605f29413ad1baa1db1b6343010878e3", "a10774e92b60d5558b372d349fcac02f3424fd92cd880f2701d1d00f3154767e", {0xbdff1bcbU, 0xbbe8d8a1U, 0xbe2ca892U, 0x3f7afafbU}, false);
   const noisemaker::Surface threshold = render_threshold(a);
-  require_oracle("threshold", threshold, "61f2a88622e0a75332fb6994f5ae82a21c6889df4296e9c64b58f2de9d41d45e", "63d3dc8653662baff87afd576ae73ecfc61d65c688cebfde7406153e6484ac65", {0U, 0U, 0U, 0x3f800000U}, true);
+  require_oracle("threshold", threshold, "665cd6cc51a1dcfe46f1382584060d093dbebdeee2d835f02a44723ce39f6da1", "63d3dc8653662baff87afd576ae73ecfc61d65c688cebfde7406153e6484ac65", {0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U}, true);
   const noisemaker::Surface smoothstep = render_smoothstep(a);
-  require_oracle("smoothstep", smoothstep, "200eb65fed133e0640ed0165c4be24923e6fda1c236c3ea8b5d07f8747566b45", "340558b647177c7f72bbd4b2fcbecef4facfd780a5e6fbfaf7231961895058a7", {0U, 0U, 0U, 0x3f7afafbU}, false);
+  require_oracle("smoothstep", smoothstep, "200eb65fed133e0640ed0165c4be24923e6fda1c236c3ea8b5d07f8747566b45", "340558b647177c7f72bbd4b2fcbecef4facfd780a5e6fbfaf7231961895058a7", {0x00000000U, 0x00000000U, 0x00000000U, 0x3f7afafbU}, false);
   const noisemaker::Surface channel = render_channel(r, g, b);
-  require_oracle("channel", channel, "8bd32d6a3e760ed40d064c8671aec9e9ce7e491d666083c5cf2785224fb4a290", "a5ac13cccc6fdb4d53bd7fefc545b7fedcbf5cca1ec93b7ab51fe746438c342f", {0x3e8a45a8U, 0x3e9e90d8U, 0x3e9e8098U, 0x3f800000U}, true);
+  require_oracle("channel", channel, "fc1400efc3cea802a1246dab60fbecc809bec633425c95295665d1c987bd1fb2", "a5ac13cccc6fdb4d53bd7fefc545b7fedcbf5cca1ec93b7ab51fe746438c342f", {0x3e8a45a7U, 0x3e9e90d8U, 0x3e9e8098U, 0x3f800000U}, true);
   noisemaker::glsl::Bindings clear_again_bindings;
   require_repeat(clear, noisemaker::run_pass(noisemaker::generated::bind_filter_wormhole_clear(clear_again_bindings), 8U, 8U, 0.125f, 7.0f));
   require_repeat(bc, render_bc(a)); require_repeat(threshold, render_threshold(a));
@@ -401,13 +401,13 @@ TEST(typed_math_slice_sixteen_external_oracles_are_repeatable) {
   constexpr std::array<Fixture, 16> fixtures{{
       {"filter/celShading:celShadingBlend", "5a665384d249380a7faf6c910392f7dd147f2c58341b3c01ee09688894d71515", "998a939393905a859371711b5c971f0435ed757720ac5b5a9348e59d652a6409", 0x3e0a9e58U},
       {"filter/chroma:chroma", "efc59e60e7b127541dbb28cf18d5981144fc4a22f02d4f6d710be29ea0ac06fe", "72ef0585ff112ea147febd8ede9f8d3965215513c44ddf0feb188790f371c637", 0x3f4234f7U},
-      {"filter/chrome:chMap", "5d0c6dd88fe0a39b97b994002b7431214d59760f9133c2ff40d1e3bebd8ec119", "bc19edaad2c576252a6f9ea3420422d08286039b8cc15f88aa0e7a6734f18bf8", 0x3d70c7b5U},
+      {"filter/chrome:chMap", "c86f1178b3c10cdcfcfb20d794907a4ca394d79dfe0d002f054084e0f84e6887", "bc19edaad2c576252a6f9ea3420422d08286039b8cc15f88aa0e7a6734f18bf8", 0x3d70c7f3U},
       {"filter/colorReplace:colorReplace", "d07476f0cc1a36bb5c4e5f392ddb14b11f3987b0c842f065387313e7c2999206", "33c8b3e38c7d93521a58581c2b1bc0e56547d2afc8d5673aeddca4d2bf26d0ff", 0x3d9c2f9cU},
       {"filter/deriv:deriv", "43e591217a059e9a86f3e00e52a91b0539c2cc3783619dd0f45de04c292fd3a2", "6a3cbb07be0a133257bd1ca518d82c8269c5b47bd4abd975fe1cb530b70c900e", 0x3c88d638U},
       {"filter/lensFlare:lensFlare", "f7b5491ccf7d5c7e6af2471788df1c817727f0bc34d4c6f5a3af3911a1ea177b", "42d035c4d765ef017d27b641bb5a2a96f03122ca19032c1e02233b8d7915cbc4", 0x3d85d166U},
-      {"filter/mosaicTiles:mosaicTiles", "b45240877494b59e366f9d9441bd2e125365bcd87f000ca363839cdc8bd725b0", "bacfcc449e6470bfa16347c7b00cf9a2807ec433a060282b32358f2b39a273e1", 0x3c311fc9U},
-      {"filter/photocopy:pcCombine", "5c30639723acd4eed15826649692300488800a81c4c20d0b9a2cdafb4bfb4405", "76d6b92b4fb7f0c8e4f465da28246117a0ad5ac0c9c45e43085d1280f0877c6f", 0x3da3d70aU},
-      {"filter/relief:rlShade", "1dba0f21095568d3f62d27d313993dfaa6bae04c1fb0fc81156d583ea3a2d1d6", "f5205caa03ccc976eefc1c41b9f535ea578a23510cf6154642b16634da32abe6", 0x3f078889U},
+      {"filter/mosaicTiles:mosaicTiles", "2f670e03ed85d4ad59f178d46690cedbed1e268a693183b1885362359b9c1a88", "43b8098f9aac9737876d0a25191899a2232333c311fec4a2f09b6f12234d4037", 0x3c311790U},
+      {"filter/photocopy:pcCombine", "84400e5def67011965258e40c5e84004f259e69a73e4804d29c22683bb61cad7", "76d6b92b4fb7f0c8e4f465da28246117a0ad5ac0c9c45e43085d1280f0877c6f", 0x3da3d70aU},
+      {"filter/relief:rlShade", "0bf68c9b1d0203dae7999e0db9c041374f22cf2871aa35f8d960e38886924165", "f5205caa03ccc976eefc1c41b9f535ea578a23510cf6154642b16634da32abe6", 0x3f078889U},
       {"filter/ridge:ridge", "14e083e0d2e604d0b5559ebbdd175316ae313160e5aca89c468678ef3932eff9", "5d220bfe0488a6b32a233b82932edee6b8b5e094c478b95f54289d6e0edc1b8b", 0x3eba3eaaU},
       {"filter/scatter:scatterJitter", "3894d5739e765cf71a39a082abb8315bfd5fac4a7d6be6c4f8a8cf9b87ae5c8c", "d3425ff7218c66a0a0711e3ed96f3c343df410227e22cececf9ad51dc48c42be", 0x3df0f0f1U},
       {"filter/simpleAberration:chromaticAberration", "09c9d93ea78ddb0f877dd993f6af3f5b7d7ffd9c10d05fe4dc2f4b505f1af7e6", "42c44f9ac2cd9b55e1dc92abd18afa3960b6a7982d44e9463db03717b207b760", 0x3e30b0b1U},
@@ -458,13 +458,13 @@ TEST(typed_control_flow_slice_external_oracles_are_repeatable) {
   constexpr std::array<Fixture, 13> fixtures{{
       {"filter/channel:channel", "757bbae80510cd028b6a64b02c19959d9c058b2b64dfc7273870e9fe219e6ebd", "c584bb267993197294a6fbdf101348d51797a91acac9eec19c5ebd23f5e47bde", {0x3e829712U,0x3e829712U,0x3e829712U,0x3f800000U,0x3dfc43e9U,0x3dfc43e9U,0x3dfc43e9U,0x3f800000U,0x3f384280U,0x3f384280U,0x3f384280U,0x3f800000U}},
       {"filter/chromaticAberration:chromaticAberration", "4ca788af3c142403813627704f6e68c9e961989a11323e2a10ec3bea01206125", "e25e1fa9f910c3cd439d465ce68a50f000eafaa4ed5d708ed399f0b1a2cea61e", {0x3d307303U,0x3dc4cf0dU,0x3cbe05b4U,0x3f7afafbU,0x3eb3d7afU,0x3e5261beU,0x3f307303U,0x3f35b5b6U,0x3f110fc8U,0x3f0dab1cU,0x3e416a60U,0x3ea8a8a9U}},
-      {"filter/glowingEdge:glowingEdge", "d4ecd1b91848d86890b86d7611ebaeee5c753d388c9fe7a5e8212f193a313163", "8fd25b2c5bb1124cb6d1348c74355432625bd247128027ae4c7a7f6b3ce55c87", {0x3e6b9ca4U,0x3eb92b60U,0x3dec4186U,0x3f800000U,0x3f1c1552U,0x3f39792fU,0x3ec312aaU,0x3f6cecedU,0x3f1d14a1U,0x3f29aeb4U,0x3ee296beU,0x3f56d6d7U}},
+      {"filter/glowingEdge:glowingEdge", "62b7e0394d19c04f9363d191fd553b5a881b2c34d2d4f265315290bc9d9b22f4", "8fd25b2c5bb1124cb6d1348c74355432625bd247128027ae4c7a7f6b3ce55c87", {0x3e6b9ca6U,0x3eb92b62U,0x3dec4187U,0x3f800000U,0x3f1c1552U,0x3f39792fU,0x3ec312aaU,0x3f6cecedU,0x3f1d149fU,0x3f29aeb1U,0x3ee296baU,0x3f56d6d7U}},
       {"filter/highPass:hpCombine", "b7d5dab26de4a4fe50a8cdc6439c52133a733625b9651abf31a4dc28bd37e40e", "37f0995e070ba207c0aac4722cabb5c78617281f23562193509956649577990d", {0x00000000U,0x3ebbbbbcU,0x3e66e6e6U,0x3f7afafbU,0x3d38b8b8U,0x3e66e6e6U,0x3ed3d3d4U,0x3f27a7a8U,0x3f800000U,0x3f800000U,0x3f1a1a1aU,0x3ea8a8a9U}},
       {"filter/pixels:pixels", "feb89b0e6a128d533471c06cac88fe82d78874442cfbd509204de736ad6bbc0d", "59adf71406e87307e5f915828cfce8b52ec0bb667bd62c853dc7181f413c9641", {0x3df0f0f1U,0x3e989899U,0x3dd0d0d1U,0x3f55d5d6U,0x3e74f4f5U,0x3eaeaeafU,0x3ebababbU,0x3f3ebebfU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
-      {"filter/plasticWrap:pwSpec", "f39c59c7f4aa4ba745d0d653b2b24d7bd77b4c5cfd9a74771fd45fd0e23eab3c", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3eb8b8b9U,0x3ec4c4c5U,0x3f20a0a1U,0x3f27a7a8U,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
+      {"filter/plasticWrap:pwSpec", "b59b84a82075ebafd04ed19e6a224be8e16a223898ffd776b19dcae17052e096", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3eb8b8b9U,0x3ec4c4c5U,0x3f20a0a1U,0x3f27a7a8U,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
       {"filter/seamless:seamless", "95627615549b377e800f657471499a978d7c445c1a35cfc9ac9915e4bdf73bf0", "90255d926242b26be8853e926acca831507d557afe72a00016c9e134a772dea2", {0x3e8f1222U,0x3eb5fd45U,0x3ee73c4fU,0x3f800000U,0x3ef0e420U,0x3eca102eU,0x3f607f02U,0x3f800000U,0x3eb91a13U,0x3ec4e750U,0x3f2040d9U,0x3f800000U}},
       {"filter/sine:sine", "73b6f26c811b0a8676d475bd8eed36917f3ab0d914f87da8f50da49a0d197014", "6f09375716db998f9df1655f106383dde3444800b8e1242a5390f01be0b916d9", {0x3f36edbcU,0x3f6af852U,0x3f1e4797U,0x3f7afafbU,0x3e8af2fcU,0x3f6d7d57U,0x3f5cff8aU,0x3f35b5b6U,0x3e90dd22U,0x3e650b52U,0x3f7727f2U,0x3ea8a8a9U}},
-      {"filter/vignette:vignette", "94a2b6f3415386e718d1d3ba3922cb4126241a5797e426b2159e07385e042e75", "03f0b8e7644def6fbf6fa486b93646041c870baff6684fb98ff8171f3d56dab7", {0x3dc6ddf3U,0x3e110c83U,0x3da4a7caU,0x3f7afafbU,0x3eb7080eU,0x3e6f5ee4U,0x3f24f08eU,0x3f35b5b6U,0x3eeae795U,0x3ee690f7U,0x3e5e860dU,0x3ea8a8a9U}},
+      {"filter/vignette:vignette", "276695edb633b4394dd03b1058af01c40af21d71bdb00c5b31c1d1b16ffe8b7e", "03f0b8e7644def6fbf6fa486b93646041c870baff6684fb98ff8171f3d56dab7", {0x3dc6ddf3U,0x3e110c83U,0x3da4a7caU,0x3f7afafbU,0x3eb7080eU,0x3e6f5ee4U,0x3f24f08eU,0x3f35b5b6U,0x3eeae795U,0x3ee690f7U,0x3e5e860dU,0x3ea8a8a9U}},
       {"mixer/alphaMask:alphaMask", "cd459701e88a9422cbf042e08013043760e6ef2d6566dde1f1d0c4fd0410cfb7", "b352155bb35bb1b39d427784164f2edfe75e8d9373161a2209d98feb4b967032", {0x3e3926fbU,0x3f22910dU,0x3f234fa2U,0x3f4889cbU,0x3f55704eU,0x3f628f41U,0x3f83c258U,0x3efcbb80U,0x3f818c4dU,0x3dbf284aU,0x3e94a2faU,0x3f63d371U}},
       {"mixer/applyMode:applyMode", "7aeee2945e2264b2706af1000de073f87afa3de89fb58b74d7d45c5e489fc462", "901503d50bab78d19f2bdd7f32efd5a6166653885a965813a1a12b735c9517e5", {0x3dc01c46U,0x3eaff106U,0x3eb6cb47U,0x3f7afafbU,0x3efb291fU,0x3f4760fbU,0x3ea6022bU,0x3f35b5b6U,0x3f4f0f0fU,0x3e0ff65cU,0x3e9cc8c2U,0x3f5ddddeU}},
       {"mixer/thresholdMix:thresholdMix", "f6e338ca581f3243524f124f3db407c3e0a56c42d9563eaba6901f48eb373712", "9499f26e19394e0bd91fad082d820362851877598640cfbdf87f9719ffa62b7e", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f088889U,0x3f3cbcbdU,0x3f50d0d1U,0x3ed82d83U,0x3f76f6f7U,0x3f27a7a8U,0x3e64e4e5U,0x3f022cd8U}},
@@ -520,20 +520,20 @@ TEST(typed_control_flow_slice_external_branch_oracles_cover_every_arm) {
       {"filter/channel:channel", "channel1", "7188cfe8d07b5c3ecf55d2c2dd4f2e421d6bbc50c019b6132673a3363dfc9b6c", "c29398951217bef5ae55ea839afb45b41a80459ea27eb5fcc12807d36cb83361"},
       {"filter/channel:channel", "channel3", "05b55b15d8e517d4d2a0370f61a2a69338092d1228995929b7db7cadd4377677", "b4d9bf4bf793c1a8c0169e66f270a626162fe24aaaf59f8e5eb62027e09b58ab"},
       {"filter/chromaticAberration:chromaticAberration", "fullResolutionZero", "d8a8c910968045fd854b6d28bae45cf531116d05ab93934560ffd8c8f49f35a0", "a5689109e8eb8c4d94b1ae4541dfb920d38ba23d866ed323220a24302f55690e"},
-      {"filter/glowingEdge:glowingEdge", "metric0", "2f2df1917198e3d97062753223fef2edb44a29afa26aadebe7f51206b8a84f7f", "8f42b60bab0ab75aea84707043c8ae0afc3047b1fc1aa420a56b557d6abaaf3d"},
-      {"filter/glowingEdge:glowingEdge", "metric1", "93a6f3e16620529b6674f42386898f61213e89a71a307ba5003b2a4298748774", "c361423fb4e4852699976ef7419619ac87aba5a98ca09e3ee673557d2d61b568"},
-      {"filter/glowingEdge:glowingEdge", "metric2", "9d750577c54c98822192665221ffd620e8543936a490b7d983023072aac824a9", "4fd31f9f94d8f89761bb05af87b02285ae12da1e2a89567da829f1746c47ed83"},
-      {"filter/highPass:hpCombine", "mono", "7eafa5965c9f8245f535a88d28f75de4a19ad186fb92afa7131ee5c9b3d7a358", "3dea99c45113cd58157c0de11127d3df3404a909eb6a9e90681556c161cf4caf"},
+      {"filter/glowingEdge:glowingEdge", "metric0", "019ab0ef1020e05e5e901cb340e9a46f66529cefc054bc8a28886981b2ce4fde", "8f42b60bab0ab75aea84707043c8ae0afc3047b1fc1aa420a56b557d6abaaf3d"},
+      {"filter/glowingEdge:glowingEdge", "metric1", "383c60189de282fadff8bdba44e57ef5641a73ba55382c0dca3d49d6e66ebd7b", "c361423fb4e4852699976ef7419619ac87aba5a98ca09e3ee673557d2d61b568"},
+      {"filter/glowingEdge:glowingEdge", "metric2", "84b1e9202b2d144924c3ed00cf409c6f716f595254751a8206429919b82e3d04", "4fd31f9f94d8f89761bb05af87b02285ae12da1e2a89567da829f1746c47ed83"},
+      {"filter/highPass:hpCombine", "mono", "6c1deb8eeabffeaf6e752635399c3e770b02cae2d3adf176ba096cb43c354c19", "3dea99c45113cd58157c0de11127d3df3404a909eb6a9e90681556c161cf4caf"},
       {"filter/pixels:pixels", "earlyReturn", "bde61fe2cc345cd2979280e465847046eec54926ac7a5569ab36b7c9d4fac749", "5f07b0549bb0b7480f9f9709f6e2d863b9e1f93ebe4a6147459092c931e38718"},
-      {"filter/plasticWrap:pwSpec", "zeroLightFallback", "f39c59c7f4aa4ba745d0d653b2b24d7bd77b4c5cfd9a74771fd45fd0e23eab3c", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a"},
-      {"filter/plasticWrap:pwSpec", "oppositeLightHalfFallback", "f39c59c7f4aa4ba745d0d653b2b24d7bd77b4c5cfd9a74771fd45fd0e23eab3c", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a"},
+      {"filter/plasticWrap:pwSpec", "zeroLightFallback", "b59b84a82075ebafd04ed19e6a224be8e16a223898ffd776b19dcae17052e096", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a"},
+      {"filter/plasticWrap:pwSpec", "oppositeLightHalfFallback", "b59b84a82075ebafd04ed19e6a224be8e16a223898ffd776b19dcae17052e096", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a"},
       {"filter/seamless:seamless", "linear", "bf23e99fe10fa918184d272409eedc549341302a770bea6d1d1f6dd1d8454dd9", "625bf1a9f9c15319aacb8c2a366a08b7d02476b83f3f2d685c1bcc1f690d9f2c"},
       {"filter/seamless:seamless", "sharp", "67fb825c82e87193a565ffb6c9cb1c18081c20513690255ae4c714d37c821a03", "98ce2fb4c75815268e9fd8f8a5e4857dda251f1d85eb96310fbc759caf029837"},
       {"filter/seamless:seamless", "zeroBlend", "43633d6a9d949ac1d965090c18be1e4709a35cc680f0348e2ee0bf735c7f7672", "002a6dc460f3a727c0ed3cd108dcad1f1bb6bc925acdd86cba0006dbb834b862"},
       {"filter/sine:sine", "luminance", "1361edb9630997113f9d535468ef0caf947c86d7e6c57be87066cb6d384c8d3f", "ecc2703ea467bb15781f2d5f5688befde66441b5e2d0ac1972a206bc06129cbc"},
       {"filter/vignette:vignette", "fullResolutionZero", "2da1d72b224dac747a3cb700bceed7447e7843ce3b94a58c5bf5efff8f82e92c", "65daf291de28c048faf144e018b39b2ff6082c1c993b280154e961e1f02ece79"},
-      {"mixer/alphaMask:alphaMask", "maskReturn", "1e40268f582f1a95e9b4d7963900b72027f48a2dcba73372d1ee33ad2a32b877", "f5ab5871ccab6489846aac701b44eee7efb15d1023abcede7ba5c0b5415b8722"},
-      {"mixer/alphaMask:alphaMask", "maskTranslucentBase", "d6dab4da6a60c5dd8a27fd5defaa6862fa0f3764037bb8b8e5328f607259f92b", "33ddffd6c473b2acd0d067cc8d75648a911b8347a407d0534cab8fa95078b614"},
+      {"mixer/alphaMask:alphaMask", "maskReturn", "6248f17d402205d7d9989d34c415d412253e104be2b18c954d6a8d868f617ce0", "f5ab5871ccab6489846aac701b44eee7efb15d1023abcede7ba5c0b5415b8722"},
+      {"mixer/alphaMask:alphaMask", "maskTranslucentBase", "5c0155acf5d163fcd4c2e8441719f2d051ce18d885c99f566c7f0da639f07741", "33ddffd6c473b2acd0d067cc8d75648a911b8347a407d0534cab8fa95078b614"},
       {"mixer/alphaMask:alphaMask", "alphaNegative", "594438d9e093edc81819ed52ced98f6c35d7678b34298a2bf1e27b49447d264e", "290e9f41f11f4200c75792050f53987b7b0757246663b625602b9bd02c12abb8"},
       {"mixer/applyMode:applyMode", "brightnessNegative", "f423203707503dcc17cd0527109c103f90cc08445bf6ec59923c2634d99c6b24", "a06677e876ad65595f255ab53c23c6894f65ebba637d750459257a7b51b308c0"},
       {"mixer/applyMode:applyMode", "saturation", "437d09a1c541faa2e055b059738dfde5385b318fca5ad562aa8afbd4e1ab0fc8", "935faeac913cea75f60785751cdbdbfcde1a9b23b5d0cf493d5d14cb1fd31999"},
@@ -790,12 +790,12 @@ TEST(typed_task11_all_ninety_four_external_oracles_are_exact_and_repeatable) {
     {"filter/flipMirror:flipMirror", "mode3", "df7494bc0f9867902e62d5236cd2d329bcc561b7661c94cc0ae6c14b7ad2c9d8", "129a0e3849b93a62531a7b7ebfd63f09a001f81f1e9e4f98a1a8c4f89b9c27cd", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ef6f6f7U,0x3edadadbU,0x3f63e3e4U,0x3f109091U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
     {"filter/flipMirror:flipMirror", "mode11", "1dd4a1e147bb3156ba5ce8640bb197ff8db4835def2968b29ea8ef3b596fc706", "16f24bcf6c1f3873ece584e5ab789dbc27c8348ea4acce76fd564c3a908e159c", {0x3df0f0f1U,0x3e989899U,0x3dd0d0d1U,0x3f55d5d6U,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e3cbcbdU,0x3ef6f6f7U,0x3e34b4b5U,0x3f30b0b1U}},
     {"filter/flipMirror:flipMirror", "mode12", "0bfcbace47d4cbf80b37a9771171f91c2c9a0f97eb7c59ad29496f13fa6a1951", "6eb8d177280f0beaaab6bd1e90d16135c27b14d86b35a4ed15f17d8260b7b066", {0x3e74f4f5U,0x3eaeaeafU,0x3ebababbU,0x3f3ebebfU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
-    {"filter/flipMirror:flipMirror", "mode13", "78bb5263b566554cd1b657a78cbf7801056e781b5897595f125574bec39c66cc", "f384f18a85804e3898b7f575e41db5ef5a066d13c6fdc960760854e89db2b865", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
-    {"filter/flipMirror:flipMirror", "mode14", "94530fe46f0be26947f3a6a65f886ad256abe2f88ced2e7740249f597f7943eb", "701ff504f64f54e5915628896069f414aa71bd66731659fe34cb16cf0d2ecb47", {0x3df0f0f1U,0x3e989899U,0x3dd0d0d1U,0x3f55d5d6U,0x3ef6f6f7U,0x3edadadbU,0x3f63e3e4U,0x3f109091U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
-    {"filter/flipMirror:flipMirror", "mode15", "805d52e217cf9be1d6cf40f0bf19b967586ce4fe0c6b8561497edf750b61f44d", "bed103fbaa2856ca2635775fafd33f8f851ccb18e2b61fd849fedf96333d5822", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e3cbcbdU,0x3ef6f6f7U,0x3e34b4b5U,0x3f30b0b1U}},
-    {"filter/flipMirror:flipMirror", "mode16", "e51fedd8e508906c9b4b58af638d3509b9f03605ddd8ad8187399b4b9bee6cf0", "8cc2ee9f2991443b5afc9e88b4f468495c4fbdff4d7333416b5e9b189819d7c6", {0x3df0f0f1U,0x3e989899U,0x3dd0d0d1U,0x3f55d5d6U,0x3ef6f6f7U,0x3edadadbU,0x3f63e3e4U,0x3f109091U,0x3e3cbcbdU,0x3ef6f6f7U,0x3e34b4b5U,0x3f30b0b1U}},
-    {"filter/flipMirror:flipMirror", "mode17", "2fd95f9588d3fca68235ab90eff6767aa40337de9f16bf74db9930ec5a0e8524", "13e1c98242807c2a5187f2627dfaaf0ee6b7fe07a88a776557259382b8f312ab", {0x3e30b0b1U,0x3e20a0a1U,0x3e949495U,0x3f63e3e4U,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
-    {"filter/flipMirror:flipMirror", "mode18", "add5bc60f389d32a8f60298df83293070708d8bef46b37465a579bab9d3f1915", "c3658b0c1350d0262eab797816b720931da7bf414ff84152865c965daec8fa37", {0x3e74f4f5U,0x3eaeaeafU,0x3ebababbU,0x3f3ebebfU,0x3ef6f6f7U,0x3edadadbU,0x3f63e3e4U,0x3f109091U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
+    {"filter/flipMirror:flipMirror", "mode13", "94530fe46f0be26947f3a6a65f886ad256abe2f88ced2e7740249f597f7943eb", "701ff504f64f54e5915628896069f414aa71bd66731659fe34cb16cf0d2ecb47", {0x3df0f0f1U,0x3e989899U,0x3dd0d0d1U,0x3f55d5d6U,0x3ef6f6f7U,0x3edadadbU,0x3f63e3e4U,0x3f109091U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
+    {"filter/flipMirror:flipMirror", "mode14", "78bb5263b566554cd1b657a78cbf7801056e781b5897595f125574bec39c66cc", "f384f18a85804e3898b7f575e41db5ef5a066d13c6fdc960760854e89db2b865", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
+    {"filter/flipMirror:flipMirror", "mode15", "e51fedd8e508906c9b4b58af638d3509b9f03605ddd8ad8187399b4b9bee6cf0", "8cc2ee9f2991443b5afc9e88b4f468495c4fbdff4d7333416b5e9b189819d7c6", {0x3df0f0f1U,0x3e989899U,0x3dd0d0d1U,0x3f55d5d6U,0x3ef6f6f7U,0x3edadadbU,0x3f63e3e4U,0x3f109091U,0x3e3cbcbdU,0x3ef6f6f7U,0x3e34b4b5U,0x3f30b0b1U}},
+    {"filter/flipMirror:flipMirror", "mode16", "805d52e217cf9be1d6cf40f0bf19b967586ce4fe0c6b8561497edf750b61f44d", "bed103fbaa2856ca2635775fafd33f8f851ccb18e2b61fd849fedf96333d5822", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e3cbcbdU,0x3ef6f6f7U,0x3e34b4b5U,0x3f30b0b1U}},
+    {"filter/flipMirror:flipMirror", "mode17", "add5bc60f389d32a8f60298df83293070708d8bef46b37465a579bab9d3f1915", "c3658b0c1350d0262eab797816b720931da7bf414ff84152865c965daec8fa37", {0x3e74f4f5U,0x3eaeaeafU,0x3ebababbU,0x3f3ebebfU,0x3ef6f6f7U,0x3edadadbU,0x3f63e3e4U,0x3f109091U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
+    {"filter/flipMirror:flipMirror", "mode18", "2fd95f9588d3fca68235ab90eff6767aa40337de9f16bf74db9930ec5a0e8524", "13e1c98242807c2a5187f2627dfaaf0ee6b7fe07a88a776557259382b8f312ab", {0x3e30b0b1U,0x3e20a0a1U,0x3e949495U,0x3f63e3e4U,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3e9c9c9dU,0x3f068687U,0x3ee0e0e1U,0x3f19999aU}},
     {"filter/outline:outlineBlend", "blackOutline", "a2aab4900a449027ed69993a88d7c968b929ba1d0a1c8d06a2eaf7232eb19317", "7d22be0b86afb76aca616b4edad9e24f726a8a8cc19ab39853297d3cb0a82804", {0x3bc4884bU,0x3c5b358fU,0x3b53a679U,0x3f7afafbU,0x3eacc4ddU,0x3e4a1b6dU,0x3f29825bU,0x3f35b5b6U,0x3ea84df3U,0x3ea45e18U,0x3de067efU,0x3ea8a8a9U}},
     {"filter/outline:outlineBlend", "whiteOutline", "6db4db090e13c80eaa2c8b5988712ed2d20e4d0afb506bbe26c7e4268da8d937", "239586e2a1ae6ba3046bfe13b4ba8c08c363c14468eff650e302da2ab33d9456", {0x3f636af3U,0x3f654eb8U,0x3f62b588U,0x3f7afafbU,0x3f06929fU,0x3ec56e17U,0x3f59b28cU,0x3f35b5b6U,0x3f56a97dU,0x3f54b18fU,0x3f1e8f81U,0x3ea8a8a9U}},
     {"filter/outline:outlineValueMap", "colorOklab", "856c984b4d37fdded7e9e7cd117a64bbf218658cfb51dc572f92d7c9b0332306", "349d19d5f9238b64607c265a97cee2e57558f49b2254a613efb80f334e4fef88", {0x3e56cac9U,0x3e56cac9U,0x3e56cac9U,0x3f7afafbU,0x3f00d280U,0x3f00d280U,0x3f00d280U,0x3f35b5b6U,0x3f36081fU,0x3f36081fU,0x3f36081fU,0x3ea8a8a9U}},
@@ -1191,24 +1191,24 @@ TEST(typed_task12_all_one_hundred_twenty_external_oracles_are_exact_and_repeatab
     {"filter/translate:translate", "wrap2", "57c71ffa3a242b459af2a91d8c7dc93834fd18fe10ce2a9aef7196797ac0fd8a", "5572bbffba8a4359705b4c98b89ff3148e6c98c25f672a9631b22724b88b1192", {0x3f028283U,0x3d60e0e1U,0x3dc0c0c1U,0x3edadadbU,0x3f139394U,0x3e74f4f5U,0x3e2cacadU,0x3e909091U,0x3f139394U,0x3e74f4f5U,0x3e2cacadU,0x3e909091U}},
     {"mixer/patternMix:patternMix", "pattern0", "213a3100c15275764c114f17f1df6584ca8559709e5cbb7bde1703aac9e00fd2", "af4025978e4b82393bd1effbcd50c76ca30f49d9bef390c692d466bee2cd2e23", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "pattern1", "6a88d5832f7c7e867b1e578b7e8ad1c94d3012ad7c253a904a11ba92757b794a", "dca0bf61d0f2da97eae9eb320a41f08e0ebbd7950aa29caadda56a3e3751c704", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f0d952dU,0x3eb48debU,0x3e1f5d5cU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
-    {"mixer/patternMix:patternMix", "pattern2", "a8334dab60eabeffc17d8961d4f088f5d9445715fcf4f421d614729a0058f376", "452797aed5e7f7321af7611f9956c3a102e64eff18af272f9049d6eb8af2a035", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
+    {"mixer/patternMix:patternMix", "pattern2", "94c06d97e68e4db3ac63f921114b80f1d93617914903c87d41ea9f6f26205e8a", "452797aed5e7f7321af7611f9956c3a102e64eff18af272f9049d6eb8af2a035", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "pattern3", "814b79f4be4d66ac5f1cc64bcfe609d5b4479b200da1c6c545046aeaf1349a5b", "7f69f7e87413570590b6b0a0a3e089133f54fab1f54170fae0e149d10ad8f5f8", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "pattern4", "b045d35a387238c609326def9157bf761c436a652a503da18840bf255d8e301e", "4c485721ff0a5b95fdb3ac98fba79b781134f30eefbe1265dfa23d5af863adc7", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "pattern5", "8647a1ca66e9499e089c020749627058526051a8baeac206e060b8d368523e2c", "de0fdcc06eabd77f24f74db2074616e44cb9034fa98a876a424e10d97f826bb9", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
-    {"mixer/patternMix:patternMix", "pattern6", "41af219be145d6a27b7c39133d91a59b34a47abe586fb1a9c07737220036b452", "1fe233e421c852824c745f5c5ccc3990bb0551dbe5ba14ad59d58c3728556c80", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f2156e5U,0x3f2d4163U,0x3f0d424fU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
+    {"mixer/patternMix:patternMix", "pattern6", "7b18879d2278a2107ee33bf60801e510a3ecfa18eb3e6df18cdd841bec227dc2", "1fe233e421c852824c745f5c5ccc3990bb0551dbe5ba14ad59d58c3728556c80", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f2156e5U,0x3f2d4163U,0x3f0d424fU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "pattern7", "c9cbfb9c8ae7570bebab6ffc165348fa2ea1b3f0f70d5d4069dab244a4f3a8cd", "f228808ec0b5b63148684debce98e6254156c15228b5ad376c2a6fb901aafeff", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "pattern8", "f30f70f8747348af843162054d084464b348cf8239385a0c435ce04263560f5c", "5ebc3fbe6badafe0c77d7abeda38aed7543059da851fc0608de1826aca894dbb", {0x3e2b3f55U,0x3f1a1bffU,0x3f1fccc6U,0x3f7afafbU,0x3f0ceecfU,0x3eaf186cU,0x3e120544U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "invert", "7560bd687b2aa0264b8b6729dcb7d6265fbd488145f2819a390138e16cfede92", "3ca0b85cace99fb54b3b967322354110092ee3fe0231ea1d26046ab71b2b5df3", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "fallback", "dcef139e5081337b2b0f0fda51806028caea30439b72b47fdc1bc277b3dbb387", "8d66b0def717df10f6a07fef8a12af4ef3b963869e04efa7b11950d5ed27563b", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
     {"mixer/patternMix:patternMix", "fullResolutionFallback", "8ad3928394e282b65ef29d89f7202f4b08091146c5708ad84471daed8700c6e4", "91c947bebf55fb99bb0fa5fb2b0094d71184045ce280145ac25e5714bd7c6698", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
-    {"mixer/shapeMask:shapeMask", "shape0", "ccdd291caef9766a907360bd21e8f82563457ae5d2fd4c46908629e53db2ca5b", "a6817588b18cf21097b92b4534dd2f78eaf36e3cb20a89b481341c18f7a7dcb7", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f3eabc5U,0x3f006330U,0x3e721156U,0x3f5ddddeU}},
+    {"mixer/shapeMask:shapeMask", "shape0", "773baa412771fc9c31bfbd2952099efc68113b7801bdf467dc175581d87e76b3", "a6817588b18cf21097b92b4534dd2f78eaf36e3cb20a89b481341c18f7a7dcb7", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f3eabc5U,0x3f006330U,0x3e721156U,0x3f5ddddeU}},
     {"mixer/shapeMask:shapeMask", "shape1", "d47636df56ef588e885bc074d075f10eb453c82d4b46b7b3a720b1c4cf18e1c2", "073603161a6a84c4c4398103b1055275351ea60ad2ec2aa3e38cce0791e3b5ab", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
-    {"mixer/shapeMask:shapeMask", "shape2", "1341dae62a1c5856a0cbf4c32f9f86f07bdf14fd240600754a662c986ffd9926", "094fd718fc0faf90c17fc9567820718f699c2d028d5b37494425dc07a40e3fcc", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
-    {"mixer/shapeMask:shapeMask", "shape3", "0ff005e314f6896264572d8643a731cb93a74fca0321e2deb486bee62507bddd", "88a4c390041dae9e19b869f5f4ab1efa47ec7afeddbf4fd094b8a485531fcc64", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
-    {"mixer/shapeMask:shapeMask", "shape4", "e65832e83bf6b3bea3f2bf05fea56333b58511548af81aa5f5c7bf84a399b746", "6bd5a7c3311875778c238ac9ef8f558012d042250b16f7de29bd2ac75319ad8c", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
+    {"mixer/shapeMask:shapeMask", "shape2", "d69936fda5f07941b85d94cc5797b6ca56509315abb0659a29ca446b760c7d1f", "094fd718fc0faf90c17fc9567820718f699c2d028d5b37494425dc07a40e3fcc", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
+    {"mixer/shapeMask:shapeMask", "shape3", "c163737cb467fd591b0e1a1952e64db8cf94f1f58aa2da6c0c1a5f34dfc35662", "88a4c390041dae9e19b869f5f4ab1efa47ec7afeddbf4fd094b8a485531fcc64", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
+    {"mixer/shapeMask:shapeMask", "shape4", "b327b7a170cd1b7bc7be9cd3380c9f71aef4c3e024ee4abea519597d0628611a", "6bd5a7c3311875778c238ac9ef8f558012d042250b16f7de29bd2ac75319ad8c", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
     {"mixer/shapeMask:shapeMask", "shape5", "0eae9e8b4ba0dd0c8a0d22df6db100bd91f29bd5212ae8655babf6a37272a2f7", "54614a0eaf345755b27bb7fa0c1e5d7783c8e5f145772d18e2d7badcade18c20", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
-    {"mixer/shapeMask:shapeMask", "shape6", "4746cb91039cc8aa5e52163e7471c35e486d1cf38902bc9f261d31c456a024fd", "8a6fd852e92c7ac2d72bb09f7d10b849528ef166e805db1a2ce29872a625099e", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f30a4edU,0x3f1d6045U,0x3e6857afU,0x3f5ddddeU}},
-    {"mixer/shapeMask:shapeMask", "shape7", "ec8a7000eae5cfdf4fe509434537806381f221e7c96d4a1faf8dd8a0d23c0227", "04aef2a8c2307bf605eba0d6e0bb33accf3bfe60bcd2b1d276feb14499a759b0", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
+    {"mixer/shapeMask:shapeMask", "shape6", "68c3b0a7bf5d1825dd3feb3846b66e3e5a2ad3325890c442aeda27969c6ca31c", "8a6fd852e92c7ac2d72bb09f7d10b849528ef166e805db1a2ce29872a625099e", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f30a4edU,0x3f1d6045U,0x3e6857afU,0x3f5ddddeU}},
+    {"mixer/shapeMask:shapeMask", "shape7", "99f061b7b71e6b3aea1b75a03e7253bd9a07e60eda94c90936fd1b08b03942a7", "04aef2a8c2307bf605eba0d6e0bb33accf3bfe60bcd2b1d276feb14499a759b0", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
     {"mixer/shapeMask:shapeMask", "invert", "fa2812cd1d9359324b438f9492d38783d3b7f38337b5f63e34bef4bab9e920a5", "e03d0d9c441bf6a98cc8204878dbb2757bb1c60ba7d114c9d180267d8eae62e4", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3f5ddddeU}},
     {"mixer/shapeMask:shapeMask", "animated", "6304562c932e79971c3ecfaf838bba47bf78fe3dc105f7c25ec21cba24b3c30a", "259bad1f6bee680a7f144c9da1f799cfe0c096638439890ad20fc1090408d328", {0x3e2cacadU,0x3f1b9b9cU,0x3f21a1a2U,0x3f7afafbU,0x3f27a7a8U,0x3f47c7c8U,0x3f2dadaeU,0x3f1e9e9fU,0x3f76f6f7U,0x3d40c0c1U,0x3e8c8c8dU,0x3f5ddddeU}},
     {"mixer/shapeMask:shapeMask", "fallback", "6d8a054edf819f9936b707cacd93c3de7a337ccda6a133f53402b64fbcc0df8e", "40938e0ba396d44cc2b6500c045542ff57fac15481b3c0560dff5e15359c43cb", {0x3de0e0e1U,0x3eb8b8b9U,0x3ea8a8a9U,0x3f7afafbU,0x3f189899U,0x3f088889U,0x3ec0c0c1U,0x3f1e9e9fU,0x3f515152U,0x3eb3b3b4U,0x3e7eff00U,0x3f5ddddeU}},
@@ -1230,12 +1230,12 @@ TEST(typed_task12_all_one_hundred_twenty_external_oracles_are_exact_and_repeatab
     {"synth/modPattern:modPattern", "blend2Anim2", "44d6f6df118c46a647903bb6f047df9f77302abef5b4067ebf2083c33e8a071b", "c8ebfb4e079211cb3aabbdefab4fa5604c8f5314741d7926baa0d53300c8a421", {0x3f258e0dU,0x3f258e0dU,0x3f258e0dU,0x3f800000U,0x3ec64896U,0x3ec64896U,0x3ec64896U,0x3f800000U,0x3ea98ba9U,0x3ea98ba9U,0x3ea98ba9U,0x3f800000U}},
     {"synth/modPattern:modPattern", "blend3", "423fc336468e9c2a851e7c27e593d092dff5619c8906c87f3bc60a59acbdcef5", "de2e3c5329b0b51c6fbb2be34c7562ca03c3c2542d5515e548c62a1022d68e83", {0x3f0973d4U,0x3f028f0cU,0x3ef6bf10U,0x3f800000U,0x3f333334U,0x3f0cccf4U,0x3f17197eU,0x3f800000U,0x3f0fc10cU,0x3f260134U,0x3f4fbf34U,0x3f800000U}},
     {"synth/pattern:pattern", "pattern0", "ce65b6674ebdc8b9a2e120207fdfbd274b8859efc8677bb3f0526de2a3284cb6", "6e437bd47e0081c716da2ca80b8a1dab786b070db4005293c59c1ebe9be1480a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern1", "b3f820f41766e65cfa888f135232ef7301b060544d0e6bd83532fe21423c64a3", "e792a79c71b16dc7622ccc75ceb37ff8ae5c6b55b375d5db062c44e728754320", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern1", "f8f4b35a01faa49f5f7eae9a17dfab2c97e406118f4d5e63eb128ce287da9338", "e792a79c71b16dc7622ccc75ceb37ff8ae5c6b55b375d5db062c44e728754320", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
     {"synth/pattern:pattern", "pattern2", "ef51ac5c8c9bcd2af1122e0a452d9d6da019ab9af2ea1616d0a25aaef5024f16", "aec5160837e274cfdf9fca07d74d09287759ba415d86a13f311919d61a8d00b5", {0x3eaf13f9U,0x3f0be220U,0x3edcf0c6U,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
     {"synth/pattern:pattern", "pattern3", "f4c95e5b26a9f500ea72c0bdca2c66668ac1d36b147ce2aea98356a30c70c21a", "3586262e902fdc56b201dfa657751d4e5242d00278cd385795ef0dc39cefe91a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
     {"synth/pattern:pattern", "pattern4", "d9e8a05492d9ac339ef4f00f8bb164230f53c3f4e958375926962535d73f1609", "be607ff90246e5ed1134fa43a064fca16afca154f29fad0df384c9fc5cd0f7a5", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
     {"synth/pattern:pattern", "pattern5", "466513fd97c8d9d0f88257a9ffb966257f20437b2cb51f393dd2630e9835ef9f", "ca941d37c1c9dee500cc8054648069489100952097babe19b44f98cd069355b9", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3db1d5edU,0x3f372925U,0x3eaf4d71U,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern6", "38d7470fb6bca04479c9efc6a567279e00f9c49e35495f3d416455d738ef6fa0", "dde101746a2ba06fa562142f6930d20217543d5d4e44c52a7395ff8df81a9463", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern6", "f04fa25e6a326ca8b1a2ca0a3e8f88caf37115d7f00ca8606dcadc4b3534f1d1", "dde101746a2ba06fa562142f6930d20217543d5d4e44c52a7395ff8df81a9463", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
     {"synth/pattern:pattern", "pattern7", "f23e2060c9629abfb60dea8c638a7df35d244db056d7978c347a8f1485574db0", "16a65955ca902e6746842cde58580358407e7c8f5ade24b4606a3938759e6c60", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
     {"synth/pattern:pattern", "pattern8", "f0afb674f48d28be1861ba8b932ddc9964cc114e661c5f139df0621e78d8f8f3", "3f60c7d6f4d4febf7e728976c83a04928efdf31001100740b32815764bf3dd8c", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
     {"synth/pattern:pattern", "pattern9", "ceb8ae072342c8afaf42c76867ff75b183ed279f365fc9b01790d7310ec51f7c", "754b3d34ad15540a99be7501dea41c68ae9d4f0d28e6bba4e928614a53a6c6c0", {0x3dae5584U,0x3f377365U,0x3eaeff24U,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
@@ -1425,7 +1425,7 @@ void populate_task13_bindings(noisemaker::glsl::Bindings& bindings,
 
 TEST(typed_task13_all_twenty_one_external_oracles_are_exact_and_repeatable) {
   constexpr std::array<Task13Case, 21> fixtures{{
-    {"filter/bloom:brightPass", "softKnee", "637fab112bdd93f09722f42a2bcbe748cb73a1aa104294398fe579cfddf9e7e4", "f37355d9e280dc7b56db4fb66868e9201c904b687333138c62c3ff5f7bda31ab", {0x00000000U,0x00000000U,0x00000000U,0x3e808081U,0x3f70f0f1U,0x3f61e1e2U,0x3f52d2d3U,0x3f40c0c1U,0x3f7afafbU,0x3f75f5f6U,0x3f6bebecU,0x3f5cdcddU}},
+    {"filter/bloom:brightPass", "softKnee", "f85d033117e2cbdfda8f50c89156585f101e8400d57ab625f4c5ca2b1268c84c", "f37355d9e280dc7b56db4fb66868e9201c904b687333138c62c3ff5f7bda31ab", {0x00000000U,0x00000000U,0x00000000U,0x3e808081U,0x3f70f0f1U,0x3f61e1e2U,0x3f52d2d3U,0x3f40c0c1U,0x3f7afafbU,0x3f75f5f6U,0x3f6bebecU,0x3f5cdcddU}},
     {"filter/bloom:brightPass", "below", "39db1c2790da52b4ec7590014d7f438a3a2b4d4cc6ca5f6ed6c38fb60de27192", "17b3576fb2405e4d1dee78a343a9d8e473409056c8c1cd0fcb38b9659df20a6a", {0x00000000U,0x00000000U,0x00000000U,0x3e808081U,0x00000000U,0x00000000U,0x00000000U,0x3f40c0c1U,0x00000000U,0x00000000U,0x00000000U,0x3f5cdcddU}},
     {"filter/bloom:brightPass", "above", "e817cda4b3759b575fdb3778177564544800f2df625f2129ef3709001c6702ed", "48b6681702181716a45c4a1e76d1c0992208d454fb8825ebe107ac8adee4ccdb", {0x3d50d0d1U,0x3da0a0a1U,0x3df0f0f1U,0x3e808081U,0x3f70f0f1U,0x3f61e1e2U,0x3f52d2d3U,0x3f40c0c1U,0x3f7afafbU,0x3f75f5f6U,0x3f6bebecU,0x3f5cdcddU}},
     {"filter/bloom:composite", "zeroIntensity", "82dce1fda9a7c8bf9e8c8ac5e3e92804ed3d75a68246f705f9f37ed379526e66", "97b2a11438e374e306befe0d6d844374c576f5e68fd5723d282b7f13a92747ab", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
@@ -1615,20 +1615,20 @@ struct Task14Case {
        {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U},
        {0.0f,0.0f,0.0f,0.0f,0.0f}, {std::int32_t{0},std::int32_t{0},std::int32_t{0}}, false,
        noisemaker::glsl::Vec2(-7.0f, 5.0f), noisemaker::glsl::Vec2(17.0f, 13.0f), 0.375f, 1U, 0U},
-      {"filter/tetraCosine:tetraCosine", "hsv_backward", "ea22015f2ef3c53edaddf5fa6a41a1e69b824dcea8aef61efa851fcbc633622d", "7cd16bb3a3519e49bdb849692905d104697ae4243da91fd0c2de6e622c389652",
+      {"filter/tetraCosine:tetraCosine", "hsv_backward", "7eee48c86ccf86c03421772eace072c3f2ad8e19f81786479a6a2b361b96b13a", "7cd16bb3a3519e49bdb849692905d104697ae4243da91fd0c2de6e622c389652",
        {0x3eda8cd7U,0x3f2f9d3dU,0x3f332b09U,0x3f0c8c8dU,0x3f1ba2bcU,0x3dd287d8U,0x3ecba875U,0x3f7dfdfeU,0x3f6bdc80U,0x3f4be05bU,0x3f6003dbU,0x3f0e8e8fU},
        {0.40999999642372131f,0.0f,0.0f,0.0f,0.0f}, {std::int32_t{1},std::int32_t{-1},std::int32_t{0}}, false,
        noisemaker::glsl::Vec2(11.0f, -4.0f), noisemaker::glsl::Vec2(29.0f, 17.0f), 0.875f, 23U, 0U},
-      {"filter/tetraCosine:tetraCosine", "oklab_forward_alpha1", "2416059647cfb69c340dcb4c869f26a3f6dd92dc2164b4902691c572048b308a", "997b17922a9430c278738815712c5397179782a4622c758689f60c8cd665ef4d",
-       {0x3e07abccU,0x3e404bf0U,0x00000000U,0x3e8c8c8dU,0x00000000U,0x3bffdbd5U,0x00000000U,0x3f6aeaebU,0x00000000U,0x3e6ae0deU,0x00000000U,0x3f179798U},
+      {"filter/tetraCosine:tetraCosine", "oklab_forward_alpha1", "de876f55185ae679ef08f64b378f3becfeb5d4116fd080cdf92d71a1298bfa5c", "997b17922a9430c278738815712c5397179782a4622c758689f60c8cd665ef4d",
+       {0x3e07abccU,0x3e404c08U,0x00000000U,0x3e8c8c8dU,0x00000000U,0x3bffdbd5U,0x00000000U,0x3f6aeaebU,0x00000000U,0x3e6ae0deU,0x00000000U,0x3f179798U},
        {1.0f,0.0f,0.0f,0.0f,0.0f}, {std::int32_t{2},std::int32_t{1},std::int32_t{0}}, false,
        noisemaker::glsl::Vec2(-13.0f, 9.0f), noisemaker::glsl::Vec2(23.0f, 19.0f), 0.625f, 37U, 0U},
-      {"filter/tetraCosine:tetraCosine", "oklch_static", "0754705dd4912ee71d140199748e39366c780cb1ee0d7f83ee4a811d7009d943", "37d73498ed162e762ad727491cf4e4c71b71ebf1082e6a18c74c100f97f94642",
+      {"filter/tetraCosine:tetraCosine", "oklch_static", "fbe8d47b9b36d3831a545c1202bfde0cbc2fa12cfbe7d586e7428e9a1f81a545", "37d73498ed162e762ad727491cf4e4c71b71ebf1082e6a18c74c100f97f94642",
        {0x3e1c5ef0U,0x3f47e69eU,0x3f611447U,0x3f76f6f7U,0x00000000U,0x3d775dc7U,0x3d5caab4U,0x3f23a3a4U,0x3ea0c83dU,0x3ee77551U,0x3ea8bbb5U,0x3e50d0d1U},
        {0.77999997138977051f,0.0f,0.0f,0.0f,0.0f}, {std::int32_t{3},std::int32_t{0},std::int32_t{0}}, false,
        noisemaker::glsl::Vec2(5.0f, -11.0f), noisemaker::glsl::Vec2(31.0f, 13.0f), 1.125f, 53U, 0U},
-      {"filter/tetraCosine:tetraCosine", "fallback_rgb", "b8e795e4f93a59e0bc297f86b627f222196c82e3510249ae45815d4c1e518400", "8d69403bfa852d5539953cee28bec937ba8e8ec7f76ab34eaae4ceebc4232550",
-       {0x3d20c9c0U,0x3db3572eU,0x3e0b8e59U,0x3f7afafbU,0x3f08f3ccU,0x3e6564edU,0x3e8295a7U,0x3f1e9e9fU,0x3f35966aU,0x3f2e7b90U,0x3ec70004U,0x3ea8a8a9U},
+      {"filter/tetraCosine:tetraCosine", "fallback_rgb", "56ea9dc5efa1d68b26fabd685d8cebd27e1dc1f50f2af47d2ed106f6d1813251", "8d69403bfa852d5539953cee28bec937ba8e8ec7f76ab34eaae4ceebc4232550",
+       {0x3d20c9c0U,0x3db3572eU,0x3e0b8e59U,0x3f7afafbU,0x3f08f3ceU,0x3e6564e2U,0x3e8295aaU,0x3f1e9e9fU,0x3f35966aU,0x3f2e7b90U,0x3ec70004U,0x3ea8a8a9U},
        {0.23000000417232513f,0.0f,0.0f,0.0f,0.0f}, {std::int32_t{9},std::int32_t{9},std::int32_t{0}}, false,
        noisemaker::glsl::Vec2(-17.0f, -3.0f), noisemaker::glsl::Vec2(37.0f, 21.0f), 1.75f, 1U, 0U},
       {"filter/tile:tile", "mirrorXY_aspect", "9bb196ff6cc417b80b7ab5ee02dc5c60e7188c2f139896d916e952f7eea838f4", "736b056673923560ba11232e57395da0d319ab941f3e03609ab11e32d92b27c8",
@@ -1915,7 +1915,7 @@ struct Task15Binding {
   Task15BindingType type;
 };
 
-constexpr std::array<Task15Binding, 239> kTask15Bindings{{
+constexpr std::array<Task15Binding, 241> kTask15Bindings{{
     {"filter/chrome:chBlurH", "inputTex", Task15BindingType::sampler},
     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2},
     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar},
@@ -1951,6 +1951,8 @@ constexpr std::array<Task15Binding, 239> kTask15Bindings{{
     {"filter/highPass:hpBlurV", "inputTex", Task15BindingType::sampler},
     {"filter/highPass:hpBlurV", "resolution", Task15BindingType::vec2},
     {"filter/highPass:hpBlurV", "radius", Task15BindingType::scalar},
+    {"filter/lowPoly:lowPoly", "LP_BORDER", Task15BindingType::integer},
+    {"filter/lowPoly:lowPoly", "LP_LIGHT", Task15BindingType::integer},
     {"filter/lowPoly:lowPoly", "inputTex", Task15BindingType::sampler},
     {"filter/lowPoly:lowPoly", "tileOffset", Task15BindingType::vec2},
     {"filter/lowPoly:lowPoly", "fullResolution", Task15BindingType::vec2},
@@ -2204,9 +2206,9 @@ TEST(typed_task15_every_required_uniform_and_sampler_fails_closed) {
     REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, wrong),
                       noisemaker::glsl::KernelBindingError);
   }
-  REQUIRE(kTask15Bindings.size() == 239U);
+  REQUIRE(kTask15Bindings.size() == 241U);
   REQUIRE(sampler_count == 46U);
-  REQUIRE(uniform_count == 193U);
+  REQUIRE(uniform_count == 195U);
 }
 
 struct Task15OracleCase {
@@ -2254,23 +2256,23 @@ constexpr std::array<Task15OracleCase, 38> kTask15OracleCases{{
      {0x3f038e1dU,0x3f26c351U,0x3ea83487U,0x3f07ec81U,0x3ef422bcU,0x3f02b2a0U,0x3ecdd7c8U,0x3f2bfdf3U,0x3f1e897bU,0x3f4174bcU,0x3ee006a2U,0x3f2de2edU}, std::int32_t{-1}, false},
     {"filter/craquelure:craquelure", "defaults", "51a1bc27355d0f8f973fd7ba742e798c85e8ad952a262a8353b137d828dee124", "7af2e319b78f42ef180cb59272c39b58a58db94a10d761c22f2de047e40bf84a",
      {0x3f170a3dU,0x3f500000U,0x3d3a2e8cU,0x3ee66666U,0x3e4ccccdU,0x3ec55555U,0x3e3a2e8cU,0x3f59999aU,0x3f51eb85U,0x3f780000U,0x3ea2e8baU,0x3f19999aU}, std::int32_t{-1}, false},
-    {"filter/lowPoly:lowPoly", "defaults", "903342a6bb5b4af8568b84e93e6adca5ad2acf591d565e938620a3e432cf5ceb", "36a4a1b0fa710f1ed0e24270052867b6ecad5b7ca3e43380769b6cdec9f278c3",
+    {"filter/lowPoly:lowPoly", "defaults", "d0ca27f3aa1fa40e2213996efc264eb8309c65acc6fbdf505ef806265697d079", "36a4a1b0fa710f1ed0e24270052867b6ecad5b7ca3e43380769b6cdec9f278c3",
      {0x3f01b0c4U,0x3f329965U,0x3d1fdd72U,0x3ee66666U,0x3e9c8b2eU,0x3eeb01e2U,0x3f639862U,0x3f733333U,0x3db77fbaU,0x3e54620cU,0x3f6a9631U,0x3f4ccccdU}, std::int32_t{-1}, false},
-    {"filter/patchwork:patchwork", "defaults", "ba842643a73ab731a2a2df9860bd9bc444c361a86ad1ee259c1fb103f831ad29", "535bcf36616037e578dd181e2947159bfd5724dd221c51057b07af49372e19ba",
+    {"filter/patchwork:patchwork", "defaults", "8283e14b801c4ba84b43bb894bbe76ac7dfe100f08d8e99b689a3ed2b5bf199b", "535bcf36616037e578dd181e2947159bfd5724dd221c51057b07af49372e19ba",
      {0x3f0e462cU,0x3f43eda7U,0x3d2f605eU,0x3ee66666U,0x3e581416U,0x3ed493c2U,0x3e758b31U,0x3f59999aU,0x3f33e715U,0x3f548995U,0x3e8b9d30U,0x3f19999aU}, std::int32_t{-1}, false},
     {"filter/scatter:scatterSmooth", "defaults", "51a1bc27355d0f8f973fd7ba742e798c85e8ad952a262a8353b137d828dee124", "7af2e319b78f42ef180cb59272c39b58a58db94a10d761c22f2de047e40bf84a",
      {0x3f170a3dU,0x3f500000U,0x3d3a2e8cU,0x3ee66666U,0x3e4ccccdU,0x3ec55555U,0x3e3a2e8cU,0x3f59999aU,0x3f51eb85U,0x3f780000U,0x3ea2e8baU,0x3f19999aU}, std::int32_t{-1}, false},
     {"filter/strokes:stkPost", "defaults", "9c5de62be0ea11267af98db82bce047b319e9b3586c31f1ab5858880cbf6c24b", "e43b0b43ccd24d27e217b04e88a13f2e0d194dc8e10d08d87a3cd7c678d3228c",
      {0x3f407729U,0x00000000U,0x00000000U,0x3ee66666U,0x3e8b9405U,0x3f1fffffU,0x3d87ab60U,0x3f59999aU,0x3f800000U,0x3e2d9365U,0x3ed7cd39U,0x3f19999aU}, std::int32_t{-1}, false},
-    {"filter/clouds:clouds", "defaults", "8a6f9b457f9f86c99290ae4ea5be3eda6c9809cd4d6a701cd4c5ce6945475e0d", "bddba5d9807cf197eb6c14bc9b6475217f93a8a9b680676a3b41008ec2945d81",
+    {"filter/clouds:clouds", "defaults", "62918953632aea7cb115efaa8939511a4d68a52542e314f4dbbbdc09940e4ae4", "bddba5d9807cf197eb6c14bc9b6475217f93a8a9b680676a3b41008ec2945d81",
      {0x3f170a3dU,0x3f500000U,0x3d3a2e8cU,0x3ee66666U,0x3eae147bU,0x3f02aaabU,0x3f7d1746U,0x3f733333U,0x3db851ecU,0x3e555555U,0x3f6ba2e9U,0x3f4ccccdU}, std::int32_t{-1}, false},
     {"filter/hatch:hatch", "defaults", "02e85cbb0464ed82e250ed79c6b05efeb0c56953acf81530cbe31bf77e08e331", "549d3a7401e3e03c135beacf64b894cc7ea83d279df5fcfdf54ad35f55b8152c",
      {0x3dcccccdU,0x3dcccccdU,0x3dcccccdU,0x3ee66666U,0x3dcccccdU,0x3dcccccdU,0x3dcccccdU,0x3f59999aU,0x3f75c28fU,0x3f70a3d7U,0x3f6147aeU,0x3f19999aU}, std::int32_t{-1}, false},
-    {"filter/oilPaint:oilPost", "defaults", "40c4579926bd60c4c8d1d46bdd8791d9ab70824cbf7f0b48a70394d0ab273b63", "527648c717ed3085055c027c784ced4afcff3639fd937d13d94a2fcf58d752f0",
-     {0x3f4a6526U,0x00000000U,0x00000000U,0x3ee66666U,0x3e51e43fU,0x3f20f5b1U,0x00000000U,0x3f59999aU,0x3f800000U,0x3e0bf34fU,0x3ef6a03cU,0x3f19999aU}, std::int32_t{-1}, false},
+    {"filter/oilPaint:oilPost", "defaults", "5c2a418670625998c1e46b0f9d9585307c3c0ac58e33ac542311cfb3f196db98", "527648c717ed3085055c027c784ced4afcff3639fd937d13d94a2fcf58d752f0",
+     {0x3f4a6526U,0x00000000U,0x00000000U,0x3ee66666U,0x3e51e43fU,0x3f20f5b1U,0x00000000U,0x3f59999aU,0x3f800000U,0x3e0bf3d4U,0x3ef6a127U,0x3f19999aU}, std::int32_t{-1}, false},
     {"synth/gradient:gradient", "defaults", "a9374d8727bf4a656de27ee91c484cc65972520b0200fe991c2a978b24586798", "f6f9bd835e10212131848e6f78775abb190e22bdfa6d10140bda8d69aac876ab",
      {0x3f800000U,0x3f000001U,0x00000000U,0x3f800000U,0x3f800000U,0x3f800000U,0x00000000U,0x3f800000U,0x00000000U,0x3f346fecU,0x3e972028U,0x3f800000U}, std::int32_t{-1}, false},
-    {"synth/mandala:mandala", "defaults", "e67605e30b716c1b6b81d98bd0819ed972aece818bcd78def3bbca8ad988db42", "994cb289e38c2f53b864d11eff3017269aa9f7a3324924d1d2ca299515d33b37",
+    {"synth/mandala:mandala", "defaults", "61203cf6017f695337b436376ab005ea559b4d79290a63d1f67e2191830c574b", "aee70c04bdb39b7c718a3a3fa2d9c4cc9ba01c669df38516a7a95be64b7704b6",
      {0x00000000U,0x00000000U,0x00000000U,0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x00000000U,0x00000000U,0x00000000U,0x3f800000U}, std::int32_t{-1}, false},
     {"synth/subdivide:subdivide", "defaults", "5370b447933cbacda5c53022dc2bd0b31a531ea7565ae4b5f93b53fb17221380", "dfd849d2041931900a7789de24b9ebb1455eef8b12f70d461c222238aac5ee47",
      {0x00000000U,0x00000000U,0x00000000U,0x3f800000U,0x00000000U,0x00000000U,0x00000000U,0x3f800000U,0x00000000U,0x00000000U,0x00000000U,0x3f800000U}, std::int32_t{-1}, false},
@@ -2282,7 +2284,7 @@ constexpr std::array<Task15OracleCase, 38> kTask15OracleCases{{
      {0x3f1a39e2U,0x3e146776U,0x3e68812eU,0x3ee66666U,0x3ef93682U,0x3f1d6807U,0x3e063c91U,0x3f733333U,0x3eaa80ddU,0x3ef349aaU,0x3f33ae0fU,0x3f4ccccdU}, std::int32_t{-1}, false},
     {"mixer/shadow:shadow", "defaults", "267fc2f1f4cc2a6edc718685296515cc089202516b7276dee475bc12f1e4447b", "d16ecc878da6dea7a47b1a79db89a8b8a71f16236a7a84bc0a651ade0e06a531",
      {0x3f170a3dU,0x3f500000U,0x3d3a2e8cU,0x3f000000U,0x3e720564U,0x3ec11a16U,0x3c8c7011U,0x3eb33333U,0x3e168e0bU,0x3e994382U,0x3f27325fU,0x3f59999aU}, std::int32_t{-1}, false},
-    {"synth/cell:cell", "defaults", "ddc70ccd74dd789480cea64b55078e74de1f6d9a2493529a871a83e3bd779ded", "54106eec3b30630ae72ad785a67938716556cc76d39d62d66655aea1732c1cb8",
+    {"synth/cell:cell", "defaults", "951b49bd4577f02ef0f0945d14e788506548a3a1fcbc14c5fb24384b56041894", "54106eec3b30630ae72ad785a67938716556cc76d39d62d66655aea1732c1cb8",
      {0x3d2726a1U,0x3d2726a1U,0x3d2726a1U,0x3f800000U,0x3e79af52U,0x3e79af52U,0x3e79af52U,0x3f800000U,0x3f2d6c0fU,0x3f2d6c0fU,0x3f2d6c0fU,0x3f800000U}, std::int32_t{-1}, false},
     {"mixer/mashup:mashup", "defaults", "51a1bc27355d0f8f973fd7ba742e798c85e8ad952a262a8353b137d828dee124", "7af2e319b78f42ef180cb59272c39b58a58db94a10d761c22f2de047e40bf84a",
      {0x3f170a3dU,0x3f500000U,0x3d3a2e8cU,0x3ee66666U,0x3e4ccccdU,0x3ec55555U,0x3e3a2e8cU,0x3f59999aU,0x3f51eb85U,0x3f780000U,0x3ea2e8baU,0x3f19999aU}, std::int32_t{-1}, false},
@@ -2305,7 +2307,7 @@ struct Task15OracleUniform {
   std::array<double, 3> value;
 };
 
-constexpr std::array<Task15OracleUniform, 196> kTask15OracleUniforms{{
+constexpr std::array<Task15OracleUniform, 199> kTask15OracleUniforms{{
     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar, {40.0, 0.0, 0.0}},
     {"filter/chrome:chBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
@@ -2330,10 +2332,13 @@ constexpr std::array<Task15OracleUniform, 196> kTask15OracleUniforms{{
     {"filter/hatch:hatch", "pressure", Task15BindingType::scalar, {50.0, 0.0, 0.0}},
     {"filter/hatch:hatch", "inkColor", Task15BindingType::vec3, {0.1, 0.1, 0.1}},
     {"filter/hatch:hatch", "paperColor", Task15BindingType::vec3, {0.96, 0.94, 0.88}},
+    {"filter/hatch:hatch", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/highPass:hpBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/highPass:hpBlurH", "radius", Task15BindingType::scalar, {10.0, 0.0, 0.0}},
     {"filter/highPass:hpBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/highPass:hpBlurV", "radius", Task15BindingType::scalar, {10.0, 0.0, 0.0}},
+    {"filter/lowPoly:lowPoly", "LP_BORDER", Task15BindingType::integer, {0.0, 0.0, 0.0}},
+    {"filter/lowPoly:lowPoly", "LP_LIGHT", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/lowPoly:lowPoly", "tileOffset", Task15BindingType::vec2, {2.0, 1.0, 0.0}},
     {"filter/lowPoly:lowPoly", "fullResolution", Task15BindingType::vec2, {13.0, 11.0, 0.0}},
     {"filter/lowPoly:lowPoly", "scale", Task15BindingType::scalar, {50.0, 0.0, 0.0}},
@@ -2470,7 +2475,7 @@ constexpr std::array<Task15OracleUniform, 196> kTask15OracleUniforms{{
     {"synth/mandala:mandala", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"synth/mandala:mandala", "tileOffset", Task15BindingType::vec2, {2.0, 1.0, 0.0}},
     {"synth/mandala:mandala", "fullResolution", Task15BindingType::vec2, {13.0, 11.0, 0.0}},
-    {"synth/mandala:mandala", "aspect", Task15BindingType::scalar, {1.2857142686843872, 0.0, 0.0}},
+    {"synth/mandala:mandala", "aspect", Task15BindingType::scalar, {1.1818181276321411, 0.0, 0.0}},
     {"synth/mandala:mandala", "scale", Task15BindingType::scalar, {10.0, 0.0, 0.0}},
     {"synth/mandala:mandala", "rotation", Task15BindingType::scalar, {0.0, 0.0, 0.0}},
     {"synth/mandala:mandala", "thickness", Task15BindingType::scalar, {0.2, 0.0, 0.0}},
@@ -2514,7 +2519,7 @@ TEST(typed_task15_scalar_fixture_precision_tracks_binding_provenance) {
   // scalars such as aspect are stored through a Float32Array first.
   REQUIRE(value("filter/lowPoly:lowPoly", "edgeStrength") == 0.15);
   REQUIRE(value("synth/mandala:mandala", "aspect") ==
-          static_cast<double>(static_cast<float>(9.0 / 7.0)));
+          static_cast<double>(static_cast<float>(13.0 / 11.0)));
 }
 
 struct Task15SamplerRoute {
@@ -2838,7 +2843,7 @@ TEST(typed_task17_sharpen_and_sobel_external_oracles_are_exact_and_repeatable) {
         0x00000000U,0x3f02aaacU,0x3f800000U,0x3f733333U,
         0x3f800000U,0x00000000U,0x3f800000U,0x3eb33333U}},
       {"sobel-default-alpha-one", "filter/sobel:sobel", 1.0f, 1.0f,
-       "df429cbfeb9dc04d3e5f9099ded0daae9ee7077a9121e325a11fb0cd9ac380dd",
+       "891443c519cf988ba5eea5acdb4e84759160ac1a992f9f8fcac2824e331e8483",
        "6841efab285a153de30bebaad4a6550107a1de719c37337a159ef07667d76777",
        {0x401537a7U,0x3ffcd731U,0x3f742c86U,0x3f666666U,
         0x3fa25fdaU,0x3ff3c2b9U,0x406c128cU,0x3f733333U,
@@ -2913,14 +2918,14 @@ TEST(typed_task18_cel_edges_and_outline_sobel_external_oracles_are_exact_and_rep
   const std::array<Task18Case, 6> fixtures{{
       {"cel-threshold-0.18f", "filter/celShading:celShadingEdges",
        noisemaker::uint_bits_to_float(0x3e3851ecU),
-       "d86694f5c5a05c094b1dc9d4302b0b98cbe3044e5ce22587fdf6dd80f77d27a7",
+       "6c54f6fc55aecddb68b4c6d90ab5e6e871d2358bf28d319c5e5023fd2fcf7593",
        "966ca81461240fb6c35316537f631f3b74b6d0a33a7b538d05ddd12e241347e9",
        {0x3f074202U,0x3f074202U,0x3f074202U,0x3f800000U,
-        0x3d038558U,0x3d038558U,0x3d038558U,0x3f800000U,
+        0x3d038551U,0x3d038551U,0x3d038551U,0x3f800000U,
         0x00000000U,0x00000000U,0x00000000U,0x3f800000U}},
       {"cel-threshold-0.6f", "filter/celShading:celShadingEdges",
        noisemaker::uint_bits_to_float(0x3f19999aU),
-       "048acf6f8feb3be40c9be548bc64eaeadc6de78366a61b778c899eb463575ac0",
+       "bec7dfa0806d4cf153699f79427479ac1ade2bf10d1b4ab688be49d9eedae6b6",
        "8d0418a7e7b046d582cafcfbbe95b1bf2c05478929a57719ab52a345de1091e5",
        {0x00000000U,0x00000000U,0x00000000U,0x3f800000U,
         0x00000000U,0x00000000U,0x00000000U,0x3f800000U,
@@ -3088,7 +3093,7 @@ TEST(typed_task19_refract_external_oracles_are_exact_and_repeatable) {
   }
 }
 
-// Current-authority captures (noisemaker-for-cpu 8ae8e2a) for every program the
+// Current-authority captures (noisemaker-for-cpu 9f3bd6a) for every program the
 // 8ae8e2a / 5976b7a6 sync changed, through the public factory route. Inputs are
 // asymmetric with white and all-zero pixels and a nonzero tile offset, so both
 // vector-equality arms, Coalesce's refracted UVs and the tiled displacement
@@ -3172,10 +3177,10 @@ constexpr std::array<Authority8ae8e2aCase, 30> kAuthority8ae8e2aCases{{
      "a0b361e445f822501e81cb7ba5aa95a77daaf9aab7b962fdc57347784973095f",
      "23b451a050e768616d0e28e2ba676e0513d620631ba7b76d3e44bb4083ed9b48"},
     {"lens-shape2-mode1", "classicNoisedeck/lensDistortion:lensDistortion", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
-     "7729d5c6922b39f1f2b114554d7997dc28ae5522cf0f7af58db0e4d4f98187f5",
+     "fa7687a41e93cef29e0760b958087dc31a1cca9bda916edca0cadc95189c95d0",
      "bcd11f67667e1a31e73229e777f705f75ad86c0811c5a786b9c0111fc682a3cf"},
     {"lens-shape10-mode0", "classicNoisedeck/lensDistortion:lensDistortion", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
-     "27fa03f481d1eefea5baf3787690e16bd802864a6e51f50c6e612c2b871d8ef7",
+     "7cc2f55256a4debca5d3cdc0660f36cfb20bb83dc41e9e5ea6f2ac5c9004ef48",
      "5da27eeaf93b663c4684be150cc5b000e216ef0d11cea78a2d6ece8a1cdd5282"},
     {"colorLab-dither4-invert1-mode2", "classicNoisedeck/colorLab:colorLab", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
      "1b364631c57e5af6733aa20654f6e21037152eba5543b4bcfcde5cca7c0b0488",
@@ -3196,10 +3201,10 @@ constexpr std::array<Authority8ae8e2aCase, 30> kAuthority8ae8e2aCases{{
      "3c2f19b1d65663b92cbc1060c379ae32a3617f746c4af2116a9ee3d978ba766d",
      "189bd2706bfe6ab5b54b19589b9d8e6a7be813037772b759d0fa3fc3289e5f3a"},
     {"degauss-tiled", "filter/degauss:degauss", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
-     "2675b87527c4eb818cf6873cf2521117ef4529555fdcf8077fe36273b2307a98",
+     "5bb8bef6dd6fc370542b5a0d94e89bcf59f4dd85a9b948fe08d41068b8e0e972",
      "011446692211d31ba8baf5c4a726825b837fa654b992a6cf6cc0d25b760f470f"},
     {"degauss-untiled", "filter/degauss:degauss", 9U, 7U, 0x3ec00000U, 7, 7U, {0.0f, 0.0f}, {9.0f, 7.0f},
-     "8a2c72035bb86339e0e1dea321001c10c470fcfb9d10e1539510bd7066f8cdbe",
+     "c8a7d8485a7dfff01aff6c9f5e44905b103ddb961292a4ddb5d206bd15998d60",
      "5bc53cadc7c33d428bb697cb8bd656ad0e97ded10fa9ae8f26e52c31725c1a7c"},
     {"effects-tiled", "classicNoisedeck/effects:effects", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
      "aa9489e9658ff4bf9906af1d91fb62a1c1060c91159c59c84aa5bf4e78836fda",
@@ -3541,14 +3546,26 @@ constexpr std::array<Authority8ae8e2aTexture, 40> kAuthority8ae8e2aTextures{{
   noisemaker::glsl::Bindings bindings;
   const float width = static_cast<float>(fixture.width);
   const float height = static_cast<float>(fixture.height);
-  // createCanonicalBindings: resolution, the tile pair, aspect, renderScale 1.
+  // Match current createCanonicalBindings derived uniforms for the full image.
   bindings.set_uniform("resolution", noisemaker::glsl::Vec2(width, height));
   bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(fixture.tile_offset[0], fixture.tile_offset[1]));
   bindings.set_uniform("fullResolution",
                        noisemaker::glsl::Vec2(fixture.full_resolution[0], fixture.full_resolution[1]));
   bindings.set_uniform("time", noisemaker::uint_bits_to_float(fixture.time_bits));
-  bindings.set_uniform("aspect", width / height);
+  const double aspect = static_cast<double>(fixture.full_resolution[0]) / fixture.full_resolution[1];
+  bindings.set_uniform("aspect", static_cast<float>(aspect));
+  bindings.set_uniform("aspectRatio", static_cast<float>(aspect));
+  bindings.set_uniform("aspectInv", static_cast<float>(1.0 / aspect));
+  bindings.set_uniform("invFullResolution", noisemaker::glsl::Vec2(
+      static_cast<float>(1.0 / fixture.full_resolution[0]),
+      static_cast<float>(1.0 / fixture.full_resolution[1])));
   bindings.set_uniform("renderScale", 1.0f);
+  if (fixture.key == "classicNoisedeck/effects:effects") {
+    // These captures use the authority defaults; the current route binds
+    // both defines at runtime.
+    bindings.set_uniform("EFFECT", std::int32_t(0));
+    bindings.set_uniform("FLIP", std::int32_t(0));
+  }
   for (const Authority8ae8e2aUniform& uniform : kAuthority8ae8e2aUniforms) {
     if (uniform.case_index != index) continue;
     const std::string name(uniform.name);
@@ -3631,7 +3648,7 @@ constexpr std::array<std::array<std::size_t, 2>, 9> task20_probe_coordinates{{
   bindings.set_uniform("resolution", noisemaker::glsl::Vec2(37.0f, 23.0f));
   bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(5.0f, 7.0f));
   bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(53.0f, 41.0f));
-  bindings.set_uniform("aspect", noisemaker::uint_bits_to_float(0x3fcde9bdU));
+  bindings.set_uniform("aspect", noisemaker::uint_bits_to_float(0x3fa576a2U));
   bindings.set_uniform("scale", noisemaker::uint_bits_to_float(fixture.scale_bits));
   bindings.set_uniform("rotation", noisemaker::uint_bits_to_float(fixture.rotation_bits));
   bindings.set_uniform("thickness", noisemaker::uint_bits_to_float(fixture.thickness_bits));
@@ -3658,79 +3675,88 @@ constexpr std::array<std::array<std::size_t, 2>, 9> task20_probe_coordinates{{
 }
 
 TEST(typed_task20_sacred_geometry_external_oracles_are_exact_and_repeatable) {
-  const std::array<Task20Case, 10> fixtures{{
+  const std::array<Task20Case, 11> fixtures{{
       {"geometry-0-flower-default-control", 0x3eaccccdU, 0x41200000U,
        0x00000000U, 0x3e4ccccdU, 0x3ca3d70aU,
        0, 3, 5, 0,
        0x3f800000U, 0x3e19999aU, {0x3f800000U, 0x3f800000U, 0x3f800000U}, {0x00000000U, 0x00000000U, 0x00000000U},
-       "f21a1640b99f9261e057803162a58a10421ef8215e986ac32a5db139772e5fc7",
-       "5924cef44fee78454a1b0de3ad2d6ee3f6e58a5781d33d6ada23a0f3ebd94695",
-       {0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x3ea9b964U, 0x3ea9b964U, 0x3ea9b964U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U},
-       0U, 523U,
-       195U, 133U},
+       "fc5265d3605f4fea4fdcda273bdd06e683cb9786673f1dba7f3294c6e084c0b8",
+       "839c10ec3273b8bc4fc9c3245b49fc513803e1fe58c4c3bd89e70f6464a8fb11",
+       {0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x3e63d62eU, 0x3e63d62eU, 0x3e63d62eU, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x3f410051U, 0x3f410051U, 0x3f410051U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x3f800000U},
+       0U, 433U,
+       249U, 169U},
       {"geometry-1-fruit-animation-off", 0x3eaccccdU, 0x41920000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        1, 4, 7, 0,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "53a248d64b3e0ddd6ec1e3b0cb464f0a34a7537b195b6101ae491ed5237527bd",
-       "65c56e8163f4771fa4b84f9491683b268f3f690244da038aa159017491446418",
-       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3ef13a31U, 0x3ecd2703U, 0x3e868e8aU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3ef13a8eU, 0x3ecd273aU, 0x3e868e7fU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
-       0U, 622U,
-       120U, 109U},
+       "f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62",
+       "52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e",
+       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f696b8bU, 0x3f2a4293U, 0x3e580737U, 0x3f800000U},
+       0U, 616U,
+       132U, 103U},
       {"geometry-3-metatron-animation-off", 0x3eaccccdU, 0x41920000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        3, 4, 7, 0,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "a59f25d73a50ea89aaecef886f6716d0160e1daff66e2c2d0d903db4b78a9768",
-       "1bcedeeb940061ff65ecd623ed9403bc7cb527f0aeb0aa109280d94377365b56",
-       {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3ef13a31U, 0x3ecd2703U, 0x3e868e8aU, 0x3f800000U, 0x3f02f977U, 0x3ed995dbU, 0x3e841e73U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3efc0e4fU, 0x3ed3a648U, 0x3e854868U, 0x3f800000U, 0x3f68b428U, 0x3f29d48bU, 0x3e585d84U, 0x3f800000U, 0x3ef13a8eU, 0x3ecd273aU, 0x3e868e7fU, 0x3f800000U, 0x3ef84d5eU, 0x3ed165b7U, 0x3e85b975U, 0x3f800000U, 0x3ea1ad5aU, 0x3e9d6c1cU, 0x3e8fea67U, 0x3f800000U},
-       0U, 125U,
-       252U, 474U},
+       "7b29aafc75000b7da82a15ad30b77e1046340451ec9ad8be93c69db397dcd36c",
+       "116f61afd10ccf1dba02786e751ea58399b278a66766ca242b2f6b63aefc9dee",
+       {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3e17cac2U, 0x3e53e83fU, 0x3e9a01edU, 0x3f800000U, 0x3f0f8368U, 0x3ee8a1c9U, 0x3e812b2bU, 0x3f800000U, 0x3e2da37eU, 0x3e6103e3U, 0x3e98b8f1U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f696b8bU, 0x3f2a4293U, 0x3e580737U, 0x3f800000U},
+       0U, 120U,
+       290U, 441U},
       {"geometry-1-fruit-ripple", 0x3eaccccdU, 0x41920000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        1, 4, 7, 4,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "4860d797929366c4653b781be06b0e1ff71e50536bb8ed520451d36696353b97",
-       "6008029ea08dd02986f54f779201b757973456d8fe110b60c279e8f25ab2ceaf",
-       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3efce9beU, 0x3ed429f1U, 0x3e852e97U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
-       0U, 500U,
-       192U, 159U},
+       "0530845ee4f2637154a532cd32668da5cf9560ecd6e7396c24fba2a2f975d970",
+       "3c8fd01ab01d1a258ca14115f9816810d4d3ebd35e08c4fa4dba2880f90fb3b0",
+       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3dbc1461U, 0x3e314181U, 0x3e9d679cU, 0x3f800000U, 0x3f32d1dcU, 0x3f097ff7U, 0x3e71b8f3U, 0x3f800000U},
+       0U, 460U,
+       223U, 168U},
       {"geometry-3-metatron-unfold", 0x3ed33333U, 0x41920000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        3, 4, 7, 5,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "b230927f646ca19eec5da4afd377b834bcfba868f6ee4ac2c4c9cd2ca704b6d9",
-       "a8a85901eb46162d910c494f18d1d55ddd6f6c137fc01184e4502d8e6e6e00bf",
-       {0x3f53cd94U, 0x3f1d4a32U, 0x3e62336fU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3eed4df8U, 0x3ecacc7aU, 0x3e8704aeU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3ee47d62U, 0x3ec58287U, 0x3e880e29U, 0x3f800000U, 0x3f514b32U, 0x3f1bc8c4U, 0x3e6361bcU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3ee1252eU, 0x3ec380ceU, 0x3e8872e4U, 0x3f800000U, 0x3e93f635U, 0x3e95316bU, 0x3e91877aU, 0x3f800000U},
-       0U, 139U,
-       0U, 712U},
+       "7684e6eb202d4ad871d475f4634fae90208090eeb88475c8fce32f89a65c6fed",
+       "9411d0e41a6081c706b5ad6f7e0cfdfc33dc306f51416fdbe2b6203b84c244da",
+       {0x3f53cd94U, 0x3f1d4a32U, 0x3e62336fU, 0x3f800000U, 0x3f53cd94U, 0x3f1d4a32U, 0x3e62336fU, 0x3f800000U, 0x3e0f0f72U, 0x3e4eab0fU, 0x3e9a856bU, 0x3f800000U, 0x3f01d310U, 0x3ed83493U, 0x3e8463b9U, 0x3f800000U, 0x3e22869dU, 0x3e5a58f5U, 0x3e99604aU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f53cd94U, 0x3f1d4a32U, 0x3e62336fU, 0x3f800000U, 0x3f53cd94U, 0x3f1d4a32U, 0x3e62336fU, 0x3f800000U, 0x3e3b4a58U, 0x3e6934ccU, 0x3e97eb5dU, 0x3f800000U},
+       0U, 134U,
+       0U, 717U},
       {"geometry-4-seed-rotate", 0x3eaccccdU, 0x41920000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        4, 4, 7, 1,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "aefe8af6e96a502a31f955c69d048fb0b3ea6509fcb7cbc812fe3a858c17057a",
-       "fb99a8983f2d2d8e7068a63741090d35687a42fac360e67c3e76398a311ff4cc",
-       {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f68e380U, 0x3f29f0f3U, 0x3e58473dU, 0x3f800000U},
-       0U, 124U,
-       443U, 284U},
+       "9e34c924e1f3877083934d62aac1d722e53cd979307641d0b63f858cb10c0497",
+       "8d3e2cd198ebe8257530c38512354b19116ca879fa27eceeea1665cc24970a71",
+       {0x3f187a71U, 0x3ef363d3U, 0x3e7e1e53U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f69c275U, 0x3f2a76b9U, 0x3e57de51U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f58b82eU, 0x3f203d5bU, 0x3e5fe327U, 0x3f800000U, 0x3edec421U, 0x3ec21360U, 0x3e88ba8bU, 0x3f800000U},
+       0U, 74U,
+       489U, 288U},
       {"geometry-5-vesica-pulse", 0x3eaccccdU, 0x41920000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        5, 4, 7, 2,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "0c64d5b84edde6e6c8ef3fb5a69a96c188cd0aa9a4061e27ace4d346d155ef11",
-       "3eec9bdd7df95c1027b106df8cddf374f7301379d8c19f1c0093d13873fa96cb",
-       {0x3f080c9dU, 0x3edfacd4U, 0x3e82ecc5U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
-       0U, 845U,
-       0U, 6U},
+       "32992d8b303d92fefb2d5e7383bde606e53d6dec07a0fa12b4ca49c2f0659b83",
+       "683413061c05ef1c86080fb336366ccf444ffcc36af68492b5a355a222d8b381",
+       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
+       0U, 851U,
+       0U, 0U},
+      {"geometry-5-vesica-pulse-visible-scale-16", 0x3eaccccdU, 0x41800000U,
+       0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
+       5, 4, 7, 2,
+       0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
+       "b7f5cda337223fc06bd2f6e95d50266fdb4b41565b6bab3dfa574652592c0cba",
+       "29a84ec3bfb586b33ed25b67a3306468bbaac9b25f0725fc40504688847352f7",
+       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3e7ed5b0U, 0x3e88ddcdU, 0x3e93f23aU, 0x3f800000U},
+       0U, 696U,
+       73U, 82U},
       {"geometry-6-borromean-ripple", 0x3eaccccdU, 0x41920000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        6, 4, 7, 4,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "0927349a467756276ad2818fad4726061093fbeada54bb67b5441c184948d368",
-       "0b04d4b45240d9359b1aa049e791321be93f0512c42858d33f4d8460b2d87599",
-       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3f43d187U, 0x3f13b2f7U, 0x3e69b91bU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f060a8dU, 0x3edd43f5U, 0x3e8365b9U, 0x3f800000U, 0x3eae3657U, 0x3ea4f180U, 0x3e8e70e0U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
-       0U, 588U,
-       143U, 120U},
+       "5fc17595d0d0a1f82a2792e73486691370a8b0ca8402f61c8c14dadbacf41961",
+       "2e10fb5660e04c7523c7bf29df18c0d39dd9e9e3be8ea925db194ab2978832c5",
+       {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3e7d79d1U, 0x3e887571U, 0x3e9406b0U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3ed0057dU, 0x3eb93a97U, 0x3e8a769fU, 0x3f800000U, 0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU, 0x3f800000U, 0x3ea769c6U, 0x3ea0dd29U, 0x3e8f3da5U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
+       0U, 542U,
+       174U, 135U},
       {"geometry-7-star-animation-off", 0x3eaccccdU, 0x412c0000U,
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        7, 4, 7, 0,
@@ -3744,18 +3770,20 @@ TEST(typed_task20_sacred_geometry_external_oracles_are_exact_and_repeatable) {
        0x418b0000U, 0x3eae147bU, 0x3ce147aeU,
        8, 4, 7, 1,
        0x40300000U, 0x3e9eb852U, {0x3f6b851fU, 0x3f2b851fU, 0x3e570a3dU}, {0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U},
-       "6b3b4a906ffa5238c87f3516f92c26f61d8a4e4b51ae0b33db8535ea2946eeaf",
-       "dad1ab989e22377d728fee5d982a9f1f9186580e5e4227f6c313db218ce52905",
-       {0x3f3080eeU, 0x3f081c35U, 0x3e72cffaU, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
-       0U, 805U,
-       22U, 24U},
+       "10c62c72cc22fdbffd860bd02913473826c46b8d4be9d216fa7ceb38d7219c0a",
+       "290bff21210403c0b559f347a081b0e58e88d1e904dee1f85d528248f1fc3f1f",
+       {0x3e825562U, 0x3e8a9dbaU, 0x3e939a66U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U, 0x3d8f5c29U, 0x3e23d70aU, 0x3e9eb852U, 0x3f800000U},
+       0U, 848U,
+       0U, 3U},
   }};
   for (const Task20Case& fixture : fixtures) {
     const noisemaker::Surface first = render_task20(fixture);
     const noisemaker::Surface second = render_task20(fixture);
     require_repeat(first, second);
     REQUIRE(first.width() == 37U); REQUIRE(first.height() == 23U);
-    REQUIRE(hex(sha256(little_endian_float_bytes(first))) == fixture.float_hash);
+    const std::string float_hash = hex(sha256(little_endian_float_bytes(first)));
+    if (float_hash != fixture.float_hash)
+      throw std::runtime_error(std::string(fixture.name) + " float oracle hash: " + float_hash);
     REQUIRE(hex(sha256(first.to_rgba8())) == fixture.rgba_hash);
     std::size_t nonfinite_rgb = 0U;
     std::size_t exact_background = 0U;
@@ -3874,9 +3902,8 @@ struct Task21Case {
   bindings.set_uniform("speed", noisemaker::uint_bits_to_float(fixture.speed_bits));
   bindings.set_uniform("seed", fixture.seed);
   bindings.set_uniform("direction", noisemaker::uint_bits_to_float(fixture.direction_bits));
-  // Captured from the e24c844f source, before 5976b7a6 changed Degauss.
   return noisemaker::run_pass(
-      noisemaker::historical_generated::bind_filter_degauss_degauss(bindings),
+      noisemaker::generated::bind_filter_degauss_degauss(bindings),
       fixture.width, fixture.height,
       noisemaker::uint_bits_to_float(fixture.time_bits), 29.0f, 17U,
       noisemaker::uint_bits_to_float(0x3c888889U));
@@ -3896,64 +3923,64 @@ TEST(typed_task21_degauss_external_oracles_are_exact_repeatable_and_nonmutating)
       "default-landscape-untiled-center-mask", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U},
       0x3ec00000U, 0x3d800000U, 0x3f800000U, 1, 0x00000000U,
       "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3",
-      "c6bf433ea90b0c82d842724d8f633fefb8cded8e34ad83b9d3480d98a7051c71", "9e02468af87d81a5d0a558ac965dd9e4f78b07a768b855e157d5769bcbd3ee98",
-      {0U, 0U, 0x3ec74900U, 0x3e11ae50U, 0x3e472d2cU, 0x00000000U, 12U, 0U, 0x3eec3e53U, 0x3de52221U, 0x3f38f8e5U, 0x3f800000U, 0U, 8U, 0x3eab380cU, 0x3f2ddefcU, 0x3e9cd86fU, 0x3f2aaaabU, 12U, 8U, 0x3ef0ecddU, 0x3ef4e2e4U, 0x3f355a2fU, 0x00000000U, 6U, 4U, 0x3ebd70a4U, 0x3eeaaaabU, 0x3f02e8baU, 0x3f555555U, 1U, 1U, 0x3f40a349U, 0x3ec5c41dU, 0x3f024889U, 0x3f555555U, 11U, 7U, 0x3e95ed77U, 0x3f05876aU, 0x3f160f7aU, 0x3f555555U, 9U, 2U, 0x3ed800e0U, 0x3ecb2407U, 0x3f03da96U, 0x3f6aaaabU},
+      "f866f3855885250a78169a56f32f59b15379152d47eebf1d4e6cec20a0e53b6f", "9e02468af87d81a5d0a558ac965dd9e4f78b07a768b855e157d5769bcbd3ee98",
+      {0U, 0U, 0x3ec74910U, 0x3e11ae50U, 0x3e472d44U, 0x00000000U, 12U, 0U, 0x3eec3e5dU, 0x3de52221U, 0x3f38f888U, 0x3f800000U, 0U, 8U, 0x3eab3907U, 0x3f2dc06fU, 0x3e9cd86fU, 0x3f2aaaabU, 12U, 8U, 0x3ef0eccfU, 0x3ef4e2e4U, 0x3f355a29U, 0x00000000U, 6U, 4U, 0x3ebd70a4U, 0x3eeaaaabU, 0x3f02e8baU, 0x3f555555U, 1U, 1U, 0x3f40a309U, 0x3ec5c41dU, 0x3f024884U, 0x3f555555U, 11U, 7U, 0x3e95ed77U, 0x3f05876aU, 0x3f160f7aU, 0x3f555555U, 9U, 2U, 0x3ed800e0U, 0x3ecb2413U, 0x3f03da96U, 0x3f6aaaabU},
       117U, 468U, 0U, 398U, 116U, 1U, 67U, 117U, 0U, 0x00000000U, 0x3f800000U
     },
     {
       "nondefault-landscape-tiled-negative-direction", 13U, 9U, {0x40e00000U, 0x41300000U}, {0x42240000U, 0x41e80000U},
       0x3ee00000U, 0x3e400000U, 0x3fe00000U, 37, 0xc3094000U,
       "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3",
-      "08dbc2988787474877268f9661bbeccbdc88dbd9f43bbfc3240e58120cf363f1", "16267b09be48cdb9b967ad1e4c203cd2170b940639975ee1cbba75309765db2c",
-      {0U, 0U, 0x3ebcd6fcU, 0x3e42a339U, 0x3ec768b2U, 0x00000000U, 12U, 0U, 0x3eb0d6feU, 0x3ea99ac9U, 0x3f14a127U, 0x3f800000U, 0U, 8U, 0x3edae64bU, 0x3de910daU, 0x3ead294cU, 0x3f2aaaabU, 12U, 8U, 0x3ec08a78U, 0x3ebbd455U, 0x3eebb5ffU, 0x00000000U, 6U, 4U, 0x3ee79840U, 0x3f319c0cU, 0x3f3cee68U, 0x3f555555U, 1U, 1U, 0x3eb0823fU, 0x3f4cd945U, 0x3eb38292U, 0x3f555555U, 11U, 7U, 0x3ef2f977U, 0x3f448a03U, 0x3f561a8fU, 0x3f555555U, 9U, 2U, 0x3ef31555U, 0x3ee3bb85U, 0x3f2a42aeU, 0x3f6aaaabU},
+      "361ac1ef7266451f4e3a4b74f9c1360c4dd9055ca9114877de0d5197614c1dda", "5dced19d2b93c865bee67ba5833da21085b56d27070dc0c996933582892166ec",
+      {0U, 0U, 0x3eae6aaaU, 0x3eb6ad7fU, 0x3e02f7eeU, 0x00000000U, 12U, 0U, 0x3f3b0ed0U, 0x3f528f7bU, 0x3f34ea46U, 0x3f800000U, 0U, 8U, 0x3ec3c29cU, 0x3e625a81U, 0x3e76e398U, 0x3f2aaaabU, 12U, 8U, 0x3f0f3192U, 0x3f0a2582U, 0x3f20855eU, 0x00000000U, 6U, 4U, 0x3ef338b9U, 0x3edd9a52U, 0x3ed53157U, 0x3f555555U, 1U, 1U, 0x3f1221dcU, 0x3ed04270U, 0x3f4a44dbU, 0x3f555555U, 11U, 7U, 0x3f1f729dU, 0x3e8a0f62U, 0x3e733eebU, 0x3f555555U, 9U, 2U, 0x3f2cbd96U, 0x3f4b78bcU, 0x3f1f44adU, 0x3f6aaaabU},
       117U, 468U, 0U, 401U, 117U, 0U, 67U, 117U, 0U, 0x00000000U, 0x3f800000U
     },
     {
       "nondefault-portrait-tiled-positive-direction", 9U, 13U, {0x40a00000U, 0x40400000U}, {0x41b80000U, 0x42140000U},
       0x3f1ccccdU, 0x3e800000U, 0x40000000U, 100, 0x43340000U,
       "7ea6ac4f0ccd3f585245fab99613afd1a39cdeff0a484320f7dd1e4dabd83396", "d553b7ab55a780eb5bbc32c77103af6bf3660fc4046e6b3eeba8dbf45a2e9880",
-      "86b32d32e970fffccc7049bf9c091f5e8b5e9139af7afd6f7bee6d315636a37f", "d2aca58372b68e20691c89a7ab278aebf97ffe85ffa35eb3d4bb6414016803d7",
-      {0U, 0U, 0x3ea2456dU, 0x3e8d4fb3U, 0x3eeefa17U, 0x00000000U, 8U, 0U, 0x3ebc6b73U, 0x3f2ac937U, 0x3e53153dU, 0x3f800000U, 0U, 12U, 0x3ee15be8U, 0x3eee483eU, 0x3f3b73c7U, 0x3f800000U, 8U, 12U, 0x3f54d993U, 0x3f2434deU, 0x3e9cf7d1U, 0x3f155555U, 4U, 6U, 0x3f3c1370U, 0x3e9a3769U, 0x3f1dbd6dU, 0x3f800000U, 1U, 1U, 0x3f0a5ceeU, 0x3f39d7f1U, 0x3f2098c1U, 0x3f555555U, 7U, 11U, 0x3f58aa6dU, 0x3ef23e76U, 0x3ef5b68eU, 0x00000000U, 6U, 3U, 0x3f08e011U, 0x3f40ec7fU, 0x3f142cb5U, 0x3e800000U},
+      "cb1aa9143d7f05a1d3992467b343d2ff5da4fa546946b4ac33728dca22e3a21c", "02e75af7adc002d125c875129923831a3db7fbaede316260a3f12176b7b6a5b6",
+      {0U, 0U, 0x3f34c216U, 0x3f250803U, 0x3f192b80U, 0x00000000U, 8U, 0U, 0x3ef2b68aU, 0x3edaba8bU, 0x3f1da687U, 0x3f800000U, 0U, 12U, 0x3ee8cf4dU, 0x3f3a431bU, 0x3f2a5227U, 0x3f800000U, 8U, 12U, 0x3ef4a6a1U, 0x3f3322b6U, 0x3efd9c33U, 0x3f155555U, 4U, 6U, 0x3f09b611U, 0x3e7f88f0U, 0x3ddeb0f5U, 0x3f800000U, 1U, 1U, 0x3f0dfd96U, 0x3f5367cdU, 0x3edc8b4bU, 0x3f555555U, 7U, 11U, 0x3e9b2d8cU, 0x3f3a0587U, 0x3f004d34U, 0x00000000U, 6U, 3U, 0x3eca409aU, 0x3ed326a4U, 0x3e93026bU, 0x3e800000U},
       117U, 468U, 0U, 403U, 117U, 0U, 65U, 117U, 0U, 0x00000000U, 0x3f800000U
     },
     {
       "speed-zero-nonzero-time", 13U, 9U, {0x40800000U, 0x40c00000U}, {0x41f80000U, 0x41c80000U},
       0x3f600000U, 0x3dc00000U, 0x00000000U, 19, 0x42050000U,
       "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3",
-      "2bd1aa43c71d4eaab6298492b9edafd35978cd439eeae2a270968f6210128f37", "7788b9151bca2f493a0af156b38cc636e14b5f27d4bbed16ed60c4942513dc22",
-      {0U, 0U, 0x3f14434dU, 0x3f3b7dd0U, 0x3ebef218U, 0x00000000U, 12U, 0U, 0x3edff55eU, 0x3f202a5bU, 0x3d61a809U, 0x3f800000U, 0U, 8U, 0x3f2449d9U, 0x3f581f14U, 0x3ea988f7U, 0x3f2aaaabU, 12U, 8U, 0x3ec972eaU, 0x3f32eefeU, 0x3f27f43fU, 0x00000000U, 6U, 4U, 0x3eab41c2U, 0x3ec1e43dU, 0x3f3b1e67U, 0x3f555555U, 1U, 1U, 0x3efeb3b1U, 0x3ed7e97fU, 0x3f30343aU, 0x3f555555U, 11U, 7U, 0x3f484e92U, 0x3eb9f73aU, 0x3f428ee4U, 0x3f555555U, 9U, 2U, 0x3e6bbd22U, 0x3e637643U, 0x3efc2ed2U, 0x3f6aaaabU},
+      "bfe2405b610d0a83dde7ac8a767936da729a0fc404d24b5c5e7f0e125f8e684f", "3d9e5456a005805257dc4d9dd34d02b25b3278da12abeb67c3066316edcda8d6",
+      {0U, 0U, 0x3f0cc372U, 0x3f430a84U, 0x3f21b82cU, 0x00000000U, 12U, 0U, 0x3f28f1c6U, 0x3f4c0679U, 0x3ee1a6baU, 0x3f800000U, 0U, 8U, 0x3f0cc749U, 0x3f044a5cU, 0x3ef2c939U, 0x3f2aaaabU, 12U, 8U, 0x3eb81b0fU, 0x3f263f82U, 0x3e978426U, 0x00000000U, 6U, 4U, 0x3e91c080U, 0x3e84f814U, 0x3ebecbbfU, 0x3f555555U, 1U, 1U, 0x3e0b8a35U, 0x3d8463d2U, 0x3dbc3087U, 0x3f555555U, 11U, 7U, 0x3f350242U, 0x3eba243bU, 0x3edeb6cbU, 0x3f555555U, 9U, 2U, 0x3f01a1a2U, 0x3e0f29d0U, 0x3f289efeU, 0x3f6aaaabU},
       117U, 468U, 0U, 397U, 116U, 1U, 68U, 116U, 1U, 0xbe2aaaabU, 0x3f800000U
     },
     {
       "time-zero-positive-speed", 13U, 9U, {0x40400000U, 0x40000000U}, {0x41e80000U, 0x41a80000U},
       0x00000000U, 0x3e100000U, 0x3fc00000U, 53, 0xc2760000U,
       "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3",
-      "c2f6253b9491350f176470a5be560068fb634e31432d524360d58ee03ed0586f", "710ce156f4b71dae2d487ac6a78fee5e58ee044fe400eb24740764c1784039b6",
-      {0U, 0U, 0x3f45986fU, 0x3f1f81d8U, 0x3f1fbbc2U, 0x00000000U, 12U, 0U, 0x3f215f99U, 0x3f0a4c3dU, 0x3e7be930U, 0x3f800000U, 0U, 8U, 0x3ecda1bdU, 0x3f0152bcU, 0x3eeff490U, 0x3f2aaaabU, 12U, 8U, 0x3ea4468bU, 0x3eaa9bb0U, 0x3e1c5670U, 0x00000000U, 6U, 4U, 0x3eff5afbU, 0x3f52f319U, 0x3eec0314U, 0x3f555555U, 1U, 1U, 0x3ea76c06U, 0x3f561aefU, 0x3f32ebadU, 0x3f555555U, 11U, 7U, 0x3eda247cU, 0x3ea7567cU, 0x3f5b2159U, 0x3f555555U, 9U, 2U, 0x3ebd1da2U, 0x3f29c158U, 0x3f3a9fe5U, 0x3f6aaaabU},
+      "350d07667e2df6a2c3eb09b70e17e355072d114bd88a99b01160ffe1ae32974e", "8bc8e7027373b0ef49c9b26adffe1b6a4958402e50e62494247a12b913e2785d",
+      {0U, 0U, 0x3f0d439fU, 0x3ebe9622U, 0x3eba7c50U, 0x00000000U, 12U, 0U, 0x3ec89d77U, 0x3eda4840U, 0x3f50daa1U, 0x3f800000U, 0U, 8U, 0x3e897591U, 0x3f152bceU, 0x3f122aacU, 0x3f2aaaabU, 12U, 8U, 0x3effe7f6U, 0x3f47ec6fU, 0x3f2f73faU, 0x00000000U, 6U, 4U, 0x3f2ca481U, 0x3e869809U, 0x3f0beab9U, 0x3f555555U, 1U, 1U, 0x3ea339c8U, 0x3e6afce9U, 0x3f2643fcU, 0x3f555555U, 11U, 7U, 0x3f2a244eU, 0x3f0bf6c1U, 0x3e683ab0U, 0x3f555555U, 9U, 2U, 0x3f310ba7U, 0x3e1c99a7U, 0x3eac61c4U, 0x3f6aaaabU},
       117U, 468U, 0U, 398U, 116U, 1U, 67U, 117U, 0U, 0x00000000U, 0x3f800000U
     },
     {
       "full-resolution-zero-fallback-landscape", 13U, 9U, {0x40000000U, 0x3f800000U}, {0x00000000U, 0x00000000U},
       0x3ea00000U, 0x3e000000U, 0x3fa00000U, 11, 0x42910000U,
       "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3",
-      "15401d32e6befb161651150f044f35496bf741be49872b3869716689131453ff", "96cbb763c8daf83c9ef99c2972993148a5c2e5231436ebe9c4d4cb581c473a32",
-      {0U, 0U, 0x3f07ae2eU, 0x3f04189aU, 0x3ddc7f93U, 0x00000000U, 12U, 0U, 0x3edc5254U, 0x3ed85000U, 0x3f4fa761U, 0x3f800000U, 0U, 8U, 0x3f006caeU, 0x3f6527efU, 0x3e9f4e51U, 0x3f2aaaabU, 12U, 8U, 0x3e6e3e5bU, 0x3ed2d5c3U, 0x3d91b7f8U, 0x00000000U, 6U, 4U, 0x3ef70e83U, 0x3e7059adU, 0x3f116026U, 0x3f555555U, 1U, 1U, 0x3f0c2bc2U, 0x3ed74a62U, 0x3e2cf67dU, 0x3f555555U, 11U, 7U, 0x3f6178c7U, 0x3f20c7a7U, 0x3f520ed4U, 0x3f555555U, 9U, 2U, 0x3f07dfefU, 0x3f07c5caU, 0x3ece51efU, 0x3f6aaaabU},
+      "d14147fa42ecf04d6bcfe69421629d139b0da9e733a0d9bdaee19dc6c86bb534", "21887cecda8086b36c4f4de752944d228f5abb50f677745a17cb79d82957394f",
+      {0U, 0U, 0x3f077310U, 0x3f0467a6U, 0x3ddc7d5bU, 0x00000000U, 12U, 0U, 0x3edc5254U, 0x3ed876c2U, 0x3f4fc3c4U, 0x3f800000U, 0U, 8U, 0x3f006c71U, 0x3f6527efU, 0x3e9f4dfcU, 0x3f2aaaabU, 12U, 8U, 0x3e6e3e87U, 0x3ed2d5c3U, 0x3d9213c6U, 0x00000000U, 6U, 4U, 0x3ef70e06U, 0x3e7059adU, 0x3f116522U, 0x3f555555U, 1U, 1U, 0x3f0c2bbfU, 0x3ed74a6bU, 0x3e2cf67dU, 0x3f555555U, 11U, 7U, 0x3f6178abU, 0x3f20c7a9U, 0x3f521007U, 0x3f555555U, 9U, 2U, 0x3f0803c1U, 0x3f07c5c7U, 0x3ece51f0U, 0x3f6aaaabU},
       117U, 468U, 0U, 398U, 116U, 1U, 67U, 117U, 0U, 0x00000000U, 0x3f800000U
     },
     {
       "square-frequency-equality", 11U, 11U, {0x40400000U, 0x40000000U}, {0x41f80000U, 0x41f80000U},
       0x3f0ccccdU, 0x3e600000U, 0x3f400000U, 71, 0xc3340000U,
       "b0f13bbfbca20ea2b40d7e19d75796f70ca2b641f564f26471869dbcd4c58da3", "c43c7e0c9248875f403f003073c29e69dd7f368a59223e01927d177b6f610acc",
-      "8c09129cc2a75ca01f8a3d774307128cb1c44721c884821f6b22b7cff67e2948", "8e456f5906aca7993075834d2f3ad09f358f9acaffbfcc4dbc0f113ed4fd94c6",
-      {0U, 0U, 0x3efae5d7U, 0x3f5754b4U, 0x3eccb371U, 0x00000000U, 10U, 0U, 0x3ee7967dU, 0x3f4a5c9bU, 0x3f0dbe30U, 0x3e2aaaabU, 0U, 10U, 0x3f10e029U, 0x3e2d028dU, 0x3f2bc720U, 0x00000000U, 10U, 10U, 0x3f003d03U, 0x3ef0cc84U, 0x3e16679eU, 0x3e800000U, 5U, 5U, 0x3ece5a9aU, 0x3e30bd73U, 0x3f0ba2bbU, 0x3f800000U, 1U, 1U, 0x3e1fcfd8U, 0x3f49d8b7U, 0x3eedb922U, 0x3f555555U, 9U, 9U, 0x3f2cbc40U, 0x3efa38e8U, 0x3f012a0dU, 0x3f800000U, 7U, 3U, 0x3ead59d9U, 0x3f3db9daU, 0x3ed07117U, 0x3f2aaaabU},
+      "bba736cff27c6ad6dadd18a954a08c4b4369032feb596d064f57f1751ab86e8d", "cb38bf280658b38f4826f8315f6d56c6459d9ab4108d44b875ca72115d8c1ca5",
+      {0U, 0U, 0x3f397617U, 0x3e66476eU, 0x3f0e3590U, 0x00000000U, 10U, 0U, 0x3f3547ccU, 0x3eeec41eU, 0x3e1e3ab3U, 0x3e2aaaabU, 0U, 10U, 0x3ebcc9a9U, 0x3da315ceU, 0x3ef96b00U, 0x00000000U, 10U, 10U, 0x3ef8086cU, 0x3f1b6543U, 0x3f42e86bU, 0x3e800000U, 5U, 5U, 0x3f1c6ec5U, 0x3e9b9bcfU, 0x3f24d4b2U, 0x3f800000U, 1U, 1U, 0x3f4583a0U, 0x3e4fe19aU, 0x3f384f9dU, 0x3f555555U, 9U, 9U, 0x3ea8d417U, 0x3e3c86cdU, 0x3e6bf9baU, 0x3f800000U, 7U, 3U, 0x3f3f6136U, 0x3ef3c8f6U, 0x3ee7acecU, 0x3f2aaaabU},
       121U, 484U, 0U, 416U, 121U, 0U, 68U, 121U, 0U, 0x00000000U, 0x3f800000U
     },
     {
       "untiled-over-cap-binding-domain-diagnostic", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U},
       0x3ef00000U, 0x3fe00000U, 0x3fa00000U, 29, 0x42b40000U,
       "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3",
-      "c7983e127a9bc4ed938cff5c316d71ed50f2dfb2126b54718901efd80aae705f", "40d20fde4f5aab0e0e42a0371d373dbfdb66f62644650bef511ff8ffa3592bda",
-      {0U, 0U, 0x3f26053eU, 0x3f3dd299U, 0x3f2abd32U, 0x00000000U, 12U, 0U, 0x3ee7df96U, 0x3f1bd6aaU, 0x3f052828U, 0x3f800000U, 0U, 8U, 0x3ebb5433U, 0x3f61dbe9U, 0x3eca4392U, 0x3f2aaaabU, 12U, 8U, 0x3e55cd47U, 0x3edd5954U, 0x3f354dfaU, 0x00000000U, 6U, 4U, 0x3ebd70a4U, 0x3eeaaaabU, 0x3f02e8baU, 0x3f555555U, 1U, 1U, 0x3f3ee451U, 0x3eed0e16U, 0x3f3c752bU, 0x3f555555U, 11U, 7U, 0x3f155419U, 0x3f0ebed0U, 0x3eeb9b51U, 0x3f555555U, 9U, 2U, 0x3e818330U, 0x3f489cf2U, 0x3e87905cU, 0x3f6aaaabU},
+      "8f70a5e03d90c93dbc18ff768108a638b938781cd464418b5d07dff674a1e55f", "ee597e5fc86137977db87fc32f06b81e8423820457b5a96f7d8efe5f918bb412",
+      {0U, 0U, 0x3f260621U, 0x3f3dd26cU, 0x3f2a18ebU, 0x00000000U, 12U, 0U, 0x3ee7811bU, 0x3f1c2147U, 0x3f052828U, 0x3f800000U, 0U, 8U, 0x3f004161U, 0x3f60967cU, 0x3eca43f0U, 0x3f2aaaabU, 12U, 8U, 0x3e55cd47U, 0x3edd5954U, 0x3f354e85U, 0x00000000U, 6U, 4U, 0x3ebd70a4U, 0x3eeaaaabU, 0x3f02e8baU, 0x3f555555U, 1U, 1U, 0x3f3ee3feU, 0x3eed0e16U, 0x3f3a5fe9U, 0x3f555555U, 11U, 7U, 0x3f1531f2U, 0x3f0ebe82U, 0x3eeb9b51U, 0x3f555555U, 9U, 2U, 0x3e818330U, 0x3f489cf2U, 0x3e879613U, 0x3f6aaaabU},
       117U, 468U, 0U, 398U, 116U, 1U, 67U, 117U, 0U, 0x00000000U, 0x3f800000U
     },
   }};
@@ -3973,7 +4000,9 @@ TEST(typed_task21_degauss_external_oracles_are_exact_repeatable_and_nonmutating)
     REQUIRE(little_endian_float_bytes(second_input) == original_floats);
     REQUIRE(second_input.to_rgba8() == original_rgba);
     REQUIRE(first.width() == fixture.width); REQUIRE(first.height() == fixture.height);
-    REQUIRE(hex(sha256(little_endian_float_bytes(first))) == fixture.output_float_hash);
+    const std::string float_hash = hex(sha256(little_endian_float_bytes(first)));
+    if (float_hash != fixture.output_float_hash)
+      throw std::runtime_error(std::string(fixture.name) + " float oracle hash: " + float_hash);
     REQUIRE(hex(sha256(first.to_rgba8())) == fixture.output_rgba_hash);
 
     std::size_t finite_lanes = 0U; std::size_t nonfinite_lanes = 0U;
@@ -4081,15 +4110,15 @@ TEST(typed_task22_crt_public_adapter_oracles_are_exact_repeatable_and_nonmutatin
   const std::array<Task22Case, 11> fixtures{{
     {"alpha-zero-exact-copy-tiled", 13U, 9U, {0x40e00000U, 0x41300000U}, {0x42240000U, 0x41e80000U}, 0x3ec00000U, 0x00000000U, 0x40000000U, 37, 0x40000000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", {0U, 0U, 0x3e051eb8U, 0x3e755555U, 0x3d68ba2fU, 0xbe2aaaabU, 12U, 0U, 0x3e19999aU, 0x3dd55555U, 0x3f7a2e8cU, 0x3f800000U, 0U, 8U, 0x3f170a3dU, 0x3f500000U, 0x3d3a2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3f1c28f6U, 0x3f2d5555U, 0x3f7745d1U, 0xbdaaaaabU, 6U, 4U, 0x3ebd70a4U, 0x3eeaaaabU, 0x3f02e8baU, 0x3f555555U, 1U, 1U, 0x3f1c28f6U, 0x3f02aaabU, 0x3f02e8baU, 0x3f555555U, 11U, 7U, 0x3e051eb8U, 0x3ed00000U, 0x3f02e8baU, 0x3f555555U}, 117U, 468U, 0U, 0U, 0U, 117U, 117U, 50U},
     {"alpha-negative-clamps-zero-copy", 9U, 7U, {0x40400000U, 0x40a00000U}, {0x41b80000U, 0x41980000U}, 0x3f200000U, 0xbe800000U, 0x3f800000U, 19, 0x3f800000U, "5036ac34df07a6e89f8ae9cd5ee4fa3250a1962bdbda6bc4e29dc4ce512fb8a8", "6b56cc6c2f780b54a655f04ba7deae8e61e8330ca84b5d5056e8c352dd16885c", "5036ac34df07a6e89f8ae9cd5ee4fa3250a1962bdbda6bc4e29dc4ce512fb8a8", "6b56cc6c2f780b54a655f04ba7deae8e61e8330ca84b5d5056e8c352dd16885c", {0U, 0U, 0x3e051eb8U, 0x3e755555U, 0x3d68ba2fU, 0xbe2aaaabU, 8U, 0U, 0x3ef5c28fU, 0x3f52aaabU, 0x3f2ba2e9U, 0x3fa00000U, 0U, 6U, 0x3f7ae148U, 0x3ed55555U, 0x3f4e8ba3U, 0x3fb55555U, 8U, 6U, 0x3ea3d70aU, 0x3f800000U, 0x3ed1745dU, 0x3f6aaaabU, 4U, 3U, 0x3f3ae148U, 0x3deaaaabU, 0x3f3d1746U, 0x3faaaaabU, 1U, 1U, 0x3f1c28f6U, 0x3f02aaabU, 0x3f02e8baU, 0x3f555555U, 7U, 5U, 0x3f59999aU, 0x3f3aaaabU, 0x3f7745d1U, 0xbdaaaaabU}, 63U, 252U, 0U, 0U, 0U, 63U, 63U, 28U},
-    {"default-landscape-untiled", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U}, 0x3ec00000U, 0x3f000000U, 0x3f800000U, 1, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "3134189c0654121a560abf3f8f102873b3395937ae244eaf1d6de7d03e6c8192", "c9a7375db6ae12c5dc1f0b2fa49669892d405c55ab587cc0a054d75d9d66eeb9", {0U, 0U, 0x3e6e4a4fU, 0x3eb2debfU, 0x3e1e84f4U, 0xbe2aaaabU, 12U, 0U, 0x3e65cda8U, 0x3e3b0955U, 0x3f55ab66U, 0x3f800000U, 0U, 8U, 0x3f26ed52U, 0x3f634822U, 0x3d99b8a3U, 0x3f2aaaabU, 12U, 8U, 0x3f1fcd19U, 0x3f3afae4U, 0x3f5b5584U, 0xbdaaaaabU, 6U, 4U, 0x3eea10aeU, 0x3f0df42aU, 0x3f1cea40U, 0x3f555555U, 1U, 1U, 0x3eff9f5cU, 0x3ecccc54U, 0x3e8fd093U, 0x3f555555U, 11U, 7U, 0x3dc01d51U, 0x3ea8b1f8U, 0x3e985952U, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
-    {"alpha-above-one-clamps-and-preserves-input-alpha", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U}, 0x3ee00000U, 0x3fe00000U, 0x3f800000U, 11, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "e6d5a0788f2a23100ee9968186ac1f1a05175ecf6972e8503bd92cd8130a4bfd", "b971437eec882ffd958b151216992caad58a8a681211f161ec60480820d52fee", {0U, 0U, 0x3e4097faU, 0x3e98be04U, 0x3dea67efU, 0xbe2aaaabU, 12U, 0U, 0x3f38577cU, 0x00000000U, 0x3ed92ca3U, 0x3f800000U, 0U, 8U, 0x3f078940U, 0x3f40a8e9U, 0x00000000U, 0x3f2aaaabU, 12U, 8U, 0x3ef0ff88U, 0x3ea76765U, 0x3ee5680eU, 0xbdaaaaabU, 6U, 4U, 0x3eb45e5fU, 0x3ee2f7c5U, 0x3efef180U, 0x3f555555U, 1U, 1U, 0x3eccd465U, 0x3e0bde44U, 0x3d6c3339U, 0x3f555555U, 11U, 7U, 0x3d9f37d8U, 0x3deb8c6cU, 0x3df406d6U, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
-    {"landscape-tiled-render-scale-two", 13U, 9U, {0x40e00000U, 0x41300000U}, {0x423c0000U, 0x41b80000U}, 0x3ee00000U, 0x3f400000U, 0x3fe00000U, 37, 0x40000000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "7e9a4e738ad67051674ea5d8e7e2333585e943bbe45fcdbdf3c9e59635c359ec", "2ed1841d5be9df1f576fecf81bab403ad848fb96d4e33055525a1520e905d75c", {0U, 0U, 0x3e82b7eeU, 0x3ec0ed7dU, 0x3e325911U, 0xbe2aaaabU, 12U, 0U, 0x3f02d8f6U, 0x3e11e1d6U, 0x3f1e75b9U, 0x3f800000U, 0U, 8U, 0x3f14aa25U, 0x3f501cfaU, 0x3c4af539U, 0x3f2aaaabU, 12U, 8U, 0x3f07a8dcU, 0x3f195440U, 0x3f65679cU, 0xbdaaaaabU, 6U, 4U, 0x3ed34e4cU, 0x3ecfe1a6U, 0x3eac213aU, 0x3f555555U, 1U, 1U, 0x3f37c9a0U, 0x3ef6f475U, 0x3ea68536U, 0x3f555555U, 11U, 7U, 0x3e05323dU, 0x3ed414a6U, 0x3f05b7efU, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
-    {"portrait-tiled-fractional-render-scale", 9U, 13U, {0x40a00000U, 0x40400000U}, {0x41b80000U, 0x42140000U}, 0x3f1ccccdU, 0x3f200000U, 0x40000000U, 100, 0x3fc00000U, "7ea6ac4f0ccd3f585245fab99613afd1a39cdeff0a484320f7dd1e4dabd83396", "d553b7ab55a780eb5bbc32c77103af6bf3660fc4046e6b3eeba8dbf45a2e9880", "cdc080912dc354a6052447427814040e552d7c38edf4e1c499d8f7c80bd196be", "ecfb38a778ba9e40d9bacfb5a8f1f62a810cd929d14b83c2bf5d4abc6bc0d079", {0U, 0U, 0x3dd51251U, 0x3e4fec57U, 0x3d1b4a6cU, 0xbe2aaaabU, 8U, 0U, 0x3edfa98bU, 0x3f36ae8bU, 0x3edf12f2U, 0x3fa00000U, 0U, 12U, 0x3f150ebcU, 0x3ecb0f5eU, 0x3eb6c500U, 0x3f8aaaabU, 8U, 12U, 0x3deae944U, 0x3e414c71U, 0x3ec11e70U, 0x3f155555U, 4U, 6U, 0x3ee83d08U, 0x3f23042eU, 0x3ed3e145U, 0x3f955555U, 1U, 1U, 0x3ef55138U, 0x3eb308b5U, 0x3e64e4a6U, 0x3f555555U, 7U, 11U, 0x3f25a278U, 0x3f47843fU, 0x3ec83a59U, 0xbed55555U}, 117U, 468U, 0U, 350U, 117U, 0U, 117U, 52U},
-    {"speed-zero-nonzero-time", 13U, 9U, {0x40800000U, 0x40c00000U}, {0x41f80000U, 0x41c80000U}, 0x3f600000U, 0x3f600000U, 0x00000000U, 19, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "f83304619eda688e29c3ae34b4c913535919c3505c2f59f5100b587ddf52ddd8", "16727fe42c77a453e47d0dcfcc14b079b39a84d06683ac8d0f689749611ec70e", {0U, 0U, 0x3e8d4aa3U, 0x3ecc6028U, 0x3e46535dU, 0xbe2aaaabU, 12U, 0U, 0x3e35211dU, 0x3e02e0d1U, 0x3f7f45d2U, 0x3f800000U, 0U, 8U, 0x3ef4bf63U, 0x3f30590dU, 0x3bba2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3eedfeeaU, 0x3f1b4257U, 0x3f0ccde8U, 0xbdaaaaabU, 6U, 4U, 0x3e7dceb1U, 0x3edd1352U, 0x3e371349U, 0x3f555555U, 1U, 1U, 0x3f2e8644U, 0x3f2edd2aU, 0x3e863253U, 0x3f555555U, 11U, 7U, 0x3dd2bef9U, 0x3eebad87U, 0x3ea8d238U, 0x3f555555U}, 117U, 468U, 0U, 348U, 117U, 0U, 117U, 50U},
-    {"time-zero-positive-speed", 13U, 9U, {0x40400000U, 0x40000000U}, {0x41e80000U, 0x41a80000U}, 0x00000000U, 0x3f600000U, 0x3fc00000U, 53, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "bc5ed1803bb52ee4d075d4c9ff6e5cc62ca2ba6f60f7d5aed93d1c237ad81b98", "59a3fef349d5457d514174dba0e328bcd1723f97d0d8fdf82649ed217265f5d0", {0U, 0U, 0x3de930eeU, 0x3e577c83U, 0x3d4b39b8U, 0xbe2aaaabU, 12U, 0U, 0x3cb6169dU, 0x3c555555U, 0x3f3bdd41U, 0x3f800000U, 0U, 8U, 0x3ec19630U, 0x3f0dd699U, 0x3bba2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3eb220d3U, 0x3f0923dfU, 0x3ee7a609U, 0xbdaaaaabU, 6U, 4U, 0x3e13e2baU, 0x3eb8d139U, 0x3e095841U, 0x3f555555U, 1U, 1U, 0x3f242d17U, 0x3f38951cU, 0x3e9974d1U, 0x3f555555U, 11U, 7U, 0x3dc1cd54U, 0x3ecf2f42U, 0x3ee99571U, 0x3f555555U}, 117U, 468U, 0U, 348U, 117U, 0U, 117U, 50U},
-    {"full-resolution-zero-fallback", 13U, 9U, {0x40000000U, 0x3f800000U}, {0x00000000U, 0x00000000U}, 0x3ea00000U, 0x3f400000U, 0x3fa00000U, 11, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "19b91bedac3685b2c368a1c8da9eb89ae6e57e8deeee513b4151cf12dad3896f", "fc49c1f7a2ea1c69db968ceabfaa4293ba8b193e13a5634b51ef763d0fea50d6", {0U, 0U, 0x3db83107U, 0x3e3b226eU, 0x3ce50454U, 0xbe2aaaabU, 12U, 0U, 0x3f12b739U, 0x3cd55555U, 0x3f0f4f08U, 0x3f800000U, 0U, 8U, 0x3ed332c8U, 0x3f18dc46U, 0x3c3a2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3f0137f7U, 0x3ed3f108U, 0x3f13a8a9U, 0xbdaaaaabU, 6U, 4U, 0x3e834fb7U, 0x3eab2bb4U, 0x3ec31999U, 0x3f555555U, 1U, 1U, 0x3f094ff5U, 0x3e8ffe92U, 0x3e599c26U, 0x3f555555U, 11U, 7U, 0x3db99834U, 0x3e4011e0U, 0x3e5e267bU, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
-    {"square-large-time-max-metadata", 11U, 11U, {0x40400000U, 0x40000000U}, {0x41f80000U, 0x41f80000U}, 0x4640e680U, 0x3f800000U, 0x40a00000U, 100, 0x3fc00000U, "b0f13bbfbca20ea2b40d7e19d75796f70ca2b641f564f26471869dbcd4c58da3", "c43c7e0c9248875f403f003073c29e69dd7f368a59223e01927d177b6f610acc", "5169bfe5072efd935eafd52f13b413c7b4f5f9834e9991f5a6207a877a6bfc48", "3a0f86f1aac14e290bbc2d22675f4af5bfa1a08fc68cbfc59c92331f5daf59a5", {0U, 0U, 0x3e844576U, 0x3ec2a7eaU, 0x3e35382eU, 0xbe2aaaabU, 10U, 0U, 0x3f2dd8d5U, 0x3f800000U, 0x3f71a330U, 0x3e2aaaabU, 0U, 10U, 0x3e9f275dU, 0x3e9df7c2U, 0x3ed57dfaU, 0xbdaaaaabU, 10U, 10U, 0x3f7508d2U, 0x3f68c905U, 0x3e375acfU, 0x3e800000U, 5U, 5U, 0x3eeb619fU, 0x3f44a975U, 0x3f800000U, 0x3f800000U, 1U, 1U, 0x3f324ecbU, 0x3efde7c3U, 0x3e61b5b3U, 0x3f555555U, 9U, 9U, 0x3e85d24fU, 0x3f528c3dU, 0x3f53bac2U, 0x3f955555U}, 121U, 484U, 0U, 361U, 121U, 0U, 121U, 53U},
-    {"render-scale-below-one-clamps", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U}, 0x3ef00000U, 0x3f000000U, 0x3fa00000U, 29, 0x3f000000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "d963390a996552ce28b3f8f5c7b7971072a60566ebad0bf29beb329fa4a24de2", "65e933fe048522db9d4b8eae08057c6ca56f3d4b53510181fb2e288f25546716", {0U, 0U, 0x3ddf417eU, 0x3e56a58eU, 0x3d2b51f2U, 0xbe2aaaabU, 12U, 0U, 0x3e87d076U, 0x3e2ab859U, 0x3f46e578U, 0x3f800000U, 0U, 8U, 0x3eed87e5U, 0x3f284ba4U, 0x3cba2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3ef1ba3eU, 0x3f1bdca0U, 0x3f3bc62eU, 0xbdaaaaabU, 6U, 4U, 0x3ef263baU, 0x3ebb45b4U, 0x3ee9e12eU, 0x3f555555U, 1U, 1U, 0x3ec042bdU, 0x3ed3f257U, 0x3e92d8cdU, 0x3f555555U, 11U, 7U, 0x3d942f25U, 0x3eb9906aU, 0x3eb12392U, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U}
+    {"default-landscape-untiled", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U}, 0x3ec00000U, 0x3f000000U, 0x3f800000U, 1, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "8d79ffbb89906ab3ac639254ad939a80b700609c11b3052da69d7d1b308a1ead", "b119d07a2c71836c7ae0ae8fb26deb0942ba5254c50b8f10e1a57983e4abc80d", {0U, 0U, 0x3e6f3c09U, 0x3eb2cacbU, 0x3e1d97c7U, 0xbe2aaaabU, 12U, 0U, 0x3e656566U, 0x3e3bdbdcU, 0x3f556f9eU, 0x3f800000U, 0U, 8U, 0x3f26e07aU, 0x3f637b7cU, 0x3d9af810U, 0x3f2aaaabU, 12U, 8U, 0x3f1fe64dU, 0x3f3b0f0fU, 0x3f5b82c8U, 0xbdaaaaabU, 6U, 4U, 0x3eea43deU, 0x3f0dfdfeU, 0x3f1ccfb8U, 0x3f555555U, 1U, 1U, 0x3eff8c5aU, 0x3eccf4f6U, 0x3e8ff5c7U, 0x3f555555U, 11U, 7U, 0x3dc15af4U, 0x3ea84040U, 0x3e97fdcfU, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
+    {"alpha-above-one-clamps-and-preserves-input-alpha", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U}, 0x3ee00000U, 0x3fe00000U, 0x3f800000U, 11, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "db6a4c4b1828da7def9818c90a04156914cc1fb57dd4fd6e8fc471e625a67203", "b971437eec882ffd958b151216992caad58a8a681211f161ec60480820d52fee", {0U, 0U, 0x3e40c0c1U, 0x3e989899U, 0x3de8e8e9U, 0xbe2aaaabU, 12U, 0U, 0x3f38b8b9U, 0x00000000U, 0x3ed8d8d9U, 0x3f800000U, 0U, 8U, 0x3f078788U, 0x3f40c0c1U, 0x00000000U, 0x3f2aaaabU, 12U, 8U, 0x3ef0f0f1U, 0x3ea6a6a7U, 0x3ee4e4e5U, 0xbdaaaaabU, 6U, 4U, 0x3eb4b4b5U, 0x3ee2e2e3U, 0x3efefeffU, 0x3f555555U, 1U, 1U, 0x3ecccccdU, 0x3e0c8c8dU, 0x3d70f0f1U, 0x3f555555U, 11U, 7U, 0x3da0a0a1U, 0x3de8e8e9U, 0x3df0f0f1U, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
+    {"landscape-tiled-render-scale-two", 13U, 9U, {0x40e00000U, 0x41300000U}, {0x423c0000U, 0x41b80000U}, 0x3ee00000U, 0x3f400000U, 0x3fe00000U, 37, 0x40000000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "d93238b6ab384881dc5bfb5d6e51e33db46b6f8430068d62bd30d5cd7e7b10af", "8b01630d856e5de5c694addc6bb8f3aecdfe561d18d777cbb773b99e983d113c", {0U, 0U, 0x3e83164aU, 0x3ec14d4dU, 0x3e312e46U, 0xbe2aaaabU, 12U, 0U, 0x3f02d2d3U, 0x3e132323U, 0x3f1e2b43U, 0x3f800000U, 0U, 8U, 0x3f14713eU, 0x3f4fdbdcU, 0x3c3a2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3f076a9eU, 0x3f194344U, 0x3f65b95cU, 0xbdaaaaabU, 6U, 4U, 0x3ed3804dU, 0x3ecfbfc0U, 0x3eac5f48U, 0x3f555555U, 1U, 1U, 0x3f379aceU, 0x3ef78b8cU, 0x3ea65942U, 0x3f555555U, 11U, 7U, 0x3e04ab12U, 0x3ed39fa0U, 0x3f059f14U, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
+    {"portrait-tiled-fractional-render-scale", 9U, 13U, {0x40a00000U, 0x40400000U}, {0x41b80000U, 0x42140000U}, 0x3f1ccccdU, 0x3f200000U, 0x40000000U, 100, 0x3fc00000U, "7ea6ac4f0ccd3f585245fab99613afd1a39cdeff0a484320f7dd1e4dabd83396", "d553b7ab55a780eb5bbc32c77103af6bf3660fc4046e6b3eeba8dbf45a2e9880", "df4de8296c90676f60025d0fff1869d001d5835343fba8e59f0ac2edc49fdbf9", "8c55dd1ea14b3cf06413cc902253ee1d7c674ff33776ca2c937c9992b22f56a9", {0U, 0U, 0x3dd74a7eU, 0x3e4f7374U, 0x3d1d8c18U, 0xbe2aaaabU, 8U, 0U, 0x3edfecbaU, 0x3f368788U, 0x3eded84dU, 0x3fa00000U, 0U, 12U, 0x3f14fe98U, 0x3ecb1919U, 0x3eb687fdU, 0x3f8aaaabU, 8U, 12U, 0x3de94fb6U, 0x3e428283U, 0x3ec0c17cU, 0x3f155555U, 4U, 6U, 0x3ee8b8b9U, 0x3f22bebfU, 0x3ed3a2e9U, 0x3f955555U, 1U, 1U, 0x3ef51eb9U, 0x3eb39192U, 0x3e64fdb8U, 0x3f555555U, 7U, 11U, 0x3f256094U, 0x3f475050U, 0x3ec88713U, 0xbed55555U}, 117U, 468U, 0U, 350U, 117U, 0U, 117U, 52U},
+    {"speed-zero-nonzero-time", 13U, 9U, {0x40800000U, 0x40c00000U}, {0x41f80000U, 0x41c80000U}, 0x3f600000U, 0x3f600000U, 0x00000000U, 19, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "50e355ebf7f615c611b33ba28a0ea4ba39ea15ef7f1abcfc7e1bc57e43d3bd84", "7fc20e14302c8dd5b1abd2561fc5f0749e1e7b014b5feb583f5cc734bc6e2e19", {0U, 0U, 0x3e8dd771U, 0x3ecd1313U, 0x3e45038fU, 0xbe2aaaabU, 12U, 0U, 0x3e34d4d5U, 0x3e01494aU, 0x3f7f45d2U, 0x3f800000U, 0U, 8U, 0x3ef511dfU, 0x3f303636U, 0x3bba2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3eed90c4U, 0x3f1b3030U, 0x3f0cb688U, 0xbdaaaaabU, 6U, 4U, 0x3e7eab78U, 0x3edcd4d5U, 0x3e356851U, 0x3f555555U, 1U, 1U, 0x3f2e1fbaU, 0x3f2e7374U, 0x3e86a014U, 0x3f555555U, 11U, 7U, 0x3dd0f75eU, 0x3eeb1111U, 0x3ea80176U, 0x3f555555U}, 117U, 468U, 0U, 348U, 117U, 0U, 117U, 50U},
+    {"time-zero-positive-speed", 13U, 9U, {0x40400000U, 0x40000000U}, {0x41e80000U, 0x41a80000U}, 0x00000000U, 0x3f600000U, 0x3fc00000U, 53, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "e8c211553f7fb1a7398cc4ce4f1dd9c1ff5c14b02fe24c4e097f9de8d418fa16", "9c9a2e5f1c63dde9de72bebded827b52339bad6d06fcb035da5c7f2286aad86d", {0U, 0U, 0x3de60c73U, 0x3e58e4e5U, 0x3d45bfefU, 0xbe2aaaabU, 12U, 0U, 0x3cb5b5b6U, 0x3c555555U, 0x3f3ba22eU, 0x3f800000U, 0U, 8U, 0x3ec21eecU, 0x3f0df3f4U, 0x3bba2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3eb1d509U, 0x3f08bdbeU, 0x3ee83bdfU, 0xbdaaaaabU, 6U, 4U, 0x3e15420fU, 0x3eb9b1b2U, 0x3e07baa3U, 0x3f555555U, 1U, 1U, 0x3f247610U, 0x3f38fdfeU, 0x3e99f368U, 0x3f555555U, 11U, 7U, 0x3dc2e950U, 0x3ecef4f5U, 0x3ee90277U, 0x3f555555U}, 117U, 468U, 0U, 348U, 117U, 0U, 117U, 50U},
+    {"full-resolution-zero-fallback", 13U, 9U, {0x40000000U, 0x3f800000U}, {0x00000000U, 0x00000000U}, 0x3ea00000U, 0x3f400000U, 0x3fa00000U, 11, 0x3f800000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "70e7b389149a2d86cb8771d9c2cbf6324a3d4132433946157674b82a7703f69a", "6503af699c4bbefc4dda800dfdb455b397b05165486e6866de4ebc0f474b5377", {0U, 0U, 0x3dbb07d5U, 0x3e3bd3d4U, 0x3cecd590U, 0xbe2aaaabU, 12U, 0U, 0x3f12a2a3U, 0x3cd55555U, 0x3f0f1c34U, 0x3f800000U, 0U, 8U, 0x3ed30ca6U, 0x3f18e4e5U, 0x3c3a2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3f016498U, 0x3ed3a7a8U, 0x3f13a74aU, 0xbdaaaaabU, 6U, 4U, 0x3e83b07dU, 0x3eab9b9cU, 0x3ec2f5dfU, 0x3f555555U, 1U, 1U, 0x3f09ace0U, 0x3e8fa3a4U, 0x3e5a4011U, 0x3f555555U, 11U, 7U, 0x3dbb07d5U, 0x3e3f5757U, 0x3e5d4314U, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U},
+    {"square-large-time-max-metadata", 11U, 11U, {0x40400000U, 0x40000000U}, {0x41f80000U, 0x41f80000U}, 0x4640e680U, 0x3f800000U, 0x40a00000U, 100, 0x3fc00000U, "b0f13bbfbca20ea2b40d7e19d75796f70ca2b641f564f26471869dbcd4c58da3", "c43c7e0c9248875f403f003073c29e69dd7f368a59223e01927d177b6f610acc", "b358b073881dd9e560052bf8204bb9b4fb2baf36d6914a67560252f4bf8682d5", "3123832208dc84924af2cae7b1f93e7cf959f72f4df0087f909f7697daca57cd", {0U, 0U, 0x3e848485U, 0x3ec2c2c3U, 0x3e34b4b5U, 0xbe2aaaabU, 10U, 0U, 0x3f2dadaeU, 0x3f800000U, 0x3f71f1f2U, 0x3e2aaaabU, 0U, 10U, 0x3e9e9e9fU, 0x3e9e9e9fU, 0x3ed4d4d5U, 0xbdaaaaabU, 10U, 10U, 0x3f74f4f5U, 0x3f68e8e9U, 0x3e38b8b9U, 0x3e800000U, 5U, 5U, 0x3eeaeaebU, 0x3f44c4c5U, 0x3f800000U, 0x3f800000U, 1U, 1U, 0x3f32b2b3U, 0x3efcfcfdU, 0x3e60e0e1U, 0x3f555555U, 9U, 9U, 0x3e868687U, 0x3f52d2d3U, 0x3f53d3d4U, 0x3f955555U}, 121U, 484U, 0U, 361U, 121U, 0U, 121U, 53U},
+    {"render-scale-below-one-clamps", 13U, 9U, {0x00000000U, 0x00000000U}, {0x41500000U, 0x41100000U}, 0x3ef00000U, 0x3f000000U, 0x3fa00000U, 29, 0x3f000000U, "daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687", "5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3", "4af92d87e04669063f3cdad9601ad08a57b5d64e9aa0bd4c5da4270ea0ee0381", "442879a307d31f079e3279360b68cf9fb95fd949f47e6ad266caf939386d3ed3", {0U, 0U, 0x3ddd7710U, 0x3e570707U, 0x3d2c9550U, 0xbe2aaaabU, 12U, 0U, 0x3e87c7c8U, 0x3e29c9caU, 0x3f46e110U, 0x3f800000U, 0U, 8U, 0x3eed6094U, 0x3f284040U, 0x3cba2e8cU, 0x3f2aaaabU, 12U, 8U, 0x3ef17e4cU, 0x3f1beff0U, 0x3f3be329U, 0xbdaaaaabU, 6U, 4U, 0x3ef24be6U, 0x3ebb9b9cU, 0x3eea5022U, 0x3f555555U, 1U, 1U, 0x3ec04d1aU, 0x3ed3fbfcU, 0x3e92f8caU, 0x3f555555U, 11U, 7U, 0x3d952ec8U, 0x3eb95152U, 0x3eb116e8U, 0x3f555555U}, 117U, 468U, 0U, 351U, 117U, 0U, 117U, 50U}
   }};
 
   for (const Task22Case& fixture : fixtures) {
@@ -4219,19 +4248,19 @@ TEST(typed_hydraulic_preserves_authority_signed_number_hash) {
   }
 }
 
-// Unmodified pinned JS canonical Noise3D MRT captures. Unsigned vectors use
-// ordinary Number arrays after construction, and the atlas z coordinate stays
-// fractional. The scalar XOR result is signed.
+// Unmodified CPU 9f3bd6a canonical Noise3D MRT captures, with defaults
+// OCTAVES=1, COLOR_MODE=0 and RIDGES=0. The current authority uses unsigned
+// 32-bit products and XOR before conversion to a Float32 noise value.
 TEST(typed_noise3d_preserves_authority_hash4_number_rounding) {
   struct Case { std::int32_t volume, seed; double scale, time; };
   const std::array<Case, 3> cases = {{{2, 0, 1.3, 0.25}, {2, 42, 1.3, 0.25}, {3, 42, 2.7, 0.375}}};
   const std::array<std::array<std::string_view, 2>, 6> hashes = {{
-      {"cf296abdf2cb42fec3468321492626fe5d98b2ca3743c6bfcbbc46fa04a6acd4", "80fec8ee25704970ebcde6169f5547715b9abd6be0ff2c583cf99b8452db0be6"},
-      {"740a3de52d4965a426f35d806e4a889cf9d038108eae9af8f1dad30eb5f0fb81", "7da01edb7326a517aea7969d18ac75d2d776147ac65f936c8864671497c8be5d"},
-      {"cb7cae7f92ac10b22f507ab798589216d9c3f9fc74fd8dd246f49bba90c32b9f", "83b97c24d232ed53878ede18d3ca35e655bdb731ecfa018bb11845ed6896cd8e"},
-      {"4b708bb0c16a26c7f5227b0d93af145723012a95c20c27fb67e9e45c53074a59", "99c6e1b97644d1fa3291c2c887e80e24dfbf63afc7e1aa56dfa08654997613ee"},
-      {"9adf88451bece9203c092df54319e5144643ac74dc472692b02a898eaa6f849d", "ed41d589bbb265d6473dbd3c704622b63795f7e1e4b49ae8151c0afbfcd4e268"},
-      {"31cc1840cc01aab34709ed1c1bc3f61b5f7289a6df132389dd4154986ac2d083", "cfc9f47328448e311792f5254bdcb3d715f612ad4a6c7199cd5d2076da025831"}}};
+      {"52488951ee237a096966529945fb8a126f5de036f24307f66b4ff35836389614", "b73670efc24f122726eec3436ae92a937e0a7365df30aba1d527a93ba1960f9a"},
+      {"556157a402108b9913bd168209eadafb2af0597e0918c420577dcb4d86f34727", "59fcdde9b8682e4b007ef84f3f24bd74062ae30cb99b2f4bfba51d31629362e7"},
+      {"3032c7d8ca0e7f875c5c63499363121fa70cbc832fdcbf0a0ae08d2986ffe61c", "dc43f2dda7a3c4610e9bda7fd1dd1f4d4f8d59e07f2f20d579513e0aad1f8825"},
+      {"9948c67bfa7e1bd28a4bcb9f7bd7a9c8cdb1d40287a96d4e3236ce614911fa5d", "7af56a1a02102559b9e709ee21893a1ae922dc6d0a164d8f0674a2ac95383a7b"},
+      {"53ccf34d0fc83e3400f3c8b1a93bd4f5db8ca17c9fb3e2d2051ff361c5a4e99d", "cdc6258f27b880ac4497c6ab3a0aac106422a13c1e39bc4ab39db216be7a0ab2"},
+      {"5c6d84c7032349996eaa8aa844f29b4a3af99e22fbac356e5ae7e5022038768b", "d88dffe2cb77826e743661b5dc18c9236ae98351f3a79235cf70267ab0dfa0db"}}};
   std::size_t capture = 0;
   for (const auto& item : cases) {
     const auto width = static_cast<std::size_t>(item.volume);
@@ -4241,16 +4270,1612 @@ TEST(typed_noise3d_preserves_authority_hash4_number_rounding) {
     bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(static_cast<float>(width), static_cast<float>(height)));
     bindings.set_uniform("time", item.time);
     bindings.set_uniform("scale", item.scale);
-    bindings.set_uniform("seed", item.seed);
+    bindings.set_uniform("seed", static_cast<double>(item.seed));
     bindings.set_uniform("volumeSize", item.volume);
     bindings.set_uniform("speed", 1.0);
+    bindings.set_uniform("OCTAVES", std::int32_t{1});
+    bindings.set_uniform("COLOR_MODE", std::int32_t{0});
+    bindings.set_uniform("RIDGES", false);
     const auto surfaces = noisemaker::run_mrt_pass(
         noisemaker::generated::bind_synth3d_noise3d_precompute(bindings), width, height, static_cast<float>(item.time));
     REQUIRE(surfaces.size() == 2U);
     for (const auto& surface : surfaces) {
+      const auto float_hash = hex(sha256(little_endian_float_bytes(surface)));
+      const auto rgba_hash = hex(sha256(surface.to_rgba8()));
+      if (float_hash != hashes[capture][0] || rgba_hash != hashes[capture][1]) {
+        throw std::runtime_error("Noise3D capture " + std::to_string(capture) +
+                                 " float=" + float_hash + " rgba=" + rgba_hash +
+                                 " first=" + std::to_string(noisemaker::float_bits_to_uint(surface.data()[0])));
+      }
+      ++capture;
+    }
+  }
+}
+
+// Authenticated CPU 9f3bd6a canonical MRT, measured with the full Number
+// render seed before hash4's Float32 lanes and JavaScript ToInt32 conversion.
+TEST(typed_noise3d_large_seed_number_and_int32_wrap_match_cpu) {
+  struct Case {
+    std::int32_t volume;
+    double seed, scale, time;
+    std::array<std::string_view, 2> f32;
+    std::array<std::string_view, 2> rgba;
+  };
+  const std::array<Case, 8> cases = {{
+      {3, 0.0, 2.7, 0.375,
+       {"3ada7df17298b44752bed96c6b5060f1082a4d64d013828de89c2cd7bd7d66b0", "1cfd31412bf3c30d4ac50eb4f03467ac487c1127139d5f7bc68715de62acd35a"},
+       {"06860629591fc306f3a51d9d835d7d0a45cfbd05c70a5b3f159350140ef63cb6", "9ab25a6c7820dae5d3391127fefd35899ab8fb6f50a49b4dcbbdbe85978ad809"}},
+      {3, 31576719.0, 2.7, 0.375,
+       {"1bd27b58d0e53f465977d0058d60fd2bf9431e8859bc5e5fdb80d496dc69380d", "4944f68da13cb749132dda76c0164e62de8f2f619005dada27f4a7ab8404a92a"},
+       {"edbc2720d7548cdccd964a59bc56b8eb6fc550a695a810d0c537dc2ba30688b6", "2600cc337342b60fea205d69be8a338c117cefe46a8131ead6e6457d73b10006"}},
+      {3, 1512140165.0, 2.7, 0.375,
+       {"1f25b3f87342bfc8dc30d1670fac126acbe7a09fb0a727fd011171138e046e6e", "2bb710e8e9afabd4666abb6062163d0e598f8270348e3f4e353904fba9bca25e"},
+       {"8de4419743e7dd1139cf1508de97bdf9a6fb1a93554ba43ef48e21e622dc7573", "0e225a5a32dc3e3f1f9728804217ed7ebac1ec4eeab5d7edef8ff674468dccd7"}},
+      {3, 2687862216.0, 2.7, 0.375,
+       {"aff11200f979721f69d5e79d647385fa4f1844070f3a21955d4441493f5acb9d", "243130a0e04f0f846679e51f346990b0f57549f9103d526c8606e98c6ecbae90"},
+       {"2249dbd1d68146e77e0f8176b0f5fc7f9333c7c83552887ed451cecf4ac9835e", "ed607d066af0d05a8c7f944a892a83e0f54b8be8139d13f145d93177d7fd728b"}},
+      {3, 4294967295.0, 2.7, 0.375,
+       {"0183b4416a48aa932b97e780d8298232c63ee2a3f024938572ae5afc8cf592b9", "f7b0e0da49bfcb4f7100a97f895a83ef2a6e8a1ef552e3346da1e02b3189120e"},
+       {"85a5dab36f26a3beb8c56b26a9dd033bb2f6822362719d64e54d413cc537e331", "aa516fa9eedc5cf707dcca5c76793517f2550e765ede2b8b222105b9c61edacb"}},
+      {3, 2147483647.0, 2.7, 0.375,
+       {"c00be0d109049e19497111c7483abceed4e766138f6fb6ce6cfeee75390feb47", "118a6745fbcdfdb256e3e11ed3c1d1ac84328364eb39dd60ff5b4bace4dd5be0"},
+       {"e709d62173a56a460d6064de4f811bffdf580e316c61f6b8effb57641d0812d6", "a8b1aa05ba5e50b10524afae268c9f2f0a2e3dbed903fc176515a96f07dad5bc"}},
+      {3, 2147483648.0, 2.7, 0.375,
+       {"c00be0d109049e19497111c7483abceed4e766138f6fb6ce6cfeee75390feb47", "118a6745fbcdfdb256e3e11ed3c1d1ac84328364eb39dd60ff5b4bace4dd5be0"},
+       {"e709d62173a56a460d6064de4f811bffdf580e316c61f6b8effb57641d0812d6", "a8b1aa05ba5e50b10524afae268c9f2f0a2e3dbed903fc176515a96f07dad5bc"}},
+      {16, 1512140165.0, 3, 0.25,
+       {"3199a12a4fdcd0aa293ba6469c06ba04e27260431fd240854094453a7e937760", "3edf97a190438b6b05c0cbe6680632b76687a270247378d577dbf55a8ce9db2d"},
+       {"a3cca49e77c13bc7bf43c6711b825b96904a0374d2d716d5df37f59ab332d955", "5986d41ae8ba7758c75e6684b0587fc80676a254fa8508ef1d5a89e258e96eac"}},
+  }};
+  for (const auto& item : cases) {
+    const auto width = static_cast<std::size_t>(item.volume);
+    const auto height = width * width;
+    const noisemaker::glsl::Vec2 tile(0.0f, 0.0f);
+    const noisemaker::glsl::Vec2 full(static_cast<float>(width), static_cast<float>(height));
+    const auto render = [&]() {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_uniform("tileOffset", tile);
+      bindings.set_uniform("fullResolution", full);
+      bindings.set_uniform("time", item.time);
+      bindings.set_uniform("scale", item.scale);
+      bindings.set_uniform("seed", item.seed);
+      bindings.set_uniform("volumeSize", item.volume);
+      bindings.set_uniform("speed", 1.0);
+      bindings.set_uniform("OCTAVES", std::int32_t{1});
+      bindings.set_uniform("COLOR_MODE", std::int32_t{0});
+      bindings.set_uniform("RIDGES", false);
+      return noisemaker::run_mrt_pass(
+          noisemaker::generated::bind_synth3d_noise3d_precompute(bindings),
+          width, height, static_cast<float>(item.time));
+    };
+    const auto first = render();
+    const auto second = render();
+    REQUIRE(first.size() == 2U);
+    REQUIRE(second.size() == 2U);
+    for (std::size_t output = 0; output < 2U; ++output) {
+      REQUIRE(hex(sha256(little_endian_float_bytes(first[output]))) == item.f32[output]);
+      REQUIRE(hex(sha256(first[output].to_rgba8())) == item.rgba[output]);
+      REQUIRE(hex(sha256(little_endian_float_bytes(second[output]))) == item.f32[output]);
+      REQUIRE(hex(sha256(second[output].to_rgba8())) == item.rgba[output]);
+    }
+    REQUIRE(tile[0] == 0.0f);
+    REQUIRE(tile[1] == 0.0f);
+    REQUIRE(full[0] == static_cast<float>(width));
+    REQUIRE(full[1] == static_cast<float>(height));
+  }
+}
+
+// CPU 9f3bd6a canonical Noise3D variant captures; source/factory hashes
+// de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863
+// and 32ed506195ba526dde0193af2ca79edc9b4e2052fb34c39711fb064ee907e4df.
+TEST(typed_noise3d_runtime_defines_match_authority_mrt) {
+  struct Case {
+    std::int32_t octaves, color_mode;
+    bool ridges;
+    std::string_view color_hash, geo_hash;
+  };
+  const std::array<Case, 12> cases = {{
+      {1, 0, false, "53ccf34d0fc83e3400f3c8b1a93bd4f5db8ca17c9fb3e2d2051ff361c5a4e99d", "5c6d84c7032349996eaa8aa844f29b4a3af99e22fbac356e5ae7e5022038768b"},
+      {1, 0, true, "402ccdcd242b4d95d186bcbc8b3427790ed0e42e70b6de18a9da6b7470068366", "70ac94e4d507ddb3e48f2d92977d65643b9ed5467638a405dda6ea9698c9524b"},
+      {1, 1, false, "225c8989d59eff0042bb81a462f5ded319f4ce1e696a5001aeff5dd93dcf33af", "5c6d84c7032349996eaa8aa844f29b4a3af99e22fbac356e5ae7e5022038768b"},
+      {1, 1, true, "bb2055ea9b0d0ce73046f87b36e0e1821079ad687cd31867d8cdafa7252b7e5c", "70ac94e4d507ddb3e48f2d92977d65643b9ed5467638a405dda6ea9698c9524b"},
+      {3, 0, false, "4775bff7e099d061cb8b95a66083d40366a9b84516ab13695760bdf9d3715d3f", "5d4316a05ca0e8f17ce6687db597be3f3c0f1e49f46b741c097cfb8de41620bd"},
+      {3, 0, true, "a2e72a0b86d9ac8f59bee2fa75f229b629e096c9a9d036b50b7118fb29ece77a", "855bc6f7b80644b0c1288721bf664d6b79fad63856a09fb198106f1cb38b4591"},
+      {3, 1, false, "a0a6a5bb2a454670850abc688daad80df8324093abdd61d518b1184709233bc9", "5d4316a05ca0e8f17ce6687db597be3f3c0f1e49f46b741c097cfb8de41620bd"},
+      {3, 1, true, "ea3e125a3f5b4f73f4c1e58570851f2f33b7ec769fd69e723ba4045f93b8d9b7", "855bc6f7b80644b0c1288721bf664d6b79fad63856a09fb198106f1cb38b4591"},
+      {6, 0, false, "6422bef2357f651b87a41ffcdc60e740061f278527ce7b8c985b956bd401906c", "7877609a612c04bf65509c828a2a447ddd858492eba340dfa1e56167f7cec977"},
+      {6, 0, true, "982aaf6ad89e6e8dd4a10c8f98211cc42d377920f75b4d18e4e48c9ba4504ad7", "89822f7dcc3f829d0442276635d81a9895cedc74062d35d66953261d33bd2463"},
+      {6, 1, false, "b60c00e233bf84528a28dd9769604f1722138a65877b5c37e3f7849b1c23100f", "7877609a612c04bf65509c828a2a447ddd858492eba340dfa1e56167f7cec977"},
+      {6, 1, true, "ded336b612ac2eec30c4383d3fd293497323d5a8500dec6cd058b0f8fcb6b327", "89822f7dcc3f829d0442276635d81a9895cedc74062d35d66953261d33bd2463"},
+  }};
+  for (const auto& item : cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+    bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(3.0f, 9.0f));
+    bindings.set_uniform("time", 0.375);
+    bindings.set_uniform("scale", 2.7);
+    bindings.set_uniform("seed", 42.0);
+    bindings.set_uniform("volumeSize", std::int32_t{3});
+    bindings.set_uniform("speed", 1.0);
+    bindings.set_uniform("OCTAVES", item.octaves);
+    bindings.set_uniform("COLOR_MODE", item.color_mode);
+    bindings.set_uniform("RIDGES", item.ridges);
+    const auto surfaces = noisemaker::run_mrt_pass(
+        noisemaker::generated::bind_synth3d_noise3d_precompute(bindings),
+        3U, 9U, 0.375f);
+    REQUIRE(surfaces.size() == 2U);
+    REQUIRE(hex(sha256(little_endian_float_bytes(surfaces[0]))) == item.color_hash);
+    REQUIRE(hex(sha256(little_endian_float_bytes(surfaces[1]))) == item.geo_hash);
+    for (const std::int32_t invalid : {0, 7}) {
+      bindings.set_uniform("OCTAVES", invalid);
+      REQUIRE_THROWS_AS(
+          noisemaker::generated::bind_synth3d_noise3d_precompute(bindings),
+          noisemaker::glsl::KernelBindingError);
+    }
+    bindings.set_uniform("OCTAVES", item.octaves);
+    bindings.set_uniform("COLOR_MODE", std::int32_t{2});
+    REQUIRE_THROWS_AS(
+        noisemaker::generated::bind_synth3d_noise3d_precompute(bindings),
+        noisemaker::glsl::KernelBindingError);
+  }
+}
+
+// CPU 9f3bd6a Flythrough3D MRT captures from the exact canonical factory.
+// Both fractal branches use the same 16-by-256 volume layout and bindings.
+TEST(typed_flythrough3d_preserves_authority_mrt_outputs) {
+  struct Case { std::int32_t noise_type, seed; };
+  const std::array<Case, 2> cases = {{{0, 3}, {1, 11}}};
+  const std::array<std::array<std::string_view, 2>, 4> hashes = {{
+      {"adef3376fa9a909d1dc1ff7564d83858b449b997f152e0328c762ecf4e4a05b4", "94f9f7b4c9d734be9af5f3fe7a68e9cf7906a33e500f0a33ee2ff78a4b3d8c7b"},
+      {"932003ef0e9c720a1c803e1dc19f45c18182fce1fce153df8317beec8432fefb", "15a1d13f6e51975bf378dd4a137768cbbd5ce41e16e70c48fa7f37ebb4b8b231"},
+      {"b9a6e017dffc8c8f7f38aaa25878608d8d78cd1ec63bb0efb6d64362b9959030", "f61f623e39ba2e8d42cca47e9d944fff9cbd709169df30647a7fa3fa83bccf92"},
+      {"18c9b82004343c0c792990ea8dd7afc2ddd5b708b017462c42618e42ff6ded84", "2b32d86449a16aaeb1e94e5a52fb294ed1cd29d8be460d899bcf9e7f40dbdbae"}}};
+  std::size_t capture = 0;
+  for (const auto& item : cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+    bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(16.0f, 256.0f));
+    bindings.set_uniform("time", 0.375);
+    bindings.set_uniform("volumeSize", std::int32_t(16));
+    bindings.set_uniform("noiseType", item.noise_type);
+    bindings.set_uniform("power", 8.0);
+    bindings.set_uniform("iterations", std::int32_t(12));
+    bindings.set_uniform("bailout", 4.0);
+    bindings.set_uniform("speed", 0.2);
+    bindings.set_uniform("voiSize", 0.5);
+    bindings.set_uniform("seed", static_cast<double>(item.seed));
+    const auto surfaces = noisemaker::run_mrt_pass(
+        noisemaker::generated::bind_synth3d_flythrough3d_precompute(bindings), 16U, 256U, 0.375f);
+    REQUIRE(surfaces.size() == 2U);
+    for (const auto& surface : surfaces) {
+      const auto float_hash = hex(sha256(little_endian_float_bytes(surface)));
+      const auto rgba_hash = hex(sha256(surface.to_rgba8()));
+      if (float_hash != hashes[capture][0] || rgba_hash != hashes[capture][1]) {
+        throw std::runtime_error("Flythrough3D capture " + std::to_string(capture) +
+                                 " float=" + float_hash + " rgba=" + rgba_hash +
+                                 " first=" + std::to_string(noisemaker::float_bits_to_uint(surface.data()[0])));
+      }
+      ++capture;
+    }
+  }
+}
+
+// CPU 9f3bd6a measures both Physical branches without the unused inputTex.
+TEST(typed_physical_agent_needs_only_the_three_state_textures) {
+  const std::array<std::array<std::string_view, 2>, 6> hashes = {{
+      {"6bd212b6fc82c237da31785d2b0fd3f5df656f43773139dba8b28a9c8e0fcac3", "7b81f9241951cdaa4e64a9574d9bd75017ddd74c8ba3a0a6a90f4c60e1a1e120"},
+      {"e2f12d2cf4e51f9697483f6b611e570c24dd2e5e1d1d57ad1d3427c7b7b08f26", "c2534ecf83c71e0c5f192eacec428adbc0f3417b3b4847d7cf5fb04777042b6b"},
+      {"71aab86faa2c77d3f56e0f1f5e7d20a834e8ad649953420677cce6083fc60b16", "c6cef49f90ad59b7f2267cb6769f2a445064092391c0a666c2651fcb37b93229"},
+      {"a21abdbae8268dcb440f1705bc149cff2ab65d892a80974a6742261fc893959c", "a432ddbc5913396b27d3065ddc047599e50cfa89162403b472c8ecc3d1ecf09e"},
+      {"ce14ceb7a6d37c52d3a35f0cbd772b73ff144d671beabf1f147942967d330dc8", "304eeff9fa4fa5633a4e121bd60a0eaac1a3e1c8ef1d9edb90e77eb0b4041d65"},
+      {"71aab86faa2c77d3f56e0f1f5e7d20a834e8ad649953420677cce6083fc60b16", "c6cef49f90ad59b7f2267cb6769f2a445064092391c0a666c2651fcb37b93229"}}};
+  std::size_t capture = 0;
+  for (const float alive : {0.0f, 1.0f}) {
+    noisemaker::Surface xyz(4U, 3U), vel(4U, 3U), rgba(4U, 3U);
+    xyz.clear({0.25f, 0.75f, 0.125f, alive});
+    vel.clear({0.05f, 0.025f, 0.01f, 0.375f});
+    rgba.clear({0.2f, 0.4f, 0.6f, 1.0f});
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("resolution", noisemaker::glsl::Vec2(4.0f, 3.0f));
+    bindings.set_uniform("time", 0.25);
+    bindings.set_uniform("gravity", 0.2);
+    bindings.set_uniform("wind", 0.3);
+    bindings.set_uniform("energy", 1.1);
+    bindings.set_uniform("drag", 0.05);
+    bindings.set_uniform("deviation", 0.2);
+    bindings.set_uniform("wander", 0.4);
+    bindings.set_texture("xyzTex", xyz);
+    bindings.set_texture("velTex", vel);
+    bindings.set_texture("rgbaTex", rgba);
+    const auto surfaces = noisemaker::run_mrt_pass(
+        noisemaker::generated::bind_points_physical_agent(bindings), 4U, 3U, 0.25f);
+    REQUIRE(surfaces.size() == 3U);
+    for (const auto& surface : surfaces) {
       REQUIRE(hex(sha256(little_endian_float_bytes(surface))) == hashes[capture][0]);
       REQUIRE(hex(sha256(surface.to_rgba8())) == hashes[capture][1]);
       ++capture;
+    }
+  }
+}
+
+// Replay tests/fixtures/palette3d_reference.mjs against CPU 9f3bd6a.
+// The OkLab authority has non-finite lanes in three cases. Check their exact
+// bytes and counts, as well as every finite RGB/HSV/OkLab and boundary case.
+TEST(typed_palette3d_matches_all_authority_palettes) {
+  constexpr std::size_t width = 3U, height = 9U;
+  noisemaker::Surface input(width, height);
+  for (std::size_t i = 0; i < input.data().size(); ++i) {
+    input.data()[i] = static_cast<float>(static_cast<double>((i * 17U + 3U) % 101U) / 100.0);
+  }
+  REQUIRE(hex(sha256(little_endian_float_bytes(input))) == "439a7a7d771020b875eca113b34d308b5a5a534d98103f17b5c3fa702430f01a");
+  const std::array<std::array<std::string_view, 2>, 58> hashes = {{
+      {"439a7a7d771020b875eca113b34d308b5a5a534d98103f17b5c3fa702430f01a", "2363297bd649b1892d2a5a70f7e713b9fcb17e4d0b7758d0f3e4d51ba7cbc1a1"},
+      {"439a7a7d771020b875eca113b34d308b5a5a534d98103f17b5c3fa702430f01a", "2363297bd649b1892d2a5a70f7e713b9fcb17e4d0b7758d0f3e4d51ba7cbc1a1"},
+      {"1369a2f7f628a234098afb897ee57b6eb7635af4ce8818aaf9d6b1d652ab6eb9", "475d6ef918c1be2692b61ae490123447f8af7da5efcdc7dfad467278613cd6df"},
+      {"2be17400c5d5c37af1718bad3ffc3bd9644a4e888c9978a117ad1cadb77d75b6", "a986a528aefaf9efd36be4dce3568aa3729025d762778fe2fabfe51e9ff45a70"},
+      {"dfe0b31905ddbb8e40517ec8f13e386030408e1ad527a05d1ba3d998e83df6ed", "0e505a24759b8fa26db271479b78d3ef82aa0af3c1eacde76d6daca52db2a627"},
+      {"8c941f987f34a3e1cd93be2d0dbfa2d613a54f4c2a5c1978de3b1f89fe2fc363", "682594c9130296dde41a6751c81b3e06d7dde4457d6fd4df9224aa2c6241c166"},
+      {"7ea1002c114c2cac3b11fd141f848464ff42dcfd2954ca33c615aaed01c5961b", "0c6923db181caf30eda40ad0a1c3a4b72566b5364d39fec8fa71e9ce32905a8c"},
+      {"54592bf25580b963caaf8eb978918029c14b5d846fccc1f948bb6799c22a91cd", "bed305a3df8b819baa341372157fbd75c2de5c79384945919cd60d5a96cc4049"},
+      {"519f998619324fa96f25530a4070c25bee5ae213d39a0e05f9ab44c1edafe5b6", "b3b8195c506224e55dc4ad2442ced0df986810b23d80b15aa74d02c474c633e2"},
+      {"25afbc2621eddf95e853102a33a2f86b6df0a259c7bd2dab338d46e6b58b3c21", "71d97bc22196053dfbcd19428d151efcf185e7c85eed4ec599da16f3f468306f"},
+      {"a2bbc7af6755e8da995a81848dd9c95435349cc15f6699ff26ed449a12e0cc6a", "869d07d907a19d0ecf825e673e713046197e9c375bf9f0b54acc12ad38013838"},
+      {"151bf63c26dc47dd4cbb74a5ac1e3a02da10047b26e22df41945b90ad152d772", "790836edec6fa4a8fb120d232b9c1fe7add7070a090c03788a5405f93b027d5a"},
+      {"9af60dda1c3160869fb2d51584c0b4469e254a7ebeb1b0d04df190fadcc5345c", "c0f88957c7465b01cff68177c1217b1b85fe6b6a693c548b52c0ff262d32b05c"},
+      {"5129dcad8cd0844fe63762b09f6cb9a6675ad6b4668d1f653b63832a2f12fe47", "469e0475f2d204e4bfdae31447f14fa647ba2facc53a1912e38ba4325f3a1ec2"},
+      {"e3341bf2194851f679a4d83132365e5be96b8c42b1283eb84e98abc1161137bc", "95fbada369e2b30b1c0e314cf270414ce013b3e8e5267beee662f3210358b5ec"},
+      {"68eac3b1e6814d1ccdd1416db9572bb032348d209d79616b45cb580a9a6645f6", "1ef4ebedacd34f125ef0e8def29db10af304889f0ded6d58581a686f5c967fd4"},
+      {"3ec5cdba8dc4b877f992542c467bd99a57fb1a2f8759c7fc0081e03412512e6e", "10568f461a5f64b6a464a528e3fd930623f750058157512b1afe20f42363b156"},
+      {"a750f61691d9ab7af522330895eb1b3e46a1cbcbc8d9001b9ca3a5fa015d4d4a", "dfe5bd2696511b4a596fdcfedf081cd5bcf8bbb0b15fde25559ad76e38e15f8f"},
+      {"44ba53832bb73692a83e80d6213296d287c6d63c50c11197373af2518e792aab", "8bbfb06196e8658a0813f427c19cf6053ece5e610ca8b31fc117202a08515ebc"},
+      {"f1b0cd71e391ba39f33695b64a53837ea51592341c07a66473a30eae0ca3bdf9", "eac42575d1e08d426de027418bdeeecbca40138846d6ae5e2461f0a5d5466c31"},
+      {"409dc817797535ecb16e914e0e6750d8ab4e15f4bfeea7cb1c142c77f2714c35", "beaa01431c6b6263cd08445056ab2c2495b7299b78616b7172ce93dc2062f439"},
+      {"f78c5684ac8163065e3b8d040edaebfce97e60ba8936f79b11765105b6305f47", "94a894776462746197f57ab87a781685cdf5832fd364f5269a23c9de7c71f6ed"},
+      {"effff57013b85a8ee6c72facd3245b6a7718152939232dd98fedc9ee092fad59", "34c47122d51b71651f3491f1004a923d5df563dedce9b946a2cf345585fd056f"},
+      {"a826d90cce755e1c3402cf3be8a60bef1d08ccfb5c377b4f24233f406639158c", "62513e44e7b450ec5c22145e5ebd82b121164159be2a7d61a154ea8214d6b475"},
+      {"dbcb6a5b1dd2e579ffebaaa13dc5a2e3e114fd44b8dfd7b24b43dee91d604caf", "b9fb3d3324ae143c4f5d2ad300ecbab1802e813c2b7e2d79df81d5614ec4bfb1"},
+      {"a8c76222dcb20f3f4747922f9ff3dc96436f7f58dd0ae4a4e79f8bce8e8c28a7", "d278523e897f82c9f692e74e3587333b064e12969298b57a895b33fa7c2b9219"},
+      {"d435aea6cbe9cbf20cc4b135fcb07194cdd348a01a145b260d0e6c657c41d63c", "3396c2896ececcb024a9ea1cd2ec277fe5c54674892a173858a0c056b3f6e73b"},
+      {"60fe2078b477a8eb8a8314cc1ce0e657f38160951280b27a30e6e7c4b572f04f", "8535629d22a0ea1660c320ff7559dfa5db4a6b89d23ca691b482707deed7a12a"},
+      {"f2c2606eb47726c221fc3a80c4d92f7419d40a0f0ea8960fe9cff837afa056c6", "196b4f77b03bb15192f972efdf84442b7cb22e61277ba8c269fc578de7d532e6"},
+      {"758b58e39f78dc0aff44c5e1468bf6ff59376ddf140870097b0becfb03589c57", "dd7a02d949457a194065c6a418fec0ca9b49d9a0c28c4db8e10867aa78233b18"},
+      {"46712b4f7db5d370d2eafa57a994e596809e601d2506a50b8653a85170a8457b", "d9534798bc290f62d5bba6ed11be5e5b02b3c5d917b17a0dbf9787ac29b0593d"},
+      {"1413a755c3264121f4311644470c8dc027c0c48e66fe234542d2ea1b10410099", "2fc95549774634971335f56cd505a04c7b0cae0336985cec0e82ba2b81116ded"},
+      {"c08fa7b97b2ff587224feb05d540b86e42b47710ab47e68adc89429b02715552", "1396ff6f0db7ad9237852be68c26156d6aae6c177dd4236f443603d45f52bfb1"},
+      {"b8e8e82d62e8ca601412747b2b918ab9e4a6d7e6d803c0a9fddc8e07c5bc48fc", "6d23d560bee673058d57f0f74d9c9bf8ae1380929f3aa324a412df53b77cf586"},
+      {"603bb2224acce078483d6f910c2865cf71d98ab004ab2915c691caf23875365a", "93a98bc330cc9f2d128fbc86cd0f4f54a831fc4743f05aca2db68e53dc75fe75"},
+      {"064da20369906e3e9f48dfebcba0287b51487b661552c21f0bf279edff7d11ef", "d330fb3c03bdb191512ee0938aa14d9f59825c94fd5736b09e10f2591fa326d6"},
+      {"1b1c0cf76aedbc8503f2275128b31fee2ba17a753c94194f6a2deb82f5fa1243", "0c9f1fe8a9f7772ba324744d98d35ff2d3f4ac63680de6320a9ec6c61acb9d4f"},
+      {"2b2171049c2447dec2b079ae7a808d0c1301a5cb7d7148da9e7f57e0172a37b7", "3db1fd592c75d7ba6e7ed349fd872eadf3ebf97c1d2ff4e6334f693fae22d195"},
+      {"f29e612f2b908875624b1563459fec4f25deda736e30384fb26bb40ac43efd83", "b9a9b9fa2569891b6da0b3febb6c98631f592dc73b4108faa3fce6663a7670fb"},
+      {"0d5322cdce32b68b7ca3605a45819c717d6e8e461e24e41b297f59ceeda84b3a", "9a1f3990738748aaa0c4fcbb9a859b1e2296e3add77c9cac640a574ae365008d"},
+      {"983fdf564134e6f1df8b9c49867085fd90407b4a4e8564059f4c476ef7f88ba2", "9781f7844d85176e3904267cff72a4640b6960e4bcbd0073148bb35ac5c7bd8d"},
+      {"8f13b0763c9cc72f5c3191aa33124a7ccd063226f2d9534df0408b551970d832", "290801c8b6651a5d3c626e58dec067770fce74e1a030b293daa5c79911509c42"},
+      {"b1b9f3c78b0a04ccd271cc472427148467483b4987beaf362788a0c0c9f34942", "13f1dae654edb743dde7e6eed30114ef474185f0757d4506e612b87a02f1635d"},
+      {"b1bfb8c58662bd443135f1329c1fea681cfa9cea426627f0cbb47fe5efe56baf", "1a0b84a3cba0a8c603ae72b3c15ea99fb4422555108f49d7bfd792c68abd0e6f"},
+      {"4002fc9430d0321ebb1542d3f88a362e1bb4b03bc915b94cbd46ffa4dc6200c9", "3659de411fd2e0a2ec1ce6251196aaeb38385f26874caf4653bdc293ed4be688"},
+      {"a9d1a0ed57166ae0bb4218e91498e70d5ed7daaf214275a18801f044da3e8ef7", "549afccf75b11948b255f6012605b15ffe1fb559d30e01f3e781a00046755a6c"},
+      {"fc0c7407be36294719fdd5e52291a678fc5cb7e87c694f10dd3f5f03ad945128", "ce2ce4de5127c0cac49fee5131abb3224a055d79d7705febc6f36d60f89857c4"},
+      {"f1c38a8cfc793d19d06e0828afa78839f161726f8247b556c9a8c19a14d18bda", "7ff5766de9b6a9918ee9da11a17d000b59a897aa24ecd91edb4dc3e7186a397a"},
+      {"068cce246cfa79769147f02c5d393c1cb69bf8d4a4595076ffcb24860be6a393", "2cbaba44b8357a707af52417d1436fccc06de4e085e1e25ed9615d7025716260"},
+      {"db39a6c7b3ba5b24579fb46de84e746f1448c5d2264c45484c2f29a049460a69", "b5111ad8c5f69b30054d4480dbae7e2d8602bf9a6deabcc7790686db927a0972"},
+      {"18f061b491eff097ebe2134746d811834767b6d2013903c7c7c91c3fb0b2f885", "157d96fa692ea7dbd0d23ced9c81ebc15a29b124c89559b4d786ba002344779b"},
+      {"4c4c04ced09d7271533d77b51981881ea02a93b8d583407255677f25064a6368", "79b545708f7f6b06c702d28f71aec32ce43a3b08cbd31db76d5f5a79646fd1d7"},
+      {"79b751567fc4daeb57aa5a749091485a49f4f6c1fbaab0e1a3a132628a63da69", "b450ca84510840510b02d17d30af1a1f7402904246abe1b94ab87be470262ee1"},
+      {"4c2765ec667ff2a36166115e9977434d304c1a6c33475eab0e3858a224bed3e3", "a396ba57305eb15567d17ea198b46f135fef31529c8d0a6b5a3989e4f52cef76"},
+      {"b1d1ec08ba27e349e4e3b3008d24528ca48c9c71792add3ce0951c67a70ddf16", "e8c9a0dc4a2a02bd3fde38fd3afc74c0a56665beef1ea0eb532b0317777abb40"},
+      {"6cf29cee9ca10eb61829b1b0bc7d46529b780c8a3485f83267b026bbc0ae5984", "43e99a55444d8e3001a377ac6b28d1e68ff15d82b37df079475d116788074cde"},
+      {"f74ebf5b1038d83632168da96a57e8ec05cc518c44f1c435e0a3e5bef1ece616", "932fd50d39af2358ce8b05de3e41ef98c4b44c411801b05c1c8a10848554dd6c"},
+      {"439a7a7d771020b875eca113b34d308b5a5a534d98103f17b5c3fa702430f01a", "2363297bd649b1892d2a5a70f7e713b9fcb17e4d0b7758d0f3e4d51ba7cbc1a1"},
+  }};
+  const std::array<std::size_t, 58> nonfinite = {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 4U, 0U, 0U, 23U, 0U, 0U, 0U, 0U, 0U, 0U, 19U, 0U, 0U, 0U, 0U, 0U, 0U};
+  for (std::int32_t index = -1; index <= 56; ++index) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("paletteIndex", index);
+    bindings.set_uniform("rotation", index % 3 - 1);
+    bindings.set_uniform("offset", 13.5);
+    bindings.set_uniform("repeat", 1.7);
+    bindings.set_uniform("alpha", 0.65);
+    bindings.set_uniform("time", 0.375);
+    bindings.set_texture("inputTex3d", input);
+    const auto surface = noisemaker::run_pass(
+        noisemaker::generated::bind_filter3d_palette3d_palette3d(bindings), width, height, 0.375f);
+    const auto capture = static_cast<std::size_t>(index + 1);
+    const auto float_hash = hex(sha256(little_endian_float_bytes(surface)));
+    const auto rgba_hash = hex(sha256(surface.to_rgba8()));
+    if (float_hash != hashes[capture][0] || rgba_hash != hashes[capture][1]) {
+      throw std::runtime_error("Palette3D index " + std::to_string(index) +
+                               " float=" + float_hash + " rgba=" + rgba_hash);
+    }
+    const auto count = std::count_if(surface.data().begin(), surface.data().end(),
+                                    [](float value) { return !std::isfinite(value); });
+    REQUIRE(static_cast<std::size_t>(count) == nonfinite[capture]);
+    REQUIRE(hex(sha256(little_endian_float_bytes(input))) == "439a7a7d771020b875eca113b34d308b5a5a534d98103f17b5c3fa702430f01a");
+  }
+}
+
+// CPU 9f3bd6a reference: tests/fixtures/local_vec4_reference.mjs.
+TEST(typed_local_vec4_arrays_match_authority) {
+  struct Case {
+    std::size_t width, height;
+    bool temporal, empty;
+    std::int32_t smoothing;
+    double red, green, blue;
+    std::string_view f32, rgba8;
+  };
+  const std::array<Case, 53> cases = {{
+      {4U, 3U, true, false, 0, -2.0, 10.0, -0.625, "d1041bc8f1731c20ce2371478c898daf3dafc2c01958dcc353d1c95f9edfadc0", "964f32a6b02a624b0cb403d6af89f0578ca55b19b57f2f97717f1fe3c845fef5"},
+      {4U, 3U, true, false, 0, 0.0, 8.0, 0.375, "f18ac3889d12e6065e66603ea5d963cc3aaeb7c32d1cd2ab829ef89cc6fe148e", "8bb3c465f73457e3c7cfc5d2e6ad37eab593f7fbcdc7780b7908d5764bd8cb77"},
+      {4U, 3U, true, false, 0, 0.25, 7.75, 0.5, "11a692ab8ee8e6e73db1edcd3ee27c5358239c26932ab2e6ad81cafb07e1e285", "f4c06e3337ea2491cc1a53827887b661da37e6c8e65a7c30b712011f88aaadd3"},
+      {4U, 3U, true, false, 0, 1.0, 7.0, 0.875, "d885195e74da615ceb13b55e6cd4884ff8da7071188ea8a83342aac37917a973", "d2208b3f923c27a4ec04691ed68041df9bf3529b9f43e88abcda1c73ef3e6485"},
+      {4U, 3U, true, false, 0, 2.0, 6.0, 1.375, "74a5b0e9c0d39bf2941211a0f46d721dfca10fa128d281dafd5b4e145701d90c", "c380f1da2a9f53fef97dabbaf35b8dd2608984fe7a8edbd661dabf7b997eb599"},
+      {4U, 3U, true, false, 0, 3.0, 5.0, 1.875, "9cf54fb119f3ffa4e160e45c1e834c62b6a42035794fef18ca0d5c845e42e2ad", "a8599a0e2e4dc232c4d939c3ae32df6dc7bae2fecd2c15f6bad54077baec3a68"},
+      {4U, 3U, true, false, 0, 4.0, 4.0, 2.375, "ef55898c54e21989cb9e41c5730b797a0e59943d5d09607dc7bfb234a49a155e", "e1326daa0ad935b9e5e5af6c6f91d07a05d9ee41e3a4524c0e0aac3b8d09cd00"},
+      {4U, 3U, true, false, 0, 5.0, 3.0, 2.875, "b511533af66eda2a9e2e218b0adb282d7a66caa9bc678c3ac3cf57d06593d5ae", "cc9e8365e3e710dfb922cad362d95a8f70b8e83f5a22e2a2d6c44146ed3d12e5"},
+      {4U, 3U, true, false, 0, 6.0, 2.0, 3.375, "4f338e1e1210b53f0de239438f113e2221b060c1031d7c3c87766039432c1b94", "d8f519fad2cdcf357113e778e76876039c9bf8590efc0ca71512c32a2b0876ad"},
+      {4U, 3U, true, false, 0, 7.0, 1.0, 3.875, "0f17eab94418f5bf8b27a4c24e2ba8495d9141665900578e65f375ad438fa518", "2c2149e69d331bbef34020f7fbd863b353c343a2e5d8b003343b8bdfd618f7bc"},
+      {4U, 3U, true, false, 0, 7.75, 0.25, 4.25, "f9c738551f2614da41d6661b5bcaf836028f82e3f639a49763c5257587b5dc18", "327912a05961a2b4fd2900bf80b445e45d2c5f0613885e72c6cfb50b09a36012"},
+      {4U, 3U, true, false, 0, 8.0, 0.0, 4.375, "d102ce6deb0aa3a92d8b13a6a9af9dbc056a8b4fe9de79300be51e28845e80d8", "a151691179c20feb9dd0a7ce390820973aa8c4eb9c15f5876929dea6919b35cc"},
+      {4U, 3U, true, false, 0, 20.0, -12.0, 10.375, "488f72ae059e14d2b83ddf600aab00a5f2b14495bb78b00678377e4fbb555900", "08468cb006df18e7e558086d2ccc48a8aed01b77876b4100a8c499362d97f146"},
+      {4U, 3U, true, true, 0, -2.0, 10.0, -0.625, "a572d308560e48a72d1a6e91e2e41565679dc7633af724e48fa6cd626dbe167c", "7e2a877b43aeb09f1c3f4fb16512a9b44756fdc8fef86ab417d29062849024c9"},
+      {4U, 3U, true, true, 0, 0.0, 8.0, 0.375, "9228306a69bba1a924e689db3dbd398698e0a67d9025acdb3c3c66cf13aba9a8", "aad1e2b5fd757cad4aa2ecc62194f2fc7519bbf0e17108a2a5da50cd673468c5"},
+      {4U, 3U, true, true, 0, 0.25, 7.75, 0.5, "1737e5b5055f4a17d95d3c8823ae9897f94e769088ec2c5d6c8e7a7e72dfadb6", "9abecbaa845c7c4b418b3417f952f343dc26b84314f3042ccbd77cbfff5071f3"},
+      {4U, 3U, true, true, 0, 1.0, 7.0, 0.875, "5428eb6fea3c6e814a86a167af4c1d25b07560688edf6dc7ea3395a7c70e8b51", "7f9d50ea42c039996af28d19fbab558d3c1131f1c3131f142b5f194fde65097d"},
+      {4U, 3U, true, true, 0, 2.0, 6.0, 1.375, "9b4a7951c488f11161de13b7a462a979df385c11eb4cb6e1ea4aefac9ede64e0", "fdf24715eea6be035d5bb47fa81b4ab860d543b58a0eaac4e59f923278e6601f"},
+      {4U, 3U, true, true, 0, 3.0, 5.0, 1.875, "c014fd658b4ded6e8ae7c965e1aba4a521a5d69ee9459637ba12aaca8cea635d", "9f4198fc961a7e05272387f8990a9efb424aed84400c36e500e7acd0a3c4010f"},
+      {4U, 3U, true, true, 0, 4.0, 4.0, 2.375, "50632694ad46d79e70b0e406ba9faa62f267824540828d280be08501749aef51", "43b3469dd91b4083b9773c6940ac7b77cd63feea5480f4121ab26aca82bee03e"},
+      {4U, 3U, true, true, 0, 5.0, 3.0, 2.875, "e535f138f9666662d1ef184f53b70cd50b6df38e5035c7b4d3942ad1257ec824", "66bd4b54d5de859420f9c69a8056b853ed524cedc25345dc9cdc8317c7aba9bd"},
+      {4U, 3U, true, true, 0, 6.0, 2.0, 3.375, "a181a4ab0336477e635df03667a247c471d2f8eb66babb412da1a7c8507bce76", "304e2e452de6f4445e0942d2d9c2ac30c20af790ec0bdddd950c0ad13d689ceb"},
+      {4U, 3U, true, true, 0, 7.0, 1.0, 3.875, "6a3ff30727b8b9b5bb940ef493536bfc8a86efe04526e7a91966020f5f110a52", "05b6ad4a2e396dcb18ecd9f682ee763d370f053ce64ad3198e555e5ba22d0111"},
+      {4U, 3U, true, true, 0, 7.75, 0.25, 4.25, "c68f3f9efbeb3ce79d591ac020e70c276fa751b5ebe704a1369a05175ac60b8e", "fa5ba821dfd76c164897baa3cf0a88ff3a0612d602cb1c9bf03f0c08fad84bfa"},
+      {4U, 3U, true, true, 0, 8.0, 0.0, 4.375, "79a9c962ebea3962ad3aad47ddb269dfe53502e215e931dd93305986e5f99696", "9f35346e2426edc3a0de274bad2174dfaa4a55fc7b4d959dc27ea93980015824"},
+      {4U, 3U, true, true, 0, 20.0, -12.0, 10.375, "873a0bc1dcc70ee25ff265d3e7dea901b6797757e846de715890cd514511f5a6", "2c1c9ac6a52ef030ae901e987f98014a75f651ed0cb1993677022a21aba0c2eb"},
+      {13U, 11U, false, false, -1, 0.0, 0.0, 0.0, "d954756d500315986be8ff51c41d1f2e887597ce3290909733bb5382014c8672", "dd108804d4efde0184db42b45fbf30bb0456fdabf880aee253ca1ff7801cdc24"},
+      {13U, 11U, false, false, 0, 0.0, 0.0, 0.0, "89bf3ebbb2b3e4f9315d5c7cdf7c4d7078b877f8649fccb53dcb45b1119a776d", "e1b9228c36d72cdf44c12345af680cdb0d540e93e34b743e4d1fcf8338a3c9d9"},
+      {13U, 11U, false, false, 1, 0.0, 0.0, 0.0, "d954756d500315986be8ff51c41d1f2e887597ce3290909733bb5382014c8672", "dd108804d4efde0184db42b45fbf30bb0456fdabf880aee253ca1ff7801cdc24"},
+      {13U, 11U, false, false, 2, 0.0, 0.0, 0.0, "d5ce7472309d2f4f3abb4abc474582aa57d862603043f82e832e2953e2e86a69", "c7478aaeebadcc4ca6371abcec64acaf0a7bd944cea7ba43107abfa43b741de9"},
+      {13U, 11U, false, false, 3, 0.0, 0.0, 0.0, "0f21338d7ca55c1a085f5665479ff690a6713e2b961cccf2c382abc66a9651a3", "00af164bc2055153045c2f0441a791e3fb00b4586c0407e35c8568dc7a73ba3f"},
+      {13U, 11U, false, false, 4, 0.0, 0.0, 0.0, "f6c4389f1a4d7e5b964543b4c54cc4ea1fd27fb90d0fceda4a5b7ae561e41673", "86f63df80322b5b1e41e58f73413687f24d0859797d77954acab2be7d34cec67"},
+      {13U, 11U, false, false, 5, 0.0, 0.0, 0.0, "438bfd04d2e68d2a7fda649e791e317e8d4872a37da309bc9c0e629510b3aacf", "562aaabcaaf066b36f100cc7bcb87bc99c1b5ff1cc35e950c218e547c99730a3"},
+      {13U, 11U, false, false, 6, 0.0, 0.0, 0.0, "aae87cf24562d62a7643f4cde50c10d00acc838e8e23c3a78eeceb24e059ce08", "b878cf8ce102109971570d6624c505574123988a4c3f6a0d35b49b59df78d596"},
+      {13U, 11U, false, false, 7, 0.0, 0.0, 0.0, "d954756d500315986be8ff51c41d1f2e887597ce3290909733bb5382014c8672", "dd108804d4efde0184db42b45fbf30bb0456fdabf880aee253ca1ff7801cdc24"},
+      {3U, 2U, false, false, -1, 0.0, 0.0, 0.0, "d24b539372990fc6ef3190e82cd0645b80b6c7aafaf4c738f216d5975b018a05", "016631275b9d7f1fc01aed9ccc90b125005d9f847435692aa00e78d05b13cca9"},
+      {3U, 2U, false, false, 0, 0.0, 0.0, 0.0, "c68ec85ffc53bc8d18ed7f217a6c689a9673389ebbc9a133ab2207b602a1182c", "f8572dbf4e34cde9579031938167f3179e321bf6e9bfb777aace9b8bc63c4956"},
+      {3U, 2U, false, false, 1, 0.0, 0.0, 0.0, "d24b539372990fc6ef3190e82cd0645b80b6c7aafaf4c738f216d5975b018a05", "016631275b9d7f1fc01aed9ccc90b125005d9f847435692aa00e78d05b13cca9"},
+      {3U, 2U, false, false, 2, 0.0, 0.0, 0.0, "d5cc8556eaff21081ac761b841ff40b30780b5948bbcc3b84ef03c6f30e7a5f2", "8fd8f369a83a4db03945a6c259d480a87cece45500207dc2df103fce8bb856da"},
+      {3U, 2U, false, false, 3, 0.0, 0.0, 0.0, "a2de4b5db08a5aad5fb68c95231a1852dbbd7bbb8122e3cc0a45e6e5102a118f", "b2fdac28bd59d93e7f9f95786fd16d4dae8d20c08a38a641e654c3ab1659c7ab"},
+      {3U, 2U, false, false, 4, 0.0, 0.0, 0.0, "a64db4e8a04562f39acfef5633ce4c5f7b19b64a17b836b59287aeab52261453", "0b257502f18df01e60a54854e693bd96497395a4ea64163d47636c328988bc55"},
+      {3U, 2U, false, false, 5, 0.0, 0.0, 0.0, "7fc4a9ed2d6d38155a0eda69259991649620861ecb74dd86cd7faa611d759066", "dbd495dd7ace2fd8264ce61bc12b235c25d09bbc244c099c9e665811b3901a9b"},
+      {3U, 2U, false, false, 6, 0.0, 0.0, 0.0, "e57eb15e383bc930b343c95e551b3e34c7c39df9c4cc2bcc9b4363bff123cda4", "3c4af1cbfc9e74c9a10bc9f207a2c1cc674c4ea5f727803fbd4b739b026b30c9"},
+      {3U, 2U, false, false, 7, 0.0, 0.0, 0.0, "d24b539372990fc6ef3190e82cd0645b80b6c7aafaf4c738f216d5975b018a05", "016631275b9d7f1fc01aed9ccc90b125005d9f847435692aa00e78d05b13cca9"},
+      {5U, 3U, false, false, -1, 0.0, 0.0, 0.0, "1e5641939a7fe5a8820756c494832716f6e81d0665713fee6a4e4c9bdacedb47", "bd7f7360ca293e83e1ff6075c477956c79a2f66661e9b9acdb92109d825fe06e"},
+      {5U, 3U, false, false, 0, 0.0, 0.0, 0.0, "7ab38275ab8380b745bd01bf4a5ecb9acf627c3103d60e57240b828b1267c6d4", "bd7f7360ca293e83e1ff6075c477956c79a2f66661e9b9acdb92109d825fe06e"},
+      {5U, 3U, false, false, 1, 0.0, 0.0, 0.0, "1e5641939a7fe5a8820756c494832716f6e81d0665713fee6a4e4c9bdacedb47", "bd7f7360ca293e83e1ff6075c477956c79a2f66661e9b9acdb92109d825fe06e"},
+      {5U, 3U, false, false, 2, 0.0, 0.0, 0.0, "771541bfe5382733959a1b8b0d6770f1121459a42e028a6514ac3f810d9afa8d", "bd7f7360ca293e83e1ff6075c477956c79a2f66661e9b9acdb92109d825fe06e"},
+      {5U, 3U, false, false, 3, 0.0, 0.0, 0.0, "f22ad4aff22b3936dcdbdf652f456c22dde32b0da98814600d108a647dda631e", "bd7f7360ca293e83e1ff6075c477956c79a2f66661e9b9acdb92109d825fe06e"},
+      {5U, 3U, false, false, 4, 0.0, 0.0, 0.0, "df25bcd37eaa5a929f08d35b0168989ab5e00af374cd3f3b68c10939311df36d", "bd7f7360ca293e83e1ff6075c477956c79a2f66661e9b9acdb92109d825fe06e"},
+      {5U, 3U, false, false, 5, 0.0, 0.0, 0.0, "17dc76a53c0835cdc445c1366034b327b38ab56174f12450c419a10f53ee68aa", "f540f81b6fa6134c1157b849c9a5af30249f885db30bbd0a231ffedf0107af03"},
+      {5U, 3U, false, false, 6, 0.0, 0.0, 0.0, "857ab004b47baf372dee0a6b596acb6d3acb0c193c3b7e0b9739350f89a987fe", "62c86bbe163b6748362737a43e24a99f943e9da4124122562f36c76b5b84da4a"},
+      {5U, 3U, false, false, 7, 0.0, 0.0, 0.0, "1e5641939a7fe5a8820756c494832716f6e81d0665713fee6a4e4c9bdacedb47", "bd7f7360ca293e83e1ff6075c477956c79a2f66661e9b9acdb92109d825fe06e"},
+  }};
+  auto fill = [](noisemaker::Surface& surface, std::size_t frame, bool empty) {
+    for (std::size_t i = 0; i < surface.data().size(); ++i) {
+      surface.data()[i] = i % 4U == 3U
+          ? ((empty && (i / 4U + frame) % 3U == 0U) ? 0.0f : 1.0f)
+          : static_cast<float>(static_cast<double>((i * 17U + frame * 11U + 3U) % 101U) / 100.0);
+    }
+  };
+  std::size_t capture = 0;
+  for (const auto& item : cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("resolution", noisemaker::glsl::Vec2(
+        static_cast<float>(item.width), static_cast<float>(item.height)));
+    std::vector<noisemaker::Surface> textures;
+    textures.reserve(9U);
+    noisemaker::Surface output(item.width, item.height);
+    if (item.temporal) {
+      bindings.set_uniform("redDelay", item.red);
+      bindings.set_uniform("greenDelay", item.green);
+      bindings.set_uniform("blueDelay", item.blue);
+      for (std::size_t frame = 0; frame <= 8U; ++frame) {
+        textures.emplace_back(4U, 3U);
+        fill(textures.back(), frame, frame > 0U && item.empty);
+        bindings.set_texture(frame == 0U ? "inputTex" : "h" + std::to_string(frame), textures.back());
+      }
+      output = noisemaker::run_pass(
+          noisemaker::generated::bind_filter_temporalAberration_temporalAberration(bindings), item.width, item.height);
+    } else {
+      bindings.set_uniform("smoothing", item.smoothing);
+      textures.emplace_back(5U, 3U);
+      fill(textures.back(), 2U, false);
+      bindings.set_texture("canvasTex", textures.back());
+      output = noisemaker::run_pass(
+          noisemaker::generated::bind_synth_navierStokes_nsSmooth(bindings), item.width, item.height);
+    }
+    const auto float_hash = hex(sha256(little_endian_float_bytes(output)));
+    const auto rgba_hash = hex(sha256(output.to_rgba8()));
+    if (float_hash != item.f32 || rgba_hash != item.rgba8) {
+      throw std::runtime_error("Local vec4 array capture " + std::to_string(capture) +
+                               " float=" + float_hash + " rgba=" + rgba_hash);
+    }
+    REQUIRE(std::all_of(output.data().begin(), output.data().end(), [](float value) { return std::isfinite(value); }));
+    ++capture;
+  }
+}
+
+// CPU9f3 reference: tests/fixtures/depth_merge_reference.mjs.
+TEST(typed_depth_merge_matches_authority_sorted_runs) {
+  struct Case { std::size_t width, height, run; std::string_view f32, rgba; };
+  const std::array<Case, 22> cases = {{
+      {1U, 1U, 1U, "09203f82f606913691c5a5dc9ddef3e00f634842cc2f5584fd0f8dc58368c728", "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"},
+      {5U, 1U, 1U, "33a876f4e452576182846b2519a790e246628b3c31cc572b6354598dd1be9301", "62fa7fcd8442dfaca80b482623cba3425c4309a3944829ce71ad15b4f848fb76"},
+      {5U, 1U, 2U, "ee64a254146c8e05d72ed04916b0679e0524b36ed0ddbf388473e637e09d9570", "49cec0146ea98572242694ef630c20227a6ae28edccf32649c60fd1daa21d618"},
+      {5U, 1U, 4U, "0f5681039ac846ce306c876a1871da53b800d34cff0a6d06fd3bc02d07e58e0e", "49cec0146ea98572242694ef630c20227a6ae28edccf32649c60fd1daa21d618"},
+      {5U, 1U, 8U, "0f5681039ac846ce306c876a1871da53b800d34cff0a6d06fd3bc02d07e58e0e", "49cec0146ea98572242694ef630c20227a6ae28edccf32649c60fd1daa21d618"},
+      {3U, 3U, 1U, "db6691f67e1b8b349f61931568a3981e4c846d248eb3ddcf71a6eee3e56d78c8", "533467ad2626f132cd4f4d347614bbcc3d12092cacc451eb551c6048d42713ac"},
+      {3U, 3U, 2U, "03b8aeb3c0a00dd06d6522691e098cc60da7c9b783a67aa471328797a819d45d", "8b173198596317aeac65938ab9688830fe51c560416b751251fdfd7c243938f0"},
+      {3U, 3U, 4U, "b045d76f1bdaf5fcdbea52a49bbcfbd2878abafce62aa0ab2053a72549cd004d", "e1920b44d90fc3c35b2f32e7021c4e5b080860060977933563dbd38a524b2aa1"},
+      {3U, 3U, 8U, "6ea2ad63fb2b07837c634768bc05f7de9e288ba25e178fb9d2dc1b172863a252", "e11f1f71c67819b04f4c92cd95a95143eb113f04c481dbdbcc492120f66c8a01"},
+      {3U, 3U, 16U, "6ea2ad63fb2b07837c634768bc05f7de9e288ba25e178fb9d2dc1b172863a252", "e11f1f71c67819b04f4c92cd95a95143eb113f04c481dbdbcc492120f66c8a01"},
+      {4U, 3U, 1U, "22642f7af9ba8bd68a9fedcc7bfba8aad3d1a15e631d570e5f667fa4bdf5b6c7", "63524cb8248c879014c2099c98c85b9cc992529dea997cce2aac9949676f7432"},
+      {4U, 3U, 2U, "b583f767ea3e2c4ca71b5999dd7577fb012dd559ec0b83661bec7fe8ad4bbaa5", "4442dae295bf8e6c067bd3693ea9ed81c7087fe5705cc4d1ad36d1b483a1958c"},
+      {4U, 3U, 4U, "c85ebea91672a629ecbdb2fd4c4298f65474503481c06dd164fcad9dae49da4e", "a9304a0a51aaa80ca9851797dff15f21a91432675511d5e0c75651a1794b8f74"},
+      {4U, 3U, 8U, "b6556574eb1e2abc88aad6e632f84f4bc74cee9859d6d38576daa22c46173f4e", "b8ad0036398a7b1fdd5d2cf36ec456b1bfe6e85ed89c1a9d904ae069acbbcab5"},
+      {4U, 3U, 16U, "b6556574eb1e2abc88aad6e632f84f4bc74cee9859d6d38576daa22c46173f4e", "b8ad0036398a7b1fdd5d2cf36ec456b1bfe6e85ed89c1a9d904ae069acbbcab5"},
+      {7U, 5U, 1U, "e822cb923f92fd21823c533e4f75613555496c440d6c2a5aefef4bdd893b630a", "04d983e1bb3d5cd4239da55ac0e89f4a1772fb0749fad275c433585ade05eac6"},
+      {7U, 5U, 2U, "50d752d0847edcc450fd75de26b7bca9990e91d0ef734e5310db783c012c4534", "ca89e78727980e2fdae40f7b9c1523ef2110d95936aeed217e70b7ee09522331"},
+      {7U, 5U, 4U, "4e3ffe35a0654b5cffa65daa4a2a6c45ac1f41c94c8c417ffa06dacbc584342a", "e46e7dbff0c655e9ba1b8a0b10879b1ffd03b8454d626adbf504385e96401ae7"},
+      {7U, 5U, 8U, "60abd85df2c9c93b96e6fc01584c206fee0f0c688a54fe92433c5c09930fc65a", "a1cb2544f4575a4bd071cd089c48f55c6a3eccb1968506f13fe48b1e223471c5"},
+      {7U, 5U, 16U, "d45e694b393efd202ac8011acfe0724a2c0a1e65a044bb8c7d1b30ae9981b712", "3b466d87f31f92d973e712503824b19c4842e5870e03b9ae95cf53080870256f"},
+      {7U, 5U, 32U, "de8cc3ec84337c1a839e86c95707ba46bbbe1610fa5efd9d1d5360ce844633b6", "8016cacbcb00feb964390ccb4a870007cd4de39fc9e7930e60df672266bd518c"},
+      {7U, 5U, 64U, "de8cc3ec84337c1a839e86c95707ba46bbbe1610fa5efd9d1d5360ce844633b6", "8016cacbcb00feb964390ccb4a870007cd4de39fc9e7930e60df672266bd518c"},
+  }};
+  for (const auto& item : cases) {
+    const auto count = item.width * item.height;
+    std::vector<std::pair<float, float>> records;
+    for (std::size_t i = 0; i < count; ++i) {
+      records.emplace_back(static_cast<float>(static_cast<int>((i * 7U + 3U) % 11U) - 6), static_cast<float>(i));
+    }
+    for (std::size_t start = 0; start < count; start += item.run) {
+      std::sort(records.begin() + static_cast<std::ptrdiff_t>(start),
+                records.begin() + static_cast<std::ptrdiff_t>(std::min(start + item.run, count)));
+    }
+    noisemaker::Surface input(item.width, item.height);
+    for (std::size_t i = 0; i < count; ++i) {
+      const auto offset = ((item.height - 1U - i / item.width) * item.width + i % item.width) * 4U;
+      input.data()[offset] = records[i].first;
+      input.data()[offset + 1U] = records[i].second;
+      input.data()[offset + 2U] = 0.0f;
+      input.data()[offset + 3U] = 1.0f;
+    }
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_texture("orderTex", input);
+    bindings.set_uniform("runLength", static_cast<std::int32_t>(item.run));
+    const auto output = noisemaker::run_pass(
+        noisemaker::generated::bind_render_pointsBillboardRender_depthMerge(bindings), item.width, item.height);
+    REQUIRE(hex(sha256(little_endian_float_bytes(output))) == item.f32);
+    REQUIRE(hex(sha256(output.to_rgba8())) == item.rgba);
+  }
+}
+
+TEST(typed_landscape_matches_authority_volume_mrt) {
+  constexpr std::int32_t side = 4;
+  constexpr std::size_t width = 7U, height = 5U;
+  noisemaker::Surface volume_cache(side, side * side), analytical_geo(side, side * side);
+  for (std::int32_t z = 0; z < side; ++z) {
+    for (std::int32_t y = 0; y < side; ++y) {
+      for (std::int32_t x = 0; x < side; ++x) {
+        const auto offset = static_cast<std::size_t>((z * side + y) * side + x) * 4U;
+        for (auto* surface : {&volume_cache, &analytical_geo}) {
+          surface->data()[offset] = noisemaker::f32(static_cast<double>(x + 1) / 5.0);
+          surface->data()[offset + 1U] = noisemaker::f32(static_cast<double>(y + 1) / 5.0);
+          surface->data()[offset + 2U] = noisemaker::f32(static_cast<double>(z + 1) / 5.0);
+        }
+        volume_cache.data()[offset + 3U] = 1.0f;
+        analytical_geo.data()[offset + 3U] = (x + y + z) >= 4 ? noisemaker::f32(0.8) : noisemaker::f32(0.1);
+      }
+    }
+  }
+  struct Case { std::int32_t view_mode, filtering; std::string_view frag, geo; };
+  const std::array<Case, 4> cases = {{{
+      1, 0, "ff6ca499d5871ca0a8dc4bd990abdd28ce6425b06d1a16b73f033688f2eeb845",
+            "4c82c45d10554c12ee104bdffa015a1fcb8429ef7a4ae905258a6e94819abc5a"},
+      {1, 1, "18b882bb672820dc647241b8ba33fb71351a6161b5d592a9f8893fa696560393",
+             "640241b79a285dadf6544c89259c13716a2368c9822d1e531624c9349b61dd2a"},
+      {2, 0, "37fea4f943bc8ef3d998ea424ad14c988026a32e1667af5aa36858e4a7e093dc",
+             "9dc03ceec883d5f0651731cb614b7738da9808f08bab9fab9e3d2d5c1ecd1889"},
+      {2, 1, "68a0a39edb47917ad77640ef7a62a29b10c615cc6b874300ef49c069af44a79f",
+             "546c57cdd3bf8b84161ba5856096182dff3805f5ac8e7a0bafba228a5dbd7300"}}};
+  for (const auto& item : cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("FILTERING", item.filtering);
+    bindings.set_uniform("VIEW_MODE", item.view_mode);
+    bindings.set_texture("volumeCache", volume_cache);
+    bindings.set_texture("analyticalGeo", analytical_geo);
+    bindings.set_uniform("resolution", noisemaker::glsl::Vec2(width, height));
+    bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(width, height));
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0));
+    bindings.set_uniform("volumeSize", side);
+    bindings.set_uniform("threshold", 0.4);
+    bindings.set_uniform("zoom", 1.0);
+    bindings.set_uniform("panX", 0.05);
+    bindings.set_uniform("panY", -0.03);
+    bindings.set_uniform("lightDirection", noisemaker::glsl::DVec3(
+        noisemaker::f32(-0.4), noisemaker::f32(0.85), noisemaker::f32(0.6)));
+    bindings.set_uniform("ambient", 0.35);
+    bindings.set_uniform("diffuseIntensity", 0.85);
+    bindings.set_uniform("specularIntensity", 0.12);
+    bindings.set_uniform("bgColor", noisemaker::glsl::DVec3(
+        noisemaker::f32(0.025), noisemaker::f32(0.045), noisemaker::f32(0.075)));
+    bindings.set_uniform("bgAlpha", 1.0);
+    bindings.set_uniform("rotateX", 0.3);
+    bindings.set_uniform("rotateY", 0.2);
+    bindings.set_uniform("rotateZ", 0.1);
+    bindings.set_uniform("viewScale", 0.8);
+    bindings.set_uniform("posX", 0.0);
+    bindings.set_uniform("posY", 0.0);
+    bindings.set_uniform("posZ", 0.0);
+    bindings.set_uniform("fieldOfView", 60.0);
+    const auto outputs = noisemaker::run_mrt_pass(
+        noisemaker::generated::bind_render_renderLandscape3d_landscape(bindings), width, height);
+    REQUIRE(outputs.size() == 2U);
+    REQUIRE(hex(sha256(little_endian_float_bytes(outputs[0]))) == item.frag);
+    REQUIRE(hex(sha256(little_endian_float_bytes(outputs[1]))) == item.geo);
+  }
+}
+
+TEST(typed_halftone_runtime_modes_preserve_cpu_color_arity) {
+  constexpr std::size_t width = 8U, height = 8U;
+  std::vector<float> data(width * height * 4U);
+  for (std::size_t i = 0; i < width * height; ++i) {
+    data[4U * i] = static_cast<float>(static_cast<double>(i % 7U + 1U) / 9.0);
+    data[4U * i + 1U] = static_cast<float>(static_cast<double>(i % 11U + 1U) / 13.0);
+    data[4U * i + 2U] = static_cast<float>(static_cast<double>(i % 13U + 1U) / 15.0);
+    data[4U * i + 3U] = static_cast<float>(static_cast<double>(i % 5U + 1U) / 7.0);
+  }
+  const noisemaker::Surface input(width, height, data);
+  struct ArityCase {
+    bool ink_alpha, paper_alpha;
+    std::array<std::string_view, 4> f32;
+    std::array<std::string_view, 4> rgba;
+  };
+  const std::array<ArityCase, 4> cases = {{
+      {false, false,
+       {"33dd974b4ac7e959fda9f7dfb17d61294a070cabb622e1474df1f239281af8d4",
+        "365de37b0950c9f010eaaa0e387ea67251b082ba189d9a3e267953afae139515",
+        "319d9f51b46e2b346f2b9b7f62d60a296125c059d1f62d75de322494934705ad",
+        "2eef4014439c0d36c31fa04fbfb633e3da59b15371f72bf7be24dc4371bac401"},
+       {"57e9b92289c9852a7bf777c263280b3a81df4b2c9ca7f2b1cb7a2abb91619ebd",
+        "088767a2d1b399b6f1e80e67476b47c57e325dcec6f82e388f894110414c1cdc",
+        "87acbd77c982406d224ff04c8587998be1de60052fb5a66540071eeddf37ed4f",
+        "150ad578c505e948ba392032ae9753cd1feece3780f6b62bf6f0c38883f3c6e9"}},
+      {false, true,
+       {"33dd974b4ac7e959fda9f7dfb17d61294a070cabb622e1474df1f239281af8d4",
+        "365de37b0950c9f010eaaa0e387ea67251b082ba189d9a3e267953afae139515",
+        "319d9f51b46e2b346f2b9b7f62d60a296125c059d1f62d75de322494934705ad",
+        "2eef4014439c0d36c31fa04fbfb633e3da59b15371f72bf7be24dc4371bac401"},
+       {"57e9b92289c9852a7bf777c263280b3a81df4b2c9ca7f2b1cb7a2abb91619ebd",
+        "088767a2d1b399b6f1e80e67476b47c57e325dcec6f82e388f894110414c1cdc",
+        "87acbd77c982406d224ff04c8587998be1de60052fb5a66540071eeddf37ed4f",
+        "150ad578c505e948ba392032ae9753cd1feece3780f6b62bf6f0c38883f3c6e9"}},
+      {true, false,
+       {"33dd974b4ac7e959fda9f7dfb17d61294a070cabb622e1474df1f239281af8d4",
+        "f9519c1043e6972dbcac3a124b7832cff5553c5a0466f1a54db0852dd522bb4f",
+        "84f8256d5a7cab749d2ba425dd1668e79b4e166305c603a5a6a1287ee8191c7b",
+        "19c498dd86360fd67b3702b9735e3e87426ab4fa46f631855b372885865c48bd"},
+       {"57e9b92289c9852a7bf777c263280b3a81df4b2c9ca7f2b1cb7a2abb91619ebd",
+        "4626721916f71e92124197f676570b451f194bd4889b93d5c98b4791ea5304e3",
+        "2c91d0f2e9b49ea345d4c241b27f55150ca8b7293d5d83e3d9a08e87736f8cb6",
+        "b2b4047ceafa6514114e176a05f6c3f5d65f44668901fecbe49c31182f1339e4"}},
+      {true, true,
+       {"33dd974b4ac7e959fda9f7dfb17d61294a070cabb622e1474df1f239281af8d4",
+        "79c535c79c497dd99dcfec38933d71d50f601d8db74e00205abe44f76162d9bd",
+        "ba7a4cf2f173ce765df33a3232e2bed8a22b1c87fbdb512e848e5f360c1be016",
+        "8b1a5a2044d41dc74e3c7731f1b1d7c1891876798631cfaccf9538729b99c7fa"},
+       {"57e9b92289c9852a7bf777c263280b3a81df4b2c9ca7f2b1cb7a2abb91619ebd",
+        "5661ef970534edeee9923b653270db2a6bfd3ab06aa6f11cd042fa264d7c0774",
+        "0419413b275dd27719de5aea1516417222b48d43184ca360b80cb297187943fd",
+        "141e987386c8ca9397f89ef1fa58a199ebbf8c6fbec8ac6a79c1532b2035cf8c"}},
+  }};
+  for (const auto& item : cases) {
+    for (std::int32_t mode : {0, 1}) {
+      for (std::int32_t pattern : {0, 1, 2}) {
+        noisemaker::glsl::Bindings bindings;
+        bindings.set_texture("inputTex", input);
+        bindings.set_uniform("MODE", mode);
+        bindings.set_uniform("PATTERN", pattern);
+        bindings.set_uniform("resolution", noisemaker::glsl::Vec2(8.0f, 8.0f));
+        bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+        bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(8.0f, 8.0f));
+        bindings.set_uniform("frequency", 6.0);
+        bindings.set_uniform("cyanAngle", 108.0);
+        bindings.set_uniform("magentaAngle", 162.0);
+        bindings.set_uniform("yellowAngle", 90.0);
+        bindings.set_uniform("blackAngle", 45.0);
+        bindings.set_uniform("monoAngle", 45.0);
+        bindings.set_uniform("sharpness", 80.0);
+        bindings.set_uniform("inkColor", noisemaker::glsl::DVec3(0.1, 0.2, 0.3));
+        bindings.set_uniform("paperColor", noisemaker::glsl::DVec3(0.8, 0.7, 0.6));
+        bindings.set_uniform("__cpuColorHasAlpha_inkColor", item.ink_alpha);
+        bindings.set_uniform("__cpuColorAlpha_inkColor", 0.25);
+        bindings.set_uniform("__cpuColorHasAlpha_paperColor", item.paper_alpha);
+        bindings.set_uniform("__cpuColorAlpha_paperColor", 0.75);
+        const auto image = noisemaker::run_pass(
+            noisemaker::generated::bind_filter_halftone_halftone(bindings), width, height);
+        const std::size_t index = mode == 0 ? 0U : static_cast<std::size_t>(pattern + 1);
+        REQUIRE(hex(sha256(little_endian_float_bytes(image))) == item.f32[index]);
+        REQUIRE(hex(sha256(image.to_rgba8())) == item.rgba[index]);
+      }
+    }
+  }
+}
+
+// CPU9f3 reference: tests/fixtures/hatch_reference.mjs.
+TEST(typed_hatch_matches_authority_modes_and_color_widths) {
+  struct Case { std::size_t width, height; int mode, colors; std::size_t nonfinite; std::string_view f32, rgba; };
+  const std::array<Case, 48> cases = {{
+      {7U, 5U, 0, 0, 0U, "1b0530324e4b3deca38fcdc29ca437d7939e8d8f90374b3c378e51162df25ff0", "f960de40881139a81fa25a4e3247a03c10fc34095834188b92563b158b2caf74"},
+      {7U, 5U, 0, 1, 0U, "1b0530324e4b3deca38fcdc29ca437d7939e8d8f90374b3c378e51162df25ff0", "f960de40881139a81fa25a4e3247a03c10fc34095834188b92563b158b2caf74"},
+      {7U, 5U, 0, 2, 0U, "1b0530324e4b3deca38fcdc29ca437d7939e8d8f90374b3c378e51162df25ff0", "f960de40881139a81fa25a4e3247a03c10fc34095834188b92563b158b2caf74"},
+      {7U, 5U, 0, 3, 0U, "1b0530324e4b3deca38fcdc29ca437d7939e8d8f90374b3c378e51162df25ff0", "f960de40881139a81fa25a4e3247a03c10fc34095834188b92563b158b2caf74"},
+      {7U, 5U, 1, 0, 0U, "d2d9351280d2b71ef9edfc9e9d3e6ee32ab0240a78406fe2420c38d69ef3d4af", "f2e2d8682f01c2334a1168991ffd3c97fc256ece9d805b46c257570e501eba7b"},
+      {7U, 5U, 1, 1, 0U, "d2d9351280d2b71ef9edfc9e9d3e6ee32ab0240a78406fe2420c38d69ef3d4af", "f2e2d8682f01c2334a1168991ffd3c97fc256ece9d805b46c257570e501eba7b"},
+      {7U, 5U, 1, 2, 0U, "d2d9351280d2b71ef9edfc9e9d3e6ee32ab0240a78406fe2420c38d69ef3d4af", "f2e2d8682f01c2334a1168991ffd3c97fc256ece9d805b46c257570e501eba7b"},
+      {7U, 5U, 1, 3, 0U, "d2d9351280d2b71ef9edfc9e9d3e6ee32ab0240a78406fe2420c38d69ef3d4af", "f2e2d8682f01c2334a1168991ffd3c97fc256ece9d805b46c257570e501eba7b"},
+      {7U, 5U, 2, 0, 0U, "263285eaef32d85b1f209f9095f0ee41b5aeed9f6b1beb0a8139f7e49047f2e9", "a2443529397d9133eb9a440992fa48eb49defbbebab675351376a7c98bf015b7"},
+      {7U, 5U, 2, 1, 0U, "263285eaef32d85b1f209f9095f0ee41b5aeed9f6b1beb0a8139f7e49047f2e9", "a2443529397d9133eb9a440992fa48eb49defbbebab675351376a7c98bf015b7"},
+      {7U, 5U, 2, 2, 0U, "263285eaef32d85b1f209f9095f0ee41b5aeed9f6b1beb0a8139f7e49047f2e9", "a2443529397d9133eb9a440992fa48eb49defbbebab675351376a7c98bf015b7"},
+      {7U, 5U, 2, 3, 0U, "263285eaef32d85b1f209f9095f0ee41b5aeed9f6b1beb0a8139f7e49047f2e9", "a2443529397d9133eb9a440992fa48eb49defbbebab675351376a7c98bf015b7"},
+      {7U, 5U, 3, 0, 0U, "bb28c8141749834b6f997db2dfd989c303667d1e1587548c7db7d5e82ec51b2f", "1eae360aa37593f62c1e4c298fe8df0c39a1b04515af7db34d6fcbb85664791f"},
+      {7U, 5U, 3, 1, 0U, "bb28c8141749834b6f997db2dfd989c303667d1e1587548c7db7d5e82ec51b2f", "1eae360aa37593f62c1e4c298fe8df0c39a1b04515af7db34d6fcbb85664791f"},
+      {7U, 5U, 3, 2, 0U, "bb28c8141749834b6f997db2dfd989c303667d1e1587548c7db7d5e82ec51b2f", "1eae360aa37593f62c1e4c298fe8df0c39a1b04515af7db34d6fcbb85664791f"},
+      {7U, 5U, 3, 3, 0U, "bb28c8141749834b6f997db2dfd989c303667d1e1587548c7db7d5e82ec51b2f", "1eae360aa37593f62c1e4c298fe8df0c39a1b04515af7db34d6fcbb85664791f"},
+      {7U, 5U, 4, 0, 0U, "6e32196ddb57ad701de09c19acf61f0c71b659bd06d06533c5cb9f3808ca1ad3", "5eee3c9f52d7c67fbe442e5c313968715fb9a4ce229b99481c570f5fc6db5d96"},
+      {7U, 5U, 4, 1, 0U, "6e32196ddb57ad701de09c19acf61f0c71b659bd06d06533c5cb9f3808ca1ad3", "5eee3c9f52d7c67fbe442e5c313968715fb9a4ce229b99481c570f5fc6db5d96"},
+      {7U, 5U, 4, 2, 0U, "6e32196ddb57ad701de09c19acf61f0c71b659bd06d06533c5cb9f3808ca1ad3", "5eee3c9f52d7c67fbe442e5c313968715fb9a4ce229b99481c570f5fc6db5d96"},
+      {7U, 5U, 4, 3, 0U, "6e32196ddb57ad701de09c19acf61f0c71b659bd06d06533c5cb9f3808ca1ad3", "5eee3c9f52d7c67fbe442e5c313968715fb9a4ce229b99481c570f5fc6db5d96"},
+      {7U, 5U, 5, 0, 0U, "0dc607e9c6958ef9361221c51f926685c83602bc51f05e58b9e62076be0bd4d9", "523bcea7c8fa2068b03edeb15acd36dfade4d5835c38c487e8b1980fa87b4ca2"},
+      {7U, 5U, 5, 1, 0U, "0dc607e9c6958ef9361221c51f926685c83602bc51f05e58b9e62076be0bd4d9", "523bcea7c8fa2068b03edeb15acd36dfade4d5835c38c487e8b1980fa87b4ca2"},
+      {7U, 5U, 5, 2, 0U, "0dc607e9c6958ef9361221c51f926685c83602bc51f05e58b9e62076be0bd4d9", "523bcea7c8fa2068b03edeb15acd36dfade4d5835c38c487e8b1980fa87b4ca2"},
+      {7U, 5U, 5, 3, 0U, "0dc607e9c6958ef9361221c51f926685c83602bc51f05e58b9e62076be0bd4d9", "523bcea7c8fa2068b03edeb15acd36dfade4d5835c38c487e8b1980fa87b4ca2"},
+      {11U, 3U, 0, 0, 0U, "1483a5fc7f5a199c9b13fb737b76f139a38927ea603e568e06013de2afb10796", "22d9170b82fbc7e0dc19591ffdb500544024e3fd234b81e5fb977b06bf9ac08a"},
+      {11U, 3U, 0, 1, 0U, "1483a5fc7f5a199c9b13fb737b76f139a38927ea603e568e06013de2afb10796", "22d9170b82fbc7e0dc19591ffdb500544024e3fd234b81e5fb977b06bf9ac08a"},
+      {11U, 3U, 0, 2, 0U, "1483a5fc7f5a199c9b13fb737b76f139a38927ea603e568e06013de2afb10796", "22d9170b82fbc7e0dc19591ffdb500544024e3fd234b81e5fb977b06bf9ac08a"},
+      {11U, 3U, 0, 3, 0U, "1483a5fc7f5a199c9b13fb737b76f139a38927ea603e568e06013de2afb10796", "22d9170b82fbc7e0dc19591ffdb500544024e3fd234b81e5fb977b06bf9ac08a"},
+      {11U, 3U, 1, 0, 0U, "9545a4a35aff4fcc43bd5ef0af3eac97cf9d82a9ae4ccb5c476945649b994196", "fe9e3497abfba4de7055c1324313f056971263bb49bb7436cdd7e3850a542c28"},
+      {11U, 3U, 1, 1, 0U, "9545a4a35aff4fcc43bd5ef0af3eac97cf9d82a9ae4ccb5c476945649b994196", "fe9e3497abfba4de7055c1324313f056971263bb49bb7436cdd7e3850a542c28"},
+      {11U, 3U, 1, 2, 0U, "9545a4a35aff4fcc43bd5ef0af3eac97cf9d82a9ae4ccb5c476945649b994196", "fe9e3497abfba4de7055c1324313f056971263bb49bb7436cdd7e3850a542c28"},
+      {11U, 3U, 1, 3, 0U, "9545a4a35aff4fcc43bd5ef0af3eac97cf9d82a9ae4ccb5c476945649b994196", "fe9e3497abfba4de7055c1324313f056971263bb49bb7436cdd7e3850a542c28"},
+      {11U, 3U, 2, 0, 0U, "c44670ae0aee24ebfd99c76616de2046dd574b2c72784fc9cea3c5e4185b336e", "e4d7da77438cfe2ccc0a628e654220f7cae27be51a1a432148efcf6195d87ebd"},
+      {11U, 3U, 2, 1, 0U, "c44670ae0aee24ebfd99c76616de2046dd574b2c72784fc9cea3c5e4185b336e", "e4d7da77438cfe2ccc0a628e654220f7cae27be51a1a432148efcf6195d87ebd"},
+      {11U, 3U, 2, 2, 0U, "c44670ae0aee24ebfd99c76616de2046dd574b2c72784fc9cea3c5e4185b336e", "e4d7da77438cfe2ccc0a628e654220f7cae27be51a1a432148efcf6195d87ebd"},
+      {11U, 3U, 2, 3, 0U, "c44670ae0aee24ebfd99c76616de2046dd574b2c72784fc9cea3c5e4185b336e", "e4d7da77438cfe2ccc0a628e654220f7cae27be51a1a432148efcf6195d87ebd"},
+      {11U, 3U, 3, 0, 0U, "71e2a1b4566bd575937488a1101ebb5810c68870f62b3256d38251cbdc5ad3f1", "e3becfc53f5c224db3baed323e741573ef5e61a22ca02e244239aed3510278f9"},
+      {11U, 3U, 3, 1, 0U, "71e2a1b4566bd575937488a1101ebb5810c68870f62b3256d38251cbdc5ad3f1", "e3becfc53f5c224db3baed323e741573ef5e61a22ca02e244239aed3510278f9"},
+      {11U, 3U, 3, 2, 0U, "71e2a1b4566bd575937488a1101ebb5810c68870f62b3256d38251cbdc5ad3f1", "e3becfc53f5c224db3baed323e741573ef5e61a22ca02e244239aed3510278f9"},
+      {11U, 3U, 3, 3, 0U, "71e2a1b4566bd575937488a1101ebb5810c68870f62b3256d38251cbdc5ad3f1", "e3becfc53f5c224db3baed323e741573ef5e61a22ca02e244239aed3510278f9"},
+      {11U, 3U, 4, 0, 0U, "ab750df25aa9475ac4d6af99f070dcde38bce5c40fc6f04e3faf00cc2868b217", "2de224678f3d5b4a5ac7c297d7cde8ed9f13ada2469d8332ba27c19274efc401"},
+      {11U, 3U, 4, 1, 0U, "ab750df25aa9475ac4d6af99f070dcde38bce5c40fc6f04e3faf00cc2868b217", "2de224678f3d5b4a5ac7c297d7cde8ed9f13ada2469d8332ba27c19274efc401"},
+      {11U, 3U, 4, 2, 0U, "ab750df25aa9475ac4d6af99f070dcde38bce5c40fc6f04e3faf00cc2868b217", "2de224678f3d5b4a5ac7c297d7cde8ed9f13ada2469d8332ba27c19274efc401"},
+      {11U, 3U, 4, 3, 0U, "ab750df25aa9475ac4d6af99f070dcde38bce5c40fc6f04e3faf00cc2868b217", "2de224678f3d5b4a5ac7c297d7cde8ed9f13ada2469d8332ba27c19274efc401"},
+      {11U, 3U, 5, 0, 0U, "735f4eaa2e0aa5e21ca1c1e2df5785b945885277cfcf359347c8d131d40046a8", "f89afbc6c1e75c7410c21a7cd8ec68da95ed3d96fdd5649183f93d87888f1470"},
+      {11U, 3U, 5, 1, 0U, "735f4eaa2e0aa5e21ca1c1e2df5785b945885277cfcf359347c8d131d40046a8", "f89afbc6c1e75c7410c21a7cd8ec68da95ed3d96fdd5649183f93d87888f1470"},
+      {11U, 3U, 5, 2, 0U, "735f4eaa2e0aa5e21ca1c1e2df5785b945885277cfcf359347c8d131d40046a8", "f89afbc6c1e75c7410c21a7cd8ec68da95ed3d96fdd5649183f93d87888f1470"},
+      {11U, 3U, 5, 3, 0U, "735f4eaa2e0aa5e21ca1c1e2df5785b945885277cfcf359347c8d131d40046a8", "f89afbc6c1e75c7410c21a7cd8ec68da95ed3d96fdd5649183f93d87888f1470"},
+  }};
+  std::size_t failures = 0;
+  for (const auto& item : cases) {
+    noisemaker::Surface input(item.width, item.height);
+    for (std::size_t i=0; i<input.data().size(); ++i) input.data()[i]=static_cast<float>(static_cast<double>((i*17U+3U)%101U)/100.0);
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_texture("inputTex", input);
+    bindings.set_uniform("MODE", static_cast<std::int32_t>(item.mode));
+    bindings.set_uniform("resolution", noisemaker::glsl::Vec2(static_cast<float>(item.width),static_cast<float>(item.height)));
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(-3.0f,2.0f));
+    bindings.set_uniform("strokeLength", 37.5);
+    bindings.set_uniform("direction", static_cast<std::int32_t>(item.mode%4));
+    bindings.set_uniform("balance",43.25);
+    bindings.set_uniform("pressure",67.75);
+    bindings.set_uniform("inkColor", noisemaker::glsl::DVec3(0.073,0.191,0.337));
+    bindings.set_uniform("paperColor", noisemaker::glsl::DVec3(0.923,0.817,0.711));
+    const auto output=noisemaker::run_pass(noisemaker::generated::bind_filter_hatch_hatch(bindings),item.width,item.height);
+    const auto actual=hex(sha256(little_endian_float_bytes(output)));
+    const auto rgba=hex(sha256(output.to_rgba8()));
+    const auto nonfinite=static_cast<std::size_t>(std::count_if(output.data().begin(),output.data().end(),[](float x){return !std::isfinite(x);}));
+    if(actual!=item.f32 || rgba!=item.rgba || nonfinite!=item.nonfinite) {
+      std::cerr << "Hatch mismatch " << item.width << 'x' << item.height << " mode=" << item.mode << " colors=" << item.colors << " f32=" << actual << " expected=" << item.f32 << " nonfinite=" << nonfinite << '/' << item.nonfinite << '\n';
+      ++failures;
+    }
+  }
+  REQUIRE(failures==0U);
+}
+
+TEST(typed_render3d_runtime_defines_match_current_cpu_mrt) {
+  struct Case {
+    int program;
+    int filtering;
+    bool invert;
+    std::string_view color_hash;
+    std::string_view depth_hash;
+  };
+  // CPU9f3 canonical factories 247 and 248; measured with the same volume
+  // atlas, dimensions, and both output attachments.
+  const std::array<Case, 8> cases = {{
+      {0, 0, false, "a5feb4c4517a0a5fc3d11ebb5e9bc705fd221abb999334849d6fea35181be7a4", "b27355af533604ef912577ab66a8e781a25b360ed26fdd10ffd31ce3abaebfd5"},
+      {0, 0, true, "a4de152876a02e7be97fda4bbae97e8968b4f25fb3470fe05a9f502958a3f452", "901db088193ab2460c63fbbf633568a20f8915b3641b39ae7be010f8e2a66340"},
+      {0, 1, false, "88e13c8a7ff07ec653c7de01ed2c09b4150d3406ec27a87d66029af6a92ebfdc", "830cfd162d1b00866459682f3558e304b846d6ecb41005b8405ed8eb23fa368d"},
+      {0, 1, true, "aad74deb9561a84ba39ebfd8df44ea0384951194cbb059cb5f4b3d3d6d6a889f", "8e09b9eee234c0fe5718a8a46ef2151cf4bea2f55513583b9cd55587d0c65abf"},
+      {1, 0, false, "a8853820a417f7a5411e90fa858f12ce365176262f1a1ba71faba9e86387d731", "9c62f8840a1fc9c248c9cfe6e288e0238da341b864d49cb9d411a264f086a647"},
+      {1, 0, true, "ed6a94441eb99b49a69f07a118b1ef50790d15cfea6829e70764aead3da964e9", "ce3ca5bf5bc0e3d050e1581df02ec1ae04308cce22eab6ad687c1c47b9d518eb"},
+      {1, 1, false, "a8853820a417f7a5411e90fa858f12ce365176262f1a1ba71faba9e86387d731", "9c62f8840a1fc9c248c9cfe6e288e0238da341b864d49cb9d411a264f086a647"},
+      {1, 1, true, "a8853820a417f7a5411e90fa858f12ce365176262f1a1ba71faba9e86387d731", "9c62f8840a1fc9c248c9cfe6e288e0238da341b864d49cb9d411a264f086a647"},
+  }};
+  constexpr std::int32_t n = 8;
+  constexpr std::size_t width = 13U;
+  constexpr std::size_t height = 11U;
+  noisemaker::Surface volume(n, n * n);
+  for (std::int32_t z = 0; z < n; ++z) {
+    for (std::int32_t y = 0; y < n; ++y) {
+      for (std::int32_t x = 0; x < n; ++x) {
+        const auto index = static_cast<std::size_t>((z * n + y) * n + x) * 4U;
+        volume.data()[index] = noisemaker::f32(static_cast<double>(x + 2*y + 3*z + 1) / (6*n));
+        volume.data()[index + 1U] = noisemaker::f32(static_cast<double>(x + 1) / n);
+        volume.data()[index + 2U] = noisemaker::f32(static_cast<double>(y + 1) / n);
+        volume.data()[index + 3U] = 1.0f;
+      }
+    }
+  }
+  for (const auto& item : cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_texture("volumeCache", volume);
+    bindings.set_uniform("FILTERING", static_cast<std::int32_t>(item.filtering));
+    bindings.set_uniform("INVERT", item.invert);
+    bindings.set_uniform("resolution", noisemaker::glsl::Vec2(width, height));
+    bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(width, height));
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f));
+    bindings.set_uniform("time", 0.125);
+    bindings.set_uniform("threshold", 0.6);
+    bindings.set_uniform("volumeSize", n);
+    bindings.set_uniform("orbitSpeed", std::int32_t(1));
+    noisemaker::glsl::DMat3 cube_basis;
+    for (std::size_t axis = 0; axis < 3U; ++axis) cube_basis[axis][axis] = 1.0;
+    bindings.set_uniform("cubeBasis", cube_basis);
+    bindings.set_uniform("bgColor", noisemaker::glsl::DVec3(
+        noisemaker::f32(0.025), noisemaker::f32(0.045), noisemaker::f32(0.075)));
+    bindings.set_uniform("bgAlpha", 0.7);
+    const auto kernel = item.program == 0
+        ? noisemaker::generated::bind_render_render3d_render3d(bindings)
+        : noisemaker::generated::bind_render_renderCubemap3d_renderCubemap3d(bindings);
+    const auto outputs = noisemaker::run_mrt_pass(kernel, width, height, 0.125f);
+    REQUIRE(outputs.size() == 2U);
+    REQUIRE(hex(sha256(little_endian_float_bytes(outputs[0]))) == item.color_hash);
+    REQUIRE(hex(sha256(little_endian_float_bytes(outputs[1]))) == item.depth_hash);
+  }
+}
+
+// CPU9f3 reference: tests/fixtures/flow3d_behavior_reference.mjs.
+TEST(typed_flow3d_agent_matches_all_runtime_behaviors) {
+  struct Case { int scenario, behavior; std::array<std::array<std::string_view,2>,3> hashes; };
+  const std::array<Case,24> cases = {{
+      {0, 0, {{{"8a83634f0466f908d08f38bd37eb2f3e9ccef8807201861e3e2b309d45c7cd1d", "a2dc5ff4d4e1541ea2d28d9683d139369a530534dc2667978356229f1bc54bb0"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {0, 1, {{{"1972da8710d178176d55b0781a0a07127915daa9c0d9dd96895b25dfae4e8612", "b429dd1bacbebf898a75f84a69cf9cc730c2ba03360829cb25ec59e7cd584304"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {0, 2, {{{"868d6906bda81c937623af20bd5577f739a662ca1d5962c66a0183339ebe2208", "8920762d7a4b4648b8f500db6bf8304d0cd294ae2b0c3ff30388dec939f6c502"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {0, 3, {{{"48709b7ab80ec03eb517e59f07452481397770959e164f2cc4d7075a0dd3f957", "1cc904d8401cc1498a8d809411676cdb379e043b9a69281a57b89023de500dd0"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {0, 4, {{{"abb2217d3563510fe605387255fdd62eee94b0b83a6cd2542f19e8e22312d1b9", "49817d9fc541060a87b0f804ca3bf40e446cfca0ec6abb87204dac6936eec709"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {0, 5, {{{"8b44a7ed10d6ecb64dccc4d6325065e1cf8f4c51811fd4de08f3141b5361bac2", "1cc904d8401cc1498a8d809411676cdb379e043b9a69281a57b89023de500dd0"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {0, 10, {{{"e22317b49bd9e32a70f655e132e6b6e205de5315d401316b0fa439dd9cd3ff49", "357e270f0b8418cb0e5b657d20bcfddfcae6f6f51af8569dec416fb7c693ca9d"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {0, 11, {{{"abb2217d3563510fe605387255fdd62eee94b0b83a6cd2542f19e8e22312d1b9", "49817d9fc541060a87b0f804ca3bf40e446cfca0ec6abb87204dac6936eec709"}, {"1ac901e4f1b073abdb9b977c70bf88f830fa360c8951ea4031382d2c9a55850f", "a1f9913ee2e33396d8fee88a4a98c4154fb2d8e4b9ce481fd5ac8ea09c4fecc7"}, {"8ea4dd76789c57ae32c30153758f93e054417a51fdcac7d693b663e612da6162", "781339240328f608a50cb05dbb01a9b7440d5ab7ed237eb727d8b98c7ce72687"}}}},
+      {1, 0, {{{"d7c5c16268a633fbf979dba84fdf04b6e31bd489c0aa66194d0baa07b0e76024", "88d67d4ca403985b55c5df6c8f19ebc3c5a65cd085f4628a3ba69195eae09358"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {1, 1, {{{"2481c40a2c3fd9476b4a37bd871eb8439db140ada0edd7ad86952f72db8ea4e5", "952541d53285b4b95c12f25856b4f7ff7c6c57d955949ca18e5278f091e4d47f"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {1, 2, {{{"c63bc04658a53ef5011c517e389a3c97968e0a926890a2bb9b35a6ecc7c0c04a", "4efeb2f84e5e9ede6d1584e3f4536a08b4d93992a88d97b0b7f3317c636f108f"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {1, 3, {{{"5872848fb8225814c82e8385699b29c7caddca4f7bfef175cd943a02a96690da", "76b99424000541ecc62206df0f1b39646de7b5811d335cfa89a54fa7a841f124"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {1, 4, {{{"01d2b2a65eaa6ac630be149a536701b05d43f2f0b30a4779c5df788ce18e8ec6", "22a4f97a8f7e69f15b880a601c180b7a77f2dff4091f0601cd65f20e6383a2ca"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {1, 5, {{{"e05a9096c2aba71a074fa5a545c990f88f7339aee1679e40c0f55044311d69bc", "7e39754df2fc4067a0269694378e331bb406fd0ccb1e2dab795223466121ed64"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {1, 10, {{{"69e09317bf34469773c184f5c9be158ea469643269987f4998abe33263e2c524", "b2decde58a2c8c199df5d597f701810adb0d70f4dc8dcd1efe209ee8a8d63bce"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {1, 11, {{{"01d2b2a65eaa6ac630be149a536701b05d43f2f0b30a4779c5df788ce18e8ec6", "22a4f97a8f7e69f15b880a601c180b7a77f2dff4091f0601cd65f20e6383a2ca"}, {"3afe2abfc4084bf1115873e5810bc7073847d73f414df8f350e20f4e09fafeb2", "17f7fd57d2e5cb2741c7e95474eabe0fc9b494e774f5d94991f224828a96015e"}, {"a0a9cde3962208600166b519211890ee4adc7d842036a8601ea07ca7c6fcd64d", "32ef8aaec94959b9f9cfcfbea406d493e9dcb65f02819ced1781d96f717ac9c0"}}}},
+      {2, 0, {{{"92d961d860b78835670d46f2a69b90119da80c227c3097d40ad246ddaa146eab", "a49d55d0ae4eb896116c8f3e44204cbf72855a8b7ea3294fae8df13ae55918cd"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+      {2, 1, {{{"5bed4484549259f3145eb6c15f1bdd44f5281d8d4fb3def69ca532b76a90b56d", "7330244d0014a0991b6a96b1a4356901b01e7a4d20da449e4da4ab07f3bbefcc"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+      {2, 2, {{{"2dee9491488a360182a980ecb7a164cdefde7dd7e894070462db0f35efea39a7", "ba6393af80da557ff63e2105081c5e18604f0388b81da50fde05126ab4f2b064"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+      {2, 3, {{{"2948fde295c4014945af4cce2591efb0e2d57911e0673e3e7a660efee6e9c881", "7a0b0795ef9a3ea690f11202f255004732fa0188a25e9a17780e09f57cbe7190"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+      {2, 4, {{{"f8ba84faaccad580cd515735a3c5e2b92ebd92ee6e3d773fb441e5d97055bde2", "24dcf64e7e31a8b3c46f147032fe89ceda48773410785651010a79d865b9c962"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+      {2, 5, {{{"99218a2b315206fe385f1f2daf97a04fee5470801e0a0e56bf5bff3d9cd36dac", "7330244d0014a0991b6a96b1a4356901b01e7a4d20da449e4da4ab07f3bbefcc"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+      {2, 10, {{{"d84cceeca745ae14b166c1b437553ca202e8be55dcdb1136723881e9cc67a0c4", "d629fe7285d7c1e5ed2ad06992404756bf94f791f77e273598651ad9c7efca52"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+      {2, 11, {{{"f8ba84faaccad580cd515735a3c5e2b92ebd92ee6e3d773fb441e5d97055bde2", "24dcf64e7e31a8b3c46f147032fe89ceda48773410785651010a79d865b9c962"}, {"730ae87999dbfbf43e1bfdf29715bf53f469732d8db76fb52162c86c3b4a108e", "162eb88aa96da8dfb089ec02a98534230fcde72ef5431c3f580a2cea66cc37eb"}, {"5443419c7a02b6a0365daaef5e6f8a93c5396f970df3b0964e019a4faf1a8d11", "431e72cf3cde7cc2d277e122d74ae99f1bb213cdee686551588809ddded390ff"}}}},
+  }};
+  std::size_t failures=0;
+  for(const auto& item:cases) {
+    noisemaker::Surface state1(2U,2U),state2(2U,2U),state3(2U,2U),mixer(4U,16U);
+    for(std::size_t i=0;i<4U;++i) {
+      const std::array<float,4> a={static_cast<float>(static_cast<double>(i)*0.5+0.25),1.5f,2.25f,static_cast<float>(static_cast<double>(i)*0.2+0.1)};
+      const std::array<float,4> b={0.2f,0.4f,0.6f,static_cast<float>(i)};
+      const std::array<float,4> c={item.scenario==2?3.0f:0.2f,item.scenario==0?0.0f:1.0f,-0.15f,0.0f};
+      for(std::size_t j=0;j<4U;++j){state1.data()[4U*i+j]=a[j];state2.data()[4U*i+j]=b[j];state3.data()[4U*i+j]=c[j];}
+    }
+    for(std::size_t i=0;i<mixer.data().size();++i)mixer.data()[i]=static_cast<float>(static_cast<double>((i*17U+3U)%101U)/100.0);
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_texture("stateTex1",state1);bindings.set_texture("stateTex2",state2);
+    bindings.set_texture("stateTex3",state3);bindings.set_texture("mixerTex",mixer);
+    bindings.set_uniform("BEHAVIOR",static_cast<std::int32_t>(item.behavior));
+    bindings.set_uniform("volumeSize",std::int32_t(4));bindings.set_uniform("stride",1.25);
+    bindings.set_uniform("strideDeviation",0.2);bindings.set_uniform("kink",1.1);
+    bindings.set_uniform("time",0.375);bindings.set_uniform("lifetime",1.25);bindings.set_uniform("density",100.0);
+    const auto outputs=noisemaker::run_mrt_pass(noisemaker::generated::bind_filter3d_flow3d_agent(bindings),2U,2U,0.375f);
+    REQUIRE(outputs.size()==3U);
+    for(std::size_t j=0;j<3U;++j) {
+      const auto f32=hex(sha256(little_endian_float_bytes(outputs[j])));
+      const auto rgba=hex(sha256(outputs[j].to_rgba8()));
+      if(f32!=item.hashes[j][0] || rgba!=item.hashes[j][1]) {
+        std::cerr << "Flow3D mismatch scenario=" << item.scenario << " behavior=" << item.behavior << " output=" << j << " f32=" << f32 << " expected=" << item.hashes[j][0] << '\n';++failures;
+      }
+    }
+  }
+  REQUIRE(failures==0U);
+}
+
+TEST(perlin_runtime_current_authority) {
+ struct Case {std::size_t width,height;int dimensions,warp,octaves,color;double aspect;std::string_view f32,rgba;};
+ const std::array<Case,32> cases={{
+{7U, 5U, 2, 0, 1, 0, 1.399999976158142, "4dfc6678bc6bf5121d31107e868cf43c3a3467bd99bc525009da0e3fce489c1c", "f6dbd220dc51bb0b877a9f785bbd84722028219fd6aa4a155da005e6a90ed564"},
+{7U, 5U, 2, 0, 1, 1, 1.399999976158142, "bea5e12ef5824ed51d9cbd45776c523b8e06d784ff1af81161cc5d70ec765b8e", "88357d6135ea8ff39a4e928ccc6faff1baf080cd77e5593f026081e71fc5a412"},
+{7U, 5U, 2, 0, 6, 0, 1.399999976158142, "45791da7d04d7a92cafc84476e5be8d237b0bdb92d5035d24baa7abdec0c7564", "985f3bc02b1226cf374709364a1e1666d83d2689aab6ff0e0ddf2ccdaa42ded4"},
+{7U, 5U, 2, 0, 6, 1, 1.399999976158142, "c4a0f9998d5adae982fb38e8a11e3c906fcbf4c27745ee316271c1b0a4120ffd", "f53986bd342aa69ffd7f97412bfb73dbc101110a07206529c08363c869973f0a"},
+{7U, 5U, 2, 2, 1, 0, 1.399999976158142, "10803aeebf903fc1ef1303c934a19cbff086923e413c719d7b5dee739fab731e", "c0a2d2c7a1f819f3c20d0d0aef78ae9d07ad362f1977886186e82018c84bd961"},
+{7U, 5U, 2, 2, 1, 1, 1.399999976158142, "0fc52524ad4d5dbd3fd44d675353f072dc46e3f806cc554ce64293460f350179", "6644916cadeea7fbb39541e6d9192fa1535fb7194de200a53ed8253c8a95e5ca"},
+{7U, 5U, 2, 2, 6, 0, 1.399999976158142, "f3d93d20961a2390f5b74cb008a007b4f0f04b2e1a09d88a4eedcc5ca2cb2b7f", "9d7fdce942abd2bd946f705cdadda1cd28b7052cc3be4e7c35e14c1e2fd0ab50"},
+{7U, 5U, 2, 2, 6, 1, 1.399999976158142, "22d9c3aac52f255a52688b74e9c48c18c0ceb7ab045cebbec968562518385ffa", "54b312abe446c05df741286cc7a83564c9fbfd1c762246485e8b34e4edeb2295"},
+{7U, 5U, 3, 0, 1, 0, 1.399999976158142, "82485a9041d441ba04984219578154365d418ce0143abb9e55d3a8d371cf45c7", "033cc63f4076c2ac0058087ab6dc4a73d8332b2dfcdb79e69fd5aa14366e99fe"},
+{7U, 5U, 3, 0, 1, 1, 1.399999976158142, "eb24ccf83803580eab74ed7051bd1407d505b5c8913ff91e15d2182dc63982cb", "d52debad1c5956152d6b26c35b022aef01523549ad36fc5c4821161e7ff5ecef"},
+{7U, 5U, 3, 0, 6, 0, 1.399999976158142, "abbc54dbbe54ef494accaa38642105a99c8ec6ff6e69036a8b38fa9325d29161", "0fdcaaa9757e2a86fd31c825226a4408e073d4413630af6f6138ac23d729a637"},
+{7U, 5U, 3, 0, 6, 1, 1.399999976158142, "f756d2ab8b0c90f18832332b3cadda0c417cf672e040f577e266ad9b6e9a63d5", "6df5c3cc01128e03151aa1ed6bb6fde6702e45fe05cd63515c075404be9dd8d4"},
+{7U, 5U, 3, 2, 1, 0, 1.399999976158142, "290aacb857a9a2cdcb5eaf538ab25e57febc66ed86523d1e6c4621257467e0ae", "f1555a2f331dcf13679044685f2aebcc0c9a8e608a009edc82a499d86e233f9e"},
+{7U, 5U, 3, 2, 1, 1, 1.399999976158142, "23e22a4a131d0629cdb8260c867e30ed62c7b5addf2b5d474c93262dd7672cab", "55774f0688d43ddb8d0f3de4d48773ef4e18eafe94a12f25fedbf61e2cacb685"},
+{7U, 5U, 3, 2, 6, 0, 1.399999976158142, "d32732fe16d8e8ef0062922b04a95b3ebe94275b119586f11e3e9a2f4ec6cbb2", "00c6396bee78c153a86a52676305a1a0e71e853b54507c99a4ea17aba7df5866"},
+{7U, 5U, 3, 2, 6, 1, 1.399999976158142, "fd8ae2551f65f42e84928c64ca9a01bf418551eaeebddb076aa535b6f1d12a61", "9687af235b1cdc4f7b96d28395c60b30c84ccb1ad99286af87e810585d2800f3"},
+{11U, 3U, 2, 0, 1, 0, 3.6666667461395264, "870046120376c1de6ba7383511adab72e81f4a4bd498fcdffc4f6303aba712da", "073f1480c5e9e029ff7cb9177443c022454e98a4bd50fbf96c5b2e8f0fa77fce"},
+{11U, 3U, 2, 0, 1, 1, 3.6666667461395264, "9e13a73d179e2505b840347d4dc202b6331bf28cae5859b47509170eb039db74", "490e040314d234e62927ee4a4e34e63182fcb3430ae0d42c8e2c0e2e70d8cc7e"},
+{11U, 3U, 2, 0, 6, 0, 3.6666667461395264, "6d3b0a7ee8a44471834a24cf10ba21df9bc0bc9078d23a52f7de6559aab926a5", "a995e8a0bb84d5bcb76802c6cedf47db07d2b176fe77d365adbb76781969b1be"},
+{11U, 3U, 2, 0, 6, 1, 3.6666667461395264, "8058fbb24824c521d8345ff1c65221ba8f930e8c05b9a17deaedc47fefb2aeb8", "0c2da877f345fc980b025a2b5da1dfd1584e5b27fd3a8a7df8d239138709fded"},
+{11U, 3U, 2, 2, 1, 0, 3.6666667461395264, "0bdf8e6fe174c28d6da0f0eccf0568c6c0f5d9134df0179ea3b72b372e721504", "27028dacc3c32d5be2337607cbabc9ad9c0d9912fa96274d5f88d58d348227ec"},
+{11U, 3U, 2, 2, 1, 1, 3.6666667461395264, "7ed6cd547d8e817b3c1ab9781bad0937294b15b07c2b15ff64713cefb2d32b51", "a9f6e9de9aeff6891fd3c07704a7eaab532ccb4eb8f11d529eeb421de7168a25"},
+{11U, 3U, 2, 2, 6, 0, 3.6666667461395264, "0044da1b75094ce6c1938791137cba193130c0f2c27c0e4a4100a8d5b312dad5", "cd29e404638667658dbb780c4fb7a938370f75e27fde7bec5ecca841a35fd67a"},
+{11U, 3U, 2, 2, 6, 1, 3.6666667461395264, "33e27fad79b138c3ba50952b35e03b72a8ee4b72bcfd3fbd608470e3ad2b7794", "da88af1649c4d1c17b982989800a28679b6499bc7986f6e0dc83480c415a1369"},
+{11U, 3U, 3, 0, 1, 0, 3.6666667461395264, "26cf2b9f561efb74a3482fdc792b7705677f6b677e9eb0fa68f9447f98aaa9fa", "753402930dd4bc4445cf3d1effaeef60852068365eb919598d79e1ff1b970524"},
+{11U, 3U, 3, 0, 1, 1, 3.6666667461395264, "d352a92d6d42e4eb77e472392e95013def97ca066ce7d0a4ee5b359b9fa1a143", "1f2b4ebc02bc60c9aa0e81b432a1191a1908268f5156d494408c8789c0356460"},
+{11U, 3U, 3, 0, 6, 0, 3.6666667461395264, "a730a557159a4c2eb83b19648cf2d0cc6d38d2c76c90c42c05327632404ecd31", "1abd7996a37a57f23f92460f739e37dc5afe2846893fa8449cc28a3bba265510"},
+{11U, 3U, 3, 0, 6, 1, 3.6666667461395264, "48e0dc7b34f2751149aa7b53008db9c5a5ba107eff03db491456d83139b2e385", "b6ba206c90dbf41644ad9fd7b409e8b4ec2d8ef3c2ab8ca5d9f4f9fe17c0255a"},
+{11U, 3U, 3, 2, 1, 0, 3.6666667461395264, "54faa5a9404b5c05b17eff9a0648171e6a06126f8568421f99793d9ccf6473a5", "8a7ca688c11fba6cf1ed8f3eccf4f5d2e85c5bc41a9d8ffa26670430e45f0ab8"},
+{11U, 3U, 3, 2, 1, 1, 3.6666667461395264, "d91083093294a4234d218de87d78ab87ed545da4f0ce05f50aa8bb0d3c04956e", "480e2e56d6b0b3f79cd12b969acc6babbe92384aab96bd8fec633f1599c22e96"},
+{11U, 3U, 3, 2, 6, 0, 3.6666667461395264, "34fea1865824449584c66716e8abfe5147b14c3dca92dcac0086dd1b8f6ce5c7", "a46d8a3bcd3e0f549c5fd95e2862c65f42a4c7420c43db6d3dcbd790ead8d6fd"},
+{11U, 3U, 3, 2, 6, 1, 3.6666667461395264, "9a826e6c1644d9b979d6c426d1f0825bb91dbec62ffb09ee274147525b6a76b2", "1116f8db7a49321e2431f027be1b78e6dc70dafbf052a6e69425b49239ce7968"},
+ }};
+ std::size_t failures=0;
+ for(const auto& c:cases){
+  noisemaker::glsl::Bindings b;
+  b.set_uniform("resolution",noisemaker::glsl::Vec2(c.width,c.height));
+  b.set_uniform("fullResolution",noisemaker::glsl::Vec2(c.width+6,c.height+4));
+  b.set_uniform("tileOffset",noisemaker::glsl::Vec2(-3.0f,2.0f));
+  b.set_uniform("DIMENSIONS",std::int32_t(c.dimensions));
+  b.set_uniform("aspect",c.aspect);
+  b.set_uniform("time",.375);b.set_uniform("scale",25.5);b.set_uniform("seed",std::int32_t(17));
+  b.set_uniform("octaves",std::int32_t(c.octaves));b.set_uniform("colorMode",std::int32_t(c.color));
+  b.set_uniform("ridges",std::int32_t(c.warp?1:0));b.set_uniform("warpIterations",std::int32_t(c.warp));
+  b.set_uniform("warpScale",37.25);b.set_uniform("warpIntensity",62.5);b.set_uniform("speed",1.75);
+  const auto out=noisemaker::run_pass(noisemaker::generated::bind_synth_perlin_perlin(b),c.width,c.height);
+  const auto f32=hex(sha256(little_endian_float_bytes(out))),rgba=hex(sha256(out.to_rgba8()));
+  if(f32!=c.f32 || rgba!=c.rgba){++failures;std::cerr<<"FAIL "<<c.width<<"x"<<c.height<<" dim="<<c.dimensions<<" warp="<<c.warp<<" oct="<<c.octaves<<" color="<<c.color<<" f32="<<f32<<" expected="<<c.f32<<" rgba="<<rgba<<" expected="<<c.rgba<<"\n";}
+ }
+ REQUIRE(failures==0);
+}
+
+TEST(runtime_lowpoly_matches_cpu) {
+  constexpr std::size_t width=7U, height=5U;
+  std::vector<float> data(width*height*4U);
+  for (std::size_t y=0; y<height; ++y) for (std::size_t x=0; x<width; ++x) {
+    const auto i=(y*width+x)*4U;
+    data[i]=static_cast<float>(static_cast<double>((37*x+17*y+11)%127+1)/129.0);
+    data[i+1U]=static_cast<float>(static_cast<double>((19*x+43*y+7)%113+2)/117.0);
+    data[i+2U]=static_cast<float>(static_cast<double>((61*x+29*y+3)%109+3)/115.0);
+    data[i+3U]=static_cast<float>(static_cast<double>((7*x+5*y+2)%23+8)/31.0);
+  }
+  const noisemaker::Surface input(width,height,data);
+  struct Case { int border, light, mode; std::string_view f32, rgba; };
+  const std::array<Case,7> cases={{
+      {0, 0, 0, "d7ce5f86fa1ebc1b491105172eb46457e43dd3d1ecf20f48ebe876310eebe1f8", "1811158a2848eab6855b50706da29d025d0b9ae34732c4c89f6796903333edf9"},
+      {1, 0, 1, "261869165dc8e2f5727315bc6b3fe68b075c3345eb15c97db98738a01b576fac", "7544de57779d31cb47b87e17f663f75684ec59d5c59cface1ac1ed8de591a756"},
+      {100, 0, 2, "91edf51a92025572671d174d96cf5782339f5b8f1debc1d576068ea988979181", "8df6643664a284ee130a65283bbe6345b3c37c024a1af30891982039ed16aabd"},
+      {0, 1, 3, "784126976b5a65ede5422947cf7ef4ff0270394b6ecdcc9b87fe384a61dbf760", "35068faa5e953f6a17cd9d9d724f88c7a7f5672e11d972dafd1695b9a1d0dd5f"},
+      {0, 100, 0, "aee82eb3090877c6e485dd5b1ef3ab50930b2472b43012876b9f01c0a300e671", "20f679a82428d6ff8b08361f02760aa2c4789c6400e70998b5c39ccd2e97a291"},
+      {33, 67, 1, "e00e12e9f011ba86a5eba8594c04424a293b2b442c911fdbd3449495f314528e", "294127de546701c158e1da38462416e8f5eb35bebdd5bbe329896ddc947a4d74"},
+      {100, 100, 3, "ac109bcb8bcc43692b8c0074133979afcff48bdca071c896c19f73d9229dedc3", "60cc2a21a3cacdaab57a199e48c35d6aabd6d6a1cc1d6771b3320d7fcc83a7e6"},
+  }};
+  for (const auto& item:cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_texture("inputTex",input);
+    bindings.set_uniform("tileOffset",noisemaker::glsl::Vec2(2.0f,1.0f));
+    bindings.set_uniform("fullResolution",noisemaker::glsl::Vec2(11.0f,9.0f));
+    bindings.set_uniform("LP_BORDER",std::int32_t{item.border});
+    bindings.set_uniform("LP_LIGHT",std::int32_t{item.light});
+    bindings.set_uniform("scale",35.0);
+    bindings.set_uniform("seed",17.0);
+    bindings.set_uniform("mode",std::int32_t{item.mode});
+    bindings.set_uniform("edgeStrength",0.42);
+    bindings.set_uniform("edgeColor",noisemaker::glsl::DVec3(static_cast<double>(0.13f),static_cast<double>(0.67f),static_cast<double>(0.29f)));
+    bindings.set_uniform("speed",2.0);
+    bindings.set_uniform("time",0.375);
+    bindings.set_uniform("alpha",0.83);
+    const auto kernel=noisemaker::generated::bind_filter_lowPoly_lowPoly(bindings);
+    for (int repeat=0; repeat<2; ++repeat) {
+      const auto image=noisemaker::run_pass(kernel,width,height,0.375f,43.0f);
+      const auto fh=hex(sha256(little_endian_float_bytes(image)));
+      const auto rh=hex(sha256(image.to_rgba8()));
+      if (fh!=item.f32 || rh!=item.rgba)
+        throw std::runtime_error("case mode="+std::to_string(item.mode)+" f32="+fh+" rgba="+rh);
+      REQUIRE(std::equal(input.data().begin(), input.data().end(), data.begin()));
+    }
+  }
+}
+
+
+TEST(runtime_strokes_matches_cpu) {
+  constexpr std::size_t width=7U, height=5U;
+  std::vector<float> data(width*height*4U);
+  for (std::size_t y=0; y<height; ++y) for (std::size_t x=0; x<width; ++x) {
+    const auto i=(y*width+x)*4U;
+    data[i]=static_cast<float>(static_cast<double>((37*x+17*y+11)%127+1)/129.0);
+    data[i+1U]=static_cast<float>(static_cast<double>((19*x+43*y+7)%113+2)/117.0);
+    data[i+2U]=static_cast<float>(static_cast<double>((61*x+29*y+3)%109+3)/115.0);
+    data[i+3U]=static_cast<float>(static_cast<double>((7*x+5*y+2)%23+8)/31.0);
+  }
+  const noisemaker::Surface input(width,height,data);
+  struct Case { int mode; std::string_view f32, rgba; };
+  const std::array<Case,5> cases={{
+      {0, "22237989054a795dc185f386530eceea80d15cc660ffee65b2ea1879792f205e", "71404eeefc445bab19aa8e19282e049b59d3d77fc7948e5b7f67f881c928f619"},
+      {1, "e0aa4eb29d0dbc79fdf3ac5cffb7970e66b11e180831b431daf41a57e6e46899", "9ab7cb9a8486e3c4f9fea1b20ad0a3902773f7d01dc228332ed54b4d42f2b0a7"},
+      {2, "d04ab5400398c8efba136aacc3cada5137e679e810ef648c7ab7dc593f87b50a", "7425e3883d66c482367cf3739a92546e97779590e69eab4f0a1226082151f20e"},
+      {3, "b7c59a507648c0eb192e7af9d13ae5b02a3009f20ab59e3911aa6a0a7b707a5b", "0c01c5a388a811ffcc52e542879e46cdb8e5ab0f1f6866d6b0472870e0f3d556"},
+      {4, "9078560d1833f6f6f8f5876dcabdbe868f39e9d98e366745cf493d7b5adf0472", "5efa62932cc63d2e88ce3d8a5ecf90d8afbb93701de845297550a6224f9edfe8"},
+  }};
+  for (const auto& item:cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_texture("inputTex",input);
+    bindings.set_uniform("tileOffset",noisemaker::glsl::Vec2(2.0f,1.0f));
+    bindings.set_uniform("resolution",noisemaker::glsl::Vec2(7.0f,5.0f));
+    bindings.set_uniform("MODE",std::int32_t{item.mode});
+    bindings.set_uniform("strokeLength",18.0);
+    bindings.set_uniform("balance",44.0);
+    bindings.set_uniform("intensity",66.0);
+    const auto kernel=noisemaker::generated::bind_filter_strokes_stkSmear(bindings);
+    for (int repeat=0; repeat<2; ++repeat) {
+      const auto image=noisemaker::run_pass(kernel,width,height,0.375f,43.0f);
+      const auto fh=hex(sha256(little_endian_float_bytes(image)));
+      const auto rh=hex(sha256(image.to_rgba8()));
+      if (fh!=item.f32 || rh!=item.rgba)
+        throw std::runtime_error("case mode="+std::to_string(item.mode)+" f32="+fh+" rgba="+rh);
+      REQUIRE(std::equal(input.data().begin(), input.data().end(), data.begin()));
+    }
+  }
+}
+
+
+// CPU9f3 Caustic and Texture runtime reference cases.
+TEST(typed_caustic_runtime_noise_modes_match_current_cpu) {
+  struct Case { const char* name; int mode; bool wrap; float noise_scale; float speed; int seed;
+    float hue_rotation; float hue_range; float intensity; float time; noisemaker::glsl::Vec2 tile;
+    noisemaker::glsl::Vec2 full; const char* float_hash; const char* rgba_hash; };
+  const std::array<Case, 18> cases{{
+    {"constant-default-wrap", 0, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "367fb4c04be302e268c958bc12d6889d07bf417c1fdd03510b8b063d28c43713", "6006c27ae98dc7a3f51d54dd73d2a402ac3f62e5af9928ba8c9259c326b31e10"},
+    {"constant-offset-no-wrap", 0, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "30dbbfd52156e09041bb40b20d1b107e3a28cb9bc5b541a68873dacd7e16d511", "4dacea4407014b1ad1668ae7d50e5bc83c03076de3a6963f7ec25a59d8dcdc74"},
+    {"linear-default-wrap", 1, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "f80a57025f3e3069dee835b90e8e8108f37e393eea4bae86c7b8b4dc178615c0", "65c86e175add45d5aecb2b8e3bf752058f534e11eecb6ced4ad17510f6e8dd7d"},
+    {"linear-offset-no-wrap", 1, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "8ee97a02aca7f3eac5f23319049031f4815a5efcb242be7135c0a03b625ea39d", "8385e18ca10f2dc9b8d7bef7d2e99f110731c9f256b37cf1f49331b009e9e9f8"},
+    {"hermite-default-wrap", 2, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "cfab1393958f97871bedf689734f48507203104d58b5e8cdfd4b73a53b57b300", "5a1c400641024dd810b31ce7b3014b8068a5e322601be5d6cda1c3cc369eee63"},
+    {"hermite-offset-no-wrap", 2, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "a831c1ea4e535e1819383e560201ee4ee52d01dfb0b63a1b5f43ff513c094a62", "fc7d643ef5013b214d8b7b6596d1a1bc37e5536cac7bb4fa12fbdf1192d629c1"},
+    {"catmullRom3x3-default-wrap", 3, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "97f0fb0f63862d31c74cddf560a7d395ae6e538bd99b742ea211b98241b5501d", "418ecd27b1fb6ec7ce905070d9dc976d232372b5e3e339549b85d13a769ea4e0"},
+    {"catmullRom3x3-offset-no-wrap", 3, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "cfd10801161c934badb4a005498e45a4031662d64ba351c9612e67a8fd73084e", "f55b284b6abb187d88ce15747ca79a4973f16c3be57594ad0a6f5672bcb224c3"},
+    {"catmullRom4x4-default-wrap", 4, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "70b1b02575a47b587af2ee8108fff0028da002704468626c1ff259118b04deaf", "5a1c400641024dd810b31ce7b3014b8068a5e322601be5d6cda1c3cc369eee63"},
+    {"catmullRom4x4-offset-no-wrap", 4, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "7c3f32f59c3e61ff037a2b1ab12c4af9beb20e97fd49c313d3a2c2618273b054", "dae0fe089e249dcd232fb78a8b57ddcad0c1080340e603c4bee2cdb782537b20"},
+    {"bSpline3x3-default-wrap", 5, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "c4c8192d517781e593781ead10bd82d2636c4f810212f351ef73ed1b60f349bc", "271c8d006e03274f7c2e39e4caf6a7de3df4cc577eb480bb188af271cf825cd7"},
+    {"bSpline3x3-offset-no-wrap", 5, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "060be3d597ee2858324f3c474fe0adb0eb78c2d7aaa80c158c5ec8b91fe4e900", "75b2321bfd627ce0a8475d1b6868670aae7e005c4d3f6de1988fad3d6a601667"},
+    {"bSpline4x4-default-wrap", 6, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "c17042af26b73ee946726693428df8cbc671b7fb7eb518ea721822240cc3195d", "e9ab9b2e185b7b642ba042702ac937f7168d64937a4ee9197813fb87c7eec446"},
+    {"bSpline4x4-offset-no-wrap", 6, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "90546ffc53d6d878e58cbaf880a5b8902f08cbc7747652bf3afea77306bcf5c5", "f2bd44f783bdc5f6c541cec65cacc3db2af80ff3de8bfe8eaa407c24d441df5a"},
+    {"simplex-default-wrap", 10, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "23fbe21e1de1c0f51b430a2d24265500198766882fc2c905c7345ef7cb80d05b", "225acd3a22c7fc6c0348d7efa13a641f1c002b23c8e304516bad7783949eadd4"},
+    {"simplex-offset-no-wrap", 10, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "525403784280500aa429826bab9787ce5ced9eceedf7d5fcc180a4332c70f7bc", "ac2ff8b9cda7a9c668c7253b6bd993efdae22c445760a608f40e4ee881459701"},
+    {"sine-default-wrap", 11, true, 85.0f, 25.0f, 44, 180.0f, 25.0f, 0.0f, 0.375f, noisemaker::glsl::Vec2(0.0f, 0.0f), noisemaker::glsl::Vec2(8.0f, 8.0f), "141eaf1619677e73ab7ec75bffbd3859ebd0fb7d8dbc57c3ad13284444a2fe73", "a48893a259330a68e04dd6fe23763491eab14eedbb1531ef3ffd7867d8bcd8d2"},
+    {"sine-offset-no-wrap", 11, false, 37.0f, 63.0f, 17, 37.0f, 74.0f, 22.0f, 0.625f, noisemaker::glsl::Vec2(3.0f, -2.0f), noisemaker::glsl::Vec2(13.0f, 11.0f), "f146debfc80c31d2dc9b999c35c5deda2c0044cc8eb2b8a2b5d6812431cafa2f", "db2aeddd773dbbb6cfd28312ceca6ad4ea9130d3a3079b11025045dc36258abb"},
+  }};
+  for (const auto& item : cases) {
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("NOISE_TYPE", static_cast<std::int32_t>(item.mode));
+    bindings.set_uniform("wrap", item.wrap);
+    bindings.set_uniform("noiseScale", item.noise_scale);
+    bindings.set_uniform("speed", item.speed);
+    bindings.set_uniform("seed", static_cast<std::int32_t>(item.seed));
+    bindings.set_uniform("hueRotation", item.hue_rotation);
+    bindings.set_uniform("hueRange", item.hue_range);
+    bindings.set_uniform("intensity", item.intensity);
+    bindings.set_uniform("time", item.time);
+    bindings.set_uniform("resolution", noisemaker::glsl::Vec2(8.0f, 8.0f));
+    bindings.set_uniform("tileOffset", item.tile);
+    bindings.set_uniform("fullResolution", item.full);
+    const auto kernel = noisemaker::generated::bind_classicNoisedeck_caustic_caustic(bindings);
+    const auto first = noisemaker::run_pass(kernel, 8U, 8U, item.time,
+                                           static_cast<float>(item.seed));
+    const auto second = noisemaker::run_pass(kernel, 8U, 8U, item.time,
+                                            static_cast<float>(item.seed));
+    require_repeat(first, second);
+    const auto float_hash = hex(sha256(little_endian_float_bytes(first)));
+    if (float_hash != item.float_hash) throw std::runtime_error(std::string(item.name) +
+        " float oracle hash: " + float_hash);
+    REQUIRE(hex(sha256(first.to_rgba8())) == item.rgba_hash);
+  }
+}
+
+TEST(typed_texture_runtime_modes_match_current_cpu_without_mutating_input) {
+  struct Spec { const char* name; std::size_t width; std::size_t height; int phase;
+    float time; float alpha; float scale; float intensity; float contrast; bool mono;
+    noisemaker::glsl::Vec2 tile; noisemaker::glsl::Vec2 full; };
+  const std::array<Spec, 2> specs{{
+    {"paper-center", 4U, 3U, 2, 0.25f, 1.0f, 1.2f, 65.0f, 35.0f, false, noisemaker::glsl::Vec2(1.0f, 2.0f), noisemaker::glsl::Vec2(16.0f, 12.0f)},
+    {"paper-wide-tile", 8U, 3U, 6, 0.41f, 0.8f, 1.8f, 55.0f, 55.0f, false, noisemaker::glsl::Vec2(-2.0f, 5.0f), noisemaker::glsl::Vec2(32.0f, 12.0f)},
+  }};
+  struct Case { std::size_t spec; int mode; const char* input_float; const char* input_rgba;
+    const char* output_float; const char* output_rgba; };
+  const std::array<Case, 30> cases{{
+    {0U, 0, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "1498a43d593339a26ee782c98183ed3d85adc4dce7826dd43843ee1a972778e1", "712f535e5f0d86052e43c890ddcebe6ac72c13f88515bda573beb56697fd887d"},
+    {0U, 1, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "9fb724b253d475737eabe4e546c3b8f1966f65e5a209d66a7319407372783397", "703b5da8dd2fc5b79efb856c711fbde0c1da14d1d1eda9903a2e4219873a5dcd"},
+    {0U, 2, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "fce277a683bc448b5f6694a4a2b246ebcd43d464a8de0a87fe6ba39e447fdafe", "d20db9a7485cf822d354c824d70bb2a656980ee80efba4e3afcd45393deb100b"},
+    {0U, 3, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "bc13c403dcd1e13342610351369eebc6443f0eb7c4484cf98a073560bf3fc294", "2477b883d7efdedbd0c16d22befea2603fe8059d8f7d0cbd7fff8c8326c15326"},
+    {0U, 4, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "ad36b4d4b1e1c1959d82a6d8a0271e944bb54f2ec12b148f90e98632187d3656", "fc92f5f0073d1e353f08d0f619bec10133ac646fb0c76de7efee7d7f1f95f9b9"},
+    {0U, 5, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "73accd095219799d84d0a47aa3b07aaf951ac2e7e26d3cd31984be60821abb7f", "417c1f7f2b0aaaee7d3c4a8f72cd977f0e69904c3ab34d1238b240b9a17a24eb"},
+    {0U, 6, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "f837d3d2bb2215961b39d72952917356816e009126285a8e82fbfd93da1f840b", "7c66a553d7ba214429d81e4d2d0291206226f43f69ab1d00bd2763722e994cfe"},
+    {0U, 7, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "53184491db93a3ffb6ef6016a744458bd1b24268e03ffd9f72649fcddc84715d", "9cd1c6ba1b8513d81e0f811e71040f7414bb19d5f3acd1a89300a2a8a3e6e9a5"},
+    {0U, 8, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "368847d6f779e76e89691086158f31e2803b5dc420f6fe5e48d095c3e6a116c8", "4757d7d0d52f10aeb6a5bf622fc56a1bb84608011c85f7b8af02c709484ff7a8"},
+    {0U, 9, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "6a2fca58b5747c57c6eecfb7268609cde89c109e70b50ebd7bca9a992a367045", "55d1e50713cb2d4aa6b5cb5df4db35885c1fa5b652e2b9b71f631d491dc0bd75"},
+    {0U, 10, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "e7d699396e3ee99d9172cd7850207549d5d5da60c8241e59eb5a7b362641e5d9", "6235c3ee71d306be8a8d2756669975529443d9ff30b8052048ca127cfda910b3"},
+    {0U, 11, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "63e7d025cced7198d627248b6d08583637ec3f2323128acd093227ef97cd4ee8", "e53b869355731664ce838d3bf6ec6776a7a465b0f93c6020f0540decb1e134ad"},
+    {0U, 12, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "b84e261908c428c3314df752b6b5d8d9c64b5347d649825cb53a6ce435e3f341", "aa347b5ac4230eca797bf558c5f548c104d345f2ed97f3985ef489707f45d2c6"},
+    {0U, 13, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "da6d5d9e2ddb3fea4ee862b64952bba02bc7a3a70f02107432b9a3d6ee97774d", "588bbfe74adc89207e53ea9fb9104fee5a8d014782539ddcae4e11940d42e854"},
+    {0U, 14, "d031e3c00beaec93a6b5b015b6d158c02cb7b2d360cd4b4b759aeeef010cf38c", "44a82fb3485fc94cce81a3d674a16e427387ff1c885c1aaa672a4803f389ca82", "72ee4a4b13f57ca2b518fdde6866393293bd445cb6a06ccf5eb1be392bca717b", "456914d18d7f78912e83a913ea52dda59da475872d9cc2c50a0b22d3a2ecd736"},
+    {1U, 0, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "6b0c4fe01e0dcbe96712cf57b2bf3d344294e7280dab6043bbd6c8f9a8603106", "1e64b063a606d861950079817971e2c9cb6d36ded6721b243df3f17178712c18"},
+    {1U, 1, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "2ec6efdf64d85f8d166f92391f0440a0192b4d0292ad9abd062401525ba8022d", "6139605c3b04d3716ecef0a23863457474610a7c64d95244563766294bb3c94b"},
+    {1U, 2, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "84711da24121eda61d646c14c5bb00c6855a81d4bfdbca971ef359a68582b9fa", "ca4022f1a45a4a2412c1b6f86085ac035da02740962fba74ff2f393a2de363d1"},
+    {1U, 3, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "f0685126fcf35dd974a4d03733bf44a29995ae992802d777e506a27a0a3c0ea2", "44db9547bad15e1a05cd86d7dce4547217a0c3e231d274c5874d24464fa96ca1"},
+    {1U, 4, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "315d49acbc6df227ee72938cbad3b215e23085ea98ae7d483ca5b53fd8b0aa0a", "360acefdce0466516f4a74060afe3fe0ce4144aac8d07ad75caf437e7ad4a747"},
+    {1U, 5, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "7382e5b2456e2f37b236643aa68ece4adfcc883aaeddfb8965350b8c5ba64065", "19480e9e82ec09e7ff9ed21ba8bf5aed6aca26f9744e311628370d79ce86fa3c"},
+    {1U, 6, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "55e03f8a9475515426f8e358ef82c55bb124bf4f811fa1c0e480aeac44fe167e", "4cfdf42cac019cafbc5dd2250cd36730100910650feb7e5589bc00b1b1048f13"},
+    {1U, 7, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "bed61b51a6d3506df73fce2475aace7cfaa4e52df3fc705a03b80b6ae55b4965", "be7910dc68f9555c236d613744d11036cc06dd792b4ccf43434791b9f83169de"},
+    {1U, 8, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "5e8ba88df29927ad4b513646915fbe35ef8d08d342948929cf153adf5e6451ce", "35ac47bbb53634666bcad87032d38201077a30cdc8c4d9c09814e4fddcf99543"},
+    {1U, 9, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "bfdd237516b7fc27ed2b70009479f9830b42bb114ba9fa2bbefa6637b71f27df", "0fcf157e38d8eb5a61278702c41e505ff519d57a06114b08c89c95f7ddb77e79"},
+    {1U, 10, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "3359c53f1679e9376803798daa4e6e5083d3c0f8f7f7d5ba041fd89b5916a16a", "5ba845f8d9d2e06de010203fa0ca04c6e8e25a3731d1236c773fc6620a3188f2"},
+    {1U, 11, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "c684b100075db8de530256f285fd20674c44c8793a0d9767741bf35bc32e7ee1", "3cf49c6ca6bf4bddeb6278f1c40bf6f8b854974eb58fcf3a9baa87f13238df2f"},
+    {1U, 12, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "cc8816a67c1fa1ff2eda61d13635ee7a276f4ea0b0d6e0e2d933bc98edfb5e74", "1a6d41eb031c432301145a78c500c04efdaf18e5babdff2a09f480b7c55d6a06"},
+    {1U, 13, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "b7dda7c3aef446346793212283cdad545112d831be33380e5c6ca1d2701ba56b", "55787ce11de5aca726c80caa2f43c4386d3fdd2ab50467fd7db340c9e136a002"},
+    {1U, 14, "0b3d946ca5827471a6ef59cbf3c9adeb099b19ee6f0c0ec68e4090c9a1201b14", "d06621c8ce2f653d4278f60fae9267c35c7aadc914cc15c907ee70f445ee4e07", "8f05ad5a00836a9cf833975719e648e8d228e9f274830b55ed1f3421ce3e4b3c", "1b0c5cd98f92ad74afb566628cb232c16d4e6096a71ed5054fb3a77eb1e7565c"},
+  }};
+  const auto make_input = [](const Spec& spec) {
+    noisemaker::Surface input(spec.width, spec.height);
+    for (std::size_t y = 0; y < spec.height; ++y) for (std::size_t x = 0; x < spec.width; ++x) {
+      const std::size_t i = (y * spec.width + x) * 4U;
+      input.data()[i] = static_cast<float>(static_cast<double>((x * 17U + y * 11U + spec.phase) % 29U) / 28.0);
+      input.data()[i + 1U] = static_cast<float>(static_cast<double>((x * 7U + y * 19U + spec.phase * 2) % 31U) / 30.0);
+      input.data()[i + 2U] = static_cast<float>(static_cast<double>((x * 13U + y * 5U + spec.phase * 3) % 37U) / 36.0);
+      input.data()[i + 3U] = static_cast<float>(0.2 + static_cast<double>((x + y + spec.phase) % 8U) / 10.0);
+    }
+    return input;
+  };
+  for (const auto& item : cases) {
+    const auto& spec = specs[item.spec];
+    const noisemaker::Surface input = make_input(spec);
+    const auto input_floats = little_endian_float_bytes(input);
+    const auto input_rgba = input.to_rgba8();
+    REQUIRE(hex(sha256(input_floats)) == item.input_float);
+    REQUIRE(hex(sha256(input_rgba)) == item.input_rgba);
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_texture("inputTex", input);
+    bindings.set_uniform("MODE", static_cast<std::int32_t>(item.mode));
+    bindings.set_uniform("time", spec.time);
+    bindings.set_uniform("alpha", spec.alpha);
+    bindings.set_uniform("scale", spec.scale);
+    bindings.set_uniform("intensity", spec.intensity);
+    bindings.set_uniform("contrast", spec.contrast);
+    bindings.set_uniform("mono", spec.mono);
+    bindings.set_uniform("tileOffset", spec.tile);
+    bindings.set_uniform("fullResolution", spec.full);
+    const auto kernel = noisemaker::generated::bind_filter_texture_texture(bindings);
+    const auto first = noisemaker::run_pass(kernel, spec.width, spec.height, spec.time,
+                                           static_cast<float>(spec.phase));
+    const auto second = noisemaker::run_pass(kernel, spec.width, spec.height, spec.time,
+                                            static_cast<float>(spec.phase));
+    require_repeat(first, second);
+    REQUIRE(little_endian_float_bytes(input) == input_floats);
+    REQUIRE(input.to_rgba8() == input_rgba);
+    const auto float_hash = hex(sha256(little_endian_float_bytes(first)));
+    if (float_hash != item.output_float) throw std::runtime_error(std::string(spec.name) +
+        " MODE " + std::to_string(item.mode) + " float oracle hash: " + float_hash);
+    REQUIRE(hex(sha256(first.to_rgba8())) == item.output_rgba);
+  }
+}
+
+// CPU9f3 Classic Noise and Moodscape runtime reference cases.
+
+TEST(typed_noise_cpu9f3_dynamic_enum_values_exact) {
+  struct Case {
+    std::string_view name;
+    bool alternate;
+    std::int32_t color_mode;
+    std::int32_t loop_offset;
+    std::int32_t metric;
+    std::int32_t noise_type;
+    std::int32_t refract_mode;
+    std::string_view float_sha256;
+    std::string_view rgba_sha256;
+  };
+  constexpr std::array<Case, 45> cases{{
+      {"base-default", false, 6, 300, 0, 10, 2, "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e", "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc"},
+      {"COLOR_MODE-0", false, 0, 300, 0, 10, 2, "9a3a02e146e739dfe5ecb6149e6a806d9ae3d8dea91a80d4a136c79d262f2259", "4d32bbfaa981a9d29c80bcd6e5c2d8d2ad0bfff8a31c523da1034f5736e50207"},
+      {"COLOR_MODE-1", false, 1, 300, 0, 10, 2, "c95f75fb0611a7afd922e398197e8c95e180924c956c96c1d48782e89bf16636", "3af156409a55a8334dcbb382e9e9580952dd38b78840aeaca810046d51c84fbf"},
+      {"COLOR_MODE-2", false, 2, 300, 0, 10, 2, "edab093a0798dc812cf4b2f01a3106476ff959942c5d1d5bf9c6c9953c29528b", "c17b0a8ef20065514f28335c04ef19105e59a253aedac90af4dd7950421d9eab"},
+      {"COLOR_MODE-3", false, 3, 300, 0, 10, 2, "77266c3a178808c04d35e3aad6bcc5ff9c5844b76579b075a9ee615a6c262601", "c65a5e93f8a47cb9e2e67a469e1d84a3d34e8453b2755d58883d6f8f8ef1d80a"},
+      {"COLOR_MODE-4", false, 4, 300, 0, 10, 2, "acfbd7d74ead64a0078885ddca88f9ace3d61d3a96f7a9ca77f0dbbf2475bf8a", "90be583d23a9d274804dc4f593c183dce31afde0e07ca67cb8994fe5bc5e84f7"},
+      {"COLOR_MODE-6", false, 6, 300, 0, 10, 2, "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e", "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc"},
+      {"LOOP_OFFSET-10", false, 6, 10, 0, 10, 2, "048f0cd377eec5f088e262835ac663684e4c100a92c051faba37cf148def10b2", "0efe5e02d57059bfbb5c5f68e54aeeb8966ef4590bf336752b5c74adeb7e9bd9"},
+      {"LOOP_OFFSET-20", false, 6, 20, 0, 10, 2, "869d3d0bccc6c07a67b97be7a04f0f6a77065f22da6e641ede21a4a2c542728b", "9fb423f15766c5dfd0c6a61a11d3e512f1a28159b6d7ddcf61c08a0e048aaf25"},
+      {"LOOP_OFFSET-30", false, 6, 30, 0, 10, 2, "7d579b874d468b1909a2b3cf0bc2ead34252c0068c6ba3cb0a6fb5fc87a8af1e", "b4eaba5b61f0af7fe0dfbc7f581e8895610c901a0eea3c8cda345d3cb3bd0a80"},
+      {"LOOP_OFFSET-40", false, 6, 40, 0, 10, 2, "ca327f664d6d0b18b5a2de9a88edbad78ade1ec182c655c53171dcec0a90f989", "506908df35fcb0a38842602ea4d6e2012f54875f6804448a3313249f7b867889"},
+      {"LOOP_OFFSET-50", false, 6, 50, 0, 10, 2, "a188cde087e964fd37e59075ac84d0a029c2e4e2bcbe9b6626a578f42eaa4c63", "173af45d5a1a968e9010e0c1cce00d4771b59e1a70c5e4b75cfd8dd7644c492d"},
+      {"LOOP_OFFSET-60", false, 6, 60, 0, 10, 2, "32103a57013158d44c5f3e5c4c9d721d8ce61e586bc26437d3f0e56d9d81d52a", "bcf497fa1d58280248a34e015dde7c8f37c986c0134aec053b117b86a97a026e"},
+      {"LOOP_OFFSET-70", false, 6, 70, 0, 10, 2, "3f5680656fb534213412a5c97f241b23746f08211ebdfbf292cb49a5a5b790e5", "953fe7d313892648d7ad7944adb5ea56ee3decfab1c8f576273f537548f633b9"},
+      {"LOOP_OFFSET-80", false, 6, 80, 0, 10, 2, "e79e94998f80cf69f3e35afadef1dcacf54f5d85bc30bf1de45a7f65c835818d", "39439664e8348cc9d17b31e49cf3870a96faf6d6cdcbcdf8662c154e35b7606d"},
+      {"LOOP_OFFSET-90", false, 6, 90, 0, 10, 2, "9669c89acc6201a8d3c33ed2f7488c641e47ccc5a568f86b54f27a09a03b680d", "5949b08f51cbddb0482db3de31830abe716249cf5d8900bc83dc78a456a0fe06"},
+      {"LOOP_OFFSET-100", false, 6, 100, 0, 10, 2, "319a8268bc1881699b80e35754e3cac28fec67e81ce4cf137f4b1e068b0ca8c9", "b0ccee26e281ed47203846038f40851c3d5c7f5ac3200c21da3933dcc542c825"},
+      {"LOOP_OFFSET-110", false, 6, 110, 0, 10, 2, "4013af85937b124820f6dc2280612b6958380507a40122202489bc0f72a62078", "817ba96e7468e77a3ab1a5d576c82eb1db6101d8e6168572d95db0c4eecbdca4"},
+      {"LOOP_OFFSET-120", false, 6, 120, 0, 10, 2, "909722e8edcfbfd8594ba69ef480c882a49df67e7d4e58ff4b56978e90533091", "69490b846c7f5a4571b4fc18b3182732d9ddc81e152de41aa42cf01b8c37934a"},
+      {"LOOP_OFFSET-200", false, 6, 200, 0, 10, 2, "a0ece66a57a1533234e2222b84d8c713096048a26c0e06acad81b891f6c3de0c", "d8200dcab6aa7749d3c6776e8420755e5c035a4b7e80251c141fb008ff3dde93"},
+      {"LOOP_OFFSET-210", false, 6, 210, 0, 10, 2, "91aa743c2e5f76343ae4b14ed353b179f424edbf601329c1cd762fe7855eeca3", "d542ad6a5770f266ea641a6bcb8ff7264d62d44007d175e21fa1fd68ab327838"},
+      {"LOOP_OFFSET-300", false, 6, 300, 0, 10, 2, "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e", "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc"},
+      {"LOOP_OFFSET-400", false, 6, 400, 0, 10, 2, "c9e6539e2a5265fd521414ab560297d08ba316e8354d5b8b3b3c2de8180505f5", "69d8ad3815e2bcc4d62f7a9d6a375626783dd9e96d4f0a9091fe82895976c704"},
+      {"LOOP_OFFSET-410", false, 6, 410, 0, 10, 2, "108187a384b649de627fbf6bd29fb519bd67acdaa28d77f947c72a8859e8a777", "09a2445993f52922726ed375980d419cd354c602ba50418aa4f1196eb162e296"},
+      {"METRIC-0", false, 6, 300, 0, 10, 2, "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e", "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc"},
+      {"METRIC-1", false, 6, 300, 1, 10, 2, "ee09f77e547a4e7d784d886c1f1c02beaad47a3a0c64d1142a026717e8801d51", "c4cc6a273420e33d287c801208e35aa1c2ef4e04bfb1820f04df2c2470318a5c"},
+      {"METRIC-2", false, 6, 300, 2, 10, 2, "083b7eccaf3c812642f65b66ac35556a2f652ec2b593cc39619c5afef86dd2c9", "1e1aeb3ac8da2f54536b068188f81056aec22ab499a96cb1283e361c77046321"},
+      {"METRIC-3", false, 6, 300, 3, 10, 2, "b646d4f042cb6290dbf315e15ec8ce040d986a394437ab3a08be337ffc205247", "4a40038f79dda624fbe1f1435b07ac2ae3413bd6aff4b03c7e116c1031d9385a"},
+      {"METRIC-4", false, 6, 300, 4, 10, 2, "1e540400eed0ebf4492622e5574bcabd244b831b02c01988de675450c909fb49", "e9b0520edefb6ef4cde9806ce1357a1d3c77d8d893158adaea6a0eab26a4e6ee"},
+      {"METRIC-5", false, 6, 300, 5, 10, 2, "3c732d73afc32b684aab5f8bbcbe81432ecfbd0115a26a7d4e47db7227cc51ec", "23b8508f0f31fe84d9b0034d578679809f3a88307afceeb0291cc43aea910fa6"},
+      {"REFRACT_MODE-0", false, 6, 300, 0, 10, 0, "bbbe197d0e7a794ec9fe16dc04deae31f2e31880051499ef2a788fb4a99808f2", "d837a65919db3a7e616b9f7343f283a6c9895f2c252e8e9bb0a99e76043676f6"},
+      {"REFRACT_MODE-1", false, 6, 300, 0, 10, 1, "d995c92fd1ba2d58f9125fe2c41c14b30b8723a911d1d49d4aa2a71ae4e6cfa3", "f01df030373eb69ae80d2f307d6fd1bfcc42f4b573c8e077f380bf5206f05827"},
+      {"REFRACT_MODE-2", false, 6, 300, 0, 10, 2, "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e", "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc"},
+      {"NOISE_TYPE-0", false, 6, 300, 0, 0, 2, "cfa2afc5f6a0825ad70b0d252e7e44e2d20acd40eef0f67163288510ffe27ea7", "3cacc0d76fc91dae60b92ad029d2615cc8efec7b37c06b38e03be69bcf50444a"},
+      {"NOISE_TYPE-1", false, 6, 300, 0, 1, 2, "02b67895acafb800b9879141caf236899ede37903ab5c5aecf1596c9b0337b23", "0a3bdff122fb3dc440da34754e85c1e77a57a72d706d22fb78f13bb70be3a2ba"},
+      {"NOISE_TYPE-2", false, 6, 300, 0, 2, 2, "684588a84844c3bf4a61f78d62be1f38011601e59cd537c814ffbf9eadaea681", "cd93f4e97895701c90d9e5499edb202f8e96ec7a1afc26034ef0dc4a1e2c6428"},
+      {"NOISE_TYPE-3", false, 6, 300, 0, 3, 2, "a45659d2c1ac6934c1d0f0e9f1a11f7d77e4deb7b146841ee1786fd0ddddeb17", "142afc0119eefb5043636174c19a7191432bf0b4507264d4ec02068db31ea548"},
+      {"NOISE_TYPE-4", false, 6, 300, 0, 4, 2, "27f9b9a0d1e4b4579b5b22efdc7f460287eff0823f251eaf2730d245a0cda686", "55843b15795cb6fc4b8a0929acd967a37eb404d8ed87112a27a225fd4563a261"},
+      {"NOISE_TYPE-5", false, 6, 300, 0, 5, 2, "3d3995279b634a29d23baa126ae04ec5df073845d71cd47c791a3fd74dc03122", "e3aa7a906485b15e90d4b46de2b56ac03c756c62af7bbdd9d323b60f0c47c427"},
+      {"NOISE_TYPE-6", false, 6, 300, 0, 6, 2, "b9ce1287f59226396a18e64e2d179b7898d3223e629609e955aa829e8e3bc057", "192863a5168d759e6d4b3cd6ccaf3523f4bd9313152376b25d502cabaf3179eb"},
+      {"NOISE_TYPE-10", false, 6, 300, 0, 10, 2, "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e", "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc"},
+      {"NOISE_TYPE-11", false, 6, 300, 0, 11, 2, "27975f7d6dd018f2b645c4616f31ad541ea9661725ca848342136e8e2c1cfaf2", "853411a40ae40dca000c3fc2f356241e4266e38e8c8bc5434b98ec319da95277"},
+      {"cross-constant-oklab", true, 3, 300, 0, 0, 2, "3ef9f3a1c840ae2c0c76627e638630062f6983ee486faad0666a413ab6d2db7b", "bb9c7c4c9940f0a4ccd78780064254e3eb0cacc5b088b28917436eb2fddb5478"},
+      {"cross-spline-palette", true, 4, 300, 0, 6, 1, "3e836789957ccd79eeeb26bf25306c47988625a8233c5aa2d84f442aafeeb9ca", "977276f1df0c6db66a8b82726cbdd48c7ce5464f64a199a568945a74e5219619"},
+      {"cross-hash-metric", true, 2, 120, 5, 11, 0, "007e8370e591db52b6c15956dea19fb9f9063dd000d41c61299cc243130d6aa8", "b1afc3dbe46c96d9627c89a90caea13bd4d5768cdc9929dcddb759fc39b5d1fa"},
+  }};
+  for (const auto& item : cases) {
+    const bool alternate = item.alternate;
+    const auto render = [&]() {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_uniform("COLOR_MODE", item.color_mode);
+      bindings.set_uniform("LOOP_OFFSET", item.loop_offset);
+      bindings.set_uniform("METRIC", item.metric);
+      bindings.set_uniform("NOISE_TYPE", item.noise_type);
+      bindings.set_uniform("REFRACT_MODE", item.refract_mode);
+      bindings.set_uniform("time", (alternate ? static_cast<double>(static_cast<float>(3.25)) : static_cast<double>(static_cast<float>(-2.5))));
+      bindings.set_uniform("seed", (alternate ? std::int32_t{100} : std::int32_t{37}));
+      bindings.set_uniform("resolution", (alternate ? noisemaker::glsl::Vec2(static_cast<float>(5), static_cast<float>(4)) : noisemaker::glsl::Vec2(static_cast<float>(4), static_cast<float>(5))));
+      bindings.set_uniform("tileOffset", (alternate ? noisemaker::glsl::Vec2(static_cast<float>(0), static_cast<float>(0)) : noisemaker::glsl::Vec2(static_cast<float>(2), static_cast<float>(1))));
+      bindings.set_uniform("fullResolution", (alternate ? noisemaker::glsl::Vec2(static_cast<float>(5), static_cast<float>(4)) : noisemaker::glsl::Vec2(static_cast<float>(11), static_cast<float>(9))));
+      bindings.set_uniform("xScale", (alternate ? static_cast<double>(static_cast<float>(100)) : static_cast<double>(static_cast<float>(17))));
+      bindings.set_uniform("yScale", (alternate ? static_cast<double>(static_cast<float>(100)) : static_cast<double>(static_cast<float>(83))));
+      bindings.set_uniform("octaves", (alternate ? std::int32_t{8} : std::int32_t{3}));
+      bindings.set_uniform("ridges", (alternate ? true : false));
+      bindings.set_uniform("refractAmt", (alternate ? static_cast<double>(static_cast<float>(100)) : static_cast<double>(static_cast<float>(33))));
+      bindings.set_uniform("kaleido", (alternate ? static_cast<double>(static_cast<float>(32)) : static_cast<double>(static_cast<float>(7))));
+      bindings.set_uniform("loopScale", (alternate ? static_cast<double>(static_cast<float>(100)) : static_cast<double>(static_cast<float>(42))));
+      bindings.set_uniform("speed", (alternate ? static_cast<double>(static_cast<float>(100)) : static_cast<double>(static_cast<float>(-100))));
+      bindings.set_uniform("paletteMode", std::int32_t{3});
+      bindings.set_uniform("paletteOffset", noisemaker::glsl::DVec3(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5)));
+      bindings.set_uniform("paletteAmp", noisemaker::glsl::DVec3(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5)));
+      bindings.set_uniform("paletteFreq", noisemaker::glsl::DVec3(static_cast<float>(1), static_cast<float>(1), static_cast<float>(1)));
+      bindings.set_uniform("palettePhase", noisemaker::glsl::DVec3(static_cast<float>(0.3), static_cast<float>(0.2), static_cast<float>(0.2)));
+      bindings.set_uniform("cyclePalette", std::int32_t{1});
+      bindings.set_uniform("rotatePalette", static_cast<double>(static_cast<float>(0)));
+      bindings.set_uniform("repeatPalette", static_cast<double>(static_cast<float>(1)));
+      bindings.set_uniform("hueRange", (alternate ? static_cast<double>(static_cast<float>(100)) : static_cast<double>(static_cast<float>(25))));
+      bindings.set_uniform("hueRotation", (alternate ? static_cast<double>(static_cast<float>(360)) : static_cast<double>(static_cast<float>(180))));
+      bindings.set_uniform("wrap", true);
+      return noisemaker::run_pass(noisemaker::generated::bind_classicNoisedeck_noise_noise(bindings),
+          static_cast<std::size_t>((alternate ? static_cast<double>(static_cast<float>(5)) : static_cast<double>(static_cast<float>(4)))), static_cast<std::size_t>((alternate ? static_cast<double>(static_cast<float>(4)) : static_cast<double>(static_cast<float>(5)))),
+          static_cast<float>((alternate ? static_cast<double>(static_cast<float>(3.25)) : static_cast<double>(static_cast<float>(-2.5)))), static_cast<float>((alternate ? std::int32_t{100} : std::int32_t{37})));
+    };
+    const auto first = render();
+    const auto second = render();
+    const auto actual_float = hex(sha256(little_endian_float_bytes(first)));
+    const auto actual_rgba = hex(sha256(first.to_rgba8()));
+    if (actual_float != item.float_sha256 || actual_rgba != item.rgba_sha256) {
+      throw std::runtime_error(std::string(item.name) + " float=" + actual_float + " rgba=" + actual_rgba);
+    }
+    require_repeat(first, second);
+  }
+}
+
+TEST(typed_moodscape_cpu9f3_dynamic_enum_values_exact) {
+  struct Case {
+    std::string_view name;
+    bool alternate;
+    std::int32_t color_mode;
+    std::int32_t noise_type;
+    std::string_view float_sha256;
+    std::string_view rgba_sha256;
+  };
+  constexpr std::array<Case, 17> cases{{
+      {"base-default", false, 2, 10, "5dc7a1e74cd47703061f3875100e3ea362d693d13b10557e3d4e03a9277f317c", "465edf2027a381e310a747525d5f38db0a8428842cfd12708ea644c80bb23d59"},
+      {"COLOR_MODE-0", false, 0, 10, "37d244344a118408484fc91194289a5d0f5529e37e7d05fe20ce642825cbfe0f", "1ddd546f60cad9aec615479f464f297e496231ccaee14d764f49dd1eeb9f7c41"},
+      {"COLOR_MODE-1", false, 1, 10, "584dc98aa174d71d80b5d4c19185de79b063f2c62af2f53dde15219aec67da9b", "c42ff5b7856840edd681d70e3b50b33b9ee5ec8c055b4fbd773a9de460991ab8"},
+      {"COLOR_MODE-2", false, 2, 10, "5dc7a1e74cd47703061f3875100e3ea362d693d13b10557e3d4e03a9277f317c", "465edf2027a381e310a747525d5f38db0a8428842cfd12708ea644c80bb23d59"},
+      {"COLOR_MODE-3", false, 3, 10, "1819006e46330c0d58155e6b144bba727eb6c27704a8b0901abc6f2a0d4883ae", "6aeeae8cadec3973edbea14af21769b80e09e23265812b7696da9a741c5d02c0"},
+      {"NOISE_TYPE-0", false, 2, 0, "c704d706181cb6c2d8fe305c6fddd81e662ef6d50f2ddbde7424350b20193f6a", "bb75b33fd8bc0df6031462239955f3ed233c6cc0f236bd18345ea5e6703c0e51"},
+      {"NOISE_TYPE-1", false, 2, 1, "fb863114d3394e081db75abc9c9c552fcf144884280c91265d7cbd5b50dcf45e", "6873a5def9e0a43f8fba76bf033d8b65aafdfffbcda9af157733ff160d647946"},
+      {"NOISE_TYPE-2", false, 2, 2, "a394fc6bb91a7901f1e36e7cf3804197c7cd4544e2c01d4f781631f4e9b8d8ee", "17927fca3d5cae06d145a080e3073912ab12378eb4b8be6d1ff8b089cd62490b"},
+      {"NOISE_TYPE-3", false, 2, 3, "1cb5a05b7ece9475b2b2ee5169aac8fb2e0bcfc41a5cc494b064c2ff29f963cf", "5a45c734aabb59c5b6081da3b33f204691a611ac58a739230e34480dd5471d7e"},
+      {"NOISE_TYPE-4", false, 2, 4, "c0eeefc16b560e035f8d336d9f14a59b1486432014c7e2855636b545a292921f", "f76f83aa24943275120e95b49eb7dd0d86c8bfeb79280188799be8b94ef55b7d"},
+      {"NOISE_TYPE-5", false, 2, 5, "bdbc9d1886f77dcfa79930d770c1a70962899884cb18ed852e09053310d65d70", "7a5208170bbe66bd3050a4a22508b634dcc04f5b481a2a0c533a2e6d754e9f40"},
+      {"NOISE_TYPE-6", false, 2, 6, "05ffb3cb988b1ff9c5ba84c9dee185b63d159964f8585cbb483d6d5e72d12911", "ce57978099d81291936509b751bc1e96d50daf8685fd70034182a99371a249a5"},
+      {"NOISE_TYPE-10", false, 2, 10, "5dc7a1e74cd47703061f3875100e3ea362d693d13b10557e3d4e03a9277f317c", "465edf2027a381e310a747525d5f38db0a8428842cfd12708ea644c80bb23d59"},
+      {"NOISE_TYPE-11", false, 2, 11, "5612070da4c77fa8e45c51428a998f7fc05b5376d159074619a0778a0972dc01", "af403b585849aea9ef44a67590d69cf0faf6139521f18e1bd4a4d8738c961694"},
+      {"cross-constant-oklab", true, 3, 0, "be92b82a0a642f6a132ffdbd98d583803e5aed8e96259e44dc9b016634aa3686", "bc9ac496a799335fe4020e2e2153a9b4567dd84a6ea940429c0a29e45100dcb0"},
+      {"cross-spline-mono", true, 0, 6, "bfb6599baa91850fa3c114d03495669e55c4e4ebd1f5940dad62f6ef27e2e579", "94fcc68673ad4a604c179d1a9f99b384999f4aba84896369912480ae2380a918"},
+      {"cross-linear-rgb", true, 1, 1, "d335c0e8c3f542148e647ae1f8fb1c150da8c571ac4355235798ea3b01134a34", "76f95ee2d2eabbba2d35b24cdc73c0d149946078600248c032512c536650c343"},
+  }};
+  for (const auto& item : cases) {
+    const bool alternate = item.alternate;
+    const auto render = [&]() {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_uniform("COLOR_MODE", item.color_mode);
+      bindings.set_uniform("NOISE_TYPE", item.noise_type);
+      bindings.set_uniform("resolution", noisemaker::glsl::Vec2(
+          static_cast<float>(alternate ? 6 : 5), static_cast<float>(alternate ? 5 : 4)));
+      bindings.set_uniform("time", (alternate ? static_cast<double>(static_cast<float>(-1.5)) : static_cast<double>(static_cast<float>(2.75))));
+      bindings.set_uniform("seed", (alternate ? std::int32_t{7} : std::int32_t{91}));
+      bindings.set_uniform("tileOffset", (alternate ? noisemaker::glsl::Vec2(static_cast<float>(0), static_cast<float>(0)) : noisemaker::glsl::Vec2(static_cast<float>(2), static_cast<float>(1))));
+      bindings.set_uniform("fullResolution", (alternate ? noisemaker::glsl::Vec2(static_cast<float>(6), static_cast<float>(5)) : noisemaker::glsl::Vec2(static_cast<float>(11), static_cast<float>(9))));
+      bindings.set_uniform("noiseScale", (alternate ? static_cast<double>(static_cast<float>(42)) : static_cast<double>(static_cast<float>(100))));
+      bindings.set_uniform("refractAmt", (alternate ? static_cast<double>(static_cast<float>(67)) : static_cast<double>(static_cast<float>(33))));
+      bindings.set_uniform("speed", (alternate ? static_cast<double>(static_cast<float>(100)) : static_cast<double>(static_cast<float>(13))));
+      bindings.set_uniform("hueRotation", (alternate ? static_cast<double>(static_cast<float>(35)) : static_cast<double>(static_cast<float>(270))));
+      bindings.set_uniform("hueRange", (alternate ? static_cast<double>(static_cast<float>(90)) : static_cast<double>(static_cast<float>(55))));
+      bindings.set_uniform("intensity", (alternate ? static_cast<double>(static_cast<float>(-75)) : static_cast<double>(static_cast<float>(40))));
+      bindings.set_uniform("ridges", (alternate ? true : false));
+      bindings.set_uniform("wrap", (alternate ? false : true));
+      return noisemaker::run_pass(noisemaker::generated::bind_classicNoisedeck_moodscape_moodscape(bindings),
+          static_cast<std::size_t>((alternate ? static_cast<double>(static_cast<float>(6)) : static_cast<double>(static_cast<float>(5)))), static_cast<std::size_t>((alternate ? static_cast<double>(static_cast<float>(5)) : static_cast<double>(static_cast<float>(4)))),
+          static_cast<float>((alternate ? static_cast<double>(static_cast<float>(-1.5)) : static_cast<double>(static_cast<float>(2.75)))), static_cast<float>((alternate ? std::int32_t{7} : std::int32_t{91})));
+    };
+    const auto first = render();
+    const auto second = render();
+    const auto actual_float = hex(sha256(little_endian_float_bytes(first)));
+    const auto actual_rgba = hex(sha256(first.to_rgba8()));
+    if (actual_float != item.float_sha256 || actual_rgba != item.rgba_sha256) {
+      throw std::runtime_error(std::string(item.name) + " float=" + actual_float + " rgba=" + actual_rgba);
+    }
+    require_repeat(first, second);
+  }
+}
+
+TEST(typed_shapes3d_runtime_enum_values_match_current_cpu) {
+ using namespace noisemaker;
+ struct Case { const char* name; int blend, shape_a, shape_b; bool variant;
+               const char* f32; const char* rgba; };
+ const std::array<Case,28> cases{{
+    {"default", 10, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"parameter", 10, 30, 10, true, "cc607f450679ad60fdf9c19b6dbeeb54d34870b54f7f7d1740061fcee35360f5", "5926466c10205be14fcc6f15722a7f312b02533913460aca9ba3d8d559faec31"},
+    {"blend-51", 51, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"blend-50", 50, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"blend-40", 40, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"blend-26", 26, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"blend-25", 25, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"blend-20", 20, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"blend-10", 10, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"blend-30", 30, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"a-70", 10, 70, 10, false, "60f51d108b624bd4f1cc6dd5aa5b922a84db659cb737c4b2a5e1700b6b97c431", "e83ea9560ea3d976c90a17808a0af4b165632c61bf5cddb55151fe0d9792da55"},
+    {"a-60", 10, 60, 10, false, "420535a1acf9668ea325df92a74c886c88364dc489677268524158af86644e1f", "cf4164f3cff5997433e98c04655124cbd7d64c95e0db3188f313ccb843e2f5f0"},
+    {"a-10", 10, 10, 10, false, "0d60c1f4d8c66e614fdbd975922da2dcb83bb6e98a189b67ca4477cf05d95732", "6eacf6bbb60bbd41bc99906da2650c47794bdb4dbd9ac9c1d8f04b43df9fed30"},
+    {"a-50", 10, 50, 10, false, "fe7c35631ad7cf906d67895b05c75f98184bd222b04f26efa10c5fda1dba8b02", "5577ca96b3cd5b8661969fedaf16771e84b29e8762f8030beeb81a1b6fcab742"},
+    {"a-40", 10, 40, 10, false, "29bf0ecd8663541a971aec301e5feb93d3933e6b9d747b60cc18f1d896fcad74", "a22ccbbb307feb46f47c13dab5ff47b0c41594943378bb1d120c873b6ce93305"},
+    {"a-80", 10, 80, 10, false, "a75aa0e4f0122cd8809a38a155f3a9b484e0b038a08f17eb9ef2f118ae64f51f", "5a227a2f7e521ce02ef8cff095440a0257a11dbe4680abf60606b9ce79c9f5a7"},
+    {"a-20", 10, 20, 10, false, "c07cabcae9a39e42a1c16e1da1a37107dcf2a4380a6c0345579a590473f745ad", "e52350f806fa69d4be152a2254affc055982aebcdc22107ba82418a73717e623"},
+    {"a-31", 10, 31, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"a-30", 10, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"b-70", 10, 30, 70, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"b-60", 10, 30, 60, false, "201c7b5344f621c1bf2223829aba6e4b3c9aeb0bf78b8c848a1faf324b751b4d", "05a1df6e7f693b2d3028926587059a16582e61a196dac2366276ac17310e6653"},
+    {"b-10", 10, 30, 10, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"b-50", 10, 30, 50, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"b-40", 10, 30, 40, false, "ead24ef66e57c6a89e6c9b96748c2b4f37c3c3bb72fb622131ce91ad4c5932e2", "ace14771c5806d73a42869302bd7bfcd36933c4681eeec1ad8b3e0f7de6c8833"},
+    {"b-80", 10, 30, 80, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"b-20", 10, 30, 20, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"b-31", 10, 30, 31, false, "affaf610706831bee77b5210c0927dcf5a562acaa139e5cb8f81ba25b5230959", "c49fa31670eefde18354c6335fb3db86732db4a55f42653dd53bd000b76f9ff7"},
+    {"b-30", 10, 30, 30, false, "6ed8c0b522ec55a2ae8f4902e2f0f4cb4f9de562bdecfdb68d6597d0d5324cb1", "5ec4c1d31460abb6b852729c1d402a6d45c170ec48354bcd4868cacb55e09b61"},
+ }};
+ for(const auto& item : cases) {
+ const int blend=item.blend, shapeA=item.shape_a, shapeB=item.shape_b;
+ const bool variant=item.variant;
+ constexpr std::size_t width=5,height=4;
+ Surface input(width,height);
+ for(std::size_t i=0;i<width*height;++i){input.data()[i*4]=f32(static_cast<double>((i*11+3)%23)/23);input.data()[i*4+1]=f32(static_cast<double>((i*7+5)%29)/29);input.data()[i*4+2]=f32(static_cast<double>((i*13+1)%31)/31);input.data()[i*4+3]=f32(.4+static_cast<double>(i%4)*.15);}
+ const auto original = little_endian_float_bytes(input);
+ glsl::Bindings b;
+ b.set_uniform("BLEND_MODE",std::int32_t(blend));b.set_uniform("SHAPE_A",std::int32_t(shapeA));b.set_uniform("SHAPE_B",std::int32_t(shapeB));
+ b.set_uniform("resolution",glsl::Vec2(width,height));b.set_uniform("fullResolution",glsl::Vec2(width,height));b.set_uniform("tileOffset",glsl::Vec2(0));
+ b.set_uniform("time",double(f32(.375)));b.set_uniform("shapeAScale",variant?45.0:64.0);b.set_uniform("shapeBScale",variant?36.0:27.0);
+ b.set_uniform("shapeAThickness",variant?9.0:5.0);b.set_uniform("shapeBThickness",variant?7.0:5.0);b.set_uniform("smoothness",variant?12.0:1.0);
+ b.set_uniform("spin",variant?35.0:0.0);b.set_uniform("flip",variant?-25.0:0.0);b.set_uniform("spinSpeed",2.0);b.set_uniform("flipSpeed",2.0);
+ b.set_uniform("repetition",variant);b.set_uniform("animation",std::int32_t(1));b.set_uniform("flythroughSpeed",0.0);b.set_uniform("spacing",10.0);
+ b.set_uniform("cameraDist",8.0);b.set_uniform("bgColor",glsl::DVec3(f32(.1),f32(.3),f32(.6)));b.set_uniform("bgAlpha",15.0);
+ b.set_uniform("colorMode",std::int32_t(variant?1:10));b.set_uniform("paletteMode",std::int32_t(0));
+ b.set_uniform("paletteOffset",glsl::DVec3(f32(.83),f32(.6),f32(.63)));b.set_uniform("paletteAmp",glsl::DVec3(f32(.5),f32(.5),f32(.5)));
+ b.set_uniform("paletteFreq",glsl::DVec3(f32(1),f32(1),f32(1)));b.set_uniform("palettePhase",glsl::DVec3(f32(.3),f32(.1),f32(0)));
+ b.set_uniform("cyclePalette",std::int32_t(1));b.set_uniform("rotatePalette",0.0);b.set_uniform("repeatPalette",1.0);b.set_uniform("weight",variant?35.0:0.0);
+ b.set_texture("inputTex",input);
+
+ const auto kernel=generated::bind_classicNoisedeck_shapes3d_shapes3d(b);
+ const auto first=run_pass(kernel,width,height,f32(.375),17);
+ const auto second=run_pass(kernel,width,height,f32(.375),17);
+ REQUIRE(little_endian_float_bytes(input)==original);
+ REQUIRE(little_endian_float_bytes(first)==little_endian_float_bytes(second));
+ const auto actual=hex(sha256(little_endian_float_bytes(first)));
+ if(actual!=item.f32) throw std::runtime_error(std::string(item.name)+" float32 hash: "+actual);
+ REQUIRE(hex(sha256(first.to_rgba8()))==item.rgba);
+ }
+}
+
+TEST(typed_emboss_runtime_cpu9f3_exact) {
+  struct Case { const char* name; std::size_t width, height; int phase, style;
+    float tile_x, tile_y, full_x, full_y; double amount, angle, emboss_height, color_amount, render_scale;
+    const char* f32; const char* rgba; };
+  const std::array<Case, 4> cases{{
+    {"wide-STYLE0", 9U, 6U, 3, 0, 0.0f, 0.0f, 9.0f, 6.0f, 1.399999976158142, 135.0, 2.0, 70.0, 1.0, "75ace6771f2c1d16ac9f44f72e492cef21f94a28af88289fa97a0ac7a1dabf13", "ada59f9a595ccf9b0c5d7c6707050cec9065ac0e568af8c2adeee6b173e53337"},
+    {"wide-STYLE1", 9U, 6U, 3, 1, 0.0f, 0.0f, 9.0f, 6.0f, 1.399999976158142, 135.0, 2.0, 70.0, 1.0, "b9c9417d8b00517933b6082a1616164ed99e6d27b0cb3e83812acfdabcd1c6d4", "42b2a9a9d6bc018330bfa03b662f3effdeb1c232249b8c71c7622c321bc065ea"},
+    {"tiled-STYLE0", 13U, 9U, 4, 0, 3.0f, 2.0f, 20.0f, 15.0f, 4.5, -215.0, 7.0, 35.0, 0.75, "cb84fd30becef8ea48c3a0f2f4a56d6aadc1f40e31d8c5b98660eef0b00e9a9f", "73cf6cb0da76cb1afc241d5b25f7fabca7059efe1eb946d0602bf831d38eac2d"},
+    {"tiled-STYLE1", 13U, 9U, 4, 1, 3.0f, 2.0f, 20.0f, 15.0f, 4.5, -215.0, 7.0, 35.0, 0.75, "6e055f23260976e660cac1c4265375dfd9db5a90c1e8acfcdf5f0002749b5a02", "176a426fa72ae20af4aa000a0eb9174c440279c63ed850725cce64c72b054d3d"},
+  }};
+  for (const auto& item : cases) {
+    std::vector<float> pattern(item.width * item.height * 4U);
+    for (std::size_t y = 0; y < item.height; ++y) for (std::size_t x = 0; x < item.width; ++x) {
+      const auto i = (y * item.width + x) * 4U;
+      pattern[i] = static_cast<float>(static_cast<double>(((31U*x+17U*y+7U+19U*item.phase)%97U)+1U)/101.0);
+      pattern[i+1U] = static_cast<float>(static_cast<double>(((13U*x+37U*y+11U+23U*item.phase)%89U)+2U)/97.0);
+      pattern[i+2U] = static_cast<float>(static_cast<double>(((43U*x+5U*y+3U+29U*item.phase)%83U)+3U)/91.0);
+      pattern[i+3U] = static_cast<float>(static_cast<double>(((7U*x+11U*y+item.phase)%29U)+5U)/37.0);
+    }
+    const noisemaker::Surface input(item.width, item.height, pattern);
+    const auto render = [&]() {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_texture("inputTex", input);
+      bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(item.tile_x, item.tile_y));
+      bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(item.full_x, item.full_y));
+      bindings.set_uniform("STYLE", std::int32_t{item.style});
+      bindings.set_uniform("amount", item.amount);
+      bindings.set_uniform("angle", item.angle);
+      bindings.set_uniform("height", item.emboss_height);
+      bindings.set_uniform("colorAmount", item.color_amount);
+      bindings.set_uniform("renderScale", item.render_scale);
+      return noisemaker::run_pass(noisemaker::generated::bind_filter_emboss_emboss(bindings), item.width, item.height);
+    };
+    const auto first = render();
+    const auto second = render();
+    const auto first_f32 = hex(sha256(little_endian_float_bytes(first)));
+    const auto first_rgba = hex(sha256(first.to_rgba8()));
+    if (first_f32 != item.f32 || first_rgba != item.rgba) {
+      throw std::runtime_error(std::string(item.name) + " f32=" + first_f32 + " rgba=" + first_rgba);
+    }
+    REQUIRE(hex(sha256(little_endian_float_bytes(second))) == first_f32);
+    REQUIRE(hex(sha256(second.to_rgba8())) == first_rgba);
+    REQUIRE(std::equal(input.data().begin(), input.data().end(), pattern.begin()));
+  }
+}
+
+TEST(typed_extrude_runtime_cpu9f3_exact) {
+  struct Case { const char* name; std::size_t width, height; int phase, depth_source, extrude_type;
+    float tile_x, tile_y, full_x, full_y; double size, depth; bool solid_front;
+    const char* f32; const char* rgba; };
+  const std::array<Case, 8> cases{{
+    {"wide-DEPTH_SOURCE0,EXTRUDE_TYPE0", 13U, 9U, 1, 0, 0, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "2769823da76429112ad41c40349a720a4e5ece03b6dafa0ea541d30ba8004071", "31c4ea799aa9bf5fea7ea1de9532133a60466135db6f65dcff41871b1b259658"},
+    {"wide-DEPTH_SOURCE0,EXTRUDE_TYPE1", 13U, 9U, 1, 0, 1, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "c6f8fee6dc46e4b91d4009b0ea553e8d18f328d7bcdb811e8c85e184127b7f40", "3c64aee6f85a05ebc7314bd66ce68ca7ea16ead1548177147593e2406bfe3fe5"},
+    {"wide-DEPTH_SOURCE1,EXTRUDE_TYPE0", 13U, 9U, 1, 1, 0, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "6921bbfe7bc6f319592eff66128024b51925c4003cad17c8b9dc879794dfbaf3", "d3049815432eabb87d143d555f9e91d7d04579bab5290e158532bee90271e05e"},
+    {"wide-DEPTH_SOURCE1,EXTRUDE_TYPE1", 13U, 9U, 1, 1, 1, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "e07bde6e68a3675e59f76b7bfad10cbf9e07650e705ba857d93fa2042030e3d5", "898566d1a73ec7101491780019bb3886d37dd34fea1986e3904eeae845d4b682"},
+    {"tiled-DEPTH_SOURCE0,EXTRUDE_TYPE0", 9U, 6U, 4, 0, 0, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "10facb6d9139a28cfffb23bc8be0434342793362c3b8e177baf594832661859e", "f206a9ee9540263d5343efd82e88ba575b9af2ee0233d3ca2f89279844d5fc34"},
+    {"tiled-DEPTH_SOURCE0,EXTRUDE_TYPE1", 9U, 6U, 4, 0, 1, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "ff978d49a691d22e54a07ae3ddb1b67b89895a155fd678341da7edef07e9c502", "490f4f7dd6aff54e7be2e4e3727392a52154a1010e82b84f8797bc67e2d8d02b"},
+    {"tiled-DEPTH_SOURCE1,EXTRUDE_TYPE0", 9U, 6U, 4, 1, 0, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "6de04778bfa7aa14b19565701ffbcd7664b443c1666c7a900b0205730f6922ac", "ffba9516c69a317c3020a435824ecc6c5ed806fd3d0aced33b94993dde6726b2"},
+    {"tiled-DEPTH_SOURCE1,EXTRUDE_TYPE1", 9U, 6U, 4, 1, 1, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "fcb31ac06b6b1ede3a41581f530200af233b763ec2de2f9cbf34f31ef65e24c4", "0f1ff4d35b8c776198fba0fc25558b8d1d4ec115ef341d6ecb5731a752789335"},
+  }};
+  for (const auto& item : cases) {
+    std::vector<float> pattern(item.width * item.height * 4U);
+    for (std::size_t y = 0; y < item.height; ++y) for (std::size_t x = 0; x < item.width; ++x) {
+      const auto i = (y * item.width + x) * 4U;
+      pattern[i] = static_cast<float>(static_cast<double>(((31U*x+17U*y+7U+19U*item.phase)%97U)+1U)/101.0);
+      pattern[i+1U] = static_cast<float>(static_cast<double>(((13U*x+37U*y+11U+23U*item.phase)%89U)+2U)/97.0);
+      pattern[i+2U] = static_cast<float>(static_cast<double>(((43U*x+5U*y+3U+29U*item.phase)%83U)+3U)/91.0);
+      pattern[i+3U] = static_cast<float>(static_cast<double>(((7U*x+11U*y+item.phase)%29U)+5U)/37.0);
+    }
+    const noisemaker::Surface input(item.width, item.height, pattern);
+    const auto render = [&]() {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_texture("inputTex", input);
+      bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(item.tile_x, item.tile_y));
+      bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(item.full_x, item.full_y));
+      bindings.set_uniform("DEPTH_SOURCE", std::int32_t{item.depth_source});
+      bindings.set_uniform("EXTRUDE_TYPE", std::int32_t{item.extrude_type});
+      bindings.set_uniform("resolution", noisemaker::glsl::Vec2(static_cast<float>(item.width), static_cast<float>(item.height)));
+      bindings.set_uniform("size", item.size);
+      bindings.set_uniform("depth", item.depth);
+      bindings.set_uniform("solidFront", item.solid_front);
+      return noisemaker::run_pass(noisemaker::generated::bind_filter_extrude_extrude(bindings), item.width, item.height);
+    };
+    const auto first = render();
+    const auto second = render();
+    const auto first_f32 = hex(sha256(little_endian_float_bytes(first)));
+    const auto first_rgba = hex(sha256(first.to_rgba8()));
+    if (first_f32 != item.f32 || first_rgba != item.rgba) {
+      throw std::runtime_error(std::string(item.name) + " f32=" + first_f32 + " rgba=" + first_rgba);
+    }
+    REQUIRE(hex(sha256(little_endian_float_bytes(second))) == first_f32);
+    REQUIRE(hex(sha256(second.to_rgba8())) == first_rgba);
+    REQUIRE(std::equal(input.data().begin(), input.data().end(), pattern.begin()));
+  }
+}
+
+// CPU9f3 Synth Shape runtime enum witnesses from attention-cpp-shape-runtime-oracles.json.
+TEST(typed_shape_runtime_cpu9f3_exact) {
+  struct Case { const char* name; int loop_a, loop_b; bool alternate;
+    const char* f32; const char* rgba; };
+  const std::array<Case, 55> cases{{
+    {"default", 40, 30, false, "52de2cc43f3526e3cf24b8d55fefd065e240796caa2aceeba800970d1adc8e46", "85893d70f9189e286166b4195a7a9807fbf3fa0799d19327c759f596b131a035"},
+    {"A-10", 10, 30, false, "2ac5385440000c0fc75144175b5fc7c53c81fdffd5162e6b033d5ba6d37aecbf", "edc149ddfec55e8ceba990181cbc5ce7bc290d36d42e0ed36cda91df6e7a2539"},
+    {"A-20", 20, 30, false, "9c1eadfb3eb316517e585e4a2905291633bc17cd0df5e4ca9afd069e282c3292", "89e5a2bd5a2062962eee1513040476ea362381b01687f8856f8e1f14ca66bf6d"},
+    {"A-30", 30, 30, false, "374aea7685484a60d9310edf6e202e388bd3645d496fd137b9b53b2986ff6968", "b1e272d950c6c8008239ec459216c2153b4434421551be94f0ae8ae9bd04c014"},
+    {"A-40", 40, 30, false, "52de2cc43f3526e3cf24b8d55fefd065e240796caa2aceeba800970d1adc8e46", "85893d70f9189e286166b4195a7a9807fbf3fa0799d19327c759f596b131a035"},
+    {"A-50", 50, 30, false, "a0d1b4d27aa6accd437d9ddde2868556a6a5513e56f5807619ba25fddb5e6acb", "80ceaa95a85b1b3ea4fefb42d46f4874cfffca1f126101ba3d8d635f8142cb98"},
+    {"A-60", 60, 30, false, "4d0c856ac3d1894eca0d5ad350b995054c9916dad54991cb8e6246f5d2395df7", "24c5ed247c632961e086fc65cc86532f8a9e8a4462c719f600bf65a164caa180"},
+    {"A-70", 70, 30, false, "b98d0a5e7d2e0e78707eba4a004e5c75a0ca955d3596ff71e70d330321783ee1", "a28b65f745c04af4a6fee74de175212007e05540275248aebb26c6835dd306de"},
+    {"A-80", 80, 30, false, "678fe44cb0a5dfab0456e853870995e1f8ee236dbba372a4fce360ccbd3720b0", "94a912a37b72f5dbc58b28949ace19f1f978f2dab869835e8ac4de3b56e8de33"},
+    {"A-90", 90, 30, false, "fb461a4d9b7c020e6a659893be72b98f01d466b71cc8d3340a6bcbdae1919680", "0f6ae458379f3ae7a20685886fad4d8ba6587b82bdc97e89e321f26f678a5f3b"},
+    {"A-100", 100, 30, false, "d800beb96859a03a88ab3af9b6078a6d9b33b6402847ee3b87ed5835cebfeee5", "cfc077c01012386ed5b2718650d5d9a9eec94a2004f57f4a2a217975c1d0b64f"},
+    {"A-110", 110, 30, false, "0c5cf75f7358b8117d6531f397a55aee6e782f663546b55cc8885632a493e707", "45164afc3f1a7917fc36a89e36c98c14597a705dccbd5d4b7bdeb0b5ab787db6"},
+    {"A-120", 120, 30, false, "f77df82e2170536750e69adc70317c8bfe303893b7f78a8e5febe160b78f3ea8", "9b26f38bd8edbf0d882ef69aea56db035fa1511f8da8cdb801d62948a2fd195e"},
+    {"A-200", 200, 30, false, "6f29fdd56e9939c87aa05cb01f07623afb53d442b794b0c1b21ca6631c3eff54", "36d6b0bd5f7a5c653252e84d50cbf75c392f73698fe2b8df371a90fd43da7b90"},
+    {"A-210", 210, 30, false, "09ab1e0718de7f6f8710194c8132f4a4582b75701adce5e7bca6856859d95e5d", "c345e6d7d9d6883fc92426ff499054b98bde6c5102d699cba0edef0a2ab3e9c6"},
+    {"A-300", 300, 30, false, "7e76be71ccbe8f83ce00daf2f3fd1d5312eb744d0702f4dc5397d7f3836cfb0f", "bcc9e9b42f2064b4908c743edd55ee231b3324269acd1eef25db1c431b4e888a"},
+    {"A-310", 310, 30, false, "7e76be71ccbe8f83ce00daf2f3fd1d5312eb744d0702f4dc5397d7f3836cfb0f", "bcc9e9b42f2064b4908c743edd55ee231b3324269acd1eef25db1c431b4e888a"},
+    {"A-320", 320, 30, false, "7e76be71ccbe8f83ce00daf2f3fd1d5312eb744d0702f4dc5397d7f3836cfb0f", "bcc9e9b42f2064b4908c743edd55ee231b3324269acd1eef25db1c431b4e888a"},
+    {"A-330", 330, 30, false, "7e76be71ccbe8f83ce00daf2f3fd1d5312eb744d0702f4dc5397d7f3836cfb0f", "bcc9e9b42f2064b4908c743edd55ee231b3324269acd1eef25db1c431b4e888a"},
+    {"A-340", 340, 30, false, "7e76be71ccbe8f83ce00daf2f3fd1d5312eb744d0702f4dc5397d7f3836cfb0f", "bcc9e9b42f2064b4908c743edd55ee231b3324269acd1eef25db1c431b4e888a"},
+    {"A-350", 350, 30, false, "7e76be71ccbe8f83ce00daf2f3fd1d5312eb744d0702f4dc5397d7f3836cfb0f", "bcc9e9b42f2064b4908c743edd55ee231b3324269acd1eef25db1c431b4e888a"},
+    {"A-360", 360, 30, false, "7e76be71ccbe8f83ce00daf2f3fd1d5312eb744d0702f4dc5397d7f3836cfb0f", "bcc9e9b42f2064b4908c743edd55ee231b3324269acd1eef25db1c431b4e888a"},
+    {"A-370", 370, 30, false, "c449685e49434e984ce7e90c6f4353fc85430f66d007013805b8b4abae06a793", "187191cdd8b0d7964d2b5861c316bb129910fe244db086cdebcae1dfaca52c80"},
+    {"A-380", 380, 30, false, "cc866a4b90f8fe3dedb3c9ab78dbcdaf7df71a6c295e80b6b8ad502fee405e29", "4281c62cf44f30c828e8483231bc23dae6db7db37b0f6511fe205e0bf25ac68c"},
+    {"A-400", 400, 30, false, "d2dffebe8d367236c44c263348059f6f1958b28b9bad0738b194bd987cd4a5ef", "a6d0c9f0ccd64f6aae0e74a3326cac4672b88e76e2f64d06a6981ec2e2a2a4f1"},
+    {"A-410", 410, 30, false, "b667630b7170ec434b3316144882885616cef8e24fac036548ea09a3b5a76da0", "970ae452ab0db82730053b90f51483804c2fe401058060988e00385e09d4263f"},
+    {"B-10", 40, 10, false, "9e2f7941a0c5b97af11594f53f1c99009402bef6165fc66c534fb6a78ff1b76e", "3d08e0559d09512eff82b1bdd99c9141b776ccff3fcab00e75ca6e35d8514a38"},
+    {"B-20", 40, 20, false, "9f7db26436c4d66c9eb4588200e953a53d3eb963af3d6e462c74ba3e6662bfe8", "2c1f847050e2f11ce7b2e43b970c25553c46d256d89cdd2f43f44baabbf02a14"},
+    {"B-30", 40, 30, false, "52de2cc43f3526e3cf24b8d55fefd065e240796caa2aceeba800970d1adc8e46", "85893d70f9189e286166b4195a7a9807fbf3fa0799d19327c759f596b131a035"},
+    {"B-40", 40, 40, false, "babc5a414e121daf99b7ecd44529cb90d91fea97e14d088f9344502f415ce767", "e952d5c43159e63e3f6de9c0f68096a07b7911454323b7d0622832504d0a4f91"},
+    {"B-50", 40, 50, false, "39ed4e955e71b3693f620ef87bd15c300547b9dbd7a163a6aeed00703eff79d3", "54c78acb1724fa9c8d3806a47ebf52e4200ddba12f556f7f3a85667148f51c4e"},
+    {"B-60", 40, 60, false, "27462f01ad8cfb77bac094c06bc8f04378e8613edbe48eed069d8c328a292e63", "0716816239c831cab5f252d4896bc578bb12869a1bd1a5f209d3fc8c87cf6d84"},
+    {"B-70", 40, 70, false, "2d46bbebc994a7dfe730930cf69f204dfdcb234e95c0c2c6000ba48cc07b8e1b", "8c3a47866a2bbffef0a9ea07293414e894e433f88185568f5ef471fb1ac2fe51"},
+    {"B-80", 40, 80, false, "e1ac5bfe4e271e7e190e3b9f62ecabeb6c9e51c5756ff57cfe48bafd41180322", "e39924dfd5ec9fa7cc9bb60cbadd2829a858f9002333c5e46b8bcdda0dce62a4"},
+    {"B-90", 40, 90, false, "744201f3e10c9dcbb26d6a6bf9865a0c632150078447f7cd31f6d97583e0d73e", "623ae3a8090be160a56ff0afc1759661805b7579e29054ad62e959cab5337072"},
+    {"B-100", 40, 100, false, "5b4b21239c3097825074f244cd6824a79820c70ec443beb39d4f00a2a14f2933", "13e4a7ea0a08f607f0eb833aa0cc04a1777fb66ba64f25b552b76545ec99673b"},
+    {"B-110", 40, 110, false, "cb6fd41120dc5d33afa08835dfdec1bc9352e261506b9258b9596786a6788607", "b24e28332799c91b0fe06cf8c2f47bb7a3cf7eeb6b0e7d9eb8a47c04c2de31df"},
+    {"B-120", 40, 120, false, "9dcb51cff361e4dbc65455e27e006d4957f53b0a219052bf18af32062b8155fa", "d13d640e15b12bfbc3cd15add00503ed009463d10a7cd02d054042c39a77e9d5"},
+    {"B-200", 40, 200, false, "5b23b490c287f96af14b9a45ed96b99536c0112c981f329cc25d54c283bde87f", "525b68fbd10f32eef635c41313dd546bcf0957cce92bde7846949746e9e02b8c"},
+    {"B-210", 40, 210, false, "db744486435cdb21b0c854538b9d93f7175dd6d797a9e10e9827e6877b647b8c", "3d57edc5fb26582519fa7c63a71a9b9065550009fff1eed6d2b6f25909356d35"},
+    {"B-300", 40, 300, false, "9fe3a9ccb9540ef30bc7cd8308afbb87878c6604c117049308e73a0b3c8c246e", "bb95f8cfcbd0f8158f3dc66823a0dd7a7f1faafd1a4a1dcf3dd0bb5ead1b44bd"},
+    {"B-310", 40, 310, false, "55d70c7ba835fedb41ba02531b358965c2db2ff69aaa1b99300cac169ba0540b", "bb95f8cfcbd0f8158f3dc66823a0dd7a7f1faafd1a4a1dcf3dd0bb5ead1b44bd"},
+    {"B-320", 40, 320, false, "55d70c7ba835fedb41ba02531b358965c2db2ff69aaa1b99300cac169ba0540b", "bb95f8cfcbd0f8158f3dc66823a0dd7a7f1faafd1a4a1dcf3dd0bb5ead1b44bd"},
+    {"B-330", 40, 330, false, "9fe3a9ccb9540ef30bc7cd8308afbb87878c6604c117049308e73a0b3c8c246e", "bb95f8cfcbd0f8158f3dc66823a0dd7a7f1faafd1a4a1dcf3dd0bb5ead1b44bd"},
+    {"B-340", 40, 340, false, "9fe3a9ccb9540ef30bc7cd8308afbb87878c6604c117049308e73a0b3c8c246e", "bb95f8cfcbd0f8158f3dc66823a0dd7a7f1faafd1a4a1dcf3dd0bb5ead1b44bd"},
+    {"B-350", 40, 350, false, "9fe3a9ccb9540ef30bc7cd8308afbb87878c6604c117049308e73a0b3c8c246e", "bb95f8cfcbd0f8158f3dc66823a0dd7a7f1faafd1a4a1dcf3dd0bb5ead1b44bd"},
+    {"B-360", 40, 360, false, "9fe3a9ccb9540ef30bc7cd8308afbb87878c6604c117049308e73a0b3c8c246e", "bb95f8cfcbd0f8158f3dc66823a0dd7a7f1faafd1a4a1dcf3dd0bb5ead1b44bd"},
+    {"B-370", 40, 370, false, "191be6b5eee8e1736cc488987ae919e5cf5742388789b298fef22b9413bc1b79", "53d2211722dd68db85751403e2c0c8b7f03426652faea43210b3841b486ac382"},
+    {"B-380", 40, 380, false, "c67aa6f75ce222c50b3abca39a313a6e40cc857a646e97153ed7a53ea06b02d2", "3e02e42f8671140fec258e5d476554e6238f630b851dbef1a9346c797dd5e892"},
+    {"B-400", 40, 400, false, "ea65133c5062fb34c7671acf37b32775accacd994e81c37f5b84cbd32257b527", "58b3615fd934fd6564c00b52107d60f7d80d62111f05f44c09f67b396be815a5"},
+    {"B-410", 40, 410, false, "90491a1fcd489447c2d7065846a3c3a5ed3ce941028c1335816d5352db989b5a", "79b4a70a11c64016ad8e528f11aa5f3f2e20e5c35fafb8b1d429a03f0f1d5b7e"},
+    {"cross-300-350", 300, 350, true, "8c03c7a19a599363fd1405efa35472cc570c834d600796fe02f811fa4b7d5ff6", "bed606f5a08966780efef737001d64558c71cad03cb71ba79556c7567e5fef7f"},
+    {"cross-370-400", 370, 400, true, "892508f8b348d9a34ce1329830b33bc6ff37dccf6e669ad827aa04c3a2634897", "a46fb02bb6cfabd395bac4407f8a99aed8ec5b9698f969bb65688e0f8ad287c6"},
+    {"cross-200-210", 200, 210, true, "edff2a1b95f3947931b8e671297dca7cfb42849e1d0a41db1bd9b1271bc3003f", "cf9cde6366acf89f2ef4f6b3e36adc2c83f993f1f207bccafddce2c4980461e0"},
+    {"cross-410-110", 410, 110, true, "086428c421f77a9288246f34b50cb9d5ed93ad6d5c3cc380176b7541901bcf5a", "b3e2d94908a99636b793aaab4f2fe907ff06e74d668918117e1b54c58f3a1dfb"},
+  }};
+  for (const auto& item : cases) {
+    const auto width = item.alternate ? 11U : 16U;
+    const auto height = item.alternate ? 7U : 9U;
+    const noisemaker::glsl::Vec2 tile = item.alternate ? noisemaker::glsl::Vec2(0.0f, 0.0f) : noisemaker::glsl::Vec2(2.0f, 1.0f);
+    const noisemaker::glsl::Vec2 full = item.alternate ? noisemaker::glsl::Vec2(11.0f, 7.0f) : noisemaker::glsl::Vec2(22.0f, 15.0f);
+    const auto render = [&]() {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_uniform("LOOP_A_OFFSET", std::int32_t{item.loop_a});
+      bindings.set_uniform("LOOP_B_OFFSET", std::int32_t{item.loop_b});
+      bindings.set_uniform("resolution", noisemaker::glsl::Vec2(static_cast<float>(width), static_cast<float>(height)));
+      bindings.set_uniform("tileOffset", tile);
+      bindings.set_uniform("fullResolution", full);
+      bindings.set_uniform("time", item.alternate ? -1.25 : 0.375);
+      bindings.set_uniform("seed", item.alternate ? std::int32_t{13} : std::int32_t{7});
+      bindings.set_uniform("wrap", !item.alternate);
+      bindings.set_uniform("loopAScale", item.alternate ? 20.0 : 37.0);
+      bindings.set_uniform("loopBScale", item.alternate ? 75.0 : 61.0);
+      bindings.set_uniform("speedA", item.alternate ? -60.0 : 50.0);
+      bindings.set_uniform("speedB", item.alternate ? 80.0 : -25.0);
+      return noisemaker::run_pass(noisemaker::generated::bind_synth_shape_shape(bindings), width, height);
+    };
+    const auto first = render();
+    const auto second = render();
+    const auto f32 = hex(sha256(little_endian_float_bytes(first)));
+    const auto rgba = hex(sha256(first.to_rgba8()));
+    if (f32 != item.f32 || rgba != item.rgba) {
+      throw std::runtime_error(std::string(item.name) + " f32=" + f32 + " rgba=" + rgba);
+    }
+    REQUIRE(hex(sha256(little_endian_float_bytes(second))) == f32);
+    REQUIRE(hex(sha256(second.to_rgba8())) == rgba);
+    REQUIRE(tile[0] == (item.alternate ? 0.0f : 2.0f));
+    REQUIRE(full[0] == (item.alternate ? 11.0f : 22.0f));
+  }
+}
+
+TEST(typed_fractal3d_power_zero_and_one_match_current_cpu_mrt) {
+  // CPU 9f3 authority, factory 293 SHA-256 49002fa4a818f25ad59921a1ad4020723b7240a326b4fdbae1f8334220bbc7c5:
+  // power 0 preserves Math.pow(NaN, 0) == 1; power 1 checks the NaN payload path.
+  struct Case {
+    int noise_type;
+    double power;
+    const char* color_f32;
+    const char* geometry_f32;
+    const char* color_rgba;
+    const char* geometry_rgba;
+  };
+  const std::array<Case, 8> cases{{
+      {0, 0.0, "ec2b545039e21a5101d407c78e457a6e2f1580ab98bcb9e6fc8ece90aa1b98af", "08fcc5e51a6f858b5b7972410fdbda914f07098851fcc7bd7c860353cb79d3df", "86fb4b02dc95d4d233f4e67a5bfb8ba5a9698ba0cb21d939d5dd0f9ab198f38a", "968b36740064676046a4f8d5e4c8f8026c731b589deb1bfea5aa40b92ddb5194"},
+      {0, 1.0, "242359ed227333d1d648b7a3e7a2b77306817b2345127922c96512d95b52c225", "b444a92a5492052e52e1f326660c2c3aa6473786ab2aa55f31118a1b1006f842", "934d51bee47609abb02424515f938edd56f4ce470040778e1742d57831e3e888", "8e6221691a54f8297c08c1baf018ee73628965f5ab061e3bf33f6773674cdc6a"},
+      {1, 0.0, "4d37fc81727d18e6aeadc48813c1849d48e7bff0784daf969b313323d9835957", "b86369c7bee089c0aa63065bb6129564ca1a1533344b40f65425864c3ab090b0", "1ee93cb79f87a8cc04161f45d5ce2c791cac48eb4abdfd8fe347f961b35b46d2", "247b77a151c77e71ddb096c926714ad57554d1e4ecf15d329149bdb7c6894285"},
+      {1, 1.0, "63b03619882ff737444dc45e7f8e5fc4699f444f981b08cbe6ccfaeef41c91e8", "58dd7a779ef721fb935d9e44fd66f887fcef35699588b53e3d0a4dceb6ffd9bb", "13b2e3b29e258ca2ce0804729c3434819f1096e7f2d2747bd88f25b611c415c4", "4ca55d300bad98d94e5bc32cfd58100a51ad9ba2157e309200c5718d558a3574"},
+      {2, 0.0, "2533eeacc5373359604c2ceb664baf72635fa6047122a70f2f7f7867df6b3df7", "9e18d8f9fec2bd0d299210db3c59fa0b652e0bb05224b89c5691a1c34045d503", "f538c19dc932cc998936e6daad3e659dd8c03d4875d1757e2a5f7f96ce562380", "296697a2dd7e32e1d981b42f09278e4f7a9f651bc87e0300af025ffd91d2cbfb"},
+      {2, 1.0, "7d9ce0cb2f082701be8a33d6b2679bbb30eda8f78385fbf0c186d9ee89e2481b", "2fd3fb88cccff5a80a22e7ba0b7cccdb1a2d99e12e1c8e36d19ed3b8286590eb", "50f2c6cf697bed4c390202b803b869901356bd924a8d1b7fd3eb257a1a4db53c", "abe21df81c3b29fcbb52660eaf81089ee1590eeec148c6fd93d548b862a64b7c"},
+      {3, 0.0, "b7ed47dbd53ae47b8874134278290d194b9db1d5deab023888fc207152501463", "b837100ad7a284d5ef7389776f4e013d729ed10be530fa908cecab52eb8ddc8a", "f8cea85141f962be3b9643a906db53a669476d830f1c36e76af13f666babe7c3", "1cff87476511d694a4b466395e8784423c10d6fd3fcefb6687eb3dc455be6f47"},
+      {3, 1.0, "e8842a707581e10e47e91958826dc87f7da106e6c1c98ae6457706cc85079ffd", "6d711bd2b72e6a253d257eb6fac377d836f981a59231dc5e4c1895a6ab233ba9", "c0d40cb203c2bd8b87ec0882502d72ad6e46b92721d8913058b502a8a2877f14", "5addffc85fa337c088cab29f47eb54b0a8961ae680130971f396120b0ed4086c"},
+  }};
+  for (const auto& item : cases) {
+    const auto render = [&]() {
+      noisemaker::glsl::Bindings bindings;
+      bindings.set_uniform("volumeSize", std::int32_t{3});
+      bindings.set_uniform("noiseType", std::int32_t{item.noise_type});
+      bindings.set_uniform("power", item.power);
+      bindings.set_uniform("iterations", std::int32_t{6});
+      bindings.set_uniform("bailout", 2.0);
+      bindings.set_uniform("juliaX", 17.0);
+      bindings.set_uniform("juliaY", -13.0);
+      bindings.set_uniform("juliaZ", 11.0);
+      bindings.set_uniform("colorMode", std::int32_t{1});
+      return noisemaker::run_mrt_pass(noisemaker::generated::bind_synth3d_fractal3d_precompute(bindings), 3U, 9U);
+    };
+    const auto first = render();
+    const auto repeated = render();
+    REQUIRE(first.size() == 2U);
+    REQUIRE(repeated.size() == 2U);
+    const std::array<const char*, 2> expected_f32{item.color_f32, item.geometry_f32};
+    const std::array<const char*, 2> expected_rgba{item.color_rgba, item.geometry_rgba};
+    for (std::size_t output = 0; output < first.size(); ++output) {
+      const auto f32 = hex(sha256(little_endian_float_bytes(first[output])));
+      const auto rgba = hex(sha256(first[output].to_rgba8()));
+      if (f32 != expected_f32[output] || rgba != expected_rgba[output]) {
+        throw std::runtime_error("fractal3d type=" + std::to_string(item.noise_type) +
+                                 " power=" + std::to_string(item.power) +
+                                 " output=" + std::to_string(output) + " f32=" + f32 + " rgba=" + rgba);
+      }
+      REQUIRE(hex(sha256(little_endian_float_bytes(repeated[output]))) == f32);
+      REQUIRE(hex(sha256(repeated[output].to_rgba8())) == rgba);
     }
   }
 }

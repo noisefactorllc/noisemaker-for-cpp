@@ -4,10 +4,10 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 
 ## Frozen authority
 
-- Upstream snapshot revision: `117a236679d1db3ab8f0e278230ece277b57564c`
-- Corpus revision: `a024dc3a960cc44af454abc7aebce50456c194e6`
+- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - GLSL source: 6530 bytes, SHA-256 `841f9f547d06aace8444953f401009abd02758f9dff271097b2799424c1db5d0`
-- Canonical factory: `canonicalFactory49`, 9011 bytes, SHA-256 `57375f0b17f6b90c541fc264b4e5233674eef6e6a496307e6a047138db1a2bb8`
+- Canonical factory: `canonicalFactory47`, 9070 bytes, SHA-256 `7bcb99c03e4c1b0dbd026aecf1e61d45a4d69d02ce8228b6900d632fe16f9212`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
 
 ## Captured pre-admission C++ frontend boundary
@@ -21,7 +21,7 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 
 - Without the profile, validator first error: `filter/edge:edge: exact Edge bvec3 contour profile carrier required`
 - Without the profile, emitter first error: `filter/edge:edge:1:1: exact Edge bvec3 contour profile carrier required`
-- The exact profile makes both independent authorities pass without widening global vocabularies; rendered C++ is 14774 bytes, SHA-256 `8855be067925a5eafad622f8bb6541be2e58671adb78a740c0c3275838a0ddab`.
+- The exact profile makes both independent authorities pass without widening global vocabularies; rendered C++ is 14819 bytes, SHA-256 `1485c72f06f691e06515a337ed3d534695a8da2f4590043e3d6bd65cd7dcffba`.
 - The center self-splat assignment is source-authenticated at `135:13-135:57`, SHA-256 `2559b7d881b9aaf4f425d0ab9df528e000fa3279a58a31ff839e4a5aaaf51064`, including its complete five-statement ancestry and target/constructor/dot child identities.
 - Do not widen the global type or builtin vocabularies. The validator and emitter independently re-authenticate the key/hash/interface, all typed nodes and lane reads, the center-splat route, and the absence of any extra admitted site.
 
@@ -39,7 +39,7 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
 | fine-color-radius-two | 9x7 | 0 | 0 | 0 | 50 | 6 | `9bdc913e82fe60bcc33a4ac648931dba39cc9c5ed3c5da950717d7ae3c5ed0b7` | `2b8a923bcd69f3f76af214760c7ea95476afbe1b94f9080e5c0a4fe0213529a9` |
 | bold-color-radius-three | 9x7 | 1 | 0 | 0 | 50 | 6 | `1bfcb17c50f4995dbd7b7a69e643e26c050fec3567552b4901bb916cd85be2ed` | `e55142c54cc2fd6ae26fc900fedef1cc179fc86d53fc3e4d603d57f2188c9811` |
-| fine-luma-threshold-invert | 8x6 | 0 | 1 | 0 | 50 | 2 | `43d14ec8c38eee1c8b3c5fce2ae2ab67b98042c3fb40087d3b61191499ed2d7a` | `af85175b54cf35725ac3422ab182daa7ed0c0be1f56f62a184349ed0e47566cf` |
+| fine-luma-threshold-invert | 8x6 | 0 | 1 | 0 | 50 | 2 | `07bab121e47a4b3d1fe8a438ed0045d58d2261b981477af75c3fc54629b233db` | `af85175b54cf35725ac3422ab182daa7ed0c0be1f56f62a184349ed0e47566cf` |
 | radius-one-scale-zero | 6x5 | 1 | 0 | 0 | 50 | 6 | `ecae9908875b965929fed9b4843d923ef92b392b1ff2b3a0c51e4cfcda2acb5d` | `a458c8d9851ee8aa034a83b41c731ca060f3831d06d0ab53129c46272f3429b4` |
 | amount-zero-normal | 6x5 | 1 | 0 | 0 | 50 | 6 | `64c5f118731fe83feb6639e7cf63c9a900b88579d5927ab89a414a5baf89f2bd` | `2bca1d79171282f6d9f10be2f677e3c020bcc9ceb0d2b0b85e1b2ddbb9acc6f4` |
 | mix-zero-input-identity | 6x5 | 1 | 0 | 0 | 50 | 8 | `e859cd989a0632253c5907945d750eadf61d9c4eea58c7f40a708eff2e6c1b99` | `ebf4857f69d6f9912ad6fb6ecbdfb5658d88a22910a4601d2ff6538a957cafe1` |
@@ -51,13 +51,13 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 | contour-color-lower-level-hundred | 7x7 | 2 | 0 | 0 | 100 | 6 | `68adab5f5048a75880de1bff341845272093f617bcf260276e4010a59ba63e32` | `d9b19470109ba436c8af9cfaf76d6acfc665e464dbff54510150703de5e7791e` |
 | contour-luma-lower | 7x7 | 2 | 1 | 0 | 43 | 6 | `fdb8c70d0df49093c617414bf289c98ec74ef29f525a2373ccbc8f296b73b783` | `73cba512a2700ddfb4f18975668ed150ceac309eaa1d59e417c0496c60187ca6` |
 | contour-luma-upper | 7x7 | 2 | 1 | 1 | 57 | 6 | `940dd932fbaa810359783a70f3ac944835e8c4922f0b6fca9c325f18b479a257` | `fd391208d91ab6bac9d159205ba396e908a8cdd52a4d1b6023a4ef8ec25a5b14` |
-| blend-0 | 5x4 | 0 | 1 | 0 | 50 | 0 | `8a8b03d743853e34bcd9a11975c860aa25888c1a3c7f5272b00a44d74b9f9dd1` | `e7e0a9c04be65179e4bf11c5427ebb26b362035f0393fdaa44c13624e64b11c8` |
+| blend-0 | 5x4 | 0 | 1 | 0 | 50 | 0 | `92a0be3ba6c49163c700998598706eb33fd40bec5bed7a0f73a7e2dbb9cd86af` | `e7e0a9c04be65179e4bf11c5427ebb26b362035f0393fdaa44c13624e64b11c8` |
 | blend-1 | 5x4 | 1 | 0 | 0 | 50 | 1 | `e256dff7e091bb45017e1314011d8e315fcdf20d7eb83051a9aa0cd8fc94eb7d` | `d1848e5103b7ec96ec4618946e248428b021efed7a55918eb14a4292ef9af08d` |
 | blend-2 | 5x4 | 0 | 0 | 0 | 50 | 2 | `f6d83885968ccf8a861da4bbf8964a97e4b886a0764d01460f4cec43959f4296` | `8a0f78424e1739d7262be4c843c5f3300d5bff48fb3b2f92395daf56e2608c82` |
 | blend-3 | 5x4 | 1 | 1 | 0 | 50 | 3 | `559ba7b503e76f3edb950d1080cab5769608dd838f3b98e518263580ecbcadf3` | `824fef9d490445780263e86c2a3f29f22f04d947583d26f9a42c547b380bb77b` |
 | blend-4 | 5x4 | 0 | 0 | 0 | 50 | 4 | `cec42b1fea3dc977143de14c8e250095b001c66d3e1981a30c129841d35fc544` | `305951cd1a2b7bd7ccc43c047d6827ab4f9b46661be5a55ccec3b239fc14cab5` |
 | blend-5 | 5x4 | 1 | 0 | 0 | 50 | 5 | `477835e29a7a8bc7bc41662f4a636c11330548372cd68036d34f7fe6c90e7d89` | `ba808de4275704cb050ccb3a0140288f372924bba80ee4b26b82d31518478e0c` |
-| blend-6 | 5x4 | 0 | 1 | 0 | 50 | 6 | `991e436f4684851bc5122c76dd4428ba2cb43822223021cd89910ed8e8b2d1d9` | `bd69518a512f924723b76dadc4bd8b2df091561bcb85a06a9d64e48356a6027c` |
+| blend-6 | 5x4 | 0 | 1 | 0 | 50 | 6 | `cfc86731c04f8c9691547753537a2773f432dd51eaffd6e3df5169db21ee60e1` | `bd69518a512f924723b76dadc4bd8b2df091561bcb85a06a9d64e48356a6027c` |
 | blend-7 | 5x4 | 1 | 0 | 0 | 50 | 7 | `050adc9953c661a799e5cdc89abc710d6059f5c73b89f1c5617827a5e2b4100e` | `1e063cc897584d917015416effa3a4a9a7efd8e006796c3f3fcb95af699bd9af` |
 | blend-8 | 5x4 | 0 | 0 | 0 | 50 | 8 | `745af9d1ed86f0ddde432621873be18d75fdadea4a6a773ff011492f206c68b9` | `7f5bb075b78111d281aea79b9abbcffade27e2ca9408f9bbcbf434e449d6378c` |
 | external-context-base | 8x5 | 1 | 0 | 0 | 50 | 7 | `a17a831e563747209feb779d03aa22e717ab27b7275332b00896f87e889af97b` | `2d3c553f02d4fa5e0ff58ab4a1dd926d56252fd28b02634e60ba5653c1a201a2` |

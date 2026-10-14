@@ -1,3 +1,4 @@
+import {authenticateCpuRoot} from '../../../tools/dsl/corpus_authority.mjs';
 import {readFile, lstat, mkdtemp, mkdir, writeFile, rm} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve, dirname} from 'node:path';
@@ -5,8 +6,8 @@ import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 
 const hashes = {
-  'src/effects/generated/canonical-kernels.js': 'eda3ca5153d7759cbf9e92982cc8579c2474828f770d29343c38dc31fcac9904',
-  'src/csl/glsl-runtime.js': 'b47fa69f3358822c314315ad985c14c94fff5c973ff98fe953d7304135b84722',
+  'src/effects/generated/canonical-kernels.js': 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  'src/csl/glsl-runtime.js': 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1',
   'src/runtime/sampler.js': '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328',
   'src/runtime/surface.js': '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   'src/runtime/texture-format.js': '10af8fd92813c7872eecf51b203c01a4e6ebc79a4c5fa7d38661a12192efbcfe',
@@ -26,6 +27,7 @@ try {
     await mkdir(dirname(resolve(scratch, name)), {recursive: true});
     await writeFile(resolve(scratch, name), bytes);
   }
+  authenticateCpuRoot(cpuRoot);
   const {canonicalKernelFactories} = await import(pathToFileURL(resolve(scratch, 'src/effects/generated/canonical-kernels.js')));
   const {bindGlslKernel} = await import(pathToFileURL(resolve(scratch, 'src/csl/glsl-runtime.js')));
   const {Surface} = await import(pathToFileURL(resolve(scratch, 'src/runtime/surface.js')));
@@ -46,7 +48,7 @@ try {
       rgba8.push(...output.toRgba8());
     }
   }
-  console.log(JSON.stringify({cpu_revision: '5b686a45b5c56329adf0c63cbcf572eb6f23fad1',
+  console.log(JSON.stringify({cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
     source_hashes: hashes, pixels: raw.length, float32_sha256: sha(Buffer.concat(raw)),
     rgba8_sha256: sha(Buffer.from(rgba8))}));
 } finally {

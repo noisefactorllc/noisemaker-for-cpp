@@ -35,8 +35,8 @@ from tools.glslcpp.frontend.typed_ir import (  # noqa: E402
 
 
 sys.path.insert(0, str(ROOT / "tools/glslcpp"))
-# Historical capture source; independent of the current live corpus.
-REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+# Pinned source capture; independent of the live checkout.
+REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 KEY = "classicNoisedeck/shapeMixer:shapeMixer"
 SOURCE = (ROOT / "tools/glslcpp/corpus" / REVISION
           / "sources/classicNoisedeck/shapeMixer/shapeMixer.glsl")

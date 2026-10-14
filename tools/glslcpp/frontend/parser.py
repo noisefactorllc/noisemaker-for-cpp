@@ -109,7 +109,7 @@ class Parser:
             self.next()
             qualifier = self.next().value
             base_type = self.next().value
-            if qualifier not in {"highp", "mediump", "lowp"} or base_type not in {"int", "float"}:
+            if qualifier not in {"highp", "mediump", "lowp"} or base_type not in {"int", "float", "sampler2D"}:
                 raise SyntaxError(f"invalid precision declaration at token {self.i - 1}")
             self.expect(";")
             return None

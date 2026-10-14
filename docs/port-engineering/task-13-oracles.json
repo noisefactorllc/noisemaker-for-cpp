@@ -1,8 +1,8 @@
 {
   "schema": "noisemaker-task13-canonical-oracles-v1",
-  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "node": "v24.7.0",
-  "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+  "revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+  "node": "v26.0.0",
+  "api": "canonicalKernelFactories+bindGlslKernel+runPass+Surface",
   "factory_hash_contract": "SHA-256 over exact UTF-8 bytes returned by Function.prototype.toString() for canonicalKernelFactories[key].",
   "base": {
     "output": {
@@ -26,50 +26,66 @@
     "filter/bloom:brightPass": {
       "source": "sources/filter/bloom/brightPass.glsl",
       "raw_sha256": "db9bb2dbe897ee03435cae86aa88a766b7d8e6bc58e61103fa5e66c3c3dbc880",
-      "factory_source_sha256": "a743462868665c5aeb90776e0d4769292018f4e93ab7b6452e23571c3aee2ac8",
-      "pass_index": 0
+      "factory_source_sha256": "0a9ab2e769ba8270da34e41353393234ef0e71c78412eab937ed28ee62bad0f5",
+      "pass_index": 0,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/bloom:composite": {
       "source": "sources/filter/bloom/composite.glsl",
       "raw_sha256": "28e480fad84b7254e9392b8d4d85bc398b62a0e57f94dffac94db655132abbef",
-      "factory_source_sha256": "c785331dac99841e1bf32813bd2702036600eb23da7d3a5eff79df633e345260",
-      "pass_index": 2
+      "factory_source_sha256": "46f81552d679a20fb474e383cab27e3e7c5f5e96dba10ad9f10073a129958a8e",
+      "pass_index": 2,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/fibers:fibersBlend": {
       "source": "sources/filter/fibers/fibersBlend.glsl",
       "raw_sha256": "3c541fbfa45fa98cbfd67c2c7c8a91e4167867a3935681163260733c19cb7575",
-      "factory_source_sha256": "ed94b776d7ed02ba469346a2fdd2ffcf7bf764b52e70bff523447f13dac25a57",
-      "pass_index": 0
+      "factory_source_sha256": "91202cb38682fec2d597f7e4a595d2eb49799c6841b269735c04ade1124ba4e0",
+      "pass_index": 0,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/normalize:apply": {
       "source": "sources/filter/normalize/apply.glsl",
       "raw_sha256": "c59c0bad843a38c823bd2fc6396d0b9bca1cac7f1fe074aaf5dbc9622522e855",
-      "factory_source_sha256": "4f7886bfdaab15e96025b6ed635324d15d908583127c0ee138e1c9b6d50362d0",
-      "pass_index": 3
+      "factory_source_sha256": "a37c90e1bb0ad53dc3550855272856d10822b9959b3903ffe1428d055ba03a2e",
+      "pass_index": 3,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/pixelSort:luminance": {
       "source": "sources/filter/pixelSort/luminance.glsl",
       "raw_sha256": "da27454ff4cc3fcc40b296c8ea8bd8913a00165b2c001aef3cd9e6bd05db0298",
-      "factory_source_sha256": "bcd29820617f79fea392ff510b2c924886ad6bc848a5cd6e1b9528628c63f09f",
-      "pass_index": 1
+      "factory_source_sha256": "77523fb9c10705456e31d6e515a401f185e2411a40655b26674fcab1d08b2371",
+      "pass_index": 1,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/reindex:nmReindexApply": {
       "source": "sources/filter/reindex/nmReindexApply.glsl",
       "raw_sha256": "651bb6930d3fe51629fc3a17c88bfa7c7831e78fa18be0ea16d0f3f9d3c5154d",
-      "factory_source_sha256": "70e57b5473d572c270db0453b05c366162f0998289e93d6d6816a8a8ae1abc2e",
-      "pass_index": 2
+      "factory_source_sha256": "30077a0c1a3f7100589f2140693a553e3a147d1ebcb88bda98e224168f774cec",
+      "pass_index": 2,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/scratches:scratchesBlend": {
       "source": "sources/filter/scratches/scratchesBlend.glsl",
       "raw_sha256": "db76fc1b477acfa7e9a2d22ca532a9d29ed4034ec695d4f4b75ed8741ce63c63",
-      "factory_source_sha256": "0d731cc78adf32ec44389012d5fc9795f024d94885e744b6e0f064ea6c7ea02b",
-      "pass_index": 0
+      "factory_source_sha256": "75f1a2be7e3948d5f16d91685edb101e9956daa83128d5592686752bd0ed1dda",
+      "pass_index": 0,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/strayHair:strayHairBlend": {
       "source": "sources/filter/strayHair/strayHairBlend.glsl",
       "raw_sha256": "bacff9ec121ac6e28d377702145eb14cdd8dfa2cbfc4ec9ba89765f658b1345c",
-      "factory_source_sha256": "baeaa10b7fc9b281d5e328c58aa5c50fae338e58a50b69650053b29ebee768dc",
-      "pass_index": 0
+      "factory_source_sha256": "99e8cfa32e14d8736cbe63c63c614c1533903b919a5c7bc53383fdbdd8dd7c38",
+      "pass_index": 0,
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     }
   },
   "partial_pass_truth": {
@@ -212,7 +228,7 @@
       "texture_fixture_ids": {
         "inputTex": "luma_steps_3x3"
       },
-      "f32_sha256": "637fab112bdd93f09722f42a2bcbe748cb73a1aa104294398fe579cfddf9e7e4",
+      "f32_sha256": "f85d033117e2cbdfda8f50c89156585f101e8400d57ab625f4c5ca2b1268c84c",
       "rgba8_sha256": "f37355d9e280dc7b56db4fb66868e9201c904b687333138c62c3ff5f7bda31ab",
       "probes": {
         "0": [
@@ -233,7 +249,9 @@
           "3f6bebec",
           "3f5cdcdd"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/bloom:brightPass",
@@ -268,7 +286,9 @@
           "00000000",
           "3f5cdcdd"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/bloom:brightPass",
@@ -303,7 +323,9 @@
           "3f6bebec",
           "3f5cdcdd"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/bloom:composite",
@@ -343,7 +365,9 @@
           "3e64e4e5",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/bloom:composite",
@@ -362,8 +386,8 @@
         "inputTex": "fetch_tag1_5x3",
         "bloomTex": "fetch_tag23_4x6"
       },
-      "f32_sha256": "88aed7c00ff073094ebb5dd35b7007448ad97e97dabd6310e566cf6fd20711aa",
-      "rgba8_sha256": "60d5ab2cf84570f303bfe8e7dc5d80f81ed1bc21fc4eff0ccc3506fcb650ad5b",
+      "f32_sha256": "1406691b8909ecbdb4ec8601b8ed1d7f0af7838cb43c26995b382f4524bca398",
+      "rgba8_sha256": "bcc786af67740040a8764308603f4e76ab20a6687b586698b12d42890b0ae944",
       "probes": {
         "0": [
           "3e0f3412",
@@ -374,16 +398,18 @@
         "31": [
           "3f637a86",
           "3edc3b77",
-          "3f12dea5",
+          "3f12dea6",
           "3f1e9e9f"
         ],
         "62": [
           "3f904c13",
-          "3fca1ba5",
-          "3f6b9ab5",
+          "3fca1ba6",
+          "3f6b9ab6",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/fibers:fibersBlend",
@@ -418,7 +444,9 @@
           "3e64e4e5",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/fibers:fibersBlend",
@@ -453,7 +481,9 @@
           "3ecf131a",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/fibers:fibersBlend",
@@ -488,7 +518,9 @@
           "3f109ba7",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/scratches:scratchesBlend",
@@ -523,7 +555,9 @@
           "3e64e4e5",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/scratches:scratchesBlend",
@@ -558,7 +592,9 @@
           "3ebe7bec",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/scratches:scratchesBlend",
@@ -593,7 +629,9 @@
           "3f33b3b4",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/normalize:apply",
@@ -626,7 +664,9 @@
           "3f80c0c1",
           "3f0e8e8f"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/normalize:apply",
@@ -659,7 +699,9 @@
           "3f49c9ca",
           "3f0e8e8f"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:luminance",
@@ -691,7 +733,9 @@
           "00000000",
           "3f800000"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:luminance",
@@ -723,7 +767,9 @@
           "00000000",
           "3f800000"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/reindex:nmReindexApply",
@@ -758,7 +804,9 @@
           "00000000",
           "00000000"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/reindex:nmReindexApply",
@@ -793,7 +841,9 @@
           "00000000",
           "00000000"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/reindex:nmReindexApply",
@@ -828,7 +878,9 @@
           "00000000",
           "00000000"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/strayHair:strayHairBlend",
@@ -873,7 +925,9 @@
           "3ec496a6",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/strayHair:strayHairBlend",
@@ -918,7 +972,9 @@
           "3ec496a6",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/strayHair:strayHairBlend",
@@ -962,7 +1018,21 @@
           "3f109ba7",
           "3ea8a8a9"
         ]
-      }
+      },
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     }
-  ]
+  ],
+  "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8",
+  "authority": {
+    "ledgerEntries": 784,
+    "packageSha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
+    "packageLockSha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
+    "sourceLockSha256": "ac6b377c57074ce4c032a9f51a789f49122fad5ecdc224e2df85e625ced4d9ae",
+    "behavioralLockSha256": "05e364dd135dddda7ff4205d2eb83521073b5bcde022295971441e81b3e2de44",
+    "behavioralFileCount": 95,
+    "upstreamRevision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+    "upstreamSourceDigest": "fd2de54727edd1ef93b033cb118a62207a821dd4ee3d37e74620f6b32994f566",
+    "method": "Original native fixture inputs were exported without native render outputs. Unmodified authenticated CPU factories rendered each input twice. Historical binder cases retain their original source and captures."
+  }
 }

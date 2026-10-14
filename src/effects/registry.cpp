@@ -353,7 +353,7 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
         logical[i].string.empty() || physical[i].string.empty()) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output ABI projection");
   }
   const auto& authority_pass = required_field(raw, "authority_pass", ValueKind::object, context).object;
-  exact_object(authority_pass, {"name", "inputs", "outputs", "uniforms", "blend", "repeat"}, context + ".authority_pass");
+  exact_object(authority_pass, {"name", "inputs", "outputs", "uniforms", "blend", "repeat"}, context + ".authority_pass", {"defines", "viewport"});
   required_field(authority_pass, "name", ValueKind::string, context + ".authority_pass");
   required_field(authority_pass, "inputs", ValueKind::object, context + ".authority_pass");
   required_field(authority_pass, "outputs", ValueKind::object, context + ".authority_pass");
@@ -367,6 +367,23 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   const bool valid_repeat_null = repeat_value != nullptr && repeat_value->kind == ValueKind::null_value;
   if (!valid_repeat_number && !valid_repeat_string && !valid_repeat_null) {
     throw std::invalid_argument("Malformed compatible compatibility row " + context + ": authority pass repeat");
+  }
+  if (const auto* defines = field(authority_pass, "defines"); defines != nullptr) {
+    if (defines->kind != ValueKind::object || defines->object.empty())
+      throw std::invalid_argument("Malformed compatible compatibility row " + context + ": authority pass defines");
+    for (const auto& item : defines->object) {
+      if (item.first.empty() || item.second.kind != ValueKind::number ||
+          !std::isfinite(item.second.number) || std::trunc(item.second.number) != item.second.number)
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": authority pass defines");
+    }
+  }
+  if (const auto* viewport = field(authority_pass, "viewport"); viewport != nullptr) {
+    if (viewport->kind != ValueKind::object || viewport->object.empty())
+      throw std::invalid_argument("Malformed compatible compatibility row " + context + ": authority pass viewport");
+    for (const auto& item : viewport->object) {
+      if (item.first != "width" && item.first != "height")
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": authority pass viewport");
+    }
   }
   const auto& factory = required_field(raw, "factory", ValueKind::object, context).object;
   exact_object(factory, {"canonical", "emitted_factory", "legacy_public", "route", "typed_manifest_output", "typed_manifest_output_sha256"}, context + ".factory");
@@ -419,14 +436,25 @@ void validate_authority_pass(const ProgramCompatibility& row, const PassDefiniti
     if (pass.blend->kind == BlendKind::boolean) blend = Value::boolean_value(pass.blend->enabled);
     else blend = Value::array_value({Value::string_value(pass.blend->factors[0]), Value::string_value(pass.blend->factors[1])});
   }
-  const Value expected = Value::object_value({
-      {"name", Value::string_value(pass.name)},
-      {"inputs", Value::object_value(std::move(inputs))},
-      {"outputs", Value::object_value(std::move(outputs))},
-      {"uniforms", Value::object_value(std::move(uniforms))},
+  std::vector<std::pair<std::string, Value>> expected_fields = {
       {"blend", std::move(blend)},
-      {"repeat", pass.repeat.value_or(Value::null())}});
-  if (!same_value(*raw, expected)) throw std::invalid_argument("Canonical authority pass does not match catalog: " + row.program_key);
+      {"inputs", Value::object_value(std::move(inputs))},
+      {"name", Value::string_value(pass.name)},
+      {"outputs", Value::object_value(std::move(outputs))},
+      {"repeat", pass.repeat.value_or(Value::null())},
+      {"uniforms", Value::object_value(std::move(uniforms))}};
+  if (pass.defines.has_value()) expected_fields.emplace_back("defines", *pass.defines);
+  if (pass.viewport.has_value()) expected_fields.emplace_back("viewport", *pass.viewport);
+  // The mesh adapter and typed generator write different field orders.
+  // validate_compatible_raw rejects duplicate and unknown keys before this
+  // comparison. Each named value, including nested object order, stays exact.
+  if (raw->object.size() != expected_fields.size())
+    throw std::invalid_argument("Canonical authority pass does not match catalog: " + row.program_key);
+  for (const auto& expected : expected_fields) {
+    const auto* actual = field(raw->object, expected.first);
+    if (actual == nullptr || !same_value(*actual, expected.second))
+      throw std::invalid_argument("Canonical authority pass does not match catalog: " + row.program_key);
+  }
 }
 
 void validate_reference_authority(const ReferencePassCompatibility& row, const PassDefinition& pass) {
@@ -445,6 +473,12 @@ void validate_reference_authority(const ReferencePassCompatibility& row, const P
   }
   if (!same_value(actual.blend, expected_blend) || !same_value(actual.repeat, pass.repeat.value_or(Value::null())))
     throw std::invalid_argument("Reference authority blend/repeat metadata mismatch: " + row.program_key);
+  if (actual.defines.has_value() != pass.defines.has_value() ||
+      (actual.defines.has_value() && !same_value(*actual.defines, *pass.defines)))
+    throw std::invalid_argument("Reference authority defines metadata mismatch: " + row.program_key);
+  if (actual.viewport.has_value() != pass.viewport.has_value() ||
+      (actual.viewport.has_value() && !same_value(*actual.viewport, *pass.viewport)))
+    throw std::invalid_argument("Reference authority viewport metadata mismatch: " + row.program_key);
 }
 
 template <typename Fields>
@@ -666,6 +700,8 @@ void fill_authority_pass(graph::PassAdmission& result, const PassDefinition& pas
     result.authority_pass.blend_factors = pass.blend->factors;
   }
   if (pass.repeat.has_value()) result.authority_pass.repeat = copy_value(*pass.repeat);
+  if (pass.defines.has_value()) result.authority_pass.defines = *pass.defines;
+  if (pass.viewport.has_value()) result.authority_pass.viewport = *pass.viewport;
 }
 
 graph::ScatterContract scatter_contract(const ScatterCompatibility& scatter) {
@@ -856,36 +892,36 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     throw std::invalid_argument("Production catalog requires the generated singleton");
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
-      provenance_.corpus_revision != "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d" ||
-      provenance_.generated_payload_sha256 != "5026dc9bfff1b618bba58cafdda66b2d24c6b98fa136496835f754b2d2922b46" ||
-      provenance_.normalized_record_stream_sha256 != "f8f99a758dad34cde8dbcd70e7f367f7a957a230385ef4a94037bebc3e3b5161" ||
-      provenance_.compatibility_sha256 != "538f2af4353fd674b5aeb901b06f3e2ed83438fdbd3ee33586cf3c8c6dea8507" ||
-      provenance_.cpu_behavioral_lock != "42ea669d94c89e32b2eff03bdbdaf79855fb4550bc305586dbead9832ead43bb" ||
+      provenance_.corpus_revision != "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d" ||
+      provenance_.generated_payload_sha256 != "cc84a096e6912426b46f920a6a8832f0fb8d1a4c37e46f2d13f5f4734cb6fa7a" ||
+      provenance_.normalized_record_stream_sha256 != "03b0c42537995616cf4ff032900d82693c249d2a826fe1eb0317caefec28ab0b" ||
+      provenance_.compatibility_sha256 != "55cd3ca1ecc17d453333625b60068ca9b333b7442edb1d0e62e672f69151f425" ||
+      provenance_.cpu_behavioral_lock != "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801" ||
       provenance_.cpu_behavioral_file_count != 95 ||
-      provenance_.cpu_revision != "42ea669d94c89e32b2eff03bdbdaf79855fb4550bc305586dbead9832ead43bb" ||
-      provenance_.source_lock_sha256 != "dfb565a24c33bd0e3dfaddc3f719d0f252b4c6f8df7059198a5f9e07b6a895d0" ||
+      provenance_.cpu_revision != "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801" ||
+      provenance_.source_lock_sha256 != "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf" ||
       provenance_.cpu_package_sha256 != "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
-      provenance_.cpu_source_lock_sha256 != "0fd19e3ecc38fba001014ace224625d87affd667b474984968b5c73a1184660d" ||
-      provenance_.upstream_revision != "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d" ||
-      provenance_.upstream_tree != "b0729d2bf429e0e7307ff8f4fffe99422870c059" ||
-      provenance_.upstream_package_sha256 != "412b9210feb975e3d6607a10ab5b1e905edbe253b0307d4b045cec6eca577183" ||
-      provenance_.upstream_package_lock_sha256 != "85313babc45c8ab92d70116a46bc4581fa93ea6c86f2797cbd1bc126be2addad" ||
+      provenance_.cpu_source_lock_sha256 != "594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c" ||
+      provenance_.upstream_revision != "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d" ||
+      provenance_.upstream_tree != "f5ea13282fd27ea01c94280ae60fcb59bcb5389f" ||
+      provenance_.upstream_package_sha256 != "ac0bca6bde670ba48096bc28f41421f484aabe14c7f668ead590a76497c218dd" ||
+      provenance_.upstream_package_lock_sha256 != "301b650e128c72d00b67f156fbc9929a81ddafea500825bbe275e9e0f78a3c48" ||
       provenance_.first_effect_id != "classicNoisedeck/bitEffects" || provenance_.last_effect_id != "synth3d/shape3d")
     throw std::invalid_argument("Production catalog provenance authentication failed");
   manifest_backed_ = true;
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
   const bool strict_manifest = !catalog.provenance.schema.empty();
-  if (strict_manifest && (canonical_programs_.size() != 290 || reference_passes_.size() != 348 || !scatter_.has_value() || scatter_contracts_.size() != 4))
+  if (strict_manifest && (canonical_programs_.size() != 301 || reference_passes_.size() != 348 || !scatter_.has_value() || scatter_contracts_.size() != 6))
     throw std::invalid_argument("Compatibility census cardinality drift");
   if (strict_manifest && (provenance_.counts.definitions != 210 || provenance_.counts.passes != 348 || provenance_.counts.reference_program_keys != 308 ||
-      provenance_.counts.backend_programs != 295 || provenance_.counts.compatible_programs != 289 || provenance_.counts.incompatible_programs != 1 ||
-      provenance_.counts.missing_passes != 44 || provenance_.counts.scatter_passes != 5 || provenance_.counts.executable_definitions != 198 ||
-      provenance_.counts.incomplete_definitions != 12 || !hex_sha256(provenance_.compatibility_sha256)))
+      provenance_.counts.backend_programs != 308 || provenance_.counts.compatible_programs != 301 || provenance_.counts.incompatible_programs != 0 ||
+      provenance_.counts.missing_passes != 0 || provenance_.counts.scatter_passes != 16 || provenance_.counts.executable_definitions != 210 ||
+      provenance_.counts.incomplete_definitions != 0 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
-  if (provenance_.backend_fragment_rows != 292 || provenance_.backend_unique_fragment_keys != 290 ||
-      provenance_.backend_raw_exact != 295 || provenance_.backend_semantic_exact != 0)
+  if (provenance_.backend_fragment_rows != 303 || provenance_.backend_unique_fragment_keys != 301 ||
+      provenance_.backend_raw_exact != 308 || provenance_.backend_semantic_exact != 0)
     throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());
@@ -1079,17 +1115,19 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
       std::any_of(scatter_->uniforms.begin(), scatter_->uniforms.end(), [](const auto& uniform) { return uniform.cpp_type != "double" || uniform.source != "effect_parameter" || uniform.name.empty(); }) ||
       scatter_->reasons != std::vector<std::pair<std::string, std::string>>{{"explicit_scatter_adapter", "filter/wormhole:deposit"}}))
     throw std::invalid_argument("Malformed scatter compatibility contract");
-  static const std::vector<std::tuple<const char*, const char*, const char*, const char*, const char*, size_t>> expected_contracts{
-      {"points/physarum:deposit", "noisemaker::scatter::physarum::adapter", "xyzTex", "input", "global_physarum_pheromone", 1},
-      {"points/dla:depositGrid", "noisemaker::scatter::dla::adapter", "xyzTex", "input", "global_dla_grid", 1},
-      {"points/lenia:deposit", "noisemaker::scatter::lenia::adapter", "xyzTex", "input", "global_lenia_density", 1},
-      {"filter3d/flow3d:deposit", "noisemaker::scatter::flow3d::adapter", "stateTex1", "pass", "global_flow3d_trail", 2},
+  static const std::vector<std::tuple<const char*, const char*, const char*, const char*, const char*, const char*, size_t>> expected_contracts{
+      {"points/physarum:deposit", "noisemaker::scatter::physarum::adapter", "points", "xyzTex", "input", "global_physarum_pheromone", 1},
+      {"points/dla:depositGrid", "noisemaker::scatter::dla::adapter", "points", "xyzTex", "input", "global_dla_grid", 1},
+      {"points/lenia:deposit", "noisemaker::scatter::lenia::adapter", "points", "xyzTex", "input", "global_lenia_density", 1},
+      {"filter3d/flow3d:deposit", "noisemaker::scatter::flow3d::adapter", "points", "stateTex1", "pass", "global_flow3d_trail", 2},
+      {"render/pointsRender:deposit", "noisemaker::scatter::points_render::adapter", "points", "xyzTex", "input", "global_points_trail", 10},
+      {"render/pointsBillboardRender:deposit", "noisemaker::scatter::points_billboard_render::adapter", "billboards", "xyzTex", "input", "defocus", 22},
   };
   if (scatter_contracts_.size() != expected_contracts.size()) throw std::invalid_argument("Scatter contract cardinality drift");
-  for (const auto& [key, adapter, input_texture, count, logical_route, uniform_count] : expected_contracts) {
+  for (const auto& [key, adapter, draw_mode, input_texture, count, logical_route, uniform_count] : expected_contracts) {
     const auto contract = std::find_if(scatter_contracts_.begin(), scatter_contracts_.end(), [&](const auto& item) { return item.program_key == key; });
     if (contract == scatter_contracts_.end()) throw std::invalid_argument("Missing scatter compatibility contract: " + std::string(key));
-    if (contract->adapter != adapter || contract->registry != "noisemaker::scatter::resolve_scatter_adapter" || contract->draw_mode != "points" ||
+    if (contract->adapter != adapter || contract->registry != "noisemaker::scatter::resolve_scatter_adapter" || contract->draw_mode != draw_mode ||
         contract->dimensionality != "image" || contract->count != count || contract->input_texture != input_texture ||
         contract->destination_mutation != "in_place_accumulate" || !contract->blend || contract->uniforms.size() != uniform_count ||
         contract->outputs.size() != 1 || contract->outputs[0].slot != 0 || contract->outputs[0].physical_name != "fragColor" ||
@@ -1163,17 +1201,14 @@ NormalizedArguments EffectRegistry::normalize(const EffectDefinition& definition
   for (std::size_t index = 0; index < arguments.size(); ++index) {
     const std::optional<std::string> supplied = named ? arguments[index].name : (index < params.size() ? std::optional<std::string>(params[index].name) : std::nullopt);
     const std::string supplied_name = supplied.value_or("argument " + std::to_string(index + 1));
-    std::string canonical = supplied_name;
-    for (const auto& alias : definition.parameter_aliases) if (alias.first == supplied_name) { canonical = alias.second; break; }
     std::size_t parameter_index = params.size();
-    for (std::size_t candidate = 0; candidate < params.size(); ++candidate) if (params[candidate].name == canonical) { parameter_index = candidate; break; }
+    for (std::size_t candidate = 0; candidate < params.size(); ++candidate) if (params[candidate].name == supplied_name) { parameter_index = candidate; break; }
     if (parameter_index == params.size()) {
       std::string accepted;
       for (const auto& parameter : params) { if (!accepted.empty()) accepted += ", "; accepted += parameter.name; }
-      for (const auto& alias : definition.parameter_aliases) { if (!accepted.empty()) accepted += ", "; accepted += alias.first; }
       throw std::invalid_argument("Unknown parameter \"" + supplied_name + "\" for " + definition.id + "; accepted: " + accepted);
     }
-    values[parameter_index].second = normalize_value(params[parameter_index], arguments[index].value, canonical);
+    values[parameter_index].second = normalize_value(params[parameter_index], arguments[index].value, supplied_name);
     present[parameter_index] = true;
   }
   for (std::size_t index = 0; index < params.size(); ++index) {
@@ -1214,6 +1249,12 @@ graph::PassAdmission EffectRegistry::admission(const EffectDefinition& definitio
           break;
         }
       }
+    }
+    if (result.identity.program_key == "render/pointsBillboardRender:deposit") {
+      if (!result.scatter.has_value() || pass.outputs.size() != 1U || pass.outputs[0].first != "fragColor" ||
+          (pass.outputs[0].second != "defocus" && pass.outputs[0].second != "global_billboard_trail"))
+        throw std::invalid_argument("Billboard scatter pass route differs from registered authority");
+      result.scatter->outputs[0].logical_route = pass.outputs[0].second;
     }
     return result;
   }

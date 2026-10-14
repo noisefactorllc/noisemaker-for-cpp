@@ -41,10 +41,10 @@ SCHEMA_VERSION = 1
 PROGRAM_KEY = "synth/shape:shape"
 EFFECT_KEY = "synth/shape"
 # Revision authenticated by the immutable oracle capture.
-CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
-FACTORY_NAME = "canonicalFactory282"
-FACTORY_SHA256 = "2244ce51eb45a6b0c9448179c5a29d39d2636aa6e832b0a403c7d554b38af3c4"
+FACTORY_NAME = "canonicalFactory285"
+FACTORY_SHA256 = "36117882ac517282234caa52869e72e0a067b62183f6e18e787c8a5ee3f598b6"
 SOURCE_RELATIVE = (
     f"tools/glslcpp/corpus/{CORPUS_REVISION}"
     "/sources/synth/shape/shape.glsl")
@@ -53,16 +53,16 @@ SOURCE_SHA256 = "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
+        "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
     "glsl_kernel": (
         "src/csl/glsl-kernel.js",
-        "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"),
+        "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff"),
     "glsl_runtime": (
         "src/csl/glsl-runtime.js",
-        "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"),
+        "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1"),
     "pass_runner": (
         "src/runtime/pass-runner.js",
         "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
@@ -80,6 +80,12 @@ CORPUS_ADAPTER_CENSUS_EXPECTED = frozenset({
     "classicNoisedeck/fractal:fractal",
     "filter/historicPalette:historicPalette",
     "filter/palette:palette",
+    "filter3d/flow3d:deposit",
+    "points/dla:depositGrid",
+    "points/lenia:deposit",
+    "points/physarum:deposit",
+    "render/pointsBillboardRender:deposit",
+    "render/pointsRender:deposit",
     "synth/julia:julia",
     "synth/remap:remap",
 })

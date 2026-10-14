@@ -3,15 +3,15 @@
 - Schema: `noisemaker-for-cpp.synth-noise.pixel-parity.v1`
 - Authority: unmodified public canonicalFactory273 from immutable CPU snapshot.
 - Source: 18131 bytes, SHA-256 `410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274`.
-- Factory: canonicalFactory273, SHA-256 `1b3860b7e5580828598f09b2b4c1c085f186367aa489349482f48e3560c36698`.
-- Import closure: exactly 23 literal files with pinned paths and hashes.
+- Factory: canonicalFactory273, SHA-256 `d3068b8c3ad15fa04454cf03b95fed917077291369e673bc4062d22dc476017f`.
+- Import closure: exactly 24 literal files with pinned paths and hashes.
 - Comparison: zero tolerance, complete f32 words and RGBA8 bytes; signed zero and NaN payloads significant.
 - Runtime controls: repeatability, distinct output data objects/backing buffers, public/direct identity, input immutability, and input lifetime executed.
 
 ## Cases
 
 - mono-hermite: 5x4, controls={"name":"mono-hermite","width":5,"height":4,"time":0.25,"seed":7,"noiseType":2,"octaves":3,"scaleX":22,"scaleY":17,"wrap":false,"ridges":false,"loopOffset":35,"loopScale":8,"speed":11,"colorMode":0}, f32=d936a2997d4848208cf363fa79e60277fb2dbbe83d0f270aa8bfb3bb3afb1255, rgba8=cc93e5d0e903fb6b03cdd9dca57c68554d8d3822da747379de713292edf53dea
-- rgb-simplex-wrapped: 4x5, controls={"name":"rgb-simplex-wrapped","width":4,"height":5,"time":1.5,"seed":19,"noiseType":10,"octaves":4,"scaleX":75,"scaleY":61,"wrap":true,"ridges":true,"loopOffset":300,"loopScale":42,"speed":-25,"colorMode":1}, f32=9baea6701f07fe45f3d8af59a07388a27074fe90b377fa2406eaf587f289451b, rgba8=cb27d6815d90cd9207d353aa3c76ae1c52db210938c7189c733d314d265379c6
+- rgb-simplex-wrapped: 4x5, controls={"name":"rgb-simplex-wrapped","width":4,"height":5,"time":1.5,"seed":19,"noiseType":10,"octaves":4,"scaleX":75,"scaleY":61,"wrap":true,"ridges":true,"loopOffset":300,"loopScale":42,"speed":-25,"colorMode":1}, f32=144fc29a3a7ffeed7a707de426c3e06cbfe10c189b89b19a71e65c435cc87b04, rgba8=cb27d6815d90cd9207d353aa3c76ae1c52db210938c7189c733d314d265379c6
 - rgb-sine-live: 6x3, controls={"name":"rgb-sine-live","width":6,"height":3,"time":2,"seed":23,"noiseType":11,"octaves":2,"scaleX":91,"scaleY":33,"wrap":true,"ridges":false,"loopOffset":300,"loopScale":20,"speed":60,"colorMode":1}, f32=4282baa58947ebc6713e508f9952f8dde8cb8c75b84d0f5ff78e9317c70933da, rgba8=3600dcde68d91b98f77282bc8ed55964489a1dd2dc5feca7c1182369a4ad4c14
 - constant-short: 3x3, controls={"name":"constant-short","width":3,"height":3,"time":0,"seed":3,"noiseType":0,"octaves":1,"scaleX":8,"scaleY":8,"wrap":false,"ridges":true,"loopOffset":10,"loopScale":1,"speed":0,"colorMode":0}, f32=e692745c0634c2ed18788594c23166389e2942decb206544269cfb98dfde6ae2, rgba8=f49f33da576b785c19268591786d32d309f6b8e291cb91e0caaf73266630ebd3
 - linear-offset20: 3x2, controls={"name":"linear-offset20","width":3,"height":2,"time":0.75,"seed":31,"noiseType":1,"octaves":2,"scaleX":34,"scaleY":29,"wrap":false,"ridges":false,"loopOffset":20,"loopScale":12,"speed":17,"colorMode":0}, f32=5fb3c9911a1f69c010ed9ad6e1466c75e8c2504f413d891d3cc57b2ba2a1d2e1, rgba8=1899687e7b8578b78a29c106d22419e64aad80ba0db7a578c60d9559c0781f96
@@ -32,10 +32,10 @@
 
 ## Exact mutation witnesses
 
-- mutable-global-frame: anchor=6c61d1d9c538263fb40b160bdac65d060dc64748197b866f99a2260d84d918bf, replacement=9982c75d15a5cf8c1328acf6b621531d9f8c71c11e06ff2020e65a5f134c7f8f, factory=956834b3b00dc589de17e0adbceefab33baad4b31a73fa7d019bd4295a59f2da, witnesses=19/19
-- runtime-loop-bound: anchor=7dca0229b063ecd50fb6dda61cc202d99f3d036da2a6e46223255650a0e11adb, replacement=7d3c4aa1d382c224e07a00ac2f591072b3edeaa4c20f7364fc5c7e59cad75c84, factory=bf2080a479b16c4eb860ab63913033fb885b0c46f11f42f9242ad0cd806da2fc, witnesses=19/19
-- scalar-uint-xor: anchor=8eeab152f20e4e83c0c8091e649b85d3eafec7b98868f119c4a525ce5d100662, replacement=028c473cf8ed4eae00c330f7c68f0c13cf3cf226d52024901bfdc3a6a783ab29, factory=445a649aa481f32e64de10a17d770e1e937606c0bbd235608cddcee5b6da0128, witnesses=17/19
-- owner-speed-control: anchor=d5773b533941651b0dcb30546a6d1bc4d1648f61f51058a0610f93cc9293e949, replacement=3cfb6c567f23b6ee56ca6e028f219de34f54050bcea85ef424a4502e1c9ddc43, factory=d4a8da6a99d861bf0341b2956fe151e2105b7644608464def35e814f7e78f0c8, witnesses=18/19
+- mutable-global-frame: anchor=6c61d1d9c538263fb40b160bdac65d060dc64748197b866f99a2260d84d918bf, replacement=9982c75d15a5cf8c1328acf6b621531d9f8c71c11e06ff2020e65a5f134c7f8f, factory=5b8349407a6eb08f0d372339a0c0d0548cefc95d8750eb56ed33fc3295c3a91e, witnesses=19/19
+- runtime-loop-bound: anchor=7dca0229b063ecd50fb6dda61cc202d99f3d036da2a6e46223255650a0e11adb, replacement=7d3c4aa1d382c224e07a00ac2f591072b3edeaa4c20f7364fc5c7e59cad75c84, factory=cd0b66572711f1bd239b8f40857015802fa0e9e48e97a2e03641502f9d844a05, witnesses=19/19
+- scalar-uint-xor: anchor=8eeab152f20e4e83c0c8091e649b85d3eafec7b98868f119c4a525ce5d100662, replacement=028c473cf8ed4eae00c330f7c68f0c13cf3cf226d52024901bfdc3a6a783ab29, factory=3f463c11ccc126a9be8e32d5c69a5b177e1cda4764723d7bf925bc345203d92f, witnesses=17/19
+- owner-speed-control: anchor=d5773b533941651b0dcb30546a6d1bc4d1648f61f51058a0610f93cc9293e949, replacement=3cfb6c567f23b6ee56ca6e028f219de34f54050bcea85ef424a4502e1c9ddc43, factory=e84fd124dabc576f5bf83cd4e72c69959b45d6ccbf534ff7b75036c85b36f0e7, witnesses=18/19
 
 ## Prepared mechanism boundary
 

@@ -20,12 +20,12 @@ import json
 import os
 import unittest
 from pathlib import Path
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 RENDER3D_KEY = "render/render3d:render3d"
 RENDER_CUBE_KEY = "render/renderCubemap3d:renderCubemap3d"
 RENDER_LIT_KEY = "render/renderLit3d:renderLit3d"
 
-CORPUS_REVISION = "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d"
 REPOSITORY = Path(__file__).resolve().parent.parent
 
 

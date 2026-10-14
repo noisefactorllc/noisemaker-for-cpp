@@ -1,4 +1,4 @@
-"""CPU26d Reverb regression for isolated original, current and accumulation vectors."""
+"""Current-CPU Reverb regression for isolated original, current and accumulation vectors."""
 from __future__ import annotations
 
 import hashlib
@@ -92,10 +92,10 @@ class ReverbReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "86ab3d3fe7e8a63ce56e3deec9faf1d928850ec32c94c82ab9dd6ab90d9dd530",
-                "expected.json": "bb00b7ced07df5f509507c8efd31f4456bde55bdc990811bf82af9966956c140"}.items():
+                "expected.json": "60c84f39965eb55250e256eb4c88a32a3cd05e68bfb1cad44078ae1a1cd30f87"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "5b686a45b5c56329adf0c63cbcf572eb6f23fad1")
+        self.assertEqual(expected["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
         self.assertEqual(len(expected["source_hashes"]), 5)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({c["uniforms"]["iterations"] for c in cases}, {1, 3, 8})

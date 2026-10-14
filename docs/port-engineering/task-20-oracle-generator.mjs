@@ -1,26 +1,33 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
 
-import { canonicalKernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) {
+  throw new Error('usage: task-20-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
+}
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalKernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outputPath = path.join(here, 'task-20-oracles.json')
-const cpuRoot = '../noisemaker-for-cpu'
 const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const corpusRevision = EXPECTED.upstreamRevision
 const corpus = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision)
 const canonicalKernelsPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const key = 'synth/sacredGeometry:sacredGeometry'
 const source = 'sources/synth/sacredGeometry/sacredGeometry.glsl'
 const expectedRawSha256 = '24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de'
 const expectedNormalizedSha256 = '6b3c4e8492a69969f3d6f78689cfd19de846656fd0c6d5c8dfd5a758427c61d3'
-const expectedCanonicalKernelsSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
-const expectedFactorySha256 = 'b4ed8af983d8bda5d48e05d418458c2fc82170f745b021199df7f7095fadb2f2'
+const expectedCanonicalKernelsSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
+const expectedFactorySha256 = '48de593c3096b18f8ca98518fac3f1055cdc3746883860273b5b1d82e374ef37'
 
 const f = Math.fround
 const dimensions = Object.freeze({ output: [37, 23], tileOffset: [5, 7], fullResolution: [53, 41] })
@@ -103,7 +110,13 @@ const caseDefinitions = Object.freeze([
   {
     name: 'geometry-5-vesica-pulse', time: context.time,
     uniforms: { ...nondefault, geometry: 5, animation: 2 },
+    expectedExactBackground: true,
     coverage: ['geometry-5-vesica', 'non-array-control', 'main-pulse-animation'],
+  },
+  {
+    name: 'geometry-5-vesica-pulse-visible-scale-16', time: context.time,
+    uniforms: { ...nondefault, scale: f(16), geometry: 5, animation: 2 },
+    coverage: ['geometry-5-vesica', 'non-array-control', 'main-pulse-animation', 'visible-mixed-output'],
   },
   {
     name: 'geometry-6-borromean-ripple', time: context.time,
@@ -212,7 +225,13 @@ function caseResult(definition) {
   } else if (metrics.finite_lanes !== metrics.pixels * 4 || metrics.nonfinite_rgb_lanes !== 0) {
     throw new Error(`${definition.name}: unexpected nonfinite lane`)
   }
-  if (!definition.expectedNonfiniteRgb && (metrics.exact_background_pixels === metrics.pixels || metrics.mixed_rgb_pixels === 0)) {
+  if (definition.expectedExactBackground &&
+      (metrics.exact_background_pixels !== metrics.pixels || metrics.mixed_rgb_pixels !== 0 ||
+       metrics.exact_foreground_pixels !== 0)) {
+    throw new Error(`${definition.name}: expected exact current-authority background`)
+  }
+  if (!definition.expectedNonfiniteRgb && !definition.expectedExactBackground &&
+      (metrics.exact_background_pixels === metrics.pixels || metrics.mixed_rgb_pixels === 0)) {
     throw new Error(`${definition.name}: background-dominated or binary-only fixture`)
   }
   canonicalSurfaces.set(definition.name, first)
@@ -438,10 +457,12 @@ function build() {
     corpus_revision: corpusRevision,
     provenance: {
       node: process.version,
+      cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+      cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
       api: 'canonicalKernelFactories+bindCanonicalKernel+runPass+Surface',
       canonical_kernels_path: 'src/effects/generated/canonical-kernels.js',
       canonical_kernels_sha256: expectedCanonicalKernelsSha256,
-      factory_name: 'canonicalFactory273',
+      factory_name: canonicalFactory.name,
       factory_to_string_sha256: expectedFactorySha256,
       factory_hash_contract: 'SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]',
       generator: 'task-20-oracle-generator.mjs',
@@ -467,7 +488,7 @@ function build() {
       resolution: { values: dimensions.output, f32_bits_le: dimensions.output.map(f32Bits) },
       tileOffset: { values: dimensions.tileOffset, f32_bits_le: dimensions.tileOffset.map(f32Bits) },
       fullResolution: { values: dimensions.fullResolution, f32_bits_le: dimensions.fullResolution.map(f32Bits) },
-      aspect: { value: f(dimensions.output[0] / dimensions.output[1]), f32_bits_le: f32Bits(f(dimensions.output[0] / dimensions.output[1])), source: 'createCanonicalBindings width/height' },
+      aspect: { value: f(dimensions.fullResolution[0] / dimensions.fullResolution[1]), f32_bits_le: f32Bits(f(dimensions.fullResolution[0] / dimensions.fullResolution[1])), source: 'createCanonicalBindings fullResolution width/height' },
       frame: context.frame,
       deltaTime: { value: context.deltaTime, f32_bits_le: f32Bits(context.deltaTime) },
       seed: { value: context.seed, f32_bits_le: f32Bits(context.seed) },
@@ -491,15 +512,15 @@ function build() {
 }
 
 const expected = build()
-if (process.argv.length === 2) {
+if (!process.argv.includes('--check') && !process.argv.includes('--write')) {
   process.stdout.write(expected)
-} else if (process.argv.length === 3 && process.argv[2] === '--write') {
+} else if (process.argv.includes('--write') && !process.argv.includes('--check')) {
   fs.writeFileSync(outputPath, expected, 'utf8')
   process.stdout.write(`wrote ${path.basename(outputPath)}\n`)
-} else if (process.argv.length === 3 && process.argv[2] === '--check') {
+} else if (process.argv.includes('--check') && !process.argv.includes('--write')) {
   const actual = fs.readFileSync(outputPath, 'utf8')
   if (actual !== expected) throw new Error(`${outputPath} is not the exact frozen canonical oracle output`)
   process.stdout.write(`ok ${path.basename(outputPath)}\n`)
 } else {
-  throw new Error('usage: node task-20-oracle-generator.mjs [--write|--check]')
+  throw new Error('usage: task-20-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
 }

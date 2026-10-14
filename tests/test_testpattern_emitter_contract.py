@@ -40,11 +40,8 @@ class TestPatternEmitterLoweringTests(unittest.TestCase):
             "const std::array<std::int32_t, 10> GLYPH = "
             "std::array<std::int32_t, 10>{{",
             rendered)
-        # `double`, not `std::int32_t` -- see the field comment on
-        # `emitted_testpattern_digit_extraction_declarations` in
-        # emit_typed_cpp.py: the authority's own compiler leaves `temp`
-        # untyped at `temp /= 10`, so `digits[]` must be able to carry the
-        # same fractional remainder forward.
+        # The generated JavaScript uses Number values in this loop. Its
+        # explicit digit division truncates before the next remainder store.
         self.assertIn(
             "std::array<double, 3> digits{};", rendered)
         self.assertIn(

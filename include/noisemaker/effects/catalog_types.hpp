@@ -234,6 +234,8 @@ struct AuthorityPassMetadata {
   std::vector<std::pair<std::string, Value>> uniforms;
   Value blend = Value::boolean_value(false);
   Value repeat = Value::null();
+  std::optional<Value> defines;
+  std::optional<Value> viewport;
 };
 
 struct ReferencePassCompatibility {

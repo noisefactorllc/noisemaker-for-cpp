@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import pathlib
 import shutil
@@ -30,6 +31,44 @@ class CorpusRatchetTests(unittest.TestCase):
     @staticmethod
     def corpus(root: pathlib.Path) -> pathlib.Path:
         return check_corpus._corpus_root(root)
+
+    def seed_pending(self, repository: pathlib.Path) -> None:
+        """Move one authenticated vendored record into a valid temporary pending split."""
+        root = self.corpus(repository)
+        manifest_path = root / "manifest.json"
+        metadata_path = root / "metadata.json"
+        pending_path = root / "pending.json"
+        manifest = json.loads(manifest_path.read_text())
+        metadata = json.loads(metadata_path.read_text())
+        pending = json.loads(pending_path.read_text())
+        key = "synth3d/shape3d:precompute"
+        entry = next(item for item in manifest["programs"]
+                     if item["program_key"] == key)
+        authority = next(item for item in pending["authority"]["programs"]
+                         if item["program_key"] == key)
+        original = root / entry["source"]
+        relative = f"pending-sources/{entry['effect_id']}/{authority['file']}"
+        destination = root / relative
+        destination.parent.mkdir(parents=True)
+        destination.write_bytes(original.read_bytes())
+        original.unlink()
+        manifest["programs"] = [item for item in manifest["programs"]
+                                if item["program_key"] != key]
+        pending["pending"] = [{
+            "program_key": key, "effect_id": entry["effect_id"],
+            "program": entry["program"], "authority_status": authority["status"],
+            "source": relative, "raw_bytes": entry["raw_bytes"],
+            "raw_sha256": entry["raw_sha256"],
+            "blocker": {"stage": "typed.validator", "diagnostic": "fixture blocker"},
+        }]
+        pending["effects"] = {
+            entry["effect_id"]: metadata["effects"].pop(entry["effect_id"])}
+        metadata["provenance"]["authority_projected"].remove(entry["effect_id"])
+        metadata_bytes = (json.dumps(metadata, indent=2, sort_keys=True) + "\n").encode()
+        metadata_path.write_bytes(metadata_bytes)
+        manifest["metadata_sha256"] = hashlib.sha256(metadata_bytes).hexdigest()
+        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        pending_path.write_text(json.dumps(pending, indent=2, sort_keys=True) + "\n")
 
     @staticmethod
     def rewrite_pending(root: pathlib.Path, callback) -> None:
@@ -59,6 +98,40 @@ class CorpusRatchetTests(unittest.TestCase):
     def test_manifest_builder_reproduces_every_vendored_record(self) -> None:
         corpus_ratchet.verify_builder_reproduces_manifest(REPOSITORY)
 
+    def test_pending_source_directory_is_optional_only_for_empty_pending(self) -> None:
+        with self.temporary_repository() as temporary:
+            repository = pathlib.Path(temporary)
+            corpus = self.corpus(repository)
+            self.assertFalse((corpus / "pending-sources").exists())
+            self.assertEqual(check_corpus.validate_corpus(repository)["counts"]["pending"], 0)
+            (corpus / "pending-sources").mkdir()
+            self.assertEqual(check_corpus.validate_corpus(repository)["counts"]["pending"], 0)
+            (corpus / "pending-sources" / "stray.glsl").write_text("void main() {}")
+            with self.assertRaisesRegex(check_corpus.CorpusError,
+                                        "pending source file set drift"):
+                check_corpus.validate_corpus(repository)
+            shutil.rmtree(corpus / "pending-sources")
+            manifest = json.loads((corpus / "manifest.json").read_text())
+            entry = manifest["programs"][0]
+            effect_id, program = entry["program_key"].split(":", 1)
+
+            def add_pending(document):
+                record = next(item for item in document["authority"]["programs"]
+                              if item["program_key"] == entry["program_key"])
+                document["pending"] = [{
+                    "program_key": entry["program_key"], "effect_id": effect_id,
+                    "program": program, "authority_status": record["status"],
+                    "source": f"pending-sources/{effect_id}/{record['file']}",
+                    "raw_bytes": entry["raw_bytes"],
+                    "raw_sha256": entry["raw_sha256"],
+                    "blocker": {"stage": "corpus.parse", "diagnostic": "fixture"},
+                }]
+
+            self.rewrite_pending(repository, add_pending)
+            with self.assertRaisesRegex(check_corpus.CorpusError,
+                                        "pending-sources is required"):
+                check_corpus.validate_corpus(repository)
+
     @full_run_only
     def test_closure_rejects_a_dropped_or_duplicated_program(self) -> None:
         def duplicate(document):
@@ -76,6 +149,7 @@ class CorpusRatchetTests(unittest.TestCase):
         for name, (callback, message) in cases.items():
             with self.subTest(case=name), self.temporary_repository() as temporary:
                 root = pathlib.Path(temporary)
+                self.seed_pending(root)
                 self.rewrite_pending(root, callback)
                 with self.assertRaisesRegex(check_corpus.CorpusError, message):
                     check_corpus.validate_corpus(root)
@@ -84,12 +158,14 @@ class CorpusRatchetTests(unittest.TestCase):
     def test_pending_sources_are_hash_bound_and_exactly_enumerated(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
+            self.seed_pending(root)
             first = corpus_ratchet.load_pending(self.corpus(root))["pending"][0]
             (self.corpus(root) / first["source"]).write_bytes(b"tampered")
             with self.assertRaisesRegex(check_corpus.CorpusError, "pending source hash or size mismatch"):
                 check_corpus.validate_corpus(root)
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
+            self.seed_pending(root)
             (self.corpus(root) / "pending-sources" / "stray.glsl").write_text("void main() {}", encoding="utf-8")
             with self.assertRaisesRegex(check_corpus.CorpusError, "pending source file set drift"):
                 check_corpus.validate_corpus(root)
@@ -98,6 +174,7 @@ class CorpusRatchetTests(unittest.TestCase):
     def test_pending_effect_projections_are_exactly_the_unvendored_effects(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
+            self.seed_pending(root)
             self.rewrite_pending(root, lambda document: document["effects"].pop(sorted(document["effects"])[0]))
             with self.assertRaisesRegex(check_corpus.CorpusError, "pending effect projections drift"):
                 check_corpus.validate_corpus(root)
@@ -106,6 +183,7 @@ class CorpusRatchetTests(unittest.TestCase):
     def test_a_changed_blocker_fails_the_ratchet(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
+            self.seed_pending(root)
             probe = self.recorded_probe(root)
             first = corpus_ratchet.load_pending(self.corpus(root))["pending"][0]["program_key"]
 
@@ -123,6 +201,7 @@ class CorpusRatchetTests(unittest.TestCase):
     def test_a_pending_program_that_starts_passing_fails_the_ratchet(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
+            self.seed_pending(root)
             probe = self.recorded_probe(root)
             first = corpus_ratchet.load_pending(self.corpus(root))["pending"][0]["program_key"]
 
@@ -136,6 +215,7 @@ class CorpusRatchetTests(unittest.TestCase):
     def test_a_recorded_stage_outside_the_pipeline_is_rejected(self) -> None:
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
+            self.seed_pending(root)
             self.rewrite_pending(root, lambda document: document["pending"][0]["blocker"].__setitem__("stage", "later"))
             with self.assertRaisesRegex(check_corpus.CorpusError, "malformed pending blocker"):
                 check_corpus.validate_corpus(root)

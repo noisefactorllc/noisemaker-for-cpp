@@ -357,6 +357,9 @@ def authenticate_emboss_color_style(
     """Authenticate Emboss and return only objects owned by ``program``."""
     if profile != PROFILE:
         raise _fail("exact profile carrier required")
+    if tuple((item.name, item.kind, item.canonical_value)
+             for item in program.preprocessor_defines) == _DYNAMIC_DEFINES:
+        return _authenticate_dynamic_emboss(program, source_hash)
     if _sha(_profile_tuple()) != _PROFILE_SHA256:
         raise _fail("internal frozen profile tuple mismatch")
     if program.key != EMBOSS_KEY or source_hash != _RAW_SHA256:
@@ -698,3 +701,403 @@ def apply_emboss_color_style(
         profile: str | None) -> TypedProgram:
     authenticate_emboss_color_style(program, source_hash, profile)
     return program
+
+
+# Runtime STYLE admission is an independent exact-source/tree record.
+# The frozen STYLE=0 proof above retains its original gates.
+_DYNAMIC_DEFINES = (('STYLE', 'str', 'int'),)
+_DYNAMIC_IDENTITY = (4144,
+ 'b58b5b52f135fc18d76e425719c153826ecf0f47fcbbe9fd2e4aa14dfe96006f',
+ '725c5d73d3e6b32a4d6c4f9a71e00e77f6c8dd93247bdc56bac99f7194555be9',
+ 'd6df7bd534748a90fda5fbd877b65bc1ecc179ab099a4d60ec0866f7c1ae91f8',
+ 'fe13a9cccff3081cc4f36a9e39ecab5f1939c9921c948c4efd949f93e14e71f5',
+ '84cc03b0327bfd6f08252a4014a2c69c6b89e56239bf3d45b00a431715432150',
+ '80ad690ce75f90622e00a53abcc89924171e18b33de4808674210c34d9ba53d4',
+ (('STYLE', 'str', 'int'),),
+ (('STYLE',
+   'tileOffset',
+   'fullResolution',
+   'inputTex',
+   'amount',
+   'angle',
+   'height',
+   'colorAmount',
+   'renderScale'),
+  ('inputTex',),
+  ('fragColor',),
+  True,
+  False),
+ (2, 0, 1, 9, 9, True),
+ ((19, 'colorDefaultEmboss', 'vec3', ((13, 'uv', 'vec2'), (14, 'texelSize', 'vec2')), 23, '27:1-54:2'),
+  (20, 'colorGeneralEmboss', 'vec3', ((15, 'uv', 'vec2'), (16, 'texelSize', 'vec2')), 26, '56:1-85:2'),
+  (21, 'grayEmboss', 'vec3', ((17, 'uv', 'vec2'), (18, 'centerRGB', 'vec3')), 12, '87:1-103:2'),
+  (22, 'main', 'void', (), 10, '105:1-129:2'),
+  (23, 'sampleGlobal', 'vec3', ((12, 'globalUV', 'vec2'),), 2, '22:1-25:2')))
+_DYNAMIC_GRAPH = (('colorDefaultEmboss', ()),
+ ('colorGeneralEmboss', ()),
+ ('grayEmboss', ('sampleGlobal',)),
+ ('main', ('colorDefaultEmboss', 'colorGeneralEmboss', 'grayEmboss')),
+ ('sampleGlobal', ()))
+_DYNAMIC_REACHABLE = ('colorDefaultEmboss', 'colorGeneralEmboss', 'grayEmboss', 'main', 'sampleGlobal')
+_DYNAMIC_TABLES = ((19,
+  'colorDefaultEmboss',
+  23,
+  25,
+  'kernel',
+  'float[9]',
+  0,
+  '28:11-28:20',
+  '9109bb80c24949a23631aea675d28c27e4d2f1aa5b27cfbec94e98d4f4c5f14d',
+  'bfdffcdb50fee99e1e60d9f12b018065f44fb6c0f1314c26a8a19d5d1183dce5',
+  ('29:5-29:22',
+   '29:23-29:40',
+   '29:41-29:57',
+   '30:5-30:22',
+   '30:23-30:39',
+   '30:41-30:57',
+   '31:5-31:21',
+   '31:23-31:39',
+   '31:41-31:57'),
+  '22f7fe6355819a2356f0cf2f33a827675b4576ec07d6a9207827889acd79689e',
+  'bb4ff6a5cb7125bf49164b0644794431ee0ff03fcafdb9e2c1358394b55384d2',
+  'bf30cf35e580caa8e057ab1676204c31ce406bf0eab7f2cab1e436d9689d2b2d',
+  21,
+  '48:5-51:6',
+  '728c7c9bf449c78ef3b5cde57b91da328763566c503aefb6b2ea958cfbc097f0',
+  'd155fa256649c464855cabf830ac718815552b7511d6eff7eeb437d1520cc818',
+  28,
+  2,
+  ((19,
+    (21, 's1', 's1', 'e0', 1, 1),
+    '50:29-50:38',
+    'e48d31f772b4651b0272f01ee53b61a9caeef1fd042414d2306e3bf6436f05c8'),),
+  72),
+ (19,
+  'colorDefaultEmboss',
+  23,
+  26,
+  'offsets',
+  'vec2[9]',
+  10,
+  '36:10-36:20',
+  'cdbb53ce16b6fe9c3e92ba9f50a701148029a4de5399b3c2be5d75338ef3bb36',
+  '07af73842ca031c36c266b6bdc9e083505dfb620ed734dbd70278b1ac30cbbf3',
+  ('37:5-37:51',
+   '38:5-38:42',
+   '39:5-39:50',
+   '40:5-40:42',
+   '41:5-41:33',
+   '42:5-42:41',
+   '43:5-43:50',
+   '44:5-44:41',
+   '45:5-45:49'),
+  '0bc1a373d5a9dc26f9254539787236753906f411238ddfeae5810e2ce560a0de',
+  '03c4baede2234e5d560e7c424ac99620d3c74284dc0ea3903fa064fa8531a082',
+  '3ffbbae02cd3742a5fef2204d651d60ba0f867bcb583609d745462909244ec13',
+  21,
+  '48:5-51:6',
+  '728c7c9bf449c78ef3b5cde57b91da328763566c503aefb6b2ea958cfbc097f0',
+  'd155fa256649c464855cabf830ac718815552b7511d6eff7eeb437d1520cc818',
+  28,
+  2,
+  ((19,
+    (21, 's1', 's0', 'e0', 0, 0, 1, 0, 0, 0, 1, 0, 0),
+    '49:51-49:61',
+    'e3db8155915995b88465fa953b0d51503338e3e1a8bc276efb7e2af71705c563'),),
+  72),
+ (20,
+  'colorGeneralEmboss',
+  26,
+  30,
+  'kernel',
+  'float[9]',
+  0,
+  '57:11-57:20',
+  '23a17c6b11dbf19af873cfe08919b9c9b0647f11cb40ddb072cac7e288f44eac',
+  '47b34206d58f516edebcf9c348632b9645778b5a5fd26e8301b77a63fcbf02e1',
+  ('58:5-58:22',
+   '58:23-58:40',
+   '58:41-58:57',
+   '59:5-59:22',
+   '59:23-59:39',
+   '59:41-59:57',
+   '60:5-60:21',
+   '60:23-60:39',
+   '60:41-60:57'),
+  '2b6ac4f3614aff71b6366df70d17fbb27dae3311b4f6ce3019e818b8de20c500',
+  'd0244e32f8ec49c8c82243c29e95bbac95fffd20d39cfec11c049f1f549dddd0',
+  'b58c200a45ec79b301f6141f6fbe3734f4f8489105c32983fc3542a1a18a1c4a',
+  24,
+  '77:5-83:6',
+  '6dee8b6dfb624da2f636a3d422ca3e4e4e8519cce4fb071d459926ac95bd283f',
+  '895bb3c58d3923ebad39c0a5a89744142430ccb6b210b1782da24c9c5e6770b5',
+  36,
+  5,
+  ((20,
+    (24, 's1', 's4', 'e0', 1, 1),
+    '82:29-82:38',
+    'c50e40cc8d50e2f15fbe1765776cc7c92ba879d0b3952058ce907e360918c816'),),
+  72),
+ (20,
+  'colorGeneralEmboss',
+  26,
+  31,
+  'baseOffsetsPx',
+  'vec2[9]',
+  10,
+  '62:10-62:26',
+  'c98e284bceed71b1d89c1ca64c27d28b8b403d2e2e07da2d83a64c38ac7ad60d',
+  '407769bb81f995e93758446c8dd773c2c1689af2f9084905459945755ea15970',
+  ('63:5-63:41',
+   '64:5-64:41',
+   '65:5-65:41',
+   '66:5-66:41',
+   '67:5-67:41',
+   '68:5-68:41',
+   '69:5-69:41',
+   '70:5-70:41',
+   '71:5-71:41'),
+  '440395745628fcccfa8b0694bed066bad28bf771cceaeaf7eb4e544da68c081a',
+  'd40a07a865611e8c9d3bc44f672b3c54af740fef07888cd51230c40e0fc65522',
+  '224a2a9fc6a59fcf889bbe867d97b19f111235375e42f82c11e92ad587e39fba',
+  24,
+  '77:5-83:6',
+  '6dee8b6dfb624da2f636a3d422ca3e4e4e8519cce4fb071d459926ac95bd283f',
+  '895bb3c58d3923ebad39c0a5a89744142430ccb6b210b1782da24c9c5e6770b5',
+  36,
+  5,
+  ((20,
+    (24, 's1', 's0', 'e0', 0),
+    '78:23-78:39',
+    '6a8d8e0b0a22d1c2e4685f62c48c8163b87161519b2201b13bb5197ab4a97f7c'),),
+  72))
+_DYNAMIC_BOOLEAN = ((22,
+  (5, 'e0', 0, 0),
+  '111:22-111:55',
+  'builtin',
+  'bool',
+  'all',
+  -3,
+  '4876c6a7ee23494e334af118e3fe40d07d60164209dc14dd0dcd9999e19ff164',
+  ('binary', None, '&&'),
+  (('bvec2', '8185336080e181868c43bd4a2be4daa01efb52dfd499c24617f2a58f6b6063d3'),)),
+ (22,
+  (5, 'e0', 0, 0, 0),
+  '111:26-111:54',
+  'builtin',
+  'bvec2',
+  'equal',
+  -14,
+  '8185336080e181868c43bd4a2be4daa01efb52dfd499c24617f2a58f6b6063d3',
+  ('builtin', 'all', None),
+  (('vec2', '4318cfc1e2fc7df2175b9d23090c0eb746055794413fe784b4564ab9d98fef48'),
+   ('vec2', '7ba38e246cbe0e73f0cbc54aed30df4642349aea51cd76a9c93ab1769ac23336'))),
+ (22,
+  (5, 'e0', 0, 1),
+  '111:59-111:97',
+  'builtin',
+  'bool',
+  'all',
+  -3,
+  'f3ad229012bfd877ad959f6f709f7d4d376ccdbb17040285dfe3b2778c4e0b39',
+  ('binary', None, '&&'),
+  (('bvec2', '3c1f4c7ae6c90fa51160f777460d0a67fa82732962a2603d599f634145636e4d'),)),
+ (22,
+  (5, 'e0', 0, 1, 0),
+  '111:63-111:96',
+  'builtin',
+  'bvec2',
+  'equal',
+  -14,
+  '3c1f4c7ae6c90fa51160f777460d0a67fa82732962a2603d599f634145636e4d',
+  ('builtin', 'all', None),
+  (('vec2', '6de03924c92a784f798ce354fa9b4b3240a06a1ffa8b95b4f4b719076b4ff723'),
+   ('vec2', '7e380628ae06f96550b135dcdff81fcd6435a5db479aa60fd172ba4170790b10'))))
+_DYNAMIC_TEXTURES = ((19,
+  'colorDefaultEmboss',
+  (21, 's1', 's0', 'e0', 0, 0),
+  '49:26-49:150',
+  'b4cc2f2f0a2cfefa3c6022d7f0c67817f84bc445841089f5c23dfb085a731a8c',
+  '49:46-49:149',
+  'ead8b5db14331b673dcc9d54a38f39d4a60f9eb0d08b240d351d6db5d9598d9b',
+  '49:46-49:115',
+  '8d890756ff1585f9641b4b9df09a6ff1cb102d5c34fafb4359dfa558d13aba75',
+  '49:119-49:149',
+  '972dacc7ff530fc6d92a8301753b5ada079a7e4eb62ff79c5ce883e7a19cc00d'),
+ (20,
+  'colorGeneralEmboss',
+  (24, 's1', 's3', 'e0', 0, 0),
+  '81:26-81:125',
+  '71a6fb54ef203d357377e0c9a41b542e3af4a5a7aabc38c865f8fbb0535bda10',
+  '81:46-81:124',
+  '9d10b115086e671c358f10dd7589b945de04a7f4786f31d29ac312cb61d39cfa',
+  '81:46-81:90',
+  '8aae8600eb4010f2a807abfa362d089827085adac7584e7b12aba5895da4afd6',
+  '81:94-81:124',
+  'df7756a712a2af0662df2004a6f2ef25e0d11d55ede0d5d05b228aa93b0371cc'))
+_DYNAMIC_MAIN_ROUTE = ((5, '111:5-111:98', 'b4540e09040b9818dff3813c9bced2c37d96bcf17885e604a9c6a04df218a76e'),
+ (6, '115:5-115:72', 'f2897e20d5216814a929c517d7304e14079930c49bd3fa4763dde2c8f0103872'),
+ (8, '118:1-126:2', '16813206b5e008fd41ab0a4edf220420146ed954111f3f43905463fe98fa2eb7'),
+ (9, '128:5-128:60', '7634950ce0c8ea6c4a269f6e92304f0603e9b0ad49b55838cd7116110a9a550a'))
+_DYNAMIC_LUMA = ('7be6aa2184fb00ea690a68adda09ae46e62ebeb3af05d1668be854016b72e647',
+ ((21, (3, 'e0', 0, 1), '93:59-93:63', 'fd7424e9dd3db73c1b96a06c3158dfcbb9b6c27e5bf2c079c697fa66bb5099af'),
+  (21, (4, 'e0', 0, 1), '94:59-94:63', '0fb66ba5e4c1db0659d083c50e9aef6aa4e9b848a3f847ab31a0449a232bb20c'),
+  (21, (8, 'e0', 0, 1), '99:39-99:43', '61f85b9bb8f97c23e92d879691071d6d6568b95139eaa66d0e939319af403194')))
+_DYNAMIC_RECORD_SHA256 = '647330c7d9f90b7f2431158c3a6c7c9b226a7eabc68a78b78906adfe5f837c2d'
+
+
+def _authenticate_dynamic_emboss(program: TypedProgram, source_hash: str | None) -> EmbossColorStyleProof:
+    if (_sha((_DYNAMIC_IDENTITY, _DYNAMIC_GRAPH, _DYNAMIC_REACHABLE,
+              _DYNAMIC_TABLES, _DYNAMIC_BOOLEAN, _DYNAMIC_TEXTURES,
+              _DYNAMIC_MAIN_ROUTE, _DYNAMIC_LUMA)) != _DYNAMIC_RECORD_SHA256
+            or program.key != EMBOSS_KEY or source_hash != _RAW_SHA256
+            or len(program.raw_source.encode('utf-8')) != _RAW_BYTES
+            or hashlib.sha256(program.raw_source.encode('utf-8')).hexdigest() != _RAW_SHA256
+            or program.body_status != 'analyzed'):
+        raise _fail('dynamic record, raw source, or program status mismatch')
+    loop = program.counted_loop_proof
+    if loop is None:
+        raise _fail('dynamic loop proof is absent')
+    identity = (len(program.source.encode('utf-8')),
+                hashlib.sha256(program.source.encode('utf-8')).hexdigest(),
+                _sha(program.source), _sha(program.functions), _sha(program.declarations),
+                _whole(program), _interface(program),
+                tuple((x.name,x.kind,x.canonical_value) for x in program.preprocessor_defines),
+                (program.resources.uniforms,program.resources.samplers,program.resources.outputs,
+                 program.resources.uses_texture,program.resources.uses_derivatives),
+                (loop.loop_count,loop.unproved_loop_count,loop.max_effective_depth,
+                 loop.max_lexical_product,loop.entrypoint_charge,loop.call_graph_acyclic),
+                tuple((f.id,f.name,f.return_type.display(),
+                       tuple((q.id,q.name,q.type.display()) for q in f.parameters),
+                       len(f.body),_span(f)) for f in program.functions))
+    if (identity != _DYNAMIC_IDENTITY or program.structs or program.uniform_blocks
+            or any(getattr(program,field,None) is not None for field in _OPTIONAL_PROOF_FIELDS)):
+        raise _fail('dynamic whole program, interface, resources, or loop mismatch')
+    by_id = {f.id:f for f in program.functions}
+    names = {f.id:f.name for f in program.functions}
+    graph = {}
+    located = []
+    for f in program.functions:
+        nodes = []
+        for i,stmt in enumerate(f.body):
+            nodes.extend(_walk_statement(stmt,(i,)))
+        located.extend((f,*r) for r in nodes)
+        graph[f.name] = tuple(sorted({names[x.signature_id] for x,_,_,_ in nodes
+                                      if x.kind=='call' and x.signature_id in names}))
+    if tuple(sorted(graph.items())) != _DYNAMIC_GRAPH or _reachable(graph) != _DYNAMIC_REACHABLE:
+        raise _fail('dynamic call graph or reachability mismatch')
+    if (len(program.declarations)!=11 or program.declarations[-1].symbol.name!='LUMA'
+            or _sha(program.declarations[-1])!=_DYNAMIC_LUMA[0]
+            or tuple((f.id,path,_span(x),_sha(x)) for f,x,parent,path,chain in located
+                     if x.kind=='id' and x.symbol_id==11)!=_DYNAMIC_LUMA[1]):
+        raise _fail('dynamic LUMA ownership mismatch')
+    tables=[]
+    for rec in _DYNAMIC_TABLES:
+        (owner_id,owner_name,body_count,symbol_id,symbol_name,array_type,di,dspan,
+         dshash,dhash,store_spans,stores_hash,targets_hash,rhs_hash,li,lspan,lhash,
+         body_hash,induction,body_count_loop,reads,payload)=rec
+        owner=by_id.get(owner_id)
+        if owner is None or owner.name!=owner_name or len(owner.body)!=body_count:
+            raise _fail('dynamic table owner mismatch')
+        ds=owner.body[di]; d=ds.expressions[0] if len(ds.expressions)==1 else None
+        if (ds.kind!='decl' or ds.children or _sha(ds)!=dshash or d is None
+                or d.kind!='declaration' or d.children or d.symbol is None
+                or (d.symbol_id,d.symbol.name,d.type.display(),_span(d),_sha(d))
+                !=(symbol_id,symbol_name,array_type,dspan,dhash)):
+            raise _fail('dynamic table declaration mismatch')
+        indices=tuple(range(di+1,di+10)); ss=tuple(owner.body[i] for i in indices)
+        if tuple(_span(s) for s in ss)!=store_spans or any(s.kind!='expr' or len(s.expressions)!=1 or s.children for s in ss):
+            raise _fail('dynamic literal store statement mismatch')
+        stores=tuple(s.expressions[0] for s in ss)
+        if any(s.kind!='assign' or s.operator!='=' or len(s.children)!=2 for s in stores):
+            raise _fail('dynamic literal store expression mismatch')
+        targets=tuple(s.children[0] for s in stores); rhs=tuple(s.children[1] for s in stores)
+        if (_sha(stores),_sha(targets),_sha(rhs))!=(stores_hash,targets_hash,rhs_hash) or any(
+                t.kind!='index' or len(t.children)!=2 or t.children[0].kind!='id'
+                or t.children[0].symbol_id!=symbol_id or t.children[1].kind!='literal'
+                for t in targets) or tuple(t.children[1].literal_value for t in targets)!=tuple(range(9)):
+            raise _fail('dynamic literal payload or ordered targets mismatch')
+        ls=owner.body[li]
+        if (ls.kind!='for' or ls.loop_proof is None or len(ls.children)!=2
+                or ls.children[1].kind!='block' or (_span(ls),_sha(ls),_sha(ls.children[1]))
+                !=(lspan,lhash,body_hash)):
+            raise _fail('dynamic table loop mismatch')
+        lp=ls.loop_proof
+        if ((lp.induction_symbol_id,lp.start_value,lp.bound_value,lp.comparison,lp.update,lp.trip_count)
+                !=(induction,0,9,'<','++',9) or len(ls.children[1].children)!=body_count_loop):
+            raise _fail('dynamic table loop bound mismatch')
+        refs=[(f,x) for f,x,parent,path,chain in located if x.kind=='id' and x.symbol_id==symbol_id]
+        found=[(f,x,path,chain) for f,x,parent,path,chain in located
+               if x.kind=='index' and len(x.children)==2 and x.children[0].kind=='id'
+               and x.children[0].symbol_id==symbol_id and x.children[1].kind=='id'
+               and x.children[1].symbol_id==induction]
+        if (len(refs)!=10 or len(found)!=1 or any(f is not owner for f,x in refs)
+                or tuple((f.id,path,_span(x),_sha(x)) for f,x,path,chain in found)!=reads):
+            raise _fail('dynamic table read count or location mismatch')
+        f,read,path,chain=found[0]
+        if (ls not in chain or ls.children[1] not in chain or read.children[0] is not refs[-1][1]
+                or any(t.children[0] is not r[1] for t,r in zip(targets,refs[:9]))):
+            raise _fail('dynamic table read owner or object identity mismatch')
+        native='double' if array_type=='float[9]' else 'glsl::Vec2'
+        tables.append(EmbossTableProof(program,owner,symbol_id,symbol_name,array_type,native,
+                      di,ds,d,indices,ss,stores,li,ls,ls.children[1],induction,read,payload))
+    if len(tables)!=4 or sum(t.payload_bytes for t in tables)!=288:
+        raise _fail('dynamic table payload mismatch')
+    main=next((f for f in program.functions if f.name=='main'),None)
+    if main is None or tuple((i,_span(main.body[i]),_sha(main.body[i]))
+                             for i,_,_ in _DYNAMIC_MAIN_ROUTE)!=_DYNAMIC_MAIN_ROUTE:
+        raise _fail('dynamic main route mismatch')
+    ff=main.body[5].expressions[0]; ct=main.body[6].expressions[0]
+    if (ff.kind!='declaration' or ff.symbol_id!=57 or ff.symbol.name!='fullFrame'
+            or ct.kind!='declaration' or ct.symbol_id!=58 or ct.symbol.name!='colorTexelSize'
+            or len(ff.children)!=1 or len(ct.children)!=1):
+        raise _fail('dynamic fullFrame declaration mismatch')
+    conjunction=ff.children[0]; conditional=ct.children[0]
+    if (conjunction.kind!='binary' or conjunction.operator!='&&' or conditional.kind!='conditional'
+            or conditional.children[0].kind!='id' or conditional.children[0].symbol_id!=57):
+        raise _fail('dynamic fullFrame consumer mismatch')
+    bool_records=[];bool_nodes=[]
+    for f,x,parent,path,chain in located:
+        if x.type.display().startswith('bvec') or (x.kind=='builtin' and x.callee in {'equal','all'}):
+            bool_records.append((f.id,path,_span(x),x.kind,x.type.display(),x.callee,x.signature_id,
+                                 _sha(x),None if parent is None else (parent.kind,parent.callee,parent.operator),
+                                 tuple((c.type.display(),_sha(c)) for c in x.children)))
+            bool_nodes.append(x)
+    if tuple(bool_records)!=_DYNAMIC_BOOLEAN or len(bool_nodes)!=4:
+        raise _fail('dynamic boolean site or route mismatch')
+    reductions=(bool_nodes[0],bool_nodes[2]);equalities=(bool_nodes[1],bool_nodes[3])
+    if (conjunction.children!=reductions or any(r.children!=(e,) for e,r in zip(equalities,reductions))
+            or [x for f,x,parent,path,chain in located if x.kind=='id' and x.symbol_id==57]
+            !=[conditional.children[0]]):
+        raise _fail('dynamic equality/reduction parent identity mismatch')
+    textures=[];divisions=[];numerators=[]
+    for rec in _DYNAMIC_TEXTURES:
+        owner_id,owner_name,path,tspan,thash,dspan,dhash,nspan,nhash,vspan,vhash=rec
+        matches=[(f,x,parent,p) for f,x,parent,p,chain in located if f.id==owner_id and p==path]
+        if len(matches)!=1:
+            raise _fail('dynamic texture location mismatch')
+        f,x,parent,p=matches[0]
+        if (f.name!=owner_name or x.kind!='builtin' or x.callee!='texture' or len(x.children)!=2
+                or x.children[0].kind!='id' or x.children[0].symbol_id!=4
+                or (_span(x),_sha(x))!=(tspan,thash)):
+            raise _fail('dynamic texture owner mismatch')
+        div=x.children[1]
+        if (div.kind!='binary' or div.operator!='/' or div.type.display()!='vec2'
+                or (_span(div),_sha(div))!=(dspan,dhash)):
+            raise _fail('dynamic coordinate division mismatch')
+        num,den=div.children
+        if (num.kind!='binary' or num.operator!='-' or den.kind!='construct'
+                or (_span(num),_sha(num),_span(den),_sha(den))!=(nspan,nhash,vspan,vhash)):
+            raise _fail('dynamic coordinate numerator/divisor mismatch')
+        textures.append(x);divisions.append(div);numerators.append(num)
+    if tuple((f.id,f.name,path,_span(x),_sha(x),_span(x.children[1]),_sha(x.children[1]),
+              _span(x.children[1].children[0]),_sha(x.children[1].children[0]),
+              _span(x.children[1].children[1]),_sha(x.children[1].children[1]))
+             for f,x,parent,path,chain in located if x.kind=='builtin' and x.callee=='texture'
+             and f.name in {'colorDefaultEmboss','colorGeneralEmboss'})!=_DYNAMIC_TEXTURES:
+        raise _fail('dynamic texture census mismatch')
+    proof=EmbossColorStyleProof(program,tuple(tables),equalities,reductions,ff,conjunction,ct,conditional,
+                                tuple(divisions),tuple(numerators))
+    if (len(proof.consumed_objects)!=102 or any(d.children[0] is not n for d,n in zip(divisions,numerators))):
+        raise _fail('dynamic candidate ownership mismatch')
+    return proof

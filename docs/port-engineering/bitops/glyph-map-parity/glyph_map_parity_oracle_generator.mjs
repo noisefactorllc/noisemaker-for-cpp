@@ -2,29 +2,40 @@ import crypto from 'node:crypto'
 import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-import {
-  canonicalAdapterFactories,
-  canonicalKernelFactories,
-  kernelFactories,
-} from '../../../../../noisemaker-for-cpu/src/effects/catalog.js'
-import { effectRecords, UPSTREAM_REVISION } from '../../../../../noisemaker-for-cpu/src/effects/generated/upstream-snapshot.js'
-import { createCanonicalBindings } from '../../../../../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { bindGlslKernel } from '../../../../../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-import { runPass } from '../../../../../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../../../../../noisemaker-for-cpu/src/runtime/surface.js'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const platformRoot = path.resolve(here, '../../../../..')
 const cppRoot = path.join(platformRoot, 'noisemaker-for-cpp')
-const cpuRoot = path.join(platformRoot, 'noisemaker-for-cpu')
+const mode = ['--check', '--write', '--json-only'].filter((value) => process.argv.includes(value))
+const cpuIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (mode.length !== 1 || cpuIndex < 0 || ledgerIndex < 0 || !process.argv[cpuIndex + 1] || !process.argv[ledgerIndex + 1]) {
+  throw new Error('usage: --check|--write|--json-only --cpu-root ROOT --ledger FILE')
+}
+const cpuRoot = process.argv[cpuIndex + 1]
+const ledger = process.argv[ledgerIndex + 1]
+const authorityModule = path.join(cppRoot, 'tools/dsl/corpus_authority.mjs')
+const { authenticateCpuRoot } = await import(pathToFileURL(authorityModule).href)
+authenticateCpuRoot(cpuRoot, ledger)
+
+const {
+  canonicalAdapterFactories,
+  canonicalKernelFactories,
+  kernelFactories,
+} = await import(pathToFileURL(path.join(cpuRoot, 'src/effects/catalog.js')).href)
+const { effectRecords, UPSTREAM_REVISION } = await import(pathToFileURL(path.join(cpuRoot, 'src/effects/generated/upstream-snapshot.js')).href)
+const { createCanonicalBindings } = await import(pathToFileURL(path.join(cpuRoot, 'src/csl/glsl-kernel.js')).href)
+const { bindGlslKernel } = await import(pathToFileURL(path.join(cpuRoot, 'src/csl/glsl-runtime.js')).href)
+const { runPass } = await import(pathToFileURL(path.join(cpuRoot, 'src/runtime/pass-runner.js')).href)
+const { Surface } = await import(pathToFileURL(path.join(cpuRoot, 'src/runtime/surface.js')).href)
+
 const outputPath = path.join(here, 'glyph-map-parity-oracles.json')
 const reportPath = path.join(here, 'glyph-map-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'glyph_map_frontend_probe.py')
 const programKey = 'filter/glyphMap:glyphMap'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const corpusRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/filter/glyphMap/glyphMap.glsl')
 const f = Math.fround
 
@@ -183,12 +194,12 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  adapter_index: ['src/effects/adapters/index.js', '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090'],
-  glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -199,7 +210,7 @@ for (const [name, [relativePath, expectedHash]] of Object.entries(provenanceFile
 }
 
 const sourceBytes = fs.readFileSync(sourcePath)
-if (sourceBytes.length !== 7838 || sha256(sourceBytes) !== '853c3c15f300cf56ba3c11d5613cb91bfcb14b8b2f1be6bb5193e71397fdcea1') {
+if (sourceBytes.length !== 8145 || sha256(sourceBytes) !== 'dc0af9a6a6fb4d0cd62ea25c4508a714a36a1dc66923f5578d91ac190d9f4dd6') {
   throw new Error('pinned Glyph Map GLSL source drift')
 }
 const sourceText = sourceBytes.toString('utf8')
@@ -209,8 +220,8 @@ if ((sourceText.match(/row >> \(4 - x\)/g) ?? []).length !== 1 || (sourceText.ma
 
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
-if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory58') throw new Error('canonical Glyph Map factory identity drift')
-if (Buffer.byteLength(canonicalFactory.toString()) !== 6749 || sha256(canonicalFactory.toString()) !== '2f26c6821b4cddd8eca6f742b5c6f9b4fb2aafc7660f9421965abb4af11d8028') {
+if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory56') throw new Error('canonical Glyph Map factory identity drift')
+if (Buffer.byteLength(canonicalFactory.toString()) !== 6826 || sha256(canonicalFactory.toString()) !== 'da7f49bffd02ea705db223296a620e20183b4b307fc8b5f0e0c505dd2045320c') {
   throw new Error('canonical Glyph Map factory body drift')
 }
 if (publicFactory !== canonicalFactory) throw new Error('public catalog Glyph Map factory is not the canonical factory identity')
@@ -232,7 +243,7 @@ if (effect.func !== 'glyphMap' || effect.kind !== 'filter' || effect.namespace !
   throw new Error('Glyph Map effect/pass interface drift')
 }
 
-const frontendProcess = spawnSync('python3', [frontendProbePath], { cwd: cppRoot, encoding: 'utf8' })
+const frontendProcess = spawnSync(process.env.GLYPH_PYTHON || 'python3', [frontendProbePath], { cwd: cppRoot, encoding: 'utf8' })
 if (frontendProcess.status !== 0) throw new Error(`frontend proof failed: ${frontendProcess.stderr || frontendProcess.stdout}`)
 const frontendProof = JSON.parse(frontendProcess.stdout)
 if (frontendProof.nodes?.length !== 2 || frontendProof.global_constant?.read_count !== 3 || frontendProof.current_frontier?.diagnostic_bypass?.validator !== 'pass' || frontendProof.current_frontier?.diagnostic_bypass?.emitter !== 'pass') {
@@ -275,6 +286,8 @@ const generalCases = [
   { name: 'rgb-variant-two-seed', width: 23, height: 17, phase: 3, cellSize: 7, seed: 2, colorMode: 1, renderScale: 1, time: 0, frame: 0, externalSeed: 1, coverage: ['variant decrement path', 'multiple cell hashes'] },
   { name: 'scale-zero-cs-one', width: 7, height: 11, phase: 4, cellSize: 4, seed: 100, colorMode: 0, renderScale: 0, time: 0.5, frame: 17, externalSeed: 99, coverage: ['max metadata seed', 'renderScale zero', 'cs minimum one', 'portrait'] },
   { name: 'tiled-noninteger-scale', width: 11, height: 9, phase: 5, cellSize: 7, seed: 37, colorMode: 1, renderScale: 1.5, time: 0.25, frame: 9, externalSeed: 123456789, tileOffset: [7, 5], fullResolution: [31, 23], coverage: ['tile offset', 'sample UV clamp', 'noninteger renderScale'] },
+  { name: 'origin-tile-zero-offset', width: 520, height: 256, phase: 5, flatGlyph: 14, cellSize: 32, seed: 37, colorMode: 1, renderScale: 32, time: 0, frame: 0, externalSeed: 1, tileOffset: [0, 0], fullResolution: [1040, 256], coverage: ['origin tile', 'zero tile offset', 'full/local resolution mismatch', 'tiled cell-size cap'] },
+  { name: 'untiled-zero-offset-control', width: 520, height: 256, phase: 5, flatGlyph: 14, cellSize: 32, seed: 37, colorMode: 1, renderScale: 32, time: 0, frame: 0, externalSeed: 1, tileOffset: [0, 0], coverage: ['nontiled zero offset', 'full/local resolution equality'] },
   { name: 'tiled-cs-cap-1024', width: 5, height: 7, phase: 6, cellSize: 32, seed: 3, colorMode: 0, renderScale: 32, time: 0, frame: 0, externalSeed: 1, tileOffset: [1, 1], fullResolution: [9, 9], sameAs: 'tiled-cs-cap-512', coverage: ['tiled cell-size cap above boundary'] },
   { name: 'tiled-cs-cap-512', width: 5, height: 7, phase: 6, cellSize: 32, seed: 3, colorMode: 0, renderScale: 16, time: 0, frame: 0, externalSeed: 1, tileOffset: [1, 1], fullResolution: [9, 9], coverage: ['tiled cell-size cap boundary'] },
   { name: 'external-context-base', width: 13, height: 8, phase: 7, cellSize: 5, seed: 11, colorMode: 1, renderScale: 1, time: 0, frame: 0, externalSeed: 0, coverage: ['external context identity reference'] },
@@ -315,6 +328,7 @@ const renderMutants = [
   compileMutant('arithmetic-shift-replaced-by-logical', bitLine, 'var bit = (row >>> (4 - x)) & 1;', 'equal-under-authenticated-range'),
   compileMutant('color-mode-branch-inverted', 'if (colorMode > 0) {', 'if (colorMode <= 0) {'),
   compileMutant('variant-two-decrement-omitted', 'glyphIdx = glyphIdx - 1;', 'glyphIdx = glyphIdx;'),
+  compileMutant('origin-tile-reverts-to-offset-detection', 'any(notEqual(fullResolution, resolution))', 'any(notEqual(tileOffset, new $runtime.PooledFloat32Array([0, 0])))'),
 ]
 
 function makeInput(definition) {
@@ -602,7 +616,7 @@ function buildData() {
       },
       coverage: definition.coverage,
       target_glyph_index: definition.flatGlyph ?? null,
-      extracted_glyph_top_down_rows: definition.flatGlyph === undefined ? null : extractGlyphRows(canonicalFirst.output),
+      extracted_glyph_top_down_rows: definition.name.startsWith('glyph-') ? extractGlyphRows(canonicalFirst.output) : null,
       input: {
         f32_sha256_before: sha256(bytes(canonicalFirst.inputBefore)),
         f32_sha256_after: sha256(bytes(canonicalFirst.inputAfter)),
@@ -629,6 +643,7 @@ function buildData() {
     'mask-materialized-before-shift': ['glyph-03-full-cell', 'glyph-14-full-cell'],
     'color-mode-branch-inverted': ['mono-min-cell-pattern', 'rgb-default-pattern'],
     'variant-two-decrement-omitted': ['rgb-variant-two-seed'],
+    'origin-tile-reverts-to-offset-detection': ['origin-tile-zero-offset'],
   }
   const renderMutationSummary = renderMutants.map((mutant) => {
     const witnesses = caseResults.filter((record) => !record.mutation_comparisons[mutant.name].float32.exact_f32_bits).map((record) => record.name)
@@ -651,7 +666,7 @@ function buildData() {
     }
   })
 
-  const glyphTruthTable = caseResults.filter((record) => record.target_glyph_index !== null).map((record) => ({
+  const glyphTruthTable = caseResults.filter((record) => record.extracted_glyph_top_down_rows !== null).map((record) => ({
     glyph_index: record.target_glyph_index,
     top_down_rows: record.extracted_glyph_top_down_rows,
     f32_sha256: record.output.f32_sha256,
@@ -733,7 +748,7 @@ function makeReport(data) {
   ]
   for (const glyph of data.glyph_truth_table) lines.push(`| ${glyph.glyph_index} | \`${glyph.top_down_rows.join('/')}\` | \`${glyph.f32_sha256}\` | \`${glyph.rgba8_sha256}\` |`)
   lines.push('', '## General render cases', '', '| Case | Size | Cell | Seed | Mode | Scale | Tile/full | Float32 SHA-256 | RGBA8 SHA-256 |', '| --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- |')
-  for (const record of data.cases.filter((item) => item.target_glyph_index === null)) {
+  for (const record of data.cases.filter((item) => item.extracted_glyph_top_down_rows === null)) {
     const c = record.controls
     lines.push(`| ${record.name} | ${record.dimensions.width}x${record.dimensions.height} | ${c.cell_size} | ${c.effect_seed} | ${c.color_mode} | ${c.render_scale} | ${c.tile_offset.join(',')}/${c.full_resolution.join(',')} | \`${record.output.f32_sha256}\` | \`${record.output.rgba8_sha256}\` |`)
   }
@@ -741,7 +756,7 @@ function makeReport(data) {
   lines.push('## Render mutation discrimination', '', '| Mutation | Expected render relation | Required witnesses | All divergent cases |', '| --- | --- | --- | --- |')
   for (const mutation of data.render_mutation_summary) lines.push(`| ${mutation.name} | ${mutation.expected_render_relation} | ${mutation.required_witnesses.join(', ')} | ${mutation.all_divergent_cases.join(', ') || '(none, required)'} |`)
   lines.push('', 'Frontend contract negatives reject wrong key/profile/hash, global value drift, mask/count drift, an extra signed shift, and return-route drift.', '')
-  lines.push('## Regeneration', '', 'From the repository root. Ordinary checks remain durable after admission; `--live-frontier` separately observes the current production gate:', '', '```sh', 'python3 docs/port-engineering/bitops/glyph-map-parity/glyph_map_frontend_probe.py --check', 'python3 docs/port-engineering/bitops/glyph-map-parity/glyph_map_frontend_probe.py --live-frontier', 'node docs/port-engineering/bitops/glyph-map-parity/glyph_map_parity_oracle_generator.mjs', 'node docs/port-engineering/bitops/glyph-map-parity/glyph_map_parity_oracle_generator.mjs --check', '```', '')
+  lines.push('## Regeneration', '', 'From the repository root. Ordinary checks remain durable after admission; `--live-frontier` separately observes the current production gate:', '', '```sh', 'python3 docs/port-engineering/bitops/glyph-map-parity/glyph_map_frontend_probe.py --check', 'python3 docs/port-engineering/bitops/glyph-map-parity/glyph_map_frontend_probe.py --live-frontier', 'node docs/port-engineering/bitops/glyph-map-parity/glyph_map_parity_oracle_generator.mjs --write --cpu-root <authenticated-archive> --ledger <archive-ledger>', 'node docs/port-engineering/bitops/glyph-map-parity/glyph_map_parity_oracle_generator.mjs --check --cpu-root <authenticated-archive> --ledger <archive-ledger>', '```', '')
   return `${lines.join('\n')}\n`
 }
 
@@ -761,7 +776,9 @@ const reportSidecar = sidecar(sha256(report), reportPath)
 const generatorSidecar = sidecar(sha256(fs.readFileSync(generatorPath)), generatorPath)
 const probeSidecar = sidecar(sha256(fs.readFileSync(frontendProbePath)), frontendProbePath)
 
-if (process.argv.includes('--check')) {
+if (process.argv.includes('--json-only')) {
+  process.stdout.write(json)
+} else if (process.argv.includes('--check')) {
   checkExact(outputPath, json, 'Glyph Map parity JSON')
   checkExact(reportPath, report, 'Glyph Map parity report')
   checkExact(`${outputPath}.sha256`, jsonSidecar, 'Glyph Map parity JSON sidecar')
@@ -769,7 +786,7 @@ if (process.argv.includes('--check')) {
   checkExact(`${generatorPath}.sha256`, generatorSidecar, 'Glyph Map generator sidecar')
   checkExact(`${frontendProbePath}.sha256`, probeSidecar, 'Glyph Map frontend probe sidecar')
   console.log(`Glyph Map parity oracle ok (${data.cases.length} render cases, ${data.numeric_narrowing.records.length + data.direct_signed_shift_and_mask.records.length} direct fixtures, ${data.render_mutation_summary.length + data.numeric_narrowing.mutations.length + data.direct_signed_shift_and_mask.mutations.length} mutations)`)
-} else {
+} else if (process.argv.includes('--write')) {
   fs.writeFileSync(outputPath, json)
   fs.writeFileSync(reportPath, report)
   fs.writeFileSync(`${outputPath}.sha256`, jsonSidecar)

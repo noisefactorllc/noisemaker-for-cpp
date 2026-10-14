@@ -111,8 +111,11 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
         # at its exact sorted position, with Shapes immediately following it.
         self.assertEqual(corpus_census.typed_count(), len(rows))
         self.assertEqual(corpus_census.typed_count(), len(set(keys)))
-        self.assertEqual(KEY, keys[15])
-        self.assertEqual("classicNoisedeck/shapes:shapes", keys[16])
+        ordinal = corpus_census.ordinal(KEY)
+        self.assertEqual(KEY, keys[ordinal])
+        self.assertEqual([KEY, "classicNoisedeck/shapes3d:shapes3d",
+                          "classicNoisedeck/shapes:shapes"],
+                         keys[ordinal:ordinal + 3])
         self.assertEqual(
             {
                 "defines": {"LOOP_OFFSET": 10},
@@ -121,7 +124,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
                 "scalar_uint_xor_profile": SCALAR_XOR_PROFILE,
                 "shape_mixer_builtin_profile": PROFILE,
             },
-            rows[15],
+            rows[ordinal],
         )
         self.assertEqual(
             corpus_census.typed_key_sha256(),

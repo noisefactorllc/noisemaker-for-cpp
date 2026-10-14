@@ -128,20 +128,20 @@ _HEIGHTMAP = AnyRelationalRecord(
 
 _RENDERLIT = AnyRelationalRecord(
     key=RENDERLIT_KEY,
-    raw_bytes=12143,
+    raw_bytes=12406,
     raw_sha256=(
-        "77460fb4a9e53f7776d7a3d73cb3fcc1840dce577c6f0989354eeb540011529f"),
-    normalized_bytes=9504,
+        "ea309e7e9c4bcb13fd96bf05f0e587bfd25557b7184872b32aabc160df49b627"),
+    normalized_bytes=9486,
     normalized_sha256=(
-        "cc72ea7149272c38ff05fb6842a4f7f720ea05c4065b2e6900edb7f1885ec980"),
+        "436cdf22da60272b948b145b0dabc113d65bc1b9006659517e07dcd80ba48b62"),
     functions_sha256=(
-        "82752b9a047ff5613dbf7073aad1a4358ed83b46cb93b406aa5b4f78c9cdb11c"),
+        "d6c4f6bbf5a4cd19ca2006fd1b997fde798c280a51039246be9e1c423cc41e38"),
     whole_sha256=(
-        "a7553f3dcf3c0ff6bf74e8d55bb6976c8c70dff4bda014fb3cdd59db50b4450c"),
+        "2688f3be3bed47ff1facee122dd2e7da11501f21044bda9206c847efaf077ac0"),
     interface_sha256=(
-        "ec6d329d5512d28f68ce1ea7b2bd102a7ef1985fe5e72d8ed6cf3c11b918ca49"),
+        "e3f61fcd73cd0441cf76d4a119f618bd6fad0515ec6b588d074ccc2751e87b86"),
     main_id=65,
-    main_span="323:1-390:2",
+    main_span="323:1-393:2",
     main_body_len=27,
     function_count=12,
     loop_proof=(2, 0, 2, 2048, 2304, True),
@@ -192,7 +192,7 @@ _RECORDS: dict[str, AnyRelationalRecord] = {
 # Self-integrity: the frozen record reprs must survive any accidental edit.
 _RECORD_SHA256 = {
     HEIGHTMAP_KEY: "e44a17436a67d750ba3c4ab14fc05300084eba39d1477a35cd6d9f22126b960f",
-    RENDERLIT_KEY: "808626e1f56b95485ac03bb7a26edaec2fd959f20e7595995af1162619976be0",
+    RENDERLIT_KEY: "2653509f034c4e3116b885b73764b2d681d4ec6dcdbc17d59198f0e2909cb6f5",
 }
 
 _ANY_SIGNATURE_ID = -4

@@ -186,6 +186,8 @@ void authority_pass(CanonicalWriter& writer, const AuthorityPassMetadata& input)
   writer.token(input.name); string_pairs(writer, input.inputs); string_pairs(writer, input.outputs); vector_values(writer, input.uniforms, [](auto& out, const auto& item) { out.token(item.first); plan_value(out, item.second); });
   writer.token(input.blend_kind); writer.boolean(input.blend); writer.token(input.blend_factors[0]); writer.token(input.blend_factors[1]);
   writer.optional(input.repeat.has_value()); if (input.repeat.has_value()) plan_value(writer, *input.repeat);
+  writer.optional(input.defines.has_value()); if (input.defines.has_value()) value(writer, *input.defines);
+  writer.optional(input.viewport.has_value()); if (input.viewport.has_value()) value(writer, *input.viewport);
 }
 
 void admission(CanonicalWriter& writer, const PassAdmission& input) {
@@ -658,9 +660,7 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
       for (std::size_t argument_index = 0; argument_index < call.args.size(); ++argument_index) {
         const auto& argument = call.args[argument_index];
         const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
-        std::string canonical = supplied;
-        for (const auto& alias : definition->parameter_aliases) if (alias.first == supplied) { canonical = alias.second; break; }
-        step.explicit_params.push_back(std::move(canonical));
+        step.explicit_params.push_back(supplied);
       }
       step.loc = call.loc;
       for (std::size_t pass_index = 0; pass_index < definition->passes.size(); ++pass_index) {

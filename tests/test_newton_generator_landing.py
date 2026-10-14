@@ -21,7 +21,8 @@ class NewtonGeneratorLandingTests(unittest.TestCase):
     def test_newton_is_landed_as_an_exact_mutual_companion_row(self):
         self.assertEqual(("synth/julia:julia", KEY), struct_profile.KEYS)
         self.assertEqual(
-            ("synth/julia:julia", "synth/mandelbrot:mandelbrot", KEY),
+            ("synth/julia:julia", "synth/mandelbrot:mandelbrot", KEY,
+             "synth3d/flythrough3d:precompute"),
             out_profile.KEYS[1:])
         self.assertEqual("struct-declaration-newton-v1",
                          struct_profile.PROFILES[KEY])

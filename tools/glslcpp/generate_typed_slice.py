@@ -20,6 +20,7 @@ if __package__ in (None, ""):
     from tools.glslcpp import check_corpus, check_semantics
     from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
     from tools.glslcpp.frontend import parse_program
+    from tools.glslcpp.frontend.physical_unused_sampler import omitted_physical_samplers
     from tools.glslcpp.frontend.corrupt_value_copy_profile import authenticate_corrupt_value_copy
     from tools.glslcpp.frontend.historic_palette_profile import (
         PROFILE as HISTORIC_PALETTE_PROFILE,
@@ -89,6 +90,7 @@ if __package__ in (None, ""):
         REFRACT_KEY,
         attach_fixed_array_in_parameter_proof,
         prove_fixed_array_in_parameter,
+        _walk_statement as walk_fixed_array_statement,
         source_provenance_error as fixed_array_source_provenance_error)
     from tools.glslcpp.frontend.sacred_geometry_compatibility import (
         SACRED_KEY, TRANSFORM as SACRED_COMPATIBILITY_TRANSFORM,
@@ -159,6 +161,7 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.cross_builtin_profile import (
         CROSS_KEYS,
         PROFILE as CROSS_BUILTIN_PROFILE,
+        RENDER_DYNAMIC_PROFILE as RENDER_DYNAMIC_CROSS_PROFILE,
         apply_cross_admission,
         authenticate_cross_sites)
     from tools.glslcpp.frontend.dla_bit_ingress_profile import (
@@ -341,6 +344,7 @@ if __package__ in (None, ""):
         REQUIRED_COMPANION_PROFILES as MUTABLE_GLOBAL_ARRAY_COMPANIONS,
         allowed_row_fields as mutable_global_array_allowed_row_fields,
         apply_mutable_global_array, authenticate_mutable_global_array,
+        authenticated_effects_emission_omission,
         frame_contract as mutable_global_array_contract,
         store_census as mutable_global_array_store_census)
     from tools.glslcpp.frontend.const_global_table_profile import (
@@ -361,7 +365,8 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.glyph_map_nonnegative_int_shift_profile import (
         GLYPH_MAP_KEY, PROFILE as GLYPH_MAP_NONNEGATIVE_INT_SHIFT_PROFILE,
         apply_glyph_map_nonnegative_int_shift,
-        authenticate_glyph_map_nonnegative_int_shift)
+        authenticate_glyph_map_nonnegative_int_shift,
+        authenticated_glyph_map_tile_sites)
     from tools.glslcpp.frontend.curl_vector_math_profile import (
         CURL_KEY, PROFILE as CURL_VECTOR_MATH_PROFILE,
         apply_curl_vector_math, authenticate_curl_vector_math)
@@ -401,6 +406,8 @@ if __package__ in (None, ""):
         PROFILE as INOUT_VEC3_SWAP_PROFILE,
         apply_inout_vec3_swap_admission, authenticate_inout_vec3_swap_admission)
     from tools.glslcpp.frontend.out_inout_admission_profile import (
+        FLYTHROUGH_KEY as OUT_INOUT_ADMISSION_FLYTHROUGH_KEY,
+        FLYTHROUGH_PROFILE as OUT_INOUT_ADMISSION_FLYTHROUGH_PROFILE,
         LIGHTLEAK_KEY as OUT_INOUT_ADMISSION_LIGHTLEAK_KEY,
         LIGHTLEAK_PROFILE as OUT_INOUT_ADMISSION_LIGHTLEAK_PROFILE,
         MANDELBROT_KEY as OUT_INOUT_ADMISSION_MANDELBROT_KEY,
@@ -417,6 +424,9 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.fractal3d_log_profile import (
         KEY as FRACTAL3D_LOG_KEY,
         PROFILE as FRACTAL3D_LOG_PROFILE,
+        FLYTHROUGH_KEY as FLYTHROUGH_LOG_KEY,
+        FLYTHROUGH_PROFILE as FLYTHROUGH_LOG_PROFILE,
+        PROFILES as FRACTAL3D_LOG_PROFILES,
         FRACTAL3D_LOG_KEYS,
         allowed_row_fields as fractal3d_log_allowed_row_fields,
         apply_fractal3d_log_admission, authenticate_fractal3d_log_admission)
@@ -428,6 +438,7 @@ if __package__ in (None, ""):
         apply_struct_declaration, authenticate_struct_declaration)
     from tools.glslcpp.frontend.struct_frontier_profile import (
         PROFILES as STRUCT_FRONTIER_PROFILES,
+        RENDER_DYNAMIC_PROFILES as RENDER_DYNAMIC_STRUCT_PROFILES,
         STRUCT_FRONTIER_KEYS,
         apply_struct_frontier, authenticate_struct_frontier)
     from tools.glslcpp.frontend.texture_lod_admission_profile import (
@@ -440,13 +451,14 @@ if __package__ in (None, ""):
         BLUR_KEYS, CF_KEYS, LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
         ROLL_KEY as RUNTIME_LOOP_BOUND_ROLL_KEY,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
+        NOISE3D_KEY as RUNTIME_LOOP_BOUND_NOISE3D_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata,
         validate_cf_metadata, validate_curl_metadata,
-        validate_lenia_metadata, validate_noise_metadata,
+        validate_lenia_metadata, validate_noise_metadata, validate_noise3d_metadata,
         validate_tetra_metadata)
     from tools.glslcpp.frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
@@ -470,6 +482,7 @@ else:
     from . import check_corpus, check_semantics
     from .emit_typed_cpp import TypedEmissionError, render_typed_cpp
     from .frontend import parse_program
+    from .frontend.physical_unused_sampler import omitted_physical_samplers
     from .frontend.corrupt_value_copy_profile import authenticate_corrupt_value_copy
     from .frontend.historic_palette_profile import (
         PROFILE as HISTORIC_PALETTE_PROFILE,
@@ -539,6 +552,7 @@ else:
         REFRACT_KEY,
         attach_fixed_array_in_parameter_proof,
         prove_fixed_array_in_parameter,
+        _walk_statement as walk_fixed_array_statement,
         source_provenance_error as fixed_array_source_provenance_error)
     from .frontend.sacred_geometry_compatibility import (
         SACRED_KEY, TRANSFORM as SACRED_COMPATIBILITY_TRANSFORM,
@@ -609,6 +623,7 @@ else:
     from .frontend.cross_builtin_profile import (
         CROSS_KEYS,
         PROFILE as CROSS_BUILTIN_PROFILE,
+        RENDER_DYNAMIC_PROFILE as RENDER_DYNAMIC_CROSS_PROFILE,
         apply_cross_admission,
         authenticate_cross_sites)
     from .frontend.dla_bit_ingress_profile import (
@@ -791,6 +806,7 @@ else:
         REQUIRED_COMPANION_PROFILES as MUTABLE_GLOBAL_ARRAY_COMPANIONS,
         allowed_row_fields as mutable_global_array_allowed_row_fields,
         apply_mutable_global_array, authenticate_mutable_global_array,
+        authenticated_effects_emission_omission,
         frame_contract as mutable_global_array_contract,
         store_census as mutable_global_array_store_census)
     from .frontend.const_global_table_profile import (
@@ -811,7 +827,8 @@ else:
     from .frontend.glyph_map_nonnegative_int_shift_profile import (
         GLYPH_MAP_KEY, PROFILE as GLYPH_MAP_NONNEGATIVE_INT_SHIFT_PROFILE,
         apply_glyph_map_nonnegative_int_shift,
-        authenticate_glyph_map_nonnegative_int_shift)
+        authenticate_glyph_map_nonnegative_int_shift,
+        authenticated_glyph_map_tile_sites)
     from .frontend.curl_vector_math_profile import (
         CURL_KEY, PROFILE as CURL_VECTOR_MATH_PROFILE,
         apply_curl_vector_math, authenticate_curl_vector_math)
@@ -851,6 +868,8 @@ else:
         PROFILE as INOUT_VEC3_SWAP_PROFILE,
         apply_inout_vec3_swap_admission, authenticate_inout_vec3_swap_admission)
     from .frontend.out_inout_admission_profile import (
+        FLYTHROUGH_KEY as OUT_INOUT_ADMISSION_FLYTHROUGH_KEY,
+        FLYTHROUGH_PROFILE as OUT_INOUT_ADMISSION_FLYTHROUGH_PROFILE,
         LIGHTLEAK_KEY as OUT_INOUT_ADMISSION_LIGHTLEAK_KEY,
         LIGHTLEAK_PROFILE as OUT_INOUT_ADMISSION_LIGHTLEAK_PROFILE,
         MANDELBROT_KEY as OUT_INOUT_ADMISSION_MANDELBROT_KEY,
@@ -867,6 +886,9 @@ else:
     from .frontend.fractal3d_log_profile import (
         KEY as FRACTAL3D_LOG_KEY,
         PROFILE as FRACTAL3D_LOG_PROFILE,
+        FLYTHROUGH_KEY as FLYTHROUGH_LOG_KEY,
+        FLYTHROUGH_PROFILE as FLYTHROUGH_LOG_PROFILE,
+        PROFILES as FRACTAL3D_LOG_PROFILES,
         FRACTAL3D_LOG_KEYS,
         allowed_row_fields as fractal3d_log_allowed_row_fields,
         apply_fractal3d_log_admission, authenticate_fractal3d_log_admission)
@@ -878,6 +900,7 @@ else:
         apply_struct_declaration, authenticate_struct_declaration)
     from .frontend.struct_frontier_profile import (
         PROFILES as STRUCT_FRONTIER_PROFILES,
+        RENDER_DYNAMIC_PROFILES as RENDER_DYNAMIC_STRUCT_PROFILES,
         STRUCT_FRONTIER_KEYS,
         apply_struct_frontier, authenticate_struct_frontier)
     from .frontend.texture_lod_admission_profile import (
@@ -890,13 +913,14 @@ else:
         BLUR_KEYS, CF_KEYS, LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
         ROLL_KEY as RUNTIME_LOOP_BOUND_ROLL_KEY,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
+        NOISE3D_KEY as RUNTIME_LOOP_BOUND_NOISE3D_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata, validate_cf_metadata,
         validate_curl_metadata, validate_lenia_metadata,
-        validate_noise_metadata, validate_tetra_metadata)
+        validate_noise_metadata, validate_noise3d_metadata, validate_tetra_metadata)
     from .frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
         authenticate_gabor_effective_depth,
@@ -932,6 +956,29 @@ else:
 # these define-backed parameters is float- or bool-typed.
 GENERIC_RUNTIME_DEFINE_PROFILE = "runtime-defines-generic-v1"
 GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
+    "classicNoisedeck/cellRefract:cellRefract": {"KERNEL": "int", "SHAPE": "int"},
+    "classicNoisedeck/kaleido:kaleido": {"DIRECTION": "int", "KERNEL": "int", "LOOP_OFFSET": "int", "METRIC": "int"},
+    "classicNoisedeck/effects:effects": {"EFFECT": "int", "FLIP": "int"},
+    "filter/emboss:emboss": {"STYLE": "int"},
+    "filter/extrude:extrude": {"DEPTH_SOURCE": "int", "EXTRUDE_TYPE": "int"},
+    "filter/texture:texture": {"MODE": "int"},
+    "classicNoisedeck/caustic:caustic": {"NOISE_TYPE": "int"},
+    "classicNoisedeck/shapes3d:shapes3d": {"BLEND_MODE": "int", "SHAPE_A": "int", "SHAPE_B": "int"},
+    "classicNoisedeck/shapes:shapes": {"LOOP_A_OFFSET": "int", "LOOP_B_OFFSET": "int"},
+    "classicNoisedeck/noise:noise": {"COLOR_MODE": "int", "LOOP_OFFSET": "int", "METRIC": "int", "NOISE_TYPE": "int", "REFRACT_MODE": "int"},
+    "classicNoisedeck/moodscape:moodscape": {"COLOR_MODE": "int", "NOISE_TYPE": "int"},
+    "synth/perlin:perlin": {"DIMENSIONS": "int"},
+    "synth/shape:shape": {"LOOP_A_OFFSET": "int", "LOOP_B_OFFSET": "int"},
+    "filter/lowPoly:lowPoly": {"LP_BORDER": "int", "LP_LIGHT": "int"},
+    "filter/strokes:stkSmear": {"MODE": "int"},
+    "filter3d/flow3d:agent": {"BEHAVIOR": "int"},
+    "filter/hatch:hatch": {"MODE": "int"},
+    "classicNoisedeck/noise3d:noise3d": {"NOISE_TYPE": "int"},
+    "filter/halftone:halftone": {"MODE": "int", "PATTERN": "int"},
+    "render/pointsBillboardRender:depthKeys": {"VIEW_MODE": "int"},
+    "render/render3d:render3d": {"FILTERING": "int", "INVERT": "bool"},
+    "render/renderCubemap3d:renderCubemap3d": {"FILTERING": "int", "INVERT": "bool"},
+    "render/renderLandscape3d:landscape": {"FILTERING": "int", "VIEW_MODE": "int"},
     "classicNoisedeck/shapeMixer:shapeMixer": {"LOOP_OFFSET": "int"},
     "filter/lensFlare:lensFlare": {"LENS_TYPE": "int"},
     "filter/morphology:morphA": {"SHAPE": "int"},
@@ -949,18 +996,11 @@ GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
     "filter/strokes:stkPost": {"MODE": "int"},
     "filter/wind:wind": {"METHOD": "int"},
     "synth/curl:curl": {"OCTAVES": "int", "OUTPUT_MODE": "int", "RIDGES": "bool"},
+    "synth3d/noise3d:precompute": {"COLOR_MODE": "int", "OCTAVES": "int", "RIDGES": "bool"},
 }
-# filter/halftone:halftone is deliberately NOT in this table. A structured
-# ordinary sweep (random ink/paper hex colors) found a real byte-exact
-# divergence at MODE=1 (mono): the JS authority's tonemap2(t, inkColor,
-# paperColor) mix leaks the RGBA hex color's alpha channel into the output
-# alpha, even though the GLSL declares inkColor/paperColor as vec3 -- a
-# vec4-vs-vec3 uniform-binding materialization quirk the C++ port does not
-# reproduce (it correctly narrows to Vec3 at bind time and threads the
-# separately-sampled input alpha instead). MODE=0 (color/CMYK) never calls
-# tonemap2 and is unaffected, but this table promotes MODE for the whole
-# program, not per-value, so halftone stays default-only until that
-# materialization contract is modeled.
+# The exact halftone mono output retains the CPU authority's optional fourth
+# color lane through a private alpha carrier. See emit_typed_cpp.py and
+# executor.cpp; MODE=0 still reads the input alpha.
 
 BUDDHABROT_KEYS = frozenset({"points/buddhabrot:agent", "points/buddhabrot:zWrite"})
 BUDDHABROT_MAX_TRIP_COUNT = 2048
@@ -1183,9 +1223,13 @@ _MUTABLE_GLOBAL_FRAME_DEFINES = {
     MUTABLE_GLOBAL_FRAME_SHAPE_KEY: _SHAPE_DEFINES,
 }
 _CURL_DEFINES = {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}
+_NOISE3D_DEFINES = {"COLOR_MODE": 0, "OCTAVES": 1, "RIDGES": False}
 _RUNTIME_LOOP_BOUND_DEFINES = {
     key: (_NOISE_DEFINES if key == RUNTIME_LOOP_BOUND_NOISE_KEY
-          else _CURL_DEFINES if key == RUNTIME_LOOP_BOUND_CURL_KEY else {})
+          else _CURL_DEFINES if key == RUNTIME_LOOP_BOUND_CURL_KEY
+          else _NOISE3D_DEFINES if key == RUNTIME_LOOP_BOUND_NOISE3D_KEY
+          else {"FILTERING": 1, "VIEW_MODE": 1}
+          if key == "render/renderLandscape3d:landscape" else {})
     for key in RUNTIME_LOOP_BOUND_KEYS
 }
 # The mutable-global array carriers' exact admitted defines, PER KEY since
@@ -1209,9 +1253,9 @@ _MUTABLE_GLOBAL_ARRAY_DEFINES = {
 # carrier, which fails the drift census closed rather than passing silently.
 _CONST_GLOBAL_TABLE_DEFINES = {CONST_GLOBAL_TABLE_NORMAL_MAP_KEY: {}}
 DEGAUSS_KEY = "filter/degauss:degauss"
-DEGAUSS_CANONICAL_FACTORY = "canonicalFactory45"
-DEGAUSS_CANONICAL_FACTORY_TEXT_SHA256 = "f515a7ac409c98fc420d9fa9a7e460eb37018b34e3be40419191fc7655a29c38"
-DEGAUSS_CANONICAL_RUNTIME_SHA256 = "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56"
+DEGAUSS_CANONICAL_FACTORY = "canonicalFactory43"
+DEGAUSS_CANONICAL_FACTORY_TEXT_SHA256 = "2dc66240984430c10a2a417e891517094371b3f2a03574931f50be929399f776"
+DEGAUSS_CANONICAL_RUNTIME_SHA256 = "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863"
 DEGAUSS_TAU_F32_BITS = 0x40C90FDB
 DEGAUSS_FUNCTIONS_SHA256 = "b806b6ce4f98eae3438bc0b01ed3fe0a3aa1f1d1c9a6186c8d18da0675c878d0"
 DEGAUSS_WHOLE_SHA256 = "3079146057f6cc68f832636748032e32777c84b0d2e36a6843ea9c2a0542d3f6"
@@ -1268,19 +1312,19 @@ DEGAUSS_METADATA_EFFECT = {
     "textures": {},
 }
 
-CRT_CANONICAL_FACTORY = "canonicalFactory44"
-CRT_CANONICAL_FACTORY_TEXT_SHA256 = "6d65f4984f8749ca7cdfec976e082662d3a7ad614aabb15ce8a168fca7d8e303"
+CRT_CANONICAL_FACTORY = "canonicalFactory42"
+CRT_CANONICAL_FACTORY_TEXT_SHA256 = "2420fa0eecb9e48c1192c1f029ab7c547888a9f9ca68cf26e145dd6762695cb6"
 CRT_PUBLIC_FACTORY = "crtFactory"
 CRT_PUBLIC_FACTORY_TEXT_SHA256 = "240972f95f908452bf87fc681e360553759f374fa81613adc415a5a7c5eb4bf7"
 CRT_PUBLIC_ADAPTER_SHA256 = "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"
-CRT_CANONICAL_RUNTIME_SHA256 = "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56"
+CRT_CANONICAL_RUNTIME_SHA256 = "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863"
 CRT_PI_F32_BITS = 0x40490FDB
 CRT_TAU_F32_BITS = 0x40C90FDB
 CRT_INV_THREE_F32_BITS = 0x3EAAAAAB
 CRT_INV_TAU_F32_BITS = 0x3E22F983
-CRT_FUNCTIONS_SHA256 = "1b67fa6d01135e98434bc9e6a4627f0d23565c81fa1e17cbdba10082e23e37a3"
-CRT_WHOLE_SHA256 = "7aa853a51316b1122750af1155411a5ca8c1e11cf02688a33d9ef6fcace5f6a2"
-CRT_INTERFACE_SHA256 = "9336d2b596c0efd955af699a27c788938c99d0e1e5c6438f66054e15fc135490"
+CRT_FUNCTIONS_SHA256 = "2589ec4675c5be60e5a532adc3bbc59bb305ad1b56979c39245149cdcc008441"
+CRT_WHOLE_SHA256 = "a413e4f6016072d3e6e2a94c9ea9debacfc3b04192c0aba64769f54e1f546195"
+CRT_INTERFACE_SHA256 = "714099ec37f477b8b8a5b3f4dd1406551a0c5d185c027fe256c28b1e69e7ba82"
 CRT_FUNCTION_PROFILES = (
     (89, "adjust_hue", 5, "e48700fa4c4e07b3f55826d5b45cc919ea3e3ed5c520d0fb762f388892d607d3"),
     (90, "adjust_saturation", 4, "05d846a08395fe65bc96437ce61acb012ba42f905f8b82eed6e4c41cfc4bbe9e"),
@@ -1301,30 +1345,30 @@ CRT_FUNCTION_PROFILES = (
     (105, "hash3", 3, "498c7c564d712125c5d86a6371fc8033ab07499b579291c7fd04eb10066cadf2"),
     (106, "hsv_to_rgb", 15, "43873d4b1e9fa8682543ecb3f4f562c747b49beeae64fbe5e281ec9d6bb98cb0"),
     (107, "lerp", 1, "9d9ecb55ef978a8f50aa2664d1e753245d279ce25810b674f7e4ee1d32714f98"),
-    (108, "main", 31, "da62c05d1a013b993bcf4820fd84fb4b7eee640e30fa8df4c226d717fd4fb1e2"),
+    (108, "main", 32, "2d940473f2fa445f6e12f99b50d8ee29fc2d4b0327e6110f9ac41a8a585b1d6c"),
     (109, "mod289_vec3", 1, "9eef4a5ee9d393857c69b44f28b32f697ba7adf253d8d2bbfcfe08554b3a03b3"),
     (110, "mod289_vec4", 1, "2eadd7753b5e226b3c7e18c91462fb0b56c641203c8e1cafdca9b08a36485fb0"),
     (111, "normalized_sine", 1, "c18a96221435819ea0d4de84dd9702765f1439d0e93309146631d83291f6f5a8"),
     (112, "periodic_value", 1, "8869f721c8c67579e0a669f21dea07cec5352a3a053c6ba28edb655e2522ab52"),
     (113, "permute", 1, "bd33a4e74b18f065bbf132ed4c6d40c137e29fe246ae8577f17bb552c35a0f98"),
     (114, "random_scalar", 1, "9af506d4fd1b6092bc8e5eb5985333598e3e4cfd6a5133c33cb762d635f0a74d"),
-    (115, "rgb_to_hsv", 7, "7fddfbe7b05e204b136e5a18150cda42252fc39d9b762f00df8fdb05902a9f47"),
-    (116, "sample_scanline_bilinear", 19, "37225bab20e4eca1744dd30dd529de0c5930613d4c7073b354c49abfbc99fcd4"),
-    (117, "simplex_noise", 46, "c6fb1af5432cf0cbbf4e2812dca9b1d0935aa4532d23c70a0cf545d4d988a8b5"),
-    (118, "simplex_random", 4, "eef49ca4ef3414fc4140bd7ecfcca4d487c02a9c5416b410659d0486c3553819"),
-    (119, "singularity_mask", 9, "95b752c42a2327d3a4acc983892aaf9ed8a8c651fcc69b34f87d51023dd128e9"),
+    (115, "rgb_to_hsv", 7, "26560fe2cf0022ffdfe85b4528abdca4579d38d5c5725e2c995b3255715b0dfc"),
+    (116, "sample_scanline_bilinear", 19, "a67782fb976561a62f756ba86f6d36dfa61cf4da7f4bb4375c53ac788efd0e69"),
+    (117, "simplex_noise", 46, "57fa82cb071e9a37d95537c5a49f202550aa1c81f85e9279d65f8dcac0489b86"),
+    (118, "simplex_random", 4, "26c1bc932bddadb48fbc1fdc340c9935060c227707912b4403366aa684a8ee1f"),
+    (119, "singularity_mask", 9, "bee64954a4b3db7435ffa86a217ec99d2b1ef1b5621ba54b9d529ddc5ce4c00c"),
     (120, "taylor_inv_sqrt", 1, "e04f914557a482d00efaa82d837e3357aeab07514b8aabecf2ca8ad60ad96ab1"),
-    (121, "value_noise_3d", 19, "2cc121f41b402b9c6594f6b02d9fa481ce61ba8573031426aee848f0af5933b1"),
-    (122, "wrap_float", 4, "06faad9ae9e7d10ebe30997326fb11ebd0d4a3a77e5358ae750aab25ec2ad8a2"),
-    (123, "wrap_unit", 3, "7b081cf2d2412e6c5fe636f06acdb6c47028c38965553c3b606e30a6602f3ef8"),
+    (121, "value_noise_3d", 19, "94579a1d2a84e44d6d82022969aa281e2fe9c8b7344b43bc3a76fef862165ca1"),
+    (122, "wrap_float", 4, "b0bc3a9da2da04918a6a0b09c70d369eb09a5e055164c5ec6b58aa5334c15886"),
+    (123, "wrap_unit", 3, "e3b3af3f2b5bbdad104acdf9b5533ede3134bbfa728c43a7e36ff2461dd2c563"),
 )
 CRT_ENTRY = {
     "effect_id": "filter/crt", "program": "crt", "program_key": CRT_KEY,
     "status": "generated", "source": "sources/filter/crt/crt.glsl",
-    "raw_bytes": 19560,
-    "raw_sha256": "62d915eda8e20a458b1df91198cee3e85f0f0b9676cd4d0777264e9cd8b99b7c",
-    "normalized_bytes": 18054,
-    "normalized_sha256": "acd1c3f05c6d02052592aeb46bbbc49d23e18f4e83530498687903e00b4623fe",
+    "raw_bytes": 19644,
+    "raw_sha256": "dfbba2918a68889c5b82ef619bf472387acec116b4d72bf76d62f35a60c9aa7f",
+    "normalized_bytes": 18138,
+    "normalized_sha256": "b61e7111d522b13682b351f592d1873b30c1644f5964e34af689117ff8408902",
     "outputs": ["fragColor"], "varyings": [], "pass_index": 0,
     "pass_name": "main", "runtime_key": CRT_KEY,
 }
@@ -1893,6 +1937,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         # RUNTIME_LOOP_BOUND_KEYS arm the other four members rely on.
         if key == RUNTIME_LOOP_BOUND_CURL_KEY:
             expected = expected | {"runtime_loop_bound_profile"}
+        if key == RUNTIME_LOOP_BOUND_NOISE3D_KEY:
+            expected = expected | {"runtime_loop_bound_profile"}
         if key == RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY:
             expected = expected | {"runtime_loop_bound_profile"}
         # The Attractor agent carries its any/isnan identity carrier on top
@@ -2203,6 +2249,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             or osd_profiles != [(OSD_KEY, OSD_FRONTEND_PROFILE, {})]
             or moodscape_profiles not in ([], [
                 (MOODSCAPE_KEY, MOODSCAPE_FRONTEND_PROFILE,
+                 {"COLOR_MODE": 2, "NOISE_TYPE": 10})], [
+                (MOODSCAPE_KEY, "moodscape-runtime-frontend-v1",
                  {"COLOR_MODE": 2, "NOISE_TYPE": 10})])
             or spooky_ticker_profiles != [
                 (SPOOKY_TICKER_KEY, SPOOKY_TICKER_FRONTEND_PROFILE, {})]
@@ -2461,7 +2509,9 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             (OUT_INOUT_ADMISSION_MANDELBROT_KEY,
              OUT_INOUT_ADMISSION_MANDELBROT_PROFILE, {}),
             (OUT_INOUT_ADMISSION_NEWTON_KEY,
-             OUT_INOUT_ADMISSION_NEWTON_PROFILE, {})]:
+             OUT_INOUT_ADMISSION_NEWTON_PROFILE, {}),
+            (OUT_INOUT_ADMISSION_FLYTHROUGH_KEY,
+             OUT_INOUT_ADMISSION_FLYTHROUGH_PROFILE, {})]:
         raise GeneratorError("typed slice out/inout admission profile drift")
     if log_admission_profiles != [
             (LOG_ADMISSION_MANDELBROT_KEY,
@@ -2470,7 +2520,9 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
     fractal3d_log_profiles = [
         (item["program_key"], item.get("fractal3d_log_profile"))
         for item in programs if "fractal3d_log_profile" in item]
-    if fractal3d_log_profiles != [(FRACTAL3D_LOG_KEY, FRACTAL3D_LOG_PROFILE)]:
+    if fractal3d_log_profiles != [
+            (FLYTHROUGH_LOG_KEY, FLYTHROUGH_LOG_PROFILE),
+            (FRACTAL3D_LOG_KEY, FRACTAL3D_LOG_PROFILE)]:
         raise GeneratorError(
             "typed slice fractal3d log admission profile drift")
     if struct_declaration_profiles != [
@@ -2512,6 +2564,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             "COLOR_SCHEME": 20, "FORMULA": 0, "INTERP": 0,
             "MASK_COLOR_SCHEME": 1, "MASK_FORMULA": 10, "MODE": 1},
         CAUSTIC_KEY: {"NOISE_TYPE": 10},
+        "classicNoisedeck/noise3d:noise3d": {"NOISE_TYPE": 12},
         MOODSCAPE_KEY: {"COLOR_MODE": 2, "NOISE_TYPE": 10},
         NOISE_FRONTEND_KEY: _CLASSIC_NOISE_DEFINES,
         CURL_KEY: {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True},
@@ -2553,13 +2606,22 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         "filter3d/flow3d:diffuse": {"BEHAVIOR": 1},
         **({"filter3d/flow3d:agent": {"BEHAVIOR": 1}} if "filter3d/flow3d:agent" in keys else {}),
         "synth3d/noise3d:precompute": {"COLOR_MODE": 0, "OCTAVES": 1, "RIDGES": False},
+        "classicNoisedeck/shapes3d:shapes3d": {"BLEND_MODE": 10, "SHAPE_A": 30, "SHAPE_B": 10},
         "render/render3d:render3d": {"FILTERING": 0, "INVERT": False},
         "render/renderCubemap3d:renderCubemap3d": {"FILTERING": 0, "INVERT": False},
+        "render/renderLandscape3d:landscape": {"FILTERING": 1, "VIEW_MODE": 1},
+        "render/pointsBillboardRender:depthKeys": {"VIEW_MODE": 1},
     }
     actual_defines = {item["program_key"]: item["defines"] for item in programs if item["defines"]}
     if actual_defines != expected_defines:
         raise GeneratorError("typed slice default-define contract drift")
     return data
+
+
+def default_define_contract(source: str, defines: dict) -> str:
+    """An absent macro cannot specialize a pass. Keep any occurrence conservative."""
+    return ("default-only" if any(re.search(r"\b" + re.escape(name) + r"\b", source)
+                                  for name in defines) else "none")
 
 
 def typed_corpus_keys() -> list[str]:
@@ -2681,15 +2743,18 @@ def _typed_abi(typed) -> dict[str, Any]:
     rather than re-derive an ABI from source text or generated C++.
     """
     declarations = {item.symbol.name: item for item in typed.declarations}
+    omitted = omitted_physical_samplers(typed)
     uniforms = []
     for name in typed.resources.uniforms:
+        if name in omitted:
+            continue
         declaration = declarations.get(name)
         if declaration is None:
             raise GeneratorError(f"{typed.key}: typed ABI declaration missing for {name}")
         uniforms.append({"name": name, "type": declaration.type.display()})
     return {
         "uniforms": uniforms,
-        "samplers": list(typed.resources.samplers),
+        "samplers": [name for name in typed.resources.samplers if name not in omitted],
         "outputs": list(typed.resources.outputs),
         "uses_texture": bool(typed.resources.uses_texture),
         "uses_derivatives": bool(typed.resources.uses_derivatives),
@@ -3004,7 +3069,7 @@ def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
 def _defaults(repository: pathlib.Path, key: str) -> dict:
     root = check_corpus._corpus_root(repository)
     metadata = check_corpus._load_json(root / "metadata.json", "metadata")
-    return check_semantics._metadata_defaults(metadata, key)
+    return check_semantics._program_defaults(metadata, key)
 
 
 def apply_compatibility_transform(typed, transform_name: str):
@@ -3931,8 +3996,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         authorized_mandelbrot_logs = ()
     visited_mandelbrot_logs: list[TypedExpression] = []
     if fractal3d_log_profile is not None:
-        if (typed.key != FRACTAL3D_LOG_KEY
-                or fractal3d_log_profile != FRACTAL3D_LOG_PROFILE
+        if (typed.key not in FRACTAL3D_LOG_KEYS
+                or fractal3d_log_profile != FRACTAL3D_LOG_PROFILES[typed.key]
                 or numeric_literal_contract != "glsl-f32"):
             raise GeneratorError(
                 f"{typed.key}: fractal3d log admission profile metadata mismatch")
@@ -3943,7 +4008,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(f"{typed.key}: {error}") from error
         authorized_fractal3d_logs = tuple(
             item.node for item in fractal3d_log_proof.sites)
-    elif typed.key == FRACTAL3D_LOG_KEY:
+    elif typed.key in FRACTAL3D_LOG_KEYS:
         raise GeneratorError(
             f"{typed.key}: exact fractal3d log admission profile carrier required")
     else:
@@ -3971,6 +4036,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or custom_comparer_profile is not None
                 or numeric_literal_contract != "glsl-f32"
                 or source_global_literal_int_profile is not None
+                or (hash_scalar_uint_xor_profile is not None
+                    and typed.key != RUNTIME_LOOP_BOUND_NOISE3D_KEY)
                 or gather_sorted_round_profile is not None
                 or literal_vec3_lane_index_profile is not None
                 or smooth_edge_luma_weights_profile is not None
@@ -4008,6 +4075,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 f"{typed.key}: runtime-loop-bound profile metadata mismatch")
     elif runtime_loop_bound_profile is not None:
         raise GeneratorError(f"{typed.key}: runtime-loop-bound carrier on foreign key")
+    authorized_landscape_tan = None
+    visited_landscape_tan: list[TypedExpression] = []
+    if typed.key == "render/renderLandscape3d:landscape":
+        from tools.glslcpp.frontend.landscape_volume_profile import tangent_node
+        try:
+            authorized_landscape_tan = tangent_node(typed, source_hash)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
     gabor_effective_depth_contract = None
     if typed.key == GABOR_KEY and gabor_effective_depth_profile is not None:
         if gabor_effective_depth_profile != GABOR_EFFECTIVE_DEPTH_PROFILE:
@@ -4088,6 +4163,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     if typed.key == OUT_INOUT_ADMISSION_NEWTON_KEY
                     else OUT_INOUT_ADMISSION_LIGHTLEAK_PROFILE
                     if typed.key == OUT_INOUT_ADMISSION_LIGHTLEAK_KEY
+                    else OUT_INOUT_ADMISSION_FLYTHROUGH_PROFILE
+                    if typed.key == OUT_INOUT_ADMISSION_FLYTHROUGH_KEY
                     else OUT_INOUT_ADMISSION_MANDELBROT_PROFILE
                     if typed.key != JULIA_KEY else
                     "out-inout-admission-julia-v1")
@@ -4131,7 +4208,31 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_struct_type = None
     authorized_struct_frontier = None
     visited_struct_frontier_members: list[TypedExpression] = []
+    visited_struct_frontier_constructors: list[TypedExpression] = []
+    authorized_landscape_indexes: tuple[TypedExpression, ...] = ()
+    authorized_landscape_samplers = None
     authorized_historic_palette_proof = None
+    from tools.glslcpp.frontend.local_vec4_array_profile import authenticate_local_vec4_arrays
+    try:
+        local_vec4_proof = authenticate_local_vec4_arrays(typed, source_hash)
+    except ValueError as error:
+        raise GeneratorError(f"{typed.key}: {error}") from error
+    from tools.glslcpp.frontend.effects_zoomblur_local_array_profile import authenticate_zoomblur_local_array
+    try:
+        zoomblur_local_array_proof = authenticate_zoomblur_local_array(typed, source_hash)
+    except ValueError as error:
+        raise GeneratorError(f"{typed.key}: {error}") from error
+    from tools.glslcpp.frontend.palette3d_profile import authenticate_palette3d
+    try:
+        authorized_palette3d = authenticate_palette3d(typed, source_hash)
+    except ValueError as error:
+        raise GeneratorError(f"{typed.key}: {error}") from error
+    from tools.glslcpp.frontend.noise3d_dead_globals import authenticate_noise3d_dead_globals
+    try:
+        authorized_noise3d_dead_globals = authenticate_noise3d_dead_globals(
+            typed, source_hash)
+    except ValueError as error:
+        raise GeneratorError(f"{typed.key}: {error}") from error
     authorized_palette_frontend_proof = None
     authorized_color_lab_frontend_proof = None
     authorized_color_lab_indexes: tuple[TypedExpression, ...] = ()
@@ -4316,6 +4417,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_points_float_bits_ingresses: list[TypedExpression] = []
     authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
     visited_points_post_nodes: list[TypedExpression] = []
+    authorized_ca_posts: tuple[TypedExpression, ...] = ()
+    visited_ca_posts: list[TypedExpression] = []
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_scalar_uint_xors: list[TypedExpression] = []
     authorized_bitwise_scalar_int_ops_sites: tuple[TypedExpression, ...] = ()
@@ -4489,6 +4592,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_const_global_table_reads: list[TypedExpression] = []
     authorized_glyph_map_sites: tuple[TypedExpression, ...] = ()
     visited_glyph_map_sites: list[TypedExpression] = []
+    authorized_glyph_map_tile_sites: tuple[TypedExpression, ...] = ()
+    visited_glyph_map_tile_sites: list[TypedExpression] = []
     authorized_extrude_relationals: tuple[TypedExpression, ...] = ()
     authorized_extrude_reductions: tuple[TypedExpression, ...] = ()
     visited_extrude_nodes: list[TypedExpression] = []
@@ -4505,6 +4610,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_emboss_reductions: list[TypedExpression] = []
     visited_emboss_materialization_divisions: list[TypedExpression] = []
     authorized_posterize_round = None
+    authorized_shapes3d_rounds: tuple[TypedExpression, ...] = ()
+    visited_shapes3d_rounds: list[TypedExpression] = []
+    visited_noise3d_rounds: list[TypedExpression] = []
+    authorized_shapes3d_indices: tuple[TypedExpression, ...] = ()
+    visited_shapes3d_indices: list[TypedExpression] = []
+    authorized_feedback_indices: tuple[TypedExpression, ...] = ()
+    visited_feedback_indices: list[TypedExpression] = []
     authorized_flow_round = None
     authorized_as_u32_round = None
     authorized_ceil = ()
@@ -4536,9 +4648,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_spooky_ticker_globals: list[object] = []
     visited_spooky_ticker_varying_reads: list[TypedExpression] = []
     if moodscape_frontend_profile is not None:
+        from tools.glslcpp.frontend.moodscape_dynamic_profile import (
+            PROFILE as MOODSCAPE_RUNTIME_PROFILE,
+            authenticate_projection as authenticate_moodscape_runtime_projection)
         if (typed.key not in MOODSCAPE_PREPARED_KEYS
-                or moodscape_frontend_profile
-                != MOODSCAPE_PREPARED_PROFILES[typed.key]
+                or moodscape_frontend_profile not in {
+                    MOODSCAPE_PREPARED_PROFILES[typed.key], MOODSCAPE_RUNTIME_PROFILE}
                 or numeric_literal_contract != "glsl-f32"
                 or any(item is not None for item in (
                     compatibility_transform, custom_comparer_profile,
@@ -4553,7 +4668,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(
                 f"{typed.key}: Moodscape frontend profile metadata mismatch")
         try:
-            authenticate_moodscape_projection(
+            (authenticate_moodscape_runtime_projection
+             if moodscape_frontend_profile == MOODSCAPE_RUNTIME_PROFILE
+             else authenticate_moodscape_projection)(
                 typed, source_hash, moodscape_frontend_profile)
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
@@ -4590,6 +4707,27 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == NOISE_FRONTEND_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Classic Noise frontend profile carrier required")
+    from tools.glslcpp.frontend import noise_frontend_profile as noise_profile
+    from tools.glslcpp.frontend.runtime_color_hash_profile import (
+        authenticate as authenticate_runtime_color_hash)
+    runtime_color_hash_selected = (
+        (typed.key == NOISE_FRONTEND_KEY
+         and noise_frontend_profile == NOISE_FRONTEND_PROFILE
+         and noise_profile._dynamic_selected(typed))
+        or (typed.key == MOODSCAPE_KEY
+            and moodscape_frontend_profile == MOODSCAPE_RUNTIME_PROFILE))
+    try:
+        authorized_runtime_color_hash = (
+            authenticate_runtime_color_hash(
+                typed, source_hash,
+                noise_frontend_profile if typed.key == NOISE_FRONTEND_KEY
+                else moodscape_frontend_profile)
+            if runtime_color_hash_selected else None)
+    except ValueError as error:
+        raise GeneratorError(f"{typed.key}: {error}") from error
+    visited_runtime_color_indexes = []
+    visited_runtime_color_bits = []
+    visited_runtime_color_xors = []
     authorized_texture_frontend_proof = None
     if osd_frontend_profile is not None:
         if (typed.key not in OSD_PREPARED_KEYS
@@ -5376,6 +5514,18 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     or sites[0].children[0] is not sites[1]):
                 raise ValueError("site order, uniqueness, or parent mismatch")
             authorized_glyph_map_sites = sites
+            tile_sites = authenticated_glyph_map_tile_sites(
+                proof, typed, source_hash)
+            if tile_sites and (len(tile_sites) != 2
+                    or tile_sites[0] is not proof.tile_any
+                    or tile_sites[1] is not proof.tile_not_equal
+                    or tile_sites[0].kind != "builtin"
+                    or tile_sites[0].callee != "any"
+                    or tile_sites[1].kind != "builtin"
+                    or tile_sites[1].callee != "notEqual"
+                    or tile_sites[0].children != (tile_sites[1],)):
+                raise ValueError("origin tile site identity mismatch")
+            authorized_glyph_map_tile_sites = tile_sites
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     if curl_vector_math_profile is not None:
@@ -5662,10 +5812,30 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key in ANY_RELATIONAL_KEYS:
         raise GeneratorError(
             f"{typed.key}: exact any-relational admission profile carrier required")
+    if (typed.key == "filter/lowPoly:lowPoly" and
+            tuple((d.name, d.canonical_value) for d in typed.preprocessor_defines)
+            == (("LP_BORDER", "int"), ("LP_LIGHT", "int"))):
+        from tools.glslcpp.frontend.lowpoly_runtime_profile import PROFILE, authenticate_lowpoly_runtime
+        try:
+            authorized_any_relational_proof = authenticate_lowpoly_runtime(typed, source_hash, PROFILE)
+            authorized_derivative_proof = authorized_any_relational_proof
+            authorized_derivative_nodes = authorized_derivative_proof.nodes
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if typed.key == "render/renderLandscape3d:landscape":
+        from tools.glslcpp.frontend.landscape_volume_profile import (
+            axis_indexes, borrowed_samplers, relational_nodes)
+        try:
+            authorized_any_relational_proof = relational_nodes(typed, source_hash)
+            authorized_landscape_indexes = axis_indexes(typed, source_hash)
+            authorized_landscape_samplers = borrowed_samplers(typed, source_hash)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
     if struct_frontier_profile is not None:
         if (typed.key not in STRUCT_FRONTIER_KEYS
-                or struct_frontier_profile
-                != STRUCT_FRONTIER_PROFILES[typed.key]):
+                or struct_frontier_profile not in (
+                    STRUCT_FRONTIER_PROFILES[typed.key],
+                    RENDER_DYNAMIC_STRUCT_PROFILES.get(typed.key))):
             raise GeneratorError(
                 f"{typed.key}: struct frontier profile metadata mismatch")
         try:
@@ -5734,6 +5904,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             authorized_points_post_nodes = (
                 authenticate_points_post(
                     typed, source_hash, points_post_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if typed.key == "synth3d/cellularAutomata3d:simulate":
+        from tools.glslcpp.frontend.cellular_automata_post_profile import authenticate_ca_posts
+        try:
+            authorized_ca_posts = authenticate_ca_posts(typed, source_hash)
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     if scalar_uint_xor_profile is not None:
@@ -5830,12 +6006,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if len(authorized_mutable_global_frames) != len(
                 (dynamic_frame_contract(typed).fields
                  if is_dynamic_program(typed)
-                 else mutable_global_frame_contract(typed.key).fields)):
+                 else mutable_global_frame_contract(typed).fields)):
             raise GeneratorError(
                 f"{typed.key}: mutable-global frame carrier cardinality mismatch")
     elif typed.key in MUTABLE_GLOBAL_FRAME_KEYS:
         raise GeneratorError(
             f"{typed.key}: exact mutable-global frame profile carrier required")
+    omitted_effects_function = None
     if mutable_global_array_profile is not None:
         # `classicNoisedeck/cellRefract` is admitted by exactly one carrier:
         # this one. `classicNoisedeck/kaleido:kaleido` is the mechanism's one
@@ -5918,9 +6095,17 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         # one leaves the rest to fail at the unconditional post-loop storage
         # gate.
         if len(authorized_mutable_global_arrays) != len(
-                mutable_global_array_contract(typed.key).fields):
+                mutable_global_array_contract(typed.key, typed).fields):
             raise GeneratorError(
                 f"{typed.key}: mutable-global array carrier cardinality mismatch")
+        if (typed.key == MUTABLE_GLOBAL_ARRAY_EFFECTS_KEY
+                and not any(d.kind == "str" and d.canonical_value == "int"
+                            for d in typed.preprocessor_defines)):
+            try:
+                omitted_effects_function = authenticated_effects_emission_omission(
+                    typed, source_hash, mutable_global_array_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{typed.key}: {error}") from error
     elif typed.key in MUTABLE_GLOBAL_ARRAY_KEYS:
         raise GeneratorError(
             f"{typed.key}: exact mutable-global array profile carrier required")
@@ -6389,6 +6574,24 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == POSTERIZE_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Posterize round admission profile carrier required")
+    if typed.key == "classicNoisedeck/shapes3d:shapes3d":
+        from tools.glslcpp.frontend.shapes3d_round_profile import (
+            authenticate_shapes3d_rounds, authenticate_shapes3d_linear_indices)
+        try:
+            authorized_shapes3d_rounds = authenticate_shapes3d_rounds(
+                typed, source_hash)
+            authorized_shapes3d_indices = authenticate_shapes3d_linear_indices(
+                typed, source_hash)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if typed.key == "filter/feedback:feedback":
+        from tools.glslcpp.frontend.feedback_hue_index_profile import (
+            authenticate_feedback_hue_indices)
+        try:
+            authorized_feedback_indices = authenticate_feedback_hue_indices(
+                typed, source_hash)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
     if flow_round_profile is not None:
         if (typed.key != FLOW_AGENT_KEY or compatibility_transform is not None
                 or numeric_literal_contract != "glsl-f32"):
@@ -6578,6 +6781,15 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if len(authorized_palette_members) != 5:
             raise GeneratorError(f"{typed.key}: Palette member census drift")
     def reject_type(typ, value) -> None:
+        if local_vec4_proof is not None and any(value is node for node in local_vec4_proof.array_nodes):
+            return
+        if (zoomblur_local_array_proof is not None
+                and any(value is node for node in zoomblur_local_array_proof.array_nodes)):
+            return
+        if authorized_palette3d is not None and (
+                typ is authorized_palette3d.struct.type
+                or any(value is item for item in authorized_palette3d.array_nodes)):
+            return
         if typ.kind == "struct":
             if (authorized_struct_type is typ
                     or (authorized_struct_frontier is not None
@@ -6687,6 +6899,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if any(value is item for item in authorized_dither_globals):
             return
         if typ.display() == "bvec2":
+            if (typed.key == "filter/lowPoly:lowPoly"
+                    and authorized_any_relational_proof is not None
+                    and any(value is item for item in authorized_any_relational_proof.relationals)):
+                return
             # `bvec2` is deliberately absent from APPROVED_TYPES. It is admitted
             # only as the result type of an exact authenticated Extrude
             # relational node (consumed immediately by its paired `all`) or
@@ -6697,6 +6913,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             if any(value is item for item in authorized_extrude_relationals):
                 return
             if any(value is item for item in authorized_waves_relationals):
+                return
+            if (authorized_glyph_map_tile_sites
+                    and value is authorized_glyph_map_tile_sites[1]):
                 return
             if (authorized_emboss_proof is not None
                     and any(value is item
@@ -6722,6 +6941,18 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             if (authorized_any_relational_proof is not None
                     and any(value is item
                             for item in authorized_any_relational_proof.relationals)):
+                return
+            if (authorized_any_relational_proof is not None
+                    and any(value is item for item in
+                            getattr(authorized_any_relational_proof,
+                                    "declarations", ()))):
+                return
+            if (typed.key == "render/renderLandscape3d:landscape"
+                    and authorized_any_relational_proof is not None
+                    and getattr(value, "kind", None) == "id"
+                    and any(value.symbol_id == declaration.symbol_id
+                            for declaration in
+                            authorized_any_relational_proof.declarations)):
                 return
             raise GeneratorError(
                 f"{location(value)}: unsupported typed type {typ.display()}")
@@ -6765,8 +6996,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         raise GeneratorError(f"{typed.key}: malformed counted-for proof functions")
 
     effective_depth_limit = (
-        gabor_effective_depth_contract.maximum_effective_depth
-        if gabor_effective_depth_contract is not None else 3)
+        authorized_noise3d_dead_globals.max_effective_depth
+        if (authorized_noise3d_dead_globals is not None
+            and authorized_noise3d_dead_globals.rounds)
+        else (gabor_effective_depth_contract.maximum_effective_depth
+              if gabor_effective_depth_contract is not None else 3))
 
     def audit_loop_proofs(actual, expected) -> None:
         if actual.kind != expected.kind or len(actual.children) != len(expected.children):
@@ -6777,15 +7011,19 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if proof is not None:
             max_trip_count = (
                 BUDDHABROT_MAX_TRIP_COUNT if typed.key in BUDDHABROT_KEYS
+                else (1024 if typed.key == "render/renderLandscape3d:landscape"
                 else (1000 if typed.key == JULIA_KEY
                       else (1537 if typed.key == RUNTIME_LOOP_BOUND_ROLL_KEY
                             # MAX_ITER is 2048 since the reference raised the
                             # GLSL cap to match its WGSL (5976b7a6).
                             else (2048 if typed.key == LOG_ADMISSION_MANDELBROT_KEY
-                                  else COUNTED_FOR_V1_MAX_TRIP_COUNT))))
+                                  else COUNTED_FOR_V1_MAX_TRIP_COUNT)))))
             max_charge = (
-                BUDDHABROT_MAX_ENTRYPOINT_CHARGE if typed.key in BUDDHABROT_KEYS
-                else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)
+                authorized_noise3d_dead_globals.max_entrypoint_charge
+                if (authorized_noise3d_dead_globals is not None
+                    and authorized_noise3d_dead_globals.rounds)
+                else (BUDDHABROT_MAX_ENTRYPOINT_CHARGE if typed.key in BUDDHABROT_KEYS
+                      else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE))
             if (proof.trip_count > max_trip_count or proof.lexical_depth > 3
                     or proof.effective_depth > effective_depth_limit
                     or proof.lexical_product > COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT
@@ -6947,10 +7185,28 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         proved_task19_read_indices.update(
             (parameter.symbol_id, recomputed_task19.induction_symbol_id, span)
             for span in parameter.induction_read_spans)
-        proved_array_arguments.update(
-            (table.symbol_id, span, table.array_type)
-            for table, span in zip(recomputed_task19.caller_tables,
-                                   parameter.direct_argument_spans))
+        if recomputed_task19.source_profile == "dynamic-kernel9-live-v1":
+            # Every live global and local call argument must match the proof.
+            dynamic_calls = tuple(
+                value for function in typed.functions
+                for statement in function.body
+                for value in walk_fixed_array_statement(statement)
+                if isinstance(value, TypedExpression)
+                and value.kind == "call" and value.callee == "convolve")
+            if (len(dynamic_calls) != len(parameter.direct_argument_spans)
+                    or tuple(value.children[1].span for value in dynamic_calls)
+                    != parameter.direct_argument_spans):
+                raise GeneratorError(
+                    f"{typed.key}: dynamic Kernel9 call census mismatch")
+            proved_array_arguments.update(
+                (value.children[1].symbol_id, value.children[1].span,
+                 value.children[1].type.display())
+                for value in dynamic_calls)
+        else:
+            proved_array_arguments.update(
+                (table.symbol_id, span, table.array_type)
+                for table, span in zip(recomputed_task19.caller_tables,
+                                       parameter.direct_argument_spans))
     elif typed.fixed_array_in_parameter_proof is not None:
         raise GeneratorError(
             f"{typed.key}: malformed fixed-array input-parameter proof key")
@@ -7063,6 +7319,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             and declaration.type.display() == "int")
     }
     for declaration in typed.declarations:
+        if authorized_palette3d is not None and declaration is authorized_palette3d.table:
+            admitted_globals[declaration.symbol.id] = declaration
+            continue
+        if (authorized_noise3d_dead_globals is not None
+                and any(declaration is item
+                        for item in authorized_noise3d_dead_globals.globals)):
+            admitted_globals[declaration.symbol.id] = declaration
+            continue
         storage = declaration.symbol.storage
         if storage in {"uniform", "output"}:
             continue
@@ -7351,6 +7615,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             and len(typed.structs) == 1
             and typed.structs[0] is authorized_palette_frontend_proof.struct)
         if (not authorized_historic_struct and not authorized_palette_struct
+                and not (authorized_palette3d is not None
+                         and len(typed.structs) == 1
+                         and typed.structs[0] is authorized_palette3d.struct)
                 and authorized_struct_frontier is None
                 and (authorized_struct_declaration is None
                      or len(typed.structs) != 1
@@ -7378,6 +7645,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(f"{location(typed.interface_symbols[0])}: unsupported varying")
         visited_varying_admissions.extend(typed.interface_symbols)
     for declaration in typed.declarations:
+        if (authorized_noise3d_dead_globals is not None
+                and any(declaration is item
+                        for item in authorized_noise3d_dead_globals.globals)):
+            continue
         if (testpattern_frontend_proof is not None
                 and any(declaration.initializer is item
                         for item in authorized_testpattern_array_constructors)):
@@ -7492,6 +7763,22 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 f"{typed.key}: authenticated varying-uv admission "
                 "visitation mismatch")
     def expression(value, context: str = "rvalue") -> None:
+        if local_vec4_proof is not None and any(value is node for node in local_vec4_proof.indexes):
+            for child in value.children:
+                expression(child)
+            return
+        if (zoomblur_local_array_proof is not None
+                and any(value is node for node in zoomblur_local_array_proof.indexes)):
+            for child in value.children:
+                expression(child)
+            return
+        if authorized_palette3d is not None and any(
+                value is item for item in (*authorized_palette3d.constructors,
+                                          *authorized_palette3d.members,
+                                          *authorized_palette3d.indexes)):
+            for child in value.children:
+                expression(child)
+            return
         if any(value is item for item in authorized_spooky_ticker_varying_reads):
             if any(value is item for item in visited_spooky_ticker_varying_reads):
                 raise GeneratorError(
@@ -7613,7 +7900,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     *authorized_distortion_sampler_actuals))
                 and not any(getattr(value, "symbol_id", None)
                             == getattr(item, "id", None)
-                            for item in authorized_distortion_sampler_parameters)):
+                            for item in authorized_distortion_sampler_parameters)
+                and not (authorized_landscape_samplers is not None
+                         and any(value is item for item in
+                                 authorized_landscape_samplers.uses))):
             raise GeneratorError(
                 f"{location(value)}: unsupported sampler expression")
         if any(value is item for item in authorized_rotate_expressions):
@@ -7621,6 +7911,19 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         reject_type(value.type, value)
         if value.kind == "construct":
             used.add("constructors")
+            if value.type.kind == "struct":
+                if (authorized_struct_frontier is None
+                        or not any(value is item for item in
+                                   authorized_struct_frontier.constructors)):
+                    if authorized_struct_declaration is None:
+                        raise GeneratorError(
+                            f"{location(value)}: unsupported struct constructor")
+                else:
+                    if any(value is item for item in
+                           visited_struct_frontier_constructors):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated struct constructor visited twice")
+                    visited_struct_frontier_constructors.append(value)
             if any(value is item for item in authorized_testpattern_array_constructors):
                 if any(value is item for item in visited_testpattern_array_constructors):
                     raise GeneratorError(
@@ -7803,6 +8106,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         raise GeneratorError(
                             f"{location(value)}: malformed authenticated scalar uint XOR")
                     visited_hash_scalar_uint_xors.append(value)
+                elif (authorized_runtime_color_hash is not None
+                      and any(value is item for item
+                              in authorized_runtime_color_hash.scalar_xors)):
+                    if ((left_type, right_type, value.type.display())
+                            != ("uint", "uint", "uint")):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed runtime lattice XOR")
+                    visited_runtime_color_xors.append(value)
                 elif any(value is item for item in authorized_scalar_uint_xors):
                     if (left_type, right_type, value.type.display()) != (
                             "uint", "uint", "uint") or value.category != "rvalue":
@@ -7931,13 +8242,19 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             if (value.children and value.children[0].type.display() == "bvec3"):
                 nodes = (() if authorized_edge_proof is None
                          else authorized_edge_proof.swizzles)
-                if not any(value is item for item in nodes):
+                landscape_swizzle = (
+                    typed.key == "render/renderLandscape3d:landscape"
+                    and authorized_any_relational_proof is not None
+                    and any(value is item for item in
+                            authorized_any_relational_proof.swizzles))
+                if not landscape_swizzle and not any(value is item for item in nodes):
                     raise GeneratorError(
                         f"{location(value)}: unsupported bvec3 swizzle")
-                if any(value is item for item in visited_edge_swizzles):
+                if not landscape_swizzle and any(value is item for item in visited_edge_swizzles):
                     raise GeneratorError(
                         f"{typed.key}: authenticated Edge swizzle visited twice")
-                visited_edge_swizzles.append(value)
+                if not landscape_swizzle:
+                    visited_edge_swizzles.append(value)
             used.add("swizzles")
         elif value.kind == "call":
             used.add("functions")
@@ -8005,6 +8322,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 if (value is not authorized_round
                         and value is not authorized_posterize_round
                         and value is not authorized_flow_round
+                        and not any(value is item for item in authorized_shapes3d_rounds)
+                        and not (authorized_noise3d_dead_globals is not None
+                                 and any(value is item for item
+                                         in authorized_noise3d_dead_globals.rounds))
                         and not any(value is item for item
                                     in (authorized_as_u32_round or ()))
                         and not (testpattern_frontend_proof is not None
@@ -8016,6 +8337,18 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         raise GeneratorError(
                             f"{typed.key}: authenticated Test Pattern round visited twice")
                     visited_testpattern_round_nodes.append(value)
+                if any(value is item for item in authorized_shapes3d_rounds):
+                    if any(value is item for item in visited_shapes3d_rounds):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated Shapes3d round visited twice")
+                    visited_shapes3d_rounds.append(value)
+                if (authorized_noise3d_dead_globals is not None
+                        and any(value is item for item
+                                in authorized_noise3d_dead_globals.rounds)):
+                    if any(value is item for item in visited_noise3d_rounds):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated Noise3D round visited twice")
+                    visited_noise3d_rounds.append(value)
             elif value.callee == "ceil":
                 if not any(value is item for item in authorized_ceil):
                     raise GeneratorError(f"{location(value)}: unsupported builtin ceil")
@@ -8028,6 +8361,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     raise GeneratorError(
                         f"{location(value)}: unsupported builtin {value.callee}")
                 visited_curl_nodes.append(value)
+            elif value.callee == "tan":
+                if value is not authorized_landscape_tan:
+                    raise GeneratorError(
+                        f"{location(value)}: unsupported builtin tan")
+                visited_landscape_tan.append(value)
             elif value.callee == "floatBitsToUint":
                 # Admitted only for candidate-owned nodes authenticated by
                 # the exact Caustic or Scanline Error identity profile. It
@@ -8075,6 +8413,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 elif any(value is item
                          for item in authorized_noise_float_bits_ingress):
                     visited_noise_float_bits_ingress.append(value)
+                elif (authorized_runtime_color_hash is not None
+                      and any(value is item for item
+                              in authorized_runtime_color_hash.float_bits)):
+                    visited_runtime_color_bits.append(value)
                 elif any(value is item
                          for item in authorized_grime_float_bits_ingresses):
                     # grime's five `floatBitsToUint` sites, the whole closure
@@ -8129,7 +8471,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     and authorized_emboss_proof is not None
                     and any(value is item
                             for item in authorized_emboss_proof.reductions))
+                landscape_relational = (
+                    value.callee == "lessThanEqual"
+                    and typed.key == "render/renderLandscape3d:landscape"
+                    and authorized_any_relational_proof is not None
+                    and any(value is item for item in
+                            authorized_any_relational_proof.relationals))
                 if (not emboss_reduction
+                        and not landscape_relational
                         and not any(value is item
                                     for item in authorized_extrude_nodes)):
                     raise GeneratorError(
@@ -8140,6 +8489,15 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         raise GeneratorError(
                             f"{typed.key}: authenticated Emboss reduction visited twice")
                     visited_emboss_reductions.append(value)
+                elif landscape_relational:
+                    if (value.type.display() != "bvec3"
+                            or tuple(child.type.display() for child in value.children)
+                            != ("vec3", "vec3")
+                            or any(value is item for item in
+                                   visited_any_relational_relationals)):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed Landscape relation")
+                    visited_any_relational_relationals.append(value)
                 else:
                     visited_extrude_nodes.append(value)
             elif value.callee in {"greaterThanEqual", "lessThan", "greaterThan"}:
@@ -8184,6 +8542,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         raise GeneratorError(
                             f"{typed.key}: authenticated Edge relational visited twice")
                     visited_edge_relationals.append(value)
+            elif (value.callee == "notEqual" and typed.key == "filter/lowPoly:lowPoly"
+                  and authorized_any_relational_proof is not None
+                  and any(value is item for item in authorized_any_relational_proof.relationals)):
+                if any(value is item for item in visited_any_relational_relationals):
+                    raise GeneratorError(f"{typed.key}: LowPoly relation visited twice")
+                visited_any_relational_relationals.append(value)
             elif value.callee in {"any", "notEqual"}:
                 # Admitted only for the exact nodes authenticated by
                 # waves-any-notequal-admission-v1, by object identity.
@@ -8207,15 +8571,32 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     authorized_any_relational_proof is not None
                     and any(value is item
                             for item in authorized_any_relational_proof.reductions))
+                glyph_tile_site = any(value is item
+                                      for item in authorized_glyph_map_tile_sites)
                 if (not any(value is item for item in authorized_waves_nodes)
                         and not attractor_reduction
-                        and not any_relational_reduction):
+                        and not any_relational_reduction
+                        and not glyph_tile_site):
                     raise GeneratorError(
                         f"{location(value)}: unsupported builtin {value.callee}")
-                if any_relational_reduction:
+                if glyph_tile_site:
+                    if (value is authorized_glyph_map_tile_sites[0]
+                            and (value.callee != "any" or value.type.display() != "bool"
+                                 or value.children != (authorized_glyph_map_tile_sites[1],))):
+                        raise GeneratorError(f"{typed.key}: malformed origin tile reduction")
+                    if (value is authorized_glyph_map_tile_sites[1]
+                            and (value.callee != "notEqual"
+                                 or value.type.display() != "bvec2"
+                                 or tuple(child.type.display() for child in value.children)
+                                 != ("vec2", "vec2"))):
+                        raise GeneratorError(f"{typed.key}: malformed origin tile relation")
+                    if any(value is item for item in visited_glyph_map_tile_sites):
+                        raise GeneratorError(f"{typed.key}: origin tile site visited twice")
+                    visited_glyph_map_tile_sites.append(value)
+                elif any_relational_reduction:
                     if (value.type.display() != "bool"
                             or len(value.children) != 1
-                            or value.children[0].type.display() != "bvec3"):
+                            or value.children[0].type.display() != ("bvec2" if typed.key == "filter/lowPoly:lowPoly" else "bvec3")):
                         raise GeneratorError(
                             f"{location(value)}: malformed authenticated "
                             f"any-relational reduction")
@@ -8341,6 +8722,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     raise GeneratorError(
                         f"{typed.key}: authenticated DLA bit-ingress site visited twice")
                 visited_dla_bit_ingress_sites.append(value)
+            elif value.callee == "degrees" and typed.key in {"filter/hatch:hatch", "filter/strokes:stkSmear"}:
+                from tools.glslcpp.frontend.hatch_degrees_profile import authenticate
+                try:
+                    sites = authenticate(typed, source_hash)
+                except ValueError as error:
+                    raise GeneratorError(f"{typed.key}: {error}") from error
+                if not any(value is site for site in sites):
+                    raise GeneratorError(f"{typed.key}: unowned authenticated degrees node")
             elif value.callee not in _BUILTINS:
                 raise GeneratorError(f"{location(value)}: unsupported builtin {value.callee}")
             if value.callee == "mod":
@@ -8379,7 +8768,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                                     "greaterThanEqual", "lessThan", "greaterThan",
                                     "floatBitsToUint", "tanh",
                                     "dFdx", "dFdy", "fwidth", "reflect",
-                                    "any", "notEqual", "ceil",
+                                    "any", "notEqual", "ceil", "tan", "degrees",
                     "textureLod", "log", "log2", "cross", "uintBitsToFloat",
                     "isnan"}):
                 used.add(value.callee)
@@ -8400,6 +8789,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             else:
                 raise GeneratorError(f"{location(value)}: unsupported unary operator {value.operator}")
         elif value.kind == "index":
+            runtime_color_index_valid = (
+                authorized_runtime_color_hash is not None
+                and any(value is item for item
+                        in authorized_runtime_color_hash.lane_indexes))
             dither_index_valid = any(value is item for item in authorized_dither_indexes)
             color_lab_index_valid = any(
                 value is item for item in authorized_color_lab_indexes)
@@ -8418,7 +8811,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 visited_color_lab_indexes.append(value)
             if (len(value.children) != 2
                     or (value.children[0].kind != "id"
-                        and not color_lab_index_valid and not dither_index_valid)):
+                        and not color_lab_index_valid and not dither_index_valid
+                        and not runtime_color_index_valid)):
                 raise GeneratorError(f"{location(value)}: unsupported typed expression index")
             base, index = value.children
             historic_index_valid = (
@@ -8499,6 +8893,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             # (adjust/colorspace/cellNoise).
             linear_srgb_valid = any(
                 value is item for item in authorized_linear_srgb_lane_index_sites)
+            shapes3d_index_valid = any(
+                value is item for item in authorized_shapes3d_indices)
+            feedback_index_valid = any(
+                value is item for item in authorized_feedback_indices)
             fractal_valid = any(
                 value is item for item in authorized_fractal_frontend_indexes)
             shape_mixer_valid = (
@@ -8561,8 +8959,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 and isinstance(index.literal_value, int))
             newton_root_index_valid = any(
                 value is item for item in authorized_newton_root_indexes)
+            landscape_index_valid = any(
+                value is item for item in authorized_landscape_indexes)
             if color_lab_index_valid:
                 pass
+            elif runtime_color_index_valid:
+                visited_runtime_color_indexes.append(value)
             elif dither_index_valid:
                 if value in visited_dither_indexes:
                     raise GeneratorError(
@@ -8572,6 +8974,16 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 visited_grade_index_sites.append(value)
             elif linear_srgb_valid:
                 visited_linear_srgb_lane_index_sites.append(value)
+            elif shapes3d_index_valid:
+                if any(value is item for item in visited_shapes3d_indices):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated Shapes3d index visited twice")
+                visited_shapes3d_indices.append(value)
+            elif feedback_index_valid:
+                if any(value is item for item in visited_feedback_indices):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated Feedback index visited twice")
+                visited_feedback_indices.append(value)
             elif fractal_valid:
                 visited_fractal_frontend_indexes.append(value)
             elif shape_mixer_valid:
@@ -8615,6 +9027,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     (base.symbol_id, index.literal_value))
             elif newton_root_index_valid:
                 visited_newton_root_indexes.append(value)
+            elif landscape_index_valid:
+                if (context not in {"lvalue", "rvalue"}
+                        or base.type.display() not in {"vec3", "ivec3"}
+                        or index.kind != "id"
+                        or index.symbol_id not in {118, 126}):
+                    raise GeneratorError(
+                        f"{location(value)}: malformed bounded axis index")
             elif not base_valid or not (
                     store_valid or read_valid or grid_store_valid or grid_read_valid
                     or task19_store_valid or task19_read_valid or task20_valid):
@@ -8673,7 +9092,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 and value.span.start_line == 228
                 and value.span.start_column == 9)
             points_post = any(value is item for item in authorized_points_post_nodes)
-            if (not (median_post or julia_period_post or points_post)
+            ca_post = any(value is item for item in authorized_ca_posts)
+            if (not (median_post or julia_period_post or points_post or ca_post)
                     or value.operator not in {"++", "--"}
                     or len(value.children) != 1
                     or value.type.display() != "int"
@@ -8685,6 +9105,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     raise GeneratorError(
                         f"{typed.key}: authenticated Points post expression visited twice")
                 visited_points_post_nodes.append(value)
+            if ca_post:
+                if any(value is item for item in visited_ca_posts):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated CA post expression visited twice")
+                visited_ca_posts.append(value)
         elif value.kind not in {"id", "literal", "declaration", "assign", "unary"}:
             raise GeneratorError(f"{location(value)}: unsupported typed expression {value.kind}")
         if value.kind == "assign":
@@ -8834,6 +9259,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         for expression_value in value.expressions: expression(expression_value)
         for child in value.children: statement(child, loop_depth)
     for function in typed.functions:
+        if function is omitted_effects_function:
+            continue
+        if (authorized_noise3d_dead_globals is not None
+                and any(function is item for item in
+                        authorized_noise3d_dead_globals.dead_functions)):
+            continue
         reject_type(function.return_type, function)
         if function.return_type.kind == "sampler":
             raise GeneratorError(
@@ -8862,7 +9293,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                          or not any(parameter is item for item in
                                     authorized_simulation_sampler_proof.sampler_parameters))
                     and not any(parameter is item
-                                for item in authorized_distortion_sampler_parameters)):
+                                for item in authorized_distortion_sampler_parameters)
+                    and not (authorized_landscape_samplers is not None
+                             and any(parameter is item for _function, item in
+                                     authorized_landscape_samplers.parameters))):
                 raise GeneratorError(
                     f"{location(parameter)}: unsupported sampler parameter")
             if parameter.type.kind == "matrix":
@@ -8903,6 +9337,17 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if (visited_palette_indexes != list(authorized_palette_frontend_proof.palette_index_reads)
                 or visited_palette_members != list(authorized_palette_members)):
             raise GeneratorError(f"{typed.key}: authenticated Palette traversal mismatch")
+    if authorized_runtime_color_hash is not None:
+        for observed, expected in (
+                (visited_runtime_color_indexes,
+                 authorized_runtime_color_hash.lane_indexes),
+                (visited_runtime_color_bits,
+                 authorized_runtime_color_hash.float_bits),
+                (visited_runtime_color_xors,
+                 authorized_runtime_color_hash.scalar_xors)):
+            if not _same_object_sequence(observed, expected):
+                raise GeneratorError(
+                    f"{typed.key}: runtime color/hash site traversal mismatch")
     if (authorized_color_lab_frontend_proof is not None
             and not _same_object_sequence(
                 visited_color_lab_indexes, authorized_color_lab_indexes)):
@@ -8946,6 +9391,31 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 != authorized_spooky_ticker_varying_reads):
             raise GeneratorError(
                 f"{typed.key}: authenticated SpookyTicker traversal mismatch")
+    if authorized_shapes3d_rounds and (
+            len(visited_shapes3d_rounds) != 2
+            or any(actual is not expected for actual, expected in zip(
+                visited_shapes3d_rounds, authorized_shapes3d_rounds))):
+        raise GeneratorError(
+            f"{typed.key}: authenticated Shapes3d round traversal mismatch")
+    if (authorized_noise3d_dead_globals is not None
+            and authorized_noise3d_dead_globals.rounds
+            and (len(visited_noise3d_rounds) != 2
+                 or {id(item) for item in visited_noise3d_rounds}
+                 != {id(item) for item in authorized_noise3d_dead_globals.rounds})):
+        raise GeneratorError(
+            f"{typed.key}: authenticated Noise3D round traversal mismatch")
+    if authorized_shapes3d_indices and (
+            len(visited_shapes3d_indices) != 5
+            or any(actual is not expected for actual, expected in zip(
+                visited_shapes3d_indices, authorized_shapes3d_indices))):
+        raise GeneratorError(
+            f"{typed.key}: authenticated Shapes3d index traversal mismatch")
+    if authorized_feedback_indices and (
+            len(visited_feedback_indices) != 2
+            or {id(item) for item in visited_feedback_indices}
+            != {id(item) for item in authorized_feedback_indices}):
+        raise GeneratorError(
+            f"{typed.key}: authenticated Feedback index traversal mismatch")
     if testpattern_frontend_proof is not None:
         expected_array_declarations = tuple(authorized_testpattern_array_declarations)
         if (len(visited_testpattern_array_types) != 3
@@ -8997,6 +9467,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 != authorized_remap_loops):
             raise GeneratorError(
                 f"{typed.key}: authenticated Remap traversal mismatch")
+    if (authorized_struct_frontier is not None
+            and (len(visited_struct_frontier_constructors)
+                 != len(authorized_struct_frontier.constructors)
+                 or any(not any(value is item for item in
+                                visited_struct_frontier_constructors)
+                        for value in authorized_struct_frontier.constructors))):
+        raise GeneratorError(
+            f"{typed.key}: authenticated struct constructor visitation mismatch")
     if authorized_out_inout_parameters:
         if (len(visited_out_inout_parameters)
                 != len(authorized_out_inout_parameters)
@@ -9099,6 +9577,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             and tuple(visited_points_post_nodes) != authorized_points_post_nodes):
         raise GeneratorError(
             f"{typed.key}: authenticated points post admission traversal mismatch")
+    if (authorized_ca_posts
+            and (len(visited_ca_posts) != len(authorized_ca_posts) - 3
+                 or {id(item) for item in visited_ca_posts}
+                 != {id(item) for item in authorized_ca_posts[3:]})):
+        raise GeneratorError(
+            f"{typed.key}: authenticated CA post traversal mismatch")
     if (authorized_scalar_uint_xors
             and tuple(visited_scalar_uint_xors) != authorized_scalar_uint_xors):
         raise GeneratorError(
@@ -9283,6 +9767,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     authorized_glyph_map_sites[1]]):
             raise GeneratorError(
                 f"{typed.key}: authenticated Glyph Map traversal mismatch")
+    if authorized_glyph_map_tile_sites:
+        if (len(visited_glyph_map_tile_sites) != 2
+                or visited_glyph_map_tile_sites != [
+                    authorized_glyph_map_tile_sites[0],
+                    authorized_glyph_map_tile_sites[1]]):
+            raise GeneratorError(
+                f"{typed.key}: authenticated Glyph Map origin tile traversal mismatch")
     if authorized_reflect_node is not None and (
             len(visited_reflect_nodes) != 1
             or visited_reflect_nodes[0] is not authorized_reflect_node):
@@ -9443,6 +9934,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(
                 f"{typed.key}: authenticated const-global nine-table "
                 "read traversal mismatch")
+    if authorized_landscape_tan is not None and (
+            len(visited_landscape_tan) != 1
+            or visited_landscape_tan[0] is not authorized_landscape_tan):
+        raise GeneratorError(f"{typed.key}: authenticated tangent traversal mismatch")
     missing = sorted(used - set(capabilities))
     if missing: raise GeneratorError(f"{typed.key}: missing capabilities {', '.join(missing)}")
 
@@ -9527,12 +10022,19 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 elif key == RUNTIME_LOOP_BOUND_CURL_KEY:
                     validate_curl_metadata(
                         metadata.get("effects", {}).get("synth/curl"))
+                elif key == RUNTIME_LOOP_BOUND_NOISE3D_KEY:
+                    validate_noise3d_metadata(
+                        metadata.get("effects", {}).get("synth3d/noise3d"))
                 elif key == RUNTIME_LOOP_BOUND_LENIA_KEY:
                     validate_lenia_metadata(
                         metadata.get("effects", {}).get("points/lenia"))
                 elif key in CF_KEYS:
                     validate_cf_metadata(
                         metadata.get("effects", {}).get("filter/convolutionFeedback"))
+                elif key == "render/renderLandscape3d:landscape":
+                    from tools.glslcpp.frontend.landscape_volume_profile import validate_metadata
+                    validate_metadata(metadata.get("effects", {}).get(
+                        "render/renderLandscape3d", {}))
                 typed = apply_runtime_loop_bound(
                     typed, source_hash, runtime_loop_bound_profile)
             except ValueError as error:
@@ -9615,14 +10117,20 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         moodscape_frontend_profile = slice_spec["programs"][index].get(
             "moodscape_frontend_profile")
         if moodscape_frontend_profile is not None:
+            from tools.glslcpp.frontend.moodscape_dynamic_profile import (
+                PROFILE as MOODSCAPE_RUNTIME_PROFILE,
+                apply as apply_moodscape_runtime)
             if (key not in MOODSCAPE_PREPARED_KEYS
-                    or moodscape_frontend_profile
-                    != MOODSCAPE_PREPARED_PROFILES[key]):
+                    or moodscape_frontend_profile not in {
+                        MOODSCAPE_PREPARED_PROFILES[key], MOODSCAPE_RUNTIME_PROFILE}):
                 raise GeneratorError(
                     f"{key}: Moodscape frontend profile metadata mismatch")
             try:
-                profiled = apply_moodscape_frontend(
-                    typed, source_hash, moodscape_frontend_profile)
+                profiled = (apply_moodscape_runtime(
+                    typed, source_hash, moodscape_frontend_profile)[0]
+                    if moodscape_frontend_profile == MOODSCAPE_RUNTIME_PROFILE
+                    else apply_moodscape_frontend(
+                        typed, source_hash, moodscape_frontend_profile))
             except ValueError as error:
                 raise GeneratorError(f"{key}: {error}") from error
             if profiled is typed:
@@ -9815,7 +10323,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         # for the two cross carriers (renderLit3d additionally carries the
         # any-relational row above).
         struct_frontier_profile = (
-            STRUCT_FRONTIER_PROFILES[key]
+            (RENDER_DYNAMIC_STRUCT_PROFILES[key]
+             if dynamic_generic and key in RENDER_DYNAMIC_STRUCT_PROFILES
+             else STRUCT_FRONTIER_PROFILES[key])
             if key in STRUCT_FRONTIER_KEYS else None)
         if struct_frontier_profile is not None:
             try:
@@ -9828,7 +10338,10 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                     f"{key}: struct frontier identity profile mutated program")
             typed = profiled
         cross_builtin_profile = (
-            CROSS_BUILTIN_PROFILE if key in CROSS_KEYS else None)
+            (RENDER_DYNAMIC_CROSS_PROFILE
+             if dynamic_generic and key == "render/render3d:render3d"
+             else CROSS_BUILTIN_PROFILE)
+            if key in CROSS_KEYS else None)
         if cross_builtin_profile is not None:
             try:
                 profiled = apply_cross_admission(
@@ -10646,7 +11159,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             "capabilities": slice_spec["capabilities"],
             "define_contract": (
                 "runtime-int" if (dynamic_noise or dynamic_generic)
-                else ("default-only" if declared_defines else "none")),
+                else default_define_contract(source, declared_defines)),
             "compatibility_transform": compatibility_transform or "none",
             "defines": declared_defines,
             "factory": factory_route["factory"],
@@ -10848,8 +11361,10 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
     standard_headers = ["#include <algorithm>", "#include <array>"]
     if blur_runtime_preflight:
         standard_headers.append("#include <cmath>")
-    standard_headers.extend([
-        "#include <cstdint>", "#include <memory>", "#include <stdexcept>"])
+    standard_headers.append("#include <cstdint>")
+    if any("std::numeric_limits" in body for body in bodies):
+        standard_headers.append("#include <limits>")
+    standard_headers.extend(["#include <memory>", "#include <stdexcept>"])
     cpp = ["// Generated by typed GLSL IR emitter. Do not edit.", f"// Revision: {slice_spec['revision']}",
            "#include \"noisemaker/generated/catalog.hpp\"",
            "#include \"noisemaker/effects/bit_effects.hpp\"",

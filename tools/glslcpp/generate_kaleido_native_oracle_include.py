@@ -278,7 +278,9 @@ def validate_document(doc: Any) -> dict[str, Any]:
         "filter/pixelSort:luminance", "filter/reindex:nmReindexApply", "filter/reindex:nmReindexStats",
         "filter/snow:snow", "synth/julia:julia", "synth/remap:remap",
     ] or provenance["corpus_adapter_keys"] != [
-        "classicNoisedeck/fractal:fractal", "filter/historicPalette:historicPalette", "filter/palette:palette", "synth/julia:julia", "synth/remap:remap",
+        "classicNoisedeck/fractal:fractal", "filter/historicPalette:historicPalette", "filter/palette:palette",
+        "filter3d/flow3d:deposit", "points/dla:depositGrid", "points/lenia:deposit", "points/physarum:deposit",
+        "render/pointsBillboardRender:deposit", "render/pointsRender:deposit", "synth/julia:julia", "synth/remap:remap",
     ]:
         raise OracleError("Kaleido187 adapter census drift")
     pinned = provenance["pinned_cpu_files"]

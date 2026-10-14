@@ -110,6 +110,23 @@ TEST(glsl_runtime_mod_covers_scalar_vector_expression_and_javascript_boundaries)
   REQUIRE(std::isnan(mod(std::numeric_limits<double>::quiet_NaN(), 2.0)));
 }
 
+TEST(glsl_runtime_dot_matches_canonical_per_term_float32_rounding) {
+  using namespace noisemaker::glsl;
+  // CPU 0788a601 src/csl/glsl-runtime.js rounds each accumulated term.
+  // A final-only rounding keeps the cancelled unit and fails these witnesses.
+  const Vec3 cancel(16777216.0f, 1.0f, -16777216.0f);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(cancel, Vec3(1.0f))) == 0U);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(cancel + 0.0, Vec3(1.0f))) == 0U);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(
+              Vec4(16777216.0f, 1.0f, -16777216.0f, 0.25f),
+              Vec4(1.0f))) == 0x3e800000U);
+  // Keep the product in double precision until the accumulated term rounds.
+  // Rounding the product first incorrectly turns this result into zero.
+  REQUIRE(noisemaker::float_bits_to_uint(dot(
+              Vec2(-1.0f, 1.0000001192092896f),
+              Vec2(1.0f, 0.9999998807907104f))) == 0xa8800000U);
+}
+
 TEST(glsl_runtime_geometric_helpers_handle_nonzero_zero_and_total_internal_reflection) {
   using namespace noisemaker::glsl;
   REQUIRE(dot(Vec2(3.0f, 4.0f), Vec2(1.0f, 2.0f)) == 11.0f);
@@ -124,6 +141,22 @@ TEST(glsl_runtime_geometric_helpers_handle_nonzero_zero_and_total_internal_refle
   REQUIRE(reflect(Vec2(1.0f, -1.0f), Vec2(0.0f, 1.0f)) == Vec2(1.0f, 1.0f));
   REQUIRE(reflect(Vec2(1.0f, -1.0f) + 0.0, Vec2(0.0f, 1.0f)) == Vec2(1.0f, 1.0f));
   REQUIRE(refract(Vec2(1.0f, 0.0f), Vec2(0.0f, 1.0f), 2.0) == Vec2());
+}
+
+TEST(glsl_runtime_double_vector_dot_rounds_terms_without_narrowing_inputs) {
+  using namespace noisemaker::glsl;
+  // Measured with CPU 9f3bd6ad GlslCpuRuntime.stdlib.dot on ordinary arrays
+  // and mixed ordinary/Float32 arrays. Each sum rounds; operands stay double.
+  const DVec3 cancel(16777216.0, 1.0, -16777216.0);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(cancel, DVec3(1.0))) == 0U);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(cancel, Vec3(1.0f))) == 0U);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(Vec3(1.0f), cancel)) == 0U);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(cancel, Vec3(1.0f) + 0.0)) == 0U);
+  const DVec2 precise(-1.0, 1.0000000149011612);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(
+              precise, DVec2(1.0, 0.9999999850988388))) == 0xa5800000U);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(precise, Vec2(1.0f))) == 0x32800000U);
+  REQUIRE(noisemaker::float_bits_to_uint(dot(Vec2(precise), Vec2(1.0f))) == 0U);
 }
 
 TEST(glsl_runtime_double_vector_distance_preserves_authority_float32_boundaries) {
@@ -165,7 +198,8 @@ TEST(glsl_runtime_reflect_and_refract_stage_shared_vector_float32_writes) {
       noisemaker::uint_bits_to_float(0xc002ca11U));
   const auto incident_expression = incident + 0.0;
   const auto normal_expression = normal + 0.0;
-  const std::array reflect_bits{0xc2dc7dddU, 0x42e6b53bU, 0xc2854c5fU};
+  // CPU 9f3bd6ad includes the per-term float32 dot-product rounding.
+  const std::array reflect_bits{0xc2dc7ddeU, 0x42e6b53cU, 0xc2854c60U};
   require_vector_bits(reflect(incident, normal), reflect_bits);
   require_vector_bits(reflect(incident_expression, normal), reflect_bits);
   require_vector_bits(reflect(incident, normal_expression), reflect_bits);
@@ -179,7 +213,7 @@ TEST(glsl_runtime_reflect_and_refract_stage_shared_vector_float32_writes) {
         rejected_reflect_scale * static_cast<double>(normal[lane]));
   }
   require_vector_bits(rejected_one_narrow_reflect,
-                      std::array{0xc2dc7ddcU, 0x42e6b53bU, 0xc2854c5fU});
+                      std::array{0xc2dc7dddU, 0x42e6b53cU, 0xc2854c60U});
   REQUIRE(noisemaker::float_bits_to_uint(rejected_one_narrow_reflect[0]) !=
           reflect_bits[0]);
 

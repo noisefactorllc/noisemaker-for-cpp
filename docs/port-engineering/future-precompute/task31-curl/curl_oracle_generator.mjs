@@ -1,13 +1,19 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel, createCanonicalBindings } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { bindGlslKernel } from '../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel, createCanonicalBindings } = await load('src/csl/glsl-kernel.js')
+const { bindGlslKernel } = await load('src/csl/glsl-runtime.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 // ---------------------------------------------------------------------------
 // Task 31 — Curl (`synth/curl:curl`) tanh(vec3) + mod(vecN,float) closure
@@ -91,11 +97,11 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const outPath = path.join(here, 'curl-oracles.json')
 const reportPath = path.join(here, 'curl-oracle-report.md')
 const key = 'synth/curl:curl'
-const revision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const sourcePath = `tools/glslcpp/corpus/${revision}/sources/synth/curl/curl.glsl`
-const canonicalPath = '../noisemaker-for-cpu/src/effects/generated/canonical-kernels.js'
-const catalogPath = '../noisemaker-for-cpu/src/effects/catalog.js'
-const adapterPath = '../noisemaker-for-cpu/src/effects/adapters/index.js'
+const revision = EXPECTED.upstreamRevision
+const sourcePath = path.resolve(here, `../../../../tools/glslcpp/corpus/${revision}/sources/synth/curl/curl.glsl`)
+const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
+const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
+const adapterPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
 const AUTHORIZED_DEFINES = Object.freeze({ OCTAVES: 1, OUTPUT_MODE: 3, RIDGES: true })
 const f = Math.fround
 
@@ -114,12 +120,12 @@ function occurrences(text, needle) { return text.split(needle).length - 1 }
 // Provenance / hermeticity pinning.
 // ---------------------------------------------------------------------------
 const provenance = {
-  canonical_kernels_sha256: 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56',
+  canonical_kernels_sha256: 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  adapter_index_sha256: '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267',
+  adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
   source_sha256: '33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce',
-  canonical_factory_name: 'canonicalFactory248',
-  canonical_factory_to_string_sha256: 'a5faaca15e28732b3ca3f802c03dc1f906a90134d9ac855eba6bcc4f85596349',
+  canonical_factory_name: 'canonicalFactory256',
+  canonical_factory_to_string_sha256: '10a41e2185a925a6f6a4a79a8c6dc428e1319519495d6366c3e9bc9302db3e65',
 }
 
 if (sha256(fs.readFileSync(canonicalPath)) !== provenance.canonical_kernels_sha256) throw new Error('canonical runtime drift')
@@ -528,7 +534,7 @@ function build() {
 
   return {
     schema: 'noisemaker-for-cpp.future-precompute.task31.curl-tanh-mod-closure-oracles.v1',
-    corpus_revision: revision,
+    corpus_revision: revision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
     provenance: { ...provenance, node: process.version, public_identity: true, adapter_absent: true },
     program: {
       key, defines: { ...AUTHORIZED_DEFINES }, profile_candidate: 'curl-tanh-vec3-mod-vecN-float-v1',

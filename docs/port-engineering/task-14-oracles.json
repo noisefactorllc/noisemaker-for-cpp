@@ -1,8 +1,8 @@
 {
   "schema": "noisemaker-task14-canonical-oracles-v1",
-  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "node": "v24.7.0",
-  "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+  "revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+  "node": "v26.0.0",
+  "api": "canonicalKernelFactories+bindGlslKernel+runPass+Surface",
   "factory_hash_contract": "SHA-256 over exact UTF-8 bytes returned by Function.prototype.toString() for canonicalKernelFactories[key].",
   "render_contract": "Every recorded variant was freshly bound and rendered twice; little-endian Float32 bytes and RGBA8 bytes were byte-identical between the two renders.",
   "base": {
@@ -27,58 +27,70 @@
     "filter/pixelSort:finalize": {
       "source": "sources/filter/pixelSort/finalize.glsl",
       "raw_sha256": "99a84b4b2f5196788c227915b500a44542d74e5cc7cb41bbf637361ae327ad87",
-      "factory_source_sha256": "3c25fe6691615d05912cc16e68afe185132a54e57fabcc829fa94420e89e4c06",
+      "factory_source_sha256": "b39641e572612499dbfa1d5cd7022d4b688e64035796c49ee314c76e297dcc10",
       "default_defines": {},
       "const_declarations": [
         "const float PI = literal"
-      ]
+      ],
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/pixelSort:prepare": {
       "source": "sources/filter/pixelSort/prepare.glsl",
       "raw_sha256": "2418f2a2bb05e85a88c7b38d7a8fdf5b797d6181e829997123373d8b258ddeb2",
-      "factory_source_sha256": "167b1ca9ec538b68b29494966eb9d602077b52cfbefb24e0af60d643d8924d14",
+      "factory_source_sha256": "cbab116e3de19bfee1732df606e5a816ddc9a0e4255c6814a9c7acf268f37580",
       "default_defines": {},
       "const_declarations": [
         "const float PI = literal"
-      ]
+      ],
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/skew:skew": {
       "source": "sources/filter/skew/skew.glsl",
       "raw_sha256": "4eb375b32775efa3fc34a07a539350b41576932c344c3b082c2fabcd51f56480",
-      "factory_source_sha256": "08d5bc91fd1bfe32b949018feb5c3d64c3a1608310c13af10077173616a274fc",
+      "factory_source_sha256": "d9993f20e684b8ea208d26072736b21f9e6b4fab0bca836d30f263359dac603e",
       "default_defines": {},
       "const_declarations": [
         "const float PI = literal"
-      ]
+      ],
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/tetraCosine:tetraCosine": {
       "source": "sources/filter/tetraCosine/tetraCosine.glsl",
       "raw_sha256": "538f13b472519cc521b5d30dbd72a799c7fa46a820691ab88117aff4d93f0ffd",
-      "factory_source_sha256": "4491618b2f215c23260fa75d3f478cd3f2847239f6fb73920d37060718c467f3",
+      "factory_source_sha256": "bc7b4213e441669eadefebb9f0b726364e50293a5f7ce996f8707c2aee3a6b12",
       "default_defines": {},
       "const_declarations": [
         "const float TAU = literal"
-      ]
+      ],
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "filter/tile:tile": {
       "source": "sources/filter/tile/tile.glsl",
       "raw_sha256": "ff85419a24f0cdcc7f12334885cb87bca74a51cf6617ab549d3ebdc6d34e03a7",
-      "factory_source_sha256": "c86a2d3f9054cbe4671ccfa3cf7354beacb625e159509eeb712327f3c417b60c",
+      "factory_source_sha256": "13e94ab49a058c1f90d65628daff6b0659d761e38993f10b63c85fd93c78ad6e",
       "default_defines": {},
       "const_declarations": [
         "const float PI = literal",
         "const float TAU = literal"
-      ]
+      ],
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     "synth/osc2d:osc2d": {
       "source": "sources/synth/osc2d/osc2d.glsl",
       "raw_sha256": "e25335112291f2b3f7e9e7f5803948b602a44058bb10c20f835c461f0b6a3512",
-      "factory_source_sha256": "23746f79e8cb7dfd3a738d417b0ba8754f3fe946294904b56c67edd0dab4e470",
+      "factory_source_sha256": "6dcdaa8f00c451deda98a27ec7db71fdfa3eee57dc4eef9a1cc467bc1006e26a",
       "default_defines": {},
       "const_declarations": [
         "const float PI = literal",
         "const float TAU = literal"
-      ]
+      ],
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     }
   },
   "fixture_contract": {
@@ -174,7 +186,9 @@
           "3f19999a"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:prepare",
@@ -227,7 +241,9 @@
           "3f58d8d9"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:prepare",
@@ -280,7 +296,9 @@
           "3e8c8c8d"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:prepare",
@@ -333,7 +351,9 @@
           "3e50d0d1"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:finalize",
@@ -388,7 +408,9 @@
           "3f0e8e8f"
         ]
       },
-      "alpha_expectation": "output alpha is originalTex alpha"
+      "alpha_expectation": "output alpha is originalTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:finalize",
@@ -443,7 +465,9 @@
           "3f179798"
         ]
       },
-      "alpha_expectation": "output alpha is originalTex alpha after darkest branch"
+      "alpha_expectation": "output alpha is originalTex alpha after darkest branch",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:finalize",
@@ -498,7 +522,9 @@
           "3e50d0d1"
         ]
       },
-      "alpha_expectation": "output alpha is originalTex alpha"
+      "alpha_expectation": "output alpha is originalTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/pixelSort:finalize",
@@ -553,7 +579,9 @@
           "3ea8a8a9"
         ]
       },
-      "alpha_expectation": "output alpha is originalTex alpha after inversion"
+      "alpha_expectation": "output alpha is originalTex alpha after inversion",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/skew:skew",
@@ -607,7 +635,9 @@
           "3ea8a8a9"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/skew:skew",
@@ -661,7 +691,9 @@
           "3f3cbcbd"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/skew:skew",
@@ -715,7 +747,9 @@
           "3dc0c0c1"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/skew:skew",
@@ -769,7 +803,9 @@
           "3f48c8c9"
         ]
       },
-      "alpha_expectation": "preserves sampled inputTex alpha"
+      "alpha_expectation": "preserves sampled inputTex alpha",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tetraCosine:tetraCosine",
@@ -836,7 +872,9 @@
           "3ea8a8a9"
         ]
       },
-      "alpha_expectation": "inputTex alpha retained exactly"
+      "alpha_expectation": "inputTex alpha retained exactly",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tetraCosine:tetraCosine",
@@ -881,7 +919,7 @@
         "height": 7,
         "top_down": true
       },
-      "f32_sha256": "ea22015f2ef3c53edaddf5fa6a41a1e69b824dcea8aef61efa851fcbc633622d",
+      "f32_sha256": "7eee48c86ccf86c03421772eace072c3f2ad8e19f81786479a6a2b361b96b13a",
       "rgba8_sha256": "7cd16bb3a3519e49bdb849692905d104697ae4243da91fd0c2de6e622c389652",
       "probes": {
         "0": [
@@ -903,7 +941,9 @@
           "3f0e8e8f"
         ]
       },
-      "alpha_expectation": "inputTex alpha retained exactly"
+      "alpha_expectation": "inputTex alpha retained exactly",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tetraCosine:tetraCosine",
@@ -948,12 +988,12 @@
         "height": 7,
         "top_down": true
       },
-      "f32_sha256": "2416059647cfb69c340dcb4c869f26a3f6dd92dc2164b4902691c572048b308a",
+      "f32_sha256": "de876f55185ae679ef08f64b378f3becfeb5d4116fd080cdf92d71a1298bfa5c",
       "rgba8_sha256": "997b17922a9430c278738815712c5397179782a4622c758689f60c8cd665ef4d",
       "probes": {
         "0": [
           "3e07abcc",
-          "3e404bf0",
+          "3e404c08",
           "00000000",
           "3e8c8c8d"
         ],
@@ -970,7 +1010,9 @@
           "3f179798"
         ]
       },
-      "alpha_expectation": "inputTex alpha retained exactly"
+      "alpha_expectation": "inputTex alpha retained exactly",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tetraCosine:tetraCosine",
@@ -1015,7 +1057,7 @@
         "height": 7,
         "top_down": true
       },
-      "f32_sha256": "0754705dd4912ee71d140199748e39366c780cb1ee0d7f83ee4a811d7009d943",
+      "f32_sha256": "fbe8d47b9b36d3831a545c1202bfde0cbc2fa12cfbe7d586e7428e9a1f81a545",
       "rgba8_sha256": "37d73498ed162e762ad727491cf4e4c71b71ebf1082e6a18c74c100f97f94642",
       "probes": {
         "0": [
@@ -1037,7 +1079,9 @@
           "3e50d0d1"
         ]
       },
-      "alpha_expectation": "inputTex alpha retained exactly"
+      "alpha_expectation": "inputTex alpha retained exactly",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tetraCosine:tetraCosine",
@@ -1082,7 +1126,7 @@
         "height": 7,
         "top_down": true
       },
-      "f32_sha256": "b8e795e4f93a59e0bc297f86b627f222196c82e3510249ae45815d4c1e518400",
+      "f32_sha256": "56ea9dc5efa1d68b26fabd685d8cebd27e1dc1f50f2af47d2ed106f6d1813251",
       "rgba8_sha256": "8d69403bfa852d5539953cee28bec937ba8e8ec7f76ab34eaae4ceebc4232550",
       "probes": {
         "0": [
@@ -1092,9 +1136,9 @@
           "3f7afafb"
         ],
         "31": [
-          "3f08f3cc",
-          "3e6564ed",
-          "3e8295a7",
+          "3f08f3ce",
+          "3e6564e2",
+          "3e8295aa",
           "3f1e9e9f"
         ],
         "62": [
@@ -1104,7 +1148,9 @@
           "3ea8a8a9"
         ]
       },
-      "alpha_expectation": "inputTex alpha retained exactly"
+      "alpha_expectation": "inputTex alpha retained exactly",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tile:tile",
@@ -1161,7 +1207,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces output alpha to 1"
+      "alpha_expectation": "forces output alpha to 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tile:tile",
@@ -1218,7 +1266,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces output alpha to 1"
+      "alpha_expectation": "forces output alpha to 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tile:tile",
@@ -1275,7 +1325,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces output alpha to 1"
+      "alpha_expectation": "forces output alpha to 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tile:tile",
@@ -1332,7 +1384,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces output alpha to 1"
+      "alpha_expectation": "forces output alpha to 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "filter/tile:tile",
@@ -1389,7 +1443,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces output alpha to 1"
+      "alpha_expectation": "forces output alpha to 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1441,7 +1497,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1493,7 +1551,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1545,7 +1605,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1597,7 +1659,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1649,7 +1713,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1701,7 +1767,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1753,7 +1821,9 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     },
     {
       "key": "synth/osc2d:osc2d",
@@ -1805,7 +1875,21 @@
           "3f800000"
         ]
       },
-      "alpha_expectation": "forces grayscale alpha 1"
+      "alpha_expectation": "forces grayscale alpha 1",
+      "authority_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+      "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8"
     }
-  ]
+  ],
+  "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8",
+  "authority": {
+    "ledgerEntries": 784,
+    "packageSha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
+    "packageLockSha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
+    "sourceLockSha256": "ac6b377c57074ce4c032a9f51a789f49122fad5ecdc224e2df85e625ced4d9ae",
+    "behavioralLockSha256": "05e364dd135dddda7ff4205d2eb83521073b5bcde022295971441e81b3e2de44",
+    "behavioralFileCount": 95,
+    "upstreamRevision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
+    "upstreamSourceDigest": "fd2de54727edd1ef93b033cb118a62207a821dd4ee3d37e74620f6b32994f566",
+    "method": "Original native fixture inputs were exported without native render outputs. Unmodified authenticated CPU factories rendered each input twice. Historical binder cases retain their original source and captures."
+  }
 }

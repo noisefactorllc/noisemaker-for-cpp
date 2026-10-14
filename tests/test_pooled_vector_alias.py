@@ -33,7 +33,7 @@ from tests.gate import full_run_only
 
 SLICE_CPP = REPOSITORY / "src/typed_generated/typed_slice.cpp"
 PARALLAX_ALIAS = "[[maybe_unused]] glsl::Vec2& prevUV = rayUV;"
-CURRENT_ALIAS_COUNT = 34
+CURRENT_ALIAS_COUNT = 31
 # One line per emitted alias: `[[maybe_unused]] glsl::VecN& name = source;`
 ALIAS_DECLARATION = re.compile(
     r"\[\[maybe_unused\]\] glsl::Vec[234]& (\w+) = ([A-Za-z_]\w*);")
@@ -69,10 +69,15 @@ class CommittedEmissionTests(unittest.TestCase):
 
     def test_alias_site_census_is_exact(self) -> None:
         sites = _alias_sites(_COMMITTED_SLICE)
-        # Six authenticated copies replace the old 36 aliases: Corrupt's
-        # sampleUv, Grade LUT's graded, Reverb's current/accum, FXAA's
-        # result_texel and Parallax's prevUV. Other sites are unchanged.
+        # Four new and two existing Fractal3D z declarations copy pos.
+        # The remaining 31 sites retain their pooled alias semantics.
         self.assertEqual(CURRENT_ALIAS_COUNT, len(sites))
+        self.assertIn(("borderNearestPoint", "nearestPoint"), sites)
+        self.assertIn(("p", "st"), sites)
+        self.assertNotIn(("color", "orig"), sites)
+        self.assertNotIn(("z", "pos"), sites)
+        self.assertEqual(6, _COMMITTED_SLICE.count(
+            "[[maybe_unused]] glsl::Vec3 z = pos;"))
         # Every alias binds a bare identifier, never a state field or a call.
         for name, source in sites:
             self.assertNotIn(".", source)

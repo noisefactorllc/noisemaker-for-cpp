@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import unittest
+from unittest import mock
 from tests import corpus_census
 
 from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
@@ -50,20 +51,33 @@ class OsdGeneratorEmitterTests(unittest.TestCase):
         rendered = emit_typed_cpp.render_typed_cpp(
             program, KEY, source_hash, osd_frontend_profile=PROFILE)
         self.assertIn("std::array<std::int32_t, 80>", rendered)
-        self.assertIn("glsl::detail::js_shift_right", rendered)
         self.assertIn("glsl::detail::js_bitwise_and", rendered)
-        self.assertIn("double state_glsl_74 =", rendered)
-        self.assertIn("static_cast<double>(std::uint32_t(v_in) * std::uint32_t(747796405))", rendered)
-        self.assertIn("glsl::detail::js_to_int32(static_cast<double>(hash2", rendered)
-        self.assertIn("glsl::detail::js_to_int32(static_cast<double>(digit_hash", rendered)
+        self.assertIn("const std::uint32_t state_glsl_74 =", rendered)
+        self.assertIn("glsl::detail::glsl_uint_cast(glyph_idx)", rendered)
+        self.assertIn("(digit_hash % std::uint32_t(10))", rendered)
         self.assertIn(" ^ ", rendered)
         self.assertIn("texture_size", rendered)
         self.assertIn("texel_fetch", rendered)
 
-    def test_osd_pcg_keeps_frozen_js_signed_right_shift_semantics(self):
+    def test_osd_pcg_uses_current_unsigned_wrapping_and_logical_shifts(self):
         source_hash, program = _program()
         rendered = emit_typed_cpp.render_typed_cpp(
             program, KEY, source_hash, osd_frontend_profile=PROFILE)
+        self.assertIn(
+            "const std::uint32_t state_glsl_74 = v_in * "
+            "std::uint32_t(747796405) + std::uint32_t(2891336453);",
+            rendered)
+        self.assertIn(
+            "((state_glsl_74 >> ((state_glsl_74 >> 28U) + 4U)) ^ "
+            "state_glsl_74) * std::uint32_t(277803737)", rendered)
+        self.assertIn("return (word >> 22U) ^ word;", rendered)
+        self.assertNotIn("glsl::detail::js_shift_right(state_glsl_74", rendered)
+
+    def test_osd_pcg_keeps_frozen_js_signed_right_shift_semantics(self):
+        source_hash, program = _program()
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False):
+            rendered = emit_typed_cpp.render_typed_cpp(
+                program, KEY, source_hash, osd_frontend_profile=PROFILE)
         self.assertIn(
             "glsl::detail::js_shift_right(state_glsl_74, std::uint32_t(28))",
             rendered)
@@ -87,11 +101,20 @@ class OsdGeneratorEmitterTests(unittest.TestCase):
         self.assertIn(
             "double within_glyph_x = (lx - (glyph_idx * cell_stride));",
             rendered)
+        self.assertIn(
+            "double gx = std::trunc((static_cast<double>(localX) / "
+            "static_cast<double>(iScale)));",
+            rendered)
+        self.assertIn(
+            "double gy = std::trunc((static_cast<double>(localY) / "
+            "static_cast<double>(iScale)));",
+            rendered)
 
     def test_osd_sample_glyph_preserves_frozen_js_number_index_boundary(self):
         source_hash, program = _program()
-        rendered = emit_typed_cpp.render_typed_cpp(
-            program, KEY, source_hash, osd_frontend_profile=PROFILE)
+        with mock.patch.object(emit_typed_cpp, "OSD_GLYPH_INDEX_TRUNCATES", False):
+            rendered = emit_typed_cpp.render_typed_cpp(
+                program, KEY, source_hash, osd_frontend_profile=PROFILE)
         self.assertIn(
             "double sample_glyph([[maybe_unused]] const State& state, "
             "[[maybe_unused]] const glsl::PixelContext& context, "
@@ -105,6 +128,10 @@ class OsdGeneratorEmitterTests(unittest.TestCase):
         self.assertIn(
             "double gy = (static_cast<double>(localY) / "
             "static_cast<double>(iScale));",
+            rendered)
+        self.assertIn(
+            "double glyph_idx = (static_cast<double>(lx) / "
+            "static_cast<double>(cell_stride));",
             rendered)
         self.assertIn(
             "glsl::detail::js_array_int32_read_for_bitwise(",

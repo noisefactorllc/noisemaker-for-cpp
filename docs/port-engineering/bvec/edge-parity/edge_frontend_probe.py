@@ -31,7 +31,7 @@ from tools.glslcpp.frontend.typed_ir import (  # noqa: E402
 )
 
 
-REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 KEY = "filter/edge:edge"
 SOURCE = (ROOT / "tools/glslcpp/corpus" / REVISION
           / "sources/filter/edge/edge.glsl")
@@ -79,9 +79,9 @@ EXPECTED_CURRENT_PROFILE_FRONTIER = {
             "self-splat as three ordered lane stores"),
         "validator": "pass",
         "emitter": "pass",
-        "rendered_cpp_bytes": 14774,
+        "rendered_cpp_bytes": 14819,
         "rendered_cpp_sha256": (
-            "8855be067925a5eafad622f8bb6541be2e58671adb78a740c0c3275838a0ddab"),
+            "1485c72f06f691e06515a337ed3d534695a8da2f4590043e3d6bd65cd7dcffba"),
     },
 }
 

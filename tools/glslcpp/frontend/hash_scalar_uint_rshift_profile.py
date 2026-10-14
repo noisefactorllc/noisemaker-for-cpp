@@ -176,6 +176,16 @@ _PROFILES = {
 }
 
 
+_FLOW3D_DYNAMIC_PROFILE = {
+    **_PROFILES[FLOW3D_AGENT_KEY],
+    "norm_bytes": 7343,
+    "norm_sha256": "ae17b10b719181a4d613ebcb0b94b433f6fb9bbf834d3e48af88f58e93f327ac",
+    "functions_sha256": "c86c927f2fb8bf59b6c792a46c515059f8c0b59e4b8bb8bfc673c2e775e02b40",
+    "whole_sha256": "4c4b20021fac2c8676319378ec9bbcda8b134e909341fb674b3de21a254162cf",
+    "interface_sha256": "fd22dc46e80d2bc1fc46fd94322484a52668d588ff0271a6f531c8e2e3632142",
+}
+
+
 def _sha(value: object) -> str:
     return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
 
@@ -217,7 +227,12 @@ def authenticate_hash_scalar_uint_rshift(
         raise ValueError(f"{PROFILE}: exact profile carrier required")
     if program.key not in HASH_SCALAR_UINT_RSHIFT_KEYS:
         raise ValueError(f"{PROFILE}: program key {program.key} not in {HASH_SCALAR_UINT_RSHIFT_KEYS}")
-    expected = _PROFILES[program.key]
+    expected = (_FLOW3D_DYNAMIC_PROFILE
+                if program.key == FLOW3D_AGENT_KEY
+                and tuple((item.name, item.kind, item.canonical_value)
+                          for item in program.preprocessor_defines)
+                == (("BEHAVIOR", "str", "int"),)
+                else _PROFILES[program.key])
     if source_hash != expected["raw_sha256"]:
         raise ValueError(f"{PROFILE}: {program.key} caller source hash mismatch")
 

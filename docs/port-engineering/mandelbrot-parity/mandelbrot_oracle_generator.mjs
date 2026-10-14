@@ -14,38 +14,37 @@ const outputPath = path.join(here, 'mandelbrot-oracles.json')
 const reportPath = path.join(here, 'mandelbrot-oracle-report.md')
 const includeGeneratorPath = path.join(cppRoot, 'tools/glslcpp/generate_mandelbrot_native_oracle_include.py')
 const programKey = 'synth/mandelbrot:mandelbrot'
-// This package reproduces the immutable historical source capture.
-const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
-const corpusRevision = HISTORICAL_CORPUS_REVISION
+const corpusRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const sourceRelative = `tools/glslcpp/corpus/${corpusRevision}/sources/synth/mandelbrot/mandelbrot.glsl`
-const sourceSha256 = '0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615'
+const sourceSha256 = '6e6f740356f7ced1cbd40b3a991dd0ef654e39ecaeec8c52e091a08f68e3b3bd'
 const factoryName = 'canonicalFactory260'
-const factoryTextSha256 = 'c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951'
-const upstreamRevision = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const factoryTextSha256 = '5234eec4621ecb138e12bbe7d0753a776afe9b57903cd721b3ff8bd53b3f6c49'
+const upstreamRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const expectedClosure = Object.freeze([
-  ['src/csl/glsl-kernel.js','a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  ['src/csl/glsl-runtime.js','a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
-  ['src/csl/runtime.js','a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee'],
-  ['src/effects/adapters/bit-effects.js','5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7'],
-  ['src/effects/adapters/crt.js','c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],
-  ['src/effects/adapters/f32-color.js','b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],
-  ['src/effects/adapters/fractal.js','0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],
-  ['src/effects/adapters/index.js','dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
-  ['src/effects/adapters/julia.js','0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],
-  ['src/effects/adapters/median.js','e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],
-  ['src/effects/adapters/palette.js','8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],
-  ['src/effects/adapters/remap.js','91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
-  ['src/effects/adapters/snow.js','202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],
-  ['src/effects/catalog.js','d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  ['src/effects/definition.js','fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],
-  ['src/effects/generated/canonical-adapter-data.js','ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
-  ['src/effects/generated/canonical-kernels.js','f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
-  ['src/effects/generated/kernels.js','b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
-  ['src/effects/generated/upstream-snapshot.js','6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
-  ['src/effects/registry.js','8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
-  ['src/runtime/pass-runner.js','fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
-  ['src/runtime/sampler.js','1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
-  ['src/runtime/surface.js','0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
+  ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  ['src/csl/runtime.js', 'a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee'],
+  ['src/effects/adapters/bit-effects.js', '5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7'],
+  ['src/effects/adapters/crt.js', 'c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],
+  ['src/effects/adapters/f32-color.js', 'b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],
+  ['src/effects/adapters/fractal.js', '0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],
+  ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+  ['src/effects/adapters/julia.js', '0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],
+  ['src/effects/adapters/median.js', 'e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],
+  ['src/effects/adapters/palette.js', '8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],
+  ['src/effects/adapters/remap.js', '91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
+  ['src/effects/adapters/snow.js', '202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],
+  ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
+  ['src/effects/definition.js', '64d722d6bdeec753ff294c76f4b58c72a38c8182cc8d7bf65c2c113d07a96a6d'],
+  ['src/effects/generated/canonical-adapter-data.js', 'ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
+  ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  ['src/effects/generated/kernels.js', 'b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
+  ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  ['src/effects/registry.js', '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
+  ['src/runtime/automation.js', '982b3ea9b83e100aebfb9a9091be058516c41837a40d7731d629f896a4d48c92'],
+  ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
+  ['src/runtime/sampler.js', '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
+  ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 ])
 const bindingNames = ['resolution','tileOffset','fullResolution','time','poi','outputMode','iterations','centerHiX','centerHiY','centerLoX','centerLoY','zoomSpeed','zoomDepth','invert','stripeFreq','trapShape','lightAngle','rotation']
 const bindingAbi = { resolution:'Vec2', tileOffset:'Vec2', fullResolution:'Vec2', time:'number', poi:'int32', outputMode:'int32', iterations:'int32', centerHiX:'number', centerHiY:'number', centerLoX:'number', centerLoY:'number', zoomSpeed:'number', zoomDepth:'number', invert:'number', stripeFreq:'number', trapShape:'int32', lightAngle:'number', rotation:'number' }
@@ -145,7 +144,7 @@ const mutationDefs = [
   {name:'out-getPOI-cY',group:'out-materialization',mechanism:'mutate getPOI cY owner materialization at the main call site',anchor:'[_local_cX_df_1, cY_df] = getPOI.__out__',replacement:'[_local_cX_df_1, cY_df] = [_local_cX_df_1, new $runtime.PooledFloat32Array([0, 0])]'},
   {name:'out-transform-re',group:'out-materialization',mechanism:'mutate transformCoords re owner materialization',anchor:'[re_df, im_df] = transformCoords_df64.__out__',replacement:'[re_df, im_df] = [new $runtime.PooledFloat32Array([0, 0]), im_df]',expectedCount:2},
   {name:'out-transform-im',group:'out-materialization',mechanism:'mutate transformCoords im owner materialization',anchor:'[re_df, im_df] = transformCoords_df64.__out__',replacement:'[re_df, im_df] = [re_df, new $runtime.PooledFloat32Array([0, 0])]',expectedCount:2},
-  {name:'max-iter-constant',group:'iteration-loop',mechanism:'mutate MAX_ITER constant',anchor:'var MAX_ITER = 500;',replacement:'var MAX_ITER = 1;'},
+  {name:'max-iter-constant',group:'iteration-loop',mechanism:'mutate MAX_ITER constant',anchor:'var MAX_ITER = 2048;',replacement:'var MAX_ITER = 1;'},
   {name:'runtime-loop-bound',group:'iteration-loop',mechanism:'mutate runtime maxIter loop break bound',anchor:'n >= maxIter)',replacement:'n >= (maxIter - 1))'},
   {name:'log-magnitude',group:'log-sites',mechanism:'mutate first log magnitude site',anchor:'var log_zn = log(mag2) * 0.5;',replacement:'var log_zn = log(mag2) * 0.25;'},
   {name:'log-normalization',group:'log-sites',mechanism:'mutate second nested log normalization site',anchor:'(log(log_zn / LOG2)) / LOG2;',replacement:'(log(log_zn / LOG2)) / (LOG2 * 2);'},

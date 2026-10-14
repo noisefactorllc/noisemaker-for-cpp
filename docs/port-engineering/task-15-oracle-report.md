@@ -10,8 +10,8 @@ effective loop depth four.
 
 ## Provenance
 
-- CPU corpus revision: `a024dc3a960cc44af454abc7aebce50456c194e6`
-- Node: `v24.7.0`
+- CPU corpus revision: `a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15`
+- Node: `v26.0.0`
 - Canonical implementation: `src/effects/generated/canonical-kernels.js`
 - Canonical binder: `src/csl/glsl-kernel.js:bindCanonicalKernel`
 - Reproducible generator:
@@ -28,7 +28,7 @@ and [8,6].
 The oracle JSON's `fixture.contract` is normative: it gives the sampler-route
 ordering, the 1-based route tag, each top-down 11x9 RGBA formula, storage lane
 indices, Float32Array conversion points, fragment inputs, output lane layout,
-and double-render check.  Run the generator with `--check` to rebuild all 38
+and double-render check. Run the generator with `--cpu-root ROOT --ledger FILE --check` to rebuild all 38
 variants and require byte-identical serialized oracle output; use `--write` to
 freeze a verified rebuild.
 

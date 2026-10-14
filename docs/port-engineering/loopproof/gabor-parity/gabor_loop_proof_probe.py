@@ -29,7 +29,7 @@ from tools.glslcpp.frontend.semantic import analyze_program  # noqa: E402
 
 
 PROGRAM_KEY = "synth/gabor:gabor"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+CORPUS_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 SOURCE_SHA256 = "91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5"
 
 

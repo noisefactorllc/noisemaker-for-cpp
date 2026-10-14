@@ -22,13 +22,13 @@ byte-identical and finite.
 | Field | Frozen value |
 | --- | --- |
 | Key | `filter/crt:crt` |
-| Corpus revision | `a024dc3a960cc44af454abc7aebce50456c194e6` |
-| Raw source | 19,560 bytes; SHA-256 `62d915eda8e20a458b1df91198cee3e85f0f0b9676cd4d0777264e9cd8b99b7c` |
-| Normalized source | SHA-256 `acd1c3f05c6d02052592aeb46bbbc49d23e18f4e83530498687903e00b4623fe` |
-| Canonical factory | `canonicalFactory44`; `toString()` SHA-256 `6d65f4984f8749ca7cdfec976e082662d3a7ad614aabb15ce8a168fca7d8e303` |
+| Corpus revision | `a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15` |
+| Raw source | 19,644 bytes; SHA-256 `dfbba2918a68889c5b82ef619bf472387acec116b4d72bf76d62f35a60c9aa7f` |
+| Normalized source | SHA-256 `b61e7111d522b13682b351f592d1873b30c1644f5964e34af689117ff8408902` |
+| Canonical factory | `canonicalFactory42`; `toString()` SHA-256 `2420fa0eecb9e48c1192c1f029ab7c547888a9f9ca68cf26e145dd6762695cb6` |
 | Public adapter | `crtFactory`; file SHA-256 `c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc`; `toString()` SHA-256 `240972f95f908452bf87fc681e360553759f374fa81613adc415a5a7c5eb4bf7` |
-| Canonical generated runtime | SHA-256 `e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56` |
-| Typed fingerprints | function tuple `f6ab50374732b058fa2a5cd33e87bbe35654682b7125593d7451871194b2ba72`; whole program `f70fc78da6c3579fa3237fbbfa3712229b88f0a93b8d556181f9bad2ed74b6fc` |
+| Canonical generated runtime | SHA-256 `80b2e701426a5003d9ef44dce09de1f601f4c8cd1e4bff1f0c4d2b607e95e91c` |
+| Typed fingerprints | function tuple `aba032705467be0f9e5f98248b0801549b9aad498ae1dd2910d0a6e6ab9f0fc1`; whole program `a413b66710aeef5c8911da18d1de09cd4f7519060ca104c16b321fbbaa3e1248` |
 | Typed shape | 35 source functions, zero loops, acyclic call graph |
 | Required compatibility | `crt-metal-sine-v1` (provisional name), public adapter semantics |
 
@@ -54,15 +54,15 @@ input alpha.
 | --- | --- | --- |
 | alpha-zero-exact-copy-tiled | `daa97cd0ed2558e4b8535a8eb0443bb9aecd825b805ae6ba16a69c632ed72687` | `5c5880004ebaa8f69183c50af07a663bf27b04d63dae0bff24d6fc1d015a37d3` |
 | alpha-negative-clamps-zero-copy | `5036ac34df07a6e89f8ae9cd5ee4fa3250a1962bdbda6bc4e29dc4ce512fb8a8` | `6b56cc6c2f780b54a655f04ba7deae8e61e8330ca84b5d5056e8c352dd16885c` |
-| default-landscape-untiled | `3134189c0654121a560abf3f8f102873b3395937ae244eaf1d6de7d03e6c8192` | `c9a7375db6ae12c5dc1f0b2fa49669892d405c55ab587cc0a054d75d9d66eeb9` |
-| alpha-above-one-clamps-and-preserves-input-alpha | `e6d5a0788f2a23100ee9968186ac1f1a05175ecf6972e8503bd92cd8130a4bfd` | `b971437eec882ffd958b151216992caad58a8a681211f161ec60480820d52fee` |
-| landscape-tiled-render-scale-two | `7e9a4e738ad67051674ea5d8e7e2333585e943bbe45fcdbdf3c9e59635c359ec` | `2ed1841d5be9df1f576fecf81bab403ad848fb96d4e33055525a1520e905d75c` |
-| portrait-tiled-fractional-render-scale | `cdc080912dc354a6052447427814040e552d7c38edf4e1c499d8f7c80bd196be` | `ecfb38a778ba9e40d9bacfb5a8f1f62a810cd929d14b83c2bf5d4abc6bc0d079` |
-| speed-zero-nonzero-time | `f83304619eda688e29c3ae34b4c913535919c3505c2f59f5100b587ddf52ddd8` | `16727fe42c77a453e47d0dcfcc14b079b39a84d06683ac8d0f689749611ec70e` |
-| time-zero-positive-speed | `bc5ed1803bb52ee4d075d4c9ff6e5cc62ca2ba6f60f7d5aed93d1c237ad81b98` | `59a3fef349d5457d514174dba0e328bcd1723f97d0d8fdf82649ed217265f5d0` |
-| full-resolution-zero-fallback | `19b91bedac3685b2c368a1c8da9eb89ae6e57e8deeee513b4151cf12dad3896f` | `fc49c1f7a2ea1c69db968ceabfaa4293ba8b193e13a5634b51ef763d0fea50d6` |
-| square-large-time-max-metadata | `5169bfe5072efd935eafd52f13b413c7b4f5f9834e9991f5a6207a877a6bfc48` | `3a0f86f1aac14e290bbc2d22675f4af5bfa1a08fc68cbfc59c92331f5daf59a5` |
-| render-scale-below-one-clamps | `d963390a996552ce28b3f8f5c7b7971072a60566ebad0bf29beb329fa4a24de2` | `65e933fe048522db9d4b8eae08057c6ca56f3d4b53510181fb2e288f25546716` |
+| default-landscape-untiled | `8d79ffbb89906ab3ac639254ad939a80b700609c11b3052da69d7d1b308a1ead` | `b119d07a2c71836c7ae0ae8fb26deb0942ba5254c50b8f10e1a57983e4abc80d` |
+| alpha-above-one-clamps-and-preserves-input-alpha | `db6a4c4b1828da7def9818c90a04156914cc1fb57dd4fd6e8fc471e625a67203` | `b971437eec882ffd958b151216992caad58a8a681211f161ec60480820d52fee` |
+| landscape-tiled-render-scale-two | `d93238b6ab384881dc5bfb5d6e51e33db46b6f8430068d62bd30d5cd7e7b10af` | `8b01630d856e5de5c694addc6bb8f3aecdfe561d18d777cbb773b99e983d113c` |
+| portrait-tiled-fractional-render-scale | `df4de8296c90676f60025d0fff1869d001d5835343fba8e59f0ac2edc49fdbf9` | `8c55dd1ea14b3cf06413cc902253ee1d7c674ff33776ca2c937c9992b22f56a9` |
+| speed-zero-nonzero-time | `50e355ebf7f615c611b33ba28a0ea4ba39ea15ef7f1abcfc7e1bc57e43d3bd84` | `7fc20e14302c8dd5b1abd2561fc5f0749e1e7b014b5feb583f5cc734bc6e2e19` |
+| time-zero-positive-speed | `e8c211553f7fb1a7398cc4ce4f1dd9c1ff5c14b02fe24c4e097f9de8d418fa16` | `9c9a2e5f1c63dde9de72bebded827b52339bad6d06fcb035da5c7f2286aad86d` |
+| full-resolution-zero-fallback | `70e7b389149a2d86cb8771d9c2cbf6324a3d4132433946157674b82a7703f69a` | `6503af699c4bbefc4dda800dfdb455b397b05165486e6866de4ebc0f474b5377` |
+| square-large-time-max-metadata | `b358b073881dd9e560052bf8204bb9b4fb2baf36d6914a67560252f4bf8682d5` | `3123832208dc84924af2cae7b1f93e7cf959f72f4df0087f909f7697daca57cd` |
+| render-scale-below-one-clamps | `4af92d87e04669063f3cdad9601ad08a57b5d64e9aa0bd4c5da4270ea0ee0381` | `442879a307d31f079e3279360b68cf9fb95fd949f47e6ad266caf939386d3ed3` |
 
 Both alpha-clamped-zero cases are exact F32 copies. Every normal case changes
 all pixels' RGB and preserves every input alpha bit, including out-of-range
@@ -76,27 +76,27 @@ the decisive compatibility proof.
 
 | Mutation | F32-changing cases / 11 | RGBA8-changing cases / 11 | Maximum changed F32 lanes in one case |
 | --- | ---: | ---: | ---: |
-| public-metal-sine-disabled | 9 | 9 | 351 |
-| uniform-time-local-alias-offset | 8 | 8 | 346 |
-| uniform-speed-local-alias-offset | 9 | 9 | 359 |
+| public-metal-sine-disabled | 9 | 9 | 350 |
+| uniform-time-local-alias-offset | 8 | 8 | 334 |
+| uniform-speed-local-alias-offset | 9 | 9 | 355 |
 | output-alpha-uses-uniform-not-shadowed-input | 9 | 9 | 117 |
 | uniform-alpha-clamp-disabled | 2 | 2 | 351 |
-| render-scale-clamp-disabled | 1 | 1 | 328 |
+| render-scale-clamp-disabled | 1 | 1 | 322 |
 | full-resolution-fallback-disabled | 1 | 1 | 320 |
-| shape-frequency-axes-unswapped | 2 | 2 | 213 |
-| scanline-parity-forced-first-value | 9 | 9 | 233 |
-| red-tile-local-subtraction-disabled | 6 | 6 | 319 |
-| blue-tile-local-subtraction-disabled | 6 | 6 | 340 |
-| red-channel-assembly-uses-blue | 9 | 9 | 323 |
-| restore-hue-disabled | 9 | 9 | 341 |
-| saturation-boost-disabled | 9 | 9 | 344 |
-| vignette-alpha-forced-zero | 9 | 9 | 337 |
-| contrast-gain-1-25-to-1 | 9 | 9 | 363 |
-| local-mean-eager-f32-materialization | 9 | **0** | 37 |
-| seed-base-disabled | 9 | 9 | 345 |
+| shape-frequency-axes-unswapped | 2 | 2 | 196 |
+| scanline-parity-forced-first-value | 9 | 9 | 223 |
+| red-tile-local-subtraction-disabled | 6 | 6 | 317 |
+| blue-tile-local-subtraction-disabled | 6 | 6 | 328 |
+| red-channel-assembly-uses-blue | 9 | 9 | 304 |
+| restore-hue-disabled | 9 | 9 | 326 |
+| saturation-boost-disabled | 9 | 9 | 320 |
+| vignette-alpha-forced-zero | 8 | 8 | 297 |
+| contrast-gain-1-25-to-1 | 9 | 9 | 346 |
+| effect-color-8bit-quantization-disabled | 9 | 7 | 337 |
+| seed-base-disabled | 9 | 9 | 338 |
 
-The eager-F32 mutation is an explicit full-precision control: it changes F32
-output in every normal case but no RGBA8 byte. The two exact-copy cases remain
+Disabling the source's effect-color 8-bit quantization changes F32 output in
+all nine normal cases and RGBA8 output in seven. The two exact-copy cases remain
 identity controls for all mutations that occur after the early return. The
 renderScale and full-resolution mutations each diverge only in their dedicated
 branch case and match all cases where their altered predicate/value is
@@ -104,10 +104,10 @@ equivalent.
 
 ## Reproduction
 
-Run from any directory:
+Run from the repository root with an authenticated CPU root and matching ledger:
 
 ```sh
-node docs/port-engineering/task-22-oracle-generator.mjs --check
+node docs/port-engineering/task-22-oracle-generator.mjs --cpu-root "$CPU_ROOT" --ledger "$CPU_LEDGER" --check
 ```
 
 `--check` revalidates pinned source, canonical runtime, canonical factory,

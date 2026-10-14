@@ -1,11 +1,10 @@
 """Exact admission for Gradient's cross-lane whole-vector assignment.
 
 The canonical JavaScript lowers ``rotatedCentered = mat2(...) * centered``
-to two stores.  ``rotatedCentered`` is the pooled-array alias created by the
-preceding declaration, so the second matrix lane reads ``centered[0]`` after
-the first store has overwritten it.  This profile deliberately admits one
-assignment by complete identity and dependency closure; it is not a generic
-vector-assignment rule.
+to two stores. The frozen authority aliases the preceding declaration, while
+CPU4307 copies it. The emitter selects the matching copy mode after this
+profile authenticates the declaration and assignment by complete identity
+and dependency closure.
 """
 
 from __future__ import annotations
@@ -51,6 +50,7 @@ class CrossLaneAssignmentProof:
     _candidate: TypedProgram
     host: TypedFunction
     statement: TypedStatement
+    alias_declaration: TypedExpression
     assignment: TypedExpression
     target: TypedExpression
     target_source: TypedExpression
@@ -187,7 +187,7 @@ def authenticate_cross_lane_assignment(
     if _sha(assignment) != _ASSIGNMENT_SHA256:
         raise _fail("whole-vector assignment identity mismatch")
     return CrossLaneAssignmentProof(
-        program, host, statement, assignment, target, alias.children[0],
+        program, host, statement, alias, assignment, target, alias.children[0],
         rhs_source, matrix, (0, 1), (0, 1))
 
 

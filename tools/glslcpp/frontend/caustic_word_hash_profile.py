@@ -73,6 +73,18 @@ _XOR_ANCESTOR_SPAN = ("194:5-198:7",)
 _PROFILE_SHA256 = "f97e506b0bd1a5b009e56809e33cfb1015e541a658dd4eff72388419f6244c80"
 _FROZEN_PROFILE_TUPLE_REPR = """('caustic-float-bits-scalar-word-hash-v1', 'classicNoisedeck/caustic:caustic', '161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d', (('NOISE_TYPE', 'int', '10'),), 'glsl-f32', '43a0063cf16ebea820084302df1d6c59594485b559267597ad30ac3cddc659a3', 'b0ffb30caee0d301f54d42892a6e70619fd4cf1e4c19d5fc3f399b3bfc598624', '094c31b573c08cfdf9e3c76e766c4b4ca96a2df12d6a1629f18b141624464b50', 94, (0, 0, 0, 0, 0, True), (('floatBitsToUint', (13, 'e0', 0), '192:21-192:46', 'uint', 'e6b86baf243b38741b4870acfe990ce3b353f18948d38773cc853ab11ce3b6a4', 'declaration', ('float',), ('4c2cc94f5d6f93142124122d1f36a2aa7560bdc88512eb7f27370783eb78dbac',)), ('^', (14, 'e0', 0, 0), '195:10-195:46', 'uint', '0ec45e30c890d1177375332f93564f8d12d8bd47805393740503edd290617445', 'construct', ('uint', 'uint'), ('2562f15164ab5b9481bb798dc74b9994417976020d5e6e9183421ecead9479a1', '4d5400d40220fb6418ef8c6d27997a72862ff40174c4487d8bcdfba8deefacb8')), ('^', (14, 'e0', 0, 1), '196:10-196:46', 'uint', '7f98e820b388d74eb98c8296f798d778d63d6bdb8d67e68f9bfae73f74e56e4e', 'construct', ('uint', 'uint'), ('b5d7903129b6eb87c8dc28a936ac1d7449031b684a895995a33f608f061bdfc8', 'b30427f6ce552c15b34104bca4aa23b865ad0939898eb45d4ec5cdcb1545dfff')), ('^', (14, 'e0', 0, 2), '197:10-197:47', 'uint', '791b232712de5fe1a3babde2e00799603fbb523421973f9b20888f12e978b8ee', 'construct', ('uint', 'uint'), ('6d5b73a65a867110b99a54ab4fd21669eeffbbffe871830809a6cc374f9df688', '53bcacbea819782a268357731c1eb75d12b5019586f84dc7d33e163aef6ebcd6'))))"""
 
+
+# Exact current runtime tree. The default tuple above remains unchanged.
+_DYNAMIC_DEFINES = (("NOISE_TYPE", "str", "int"),)
+_DYNAMIC_NORMALIZED_BYTES = 14783
+_DYNAMIC_NORMALIZED_SHA256 = "d99a1b7d2aa67458f6ffa87e6f6521f8fe602fc08b9e28053ec8567c2cb879eb"
+_DYNAMIC_HOST_SPAN = "180:1-224:2"
+_DYNAMIC_FUNCTION_COUNT = 27
+_DYNAMIC_INGRESS_ANCESTOR_SPAN = ("208:5-208:47",)
+_DYNAMIC_XOR_ANCESTOR_SPAN = ("210:5-214:7",)
+_DYNAMIC_PROFILE_SHA256 = "378633c35bade1b134eefaae5497f64c60c6b3f26aa46f53c4d5176c481e67f5"
+_DYNAMIC_FROZEN_PROFILE_TUPLE_REPR = """('caustic-float-bits-scalar-word-hash-v1', 'classicNoisedeck/caustic:caustic', '161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d', (('NOISE_TYPE', 'str', 'int'),), 'glsl-f32', 'd8d32f6c2e3dbe45d18858abf262a256b6eeb46b04fa06bfd726a7cfd797839a', '0d087d5f016f8009ea7fbf1dc7f80a0d2763656b4e9fea80801ed660984f6fac', '12318d0f302f004fd3dfeac3062f3d2a2c03690275c2485d14f5c522110900aa', 120, (0, 0, 0, 0, 0, True), (('floatBitsToUint', (13, 'e0', 0), '208:21-208:46', 'uint', '76eb921a7e9a5477c2949d65d2c17eb5dc3eaab48015168f83a93c0054ceb08f', 'declaration', ('float',), ('173cd80f191c0d8d4a892a3ec9edca50bfa26d68befb861e6999eefaa2b0a893',)), ('^', (14, 'e0', 0, 0), '211:10-211:46', 'uint', 'e353c388481f3feb7caebad195a6777eb70946f5f7e2c65b4e67dff4c8409344', 'construct', ('uint', 'uint'), ('2b2dae07fb219e922c6b33cccc9c34fe23306c1804bd260e4862480c987d63cc', '5cc579da348ac02af52f5220601b725224e38a430ef4eb7d29cf24806593b9e1')), ('^', (14, 'e0', 0, 1), '212:10-212:46', 'uint', '9d78c3f72dafa6e9aebf1c7ff2671bea1351ff9adc8248e2cdaedc086c63a5fe', 'construct', ('uint', 'uint'), ('44b6b9133fb0f0280fcd107975a336163f2752cb3e94b6a93b163b9cafe04f48', '0d9ab4870cfc3be497a81bae1ee2f04c924ca4de97a07ec76b8a7cb8ea8cf521')), ('^', (14, 'e0', 0, 2), '213:10-213:47', 'uint', '170e029abdad3360d5f4bd1795cefdfeebd7cb1594c74172827fb68715fdf984', 'construct', ('uint', 'uint'), ('6d0582c8f8fb6430a384ca8d1b8fc3b42ab0d1b2348c4314143a64d4d9935eec', 'cd6902ba856fec8e875d7672cea0411fa43ea4553b96b1699bc2c4018b53c4e0'))))"""
+
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
     "fixed_array_in_parameter_proof", "fixed_affine_centers13_proof",
@@ -172,23 +184,56 @@ def authenticate_caustic_word_hash(
     """Authenticate Caustic and return only candidate-owned exact objects."""
     if profile != PROFILE:
         raise _fail("exact profile carrier required")
-    if _sha(_profile_tuple()) != _PROFILE_SHA256:
+    default_frozen = _profile_tuple()
+    if _sha(default_frozen) != _PROFILE_SHA256:
         raise _fail("internal frozen profile tuple mismatch")
+    defines = tuple((item.name, item.kind, item.canonical_value)
+                    for item in program.preprocessor_defines)
+    dynamic = defines == _DYNAMIC_DEFINES
+    if dynamic:
+        frozen = ast.literal_eval(_DYNAMIC_FROZEN_PROFILE_TUPLE_REPR)
+        if not isinstance(frozen, tuple) or _sha(frozen) != _DYNAMIC_PROFILE_SHA256:
+            raise _fail("internal frozen runtime profile tuple mismatch")
+        normalized_bytes = _DYNAMIC_NORMALIZED_BYTES
+        normalized_sha256 = _DYNAMIC_NORMALIZED_SHA256
+        functions_sha256, whole_sha256, interface_sha256 = frozen[5:8]
+        host_id = frozen[8]
+        nodes = frozen[10]
+        host_span = _DYNAMIC_HOST_SPAN
+        function_count = _DYNAMIC_FUNCTION_COUNT
+        ingress_ancestor_span = _DYNAMIC_INGRESS_ANCESTOR_SPAN
+        xor_ancestor_span = _DYNAMIC_XOR_ANCESTOR_SPAN
+        expected_uniforms = ("NOISE_TYPE", "time", "seed", "wrap", "resolution",
+                             "tileOffset", "fullResolution", "noiseScale", "speed",
+                             "hueRotation", "hueRange", "intensity")
+    else:
+        frozen = default_frozen
+        normalized_bytes = _NORMALIZED_BYTES
+        normalized_sha256 = _NORMALIZED_SHA256
+        functions_sha256, whole_sha256, interface_sha256 = (
+            _FUNCTIONS_SHA256, _WHOLE_SHA256, _INTERFACE_SHA256)
+        host_id = _HOST_ID
+        nodes = _NODES
+        host_span = _HOST_SPAN
+        function_count = 22
+        ingress_ancestor_span = _INGRESS_ANCESTOR_SPAN
+        xor_ancestor_span = _XOR_ANCESTOR_SPAN
+        expected_uniforms = ("time", "seed", "wrap", "resolution", "tileOffset",
+                             "fullResolution", "noiseScale", "speed", "hueRotation",
+                             "hueRange", "intensity")
     if program.key != CAUSTIC_KEY or source_hash != _RAW_SHA256:
         raise _fail("selected key and exact caller source hash required")
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
-    defines = tuple((item.name, item.kind, item.canonical_value)
-                    for item in program.preprocessor_defines)
     if (len(raw) != _RAW_BYTES or hashlib.sha256(raw).hexdigest() != _RAW_SHA256
-            or len(normalized) != _NORMALIZED_BYTES
-            or hashlib.sha256(normalized).hexdigest() != _NORMALIZED_SHA256
-            or defines != _DEFINES
+            or len(normalized) != normalized_bytes
+            or hashlib.sha256(normalized).hexdigest() != normalized_sha256
+            or defines != frozen[3]
             or program.body_status != "analyzed"
-            or _sha(program.functions) != _FUNCTIONS_SHA256
-            or _whole(program) != _WHOLE_SHA256
-            or _interface(program) != _INTERFACE_SHA256):
+            or _sha(program.functions) != functions_sha256
+            or _whole(program) != whole_sha256
+            or _interface(program) != interface_sha256):
         raise _fail("source, define, function, whole-program, or interface mismatch")
 
     if any(getattr(program, field, None) is not None
@@ -201,25 +246,23 @@ def authenticate_caustic_word_hash(
     if (proof is None or
             (proof.loop_count, proof.unproved_loop_count,
              proof.max_effective_depth, proof.max_lexical_product,
-             proof.entrypoint_charge, proof.call_graph_acyclic) != _LOOP_PROOF):
+             proof.entrypoint_charge, proof.call_graph_acyclic) != frozen[9]):
         raise _fail("loop or call graph profile mismatch")
 
     if ((program.resources.uniforms, program.resources.samplers,
          program.resources.outputs, program.resources.uses_texture,
          program.resources.uses_derivatives)
-            != (("time", "seed", "wrap", "resolution", "tileOffset",
-                 "fullResolution", "noiseScale", "speed", "hueRotation",
-                 "hueRange", "intensity"),
+            != (expected_uniforms,
                 (), ("fragColor",), False, False)):
         raise _fail("resource or binding signature mismatch")
 
-    if len(program.functions) != 22:
+    if len(program.functions) != function_count:
         raise _fail("function cardinality mismatch")
-    host = next((item for item in program.functions if item.id == _HOST_ID), None)
+    host = next((item for item in program.functions if item.id == host_id), None)
     if (host is None
             or (host.name, host.return_type.display(), len(host.parameters),
                 len(host.body), _span(host))
-            != (_HOST_NAME, "vec3", 5, 19, _HOST_SPAN)):
+            != (_HOST_NAME, "vec3", 5, 19, host_span)):
         raise _fail("host function identity mismatch")
 
     # Census the WHOLE program, so an additional ingress or scalar word XOR
@@ -230,13 +273,13 @@ def authenticate_caustic_word_hash(
         for index, statement in enumerate(function.body):
             for item, parent, path, chain in _walk_statement(statement, (index,)):
                 if _is_closure_node(item):
-                    if function.id != _HOST_ID:
+                    if function.id != host_id:
                         raise _fail("closure site outside the host function")
                     kind = ("floatBitsToUint" if item.kind == "builtin"
                             else "^")
                     located.append((kind, path, item, parent, chain))
 
-    if len(located) != len(_NODES):
+    if len(located) != len(nodes):
         raise _fail(f"closure site cardinality mismatch: {len(located)}")
 
     actual = tuple(
@@ -247,7 +290,7 @@ def authenticate_caustic_word_hash(
                for child in item.children),
          tuple(_sha(child) for child in item.children))
         for kind, path, item, parent, _ in located)
-    if actual != _NODES:
+    if actual != nodes:
         raise _fail("closure node identity mismatch")
 
     ingress = tuple(item for kind, _, item, _, _ in located
@@ -274,8 +317,8 @@ def authenticate_caustic_word_hash(
              for chain in chains) != (_ANCESTOR_KINDS,) * 4:
         raise _fail("closure ancestry kind mismatch")
     spans = tuple(tuple(_span(item) for item in chain) for chain in chains)
-    if (spans[0] != _INGRESS_ANCESTOR_SPAN
-            or any(span != _XOR_ANCESTOR_SPAN for span in spans[1:])):
+    if (spans[0] != ingress_ancestor_span
+            or any(span != xor_ancestor_span for span in spans[1:])):
         raise _fail("closure ancestry span mismatch")
 
     result = CausticWordHashProof(host, ingress[0], word_xors, parents,

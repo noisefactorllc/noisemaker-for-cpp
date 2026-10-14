@@ -146,10 +146,8 @@ class GeneratedFactoryRouteTests(unittest.TestCase):
 
 
     def test_route_row_extras_counts_distinct_binding_projections(self) -> None:
-        # On the live compatibility document every multi-bound program's
-        # binding projections are distinct, so the distinct-projection count
-        # equals the per-binding count the table emitted before the dedupe
-        # rule existed.
+        # The current authority reuses identical binding projections. The
+        # generated table must count distinct routes rather than pass bindings.
         doc = self.compatibility
         mrt = set(corpus_census.mrt_keys())
         per_binding = sum(
@@ -157,7 +155,13 @@ class GeneratedFactoryRouteTests(unittest.TestCase):
             for row in doc["canonical_programs"]
             if row["program_key"] not in mrt and row.get("binding_outputs"))
         self.assertGreater(per_binding, 0)
-        self.assertEqual(corpus_census._route_row_extras(doc), per_binding)
+        extras = corpus_census._route_row_extras(doc)
+        self.assertLess(extras, per_binding)
+        table = re.search(r"std::array<FactoryRoute, (\d+)> kCanonicalRoutes",
+                          self.generated)
+        self.assertIsNotNone(table)
+        self.assertEqual(extras, int(table.group(1)) -
+                         corpus_census.single_output_typed_count())
 
         # Synthetic byte-identical bindings collapse: N identical bindings
         # contribute one row (zero extras), and each distinct projection

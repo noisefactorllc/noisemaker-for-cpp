@@ -407,6 +407,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
                 "program_key": "classicNoisedeck/kaleido:kaleido",
                 "defines": {"DIRECTION": 2, "KERNEL": 0,
                             "LOOP_OFFSET": 10, "METRIC": 0},
+                "runtime_define_profile": "runtime-defines-generic-v1",
                 "mutable_global_array_profile":
                     "mutable-global-nine-array-kaleido-v1",
                 "scalar_uint_xor_profile": PROFILE,
@@ -425,6 +426,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
             {
                 "program_key": "classicNoisedeck/shapes:shapes",
                 "defines": {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30},
+                "runtime_define_profile": "runtime-defines-generic-v1",
                 "linear_srgb_lane_index_profile":
                     "linear-srgb-shapes-lane-index-v1",
                 "scalar_uint_xor_profile": PROFILE,
@@ -456,6 +458,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
                 "defines": {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30},
                 "mutable_global_frame_profile":
                     "mutable-global-frame-shape-v1",
+                "runtime_define_profile": "runtime-defines-generic-v1",
                 "scalar_uint_xor_profile": PROFILE,
             },
         ], rows)

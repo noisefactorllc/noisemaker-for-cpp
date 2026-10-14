@@ -1,4 +1,4 @@
-"""CPU26d Corrupt regression for copied rather than aliased sample UVs."""
+"""Current-CPU Corrupt regression for copied rather than aliased sample UVs."""
 from __future__ import annotations
 
 import hashlib
@@ -100,10 +100,10 @@ class CorruptReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "3a8fe2538d58395696245eec7425b5491e3e6ca2135ea85240b7f7c3ee762e53",
-                "expected.json": "4dade199a535207d7d623f6351f719d0f020d9202a45c106c096cd46bca1f14e"}.items():
+                "expected.json": "db10622bce60fb5a264cc72f88e69a47e9da0b21b3330229867d62227c40163d"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "5b686a45b5c56329adf0c63cbcf572eb6f23fad1")
+        self.assertEqual(expected["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
         self.assertEqual(len(expected["source_hashes"]), 5)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({c["name"].split("-")[0] for c in cases},

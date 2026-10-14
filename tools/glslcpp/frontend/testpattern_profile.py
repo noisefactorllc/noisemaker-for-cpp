@@ -126,6 +126,7 @@ class FrontendProof(NamedTuple):
     local_arrays: tuple[str, ...]
     dynamic_indexes: tuple[IndexRecord, ...]
     digit_store_index: IndexRecord
+    digit_division: TypedExpression
     round_node: TypedExpression
     round_span: str
     loop_bounds: tuple[tuple[int, int], ...]
@@ -423,6 +424,21 @@ def _authenticate(program: TypedProgram, source_hash: str | None,
         {30: sample, 29: render, 22: bars}[lock.owner_id], lock)
         for lock in _DYNAMIC_INDEX_LOCKS)
     digit_store = _lock_index(render, _DIGIT_STORE_LOCK)
+    divisions = [value for statement in render.body
+                 for value in _walk_statement(statement)
+                 if value.kind == "assign" and value.operator == "/="]
+    if len(divisions) != 1:
+        raise _fail("renderNumber digit division census mismatch")
+    division = divisions[0]
+    if (_span(division) != "57:9-57:19"
+            or _sha(division) != "4ba8ee683abd8c7332e1410e6126940655afbd430ba2b1acd37defec2ba5b0ac"
+            or division.type.display() != "int"
+            or len(division.children) != 2
+            or division.children[0].kind != "id"
+            or division.children[0].symbol_id != 73
+            or division.children[1].kind != "literal"
+            or division.children[1].literal_value != 10):
+        raise _fail("renderNumber digit division identity mismatch")
     all_indexes = [value for function, _, value in _program_nodes(program)
                    if function is not None and value.kind == "index"]
     if len(all_indexes) != 4 or set(map(id, all_indexes)) != {
@@ -479,7 +495,8 @@ def _authenticate(program: TypedProgram, source_hash: str | None,
 
     consumed = (
         glyph, glyph.initializer, digits, colors, colors.children[0],
-        *(item.node for item in dynamic), digit_store.node, round_node,
+        *(item.node for item in dynamic), digit_store.node, division,
+        round_node,
         first, second,
     )
     if len(consumed) != len({id(item) for item in consumed}):
@@ -487,7 +504,7 @@ def _authenticate(program: TypedProgram, source_hash: str | None,
     binding_preflight = preflight_testpattern_bindings(program)
     return FrontendProof(
         KEY, global_record, ("digits", "colors"), dynamic, digit_store,
-        round_node, _span(round_node), ((0, 3), (0, 3)), (1, 3),
+        division, round_node, _span(round_node), ((0, 3), (0, 3)), (1, 3),
         binding_preflight, (29, "renderNumber"), 65, (1, 3), consumed)
 
 

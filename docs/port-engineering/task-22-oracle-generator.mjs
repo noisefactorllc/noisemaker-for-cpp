@@ -1,32 +1,39 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) {
+  throw new Error('usage: task-22-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')
+}
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outputPath = path.join(here, 'task-22-oracles.json')
-const cpuRoot = '../noisemaker-for-cpu'
 const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const corpusRevision = EXPECTED.upstreamRevision
 const corpus = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision)
 const canonicalKernelsPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const adapterPath = path.join(cpuRoot, 'src/effects/adapters/crt.js')
 const key = 'filter/crt:crt'
 const source = 'sources/filter/crt/crt.glsl'
-const expectedRawBytes = 19560
-const expectedRawSha256 = '62d915eda8e20a458b1df91198cee3e85f0f0b9676cd4d0777264e9cd8b99b7c'
-const expectedNormalizedSha256 = 'acd1c3f05c6d02052592aeb46bbbc49d23e18f4e83530498687903e00b4623fe'
-const expectedCanonicalKernelsSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
+const expectedRawBytes = 19644
+const expectedRawSha256 = 'dfbba2918a68889c5b82ef619bf472387acec116b4d72bf76d62f35a60c9aa7f'
+const expectedNormalizedSha256 = 'b61e7111d522b13682b351f592d1873b30c1644f5964e34af689117ff8408902'
+const expectedCanonicalKernelsSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
 const expectedAdapterFileSha256 = 'c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'
-const expectedFactorySha256 = '6d65f4984f8749ca7cdfec976e082662d3a7ad614aabb15ce8a168fca7d8e303'
+const expectedFactorySha256 = '2420fa0eecb9e48c1192c1f029ab7c547888a9f9ca68cf26e145dd6762695cb6'
 const expectedAdapterFactorySha256 = '240972f95f908452bf87fc681e360553759f374fa81613adc415a5a7c5eb4bf7'
-const expectedFunctionTupleFingerprint = 'f6ab50374732b058fa2a5cd33e87bbe35654682b7125593d7451871194b2ba72'
-const expectedWholeProgramFingerprint = 'f70fc78da6c3579fa3237fbbfa3712229b88f0a93b8d556181f9bad2ed74b6fc'
+const expectedFunctionTupleFingerprint = 'aba032705467be0f9e5f98248b0801549b9aad498ae1dd2910d0a6e6ab9f0fc1'
+const expectedWholeProgramFingerprint = 'a413b66710aeef5c8911da18d1de09cd4f7519060ca104c16b321fbbaa3e1248'
 const f = Math.fround
 const frame = 17
 const deltaTime = f(1 / 60)
@@ -57,7 +64,7 @@ if (sha256(fs.readFileSync(canonicalKernelsPath)) !== expectedCanonicalKernelsSh
 if (sha256(fs.readFileSync(adapterPath)) !== expectedAdapterFileSha256) throw new Error('pinned CRT adapter drift')
 const canonicalFactory = canonicalKernelFactories[key]
 const adapterFactory = canonicalAdapterFactories[key]
-if (canonicalFactory?.name !== 'canonicalFactory44' || adapterFactory?.name !== 'crtFactory') throw new Error('pinned CRT factory identity drift')
+if (canonicalFactory?.name !== 'canonicalFactory42' || adapterFactory?.name !== 'crtFactory') throw new Error('pinned CRT factory identity drift')
 if (kernelFactories.get(key) !== adapterFactory) throw new Error('public CRT dispatch no longer selects adapter')
 const canonicalFactoryText = canonicalFactory.toString()
 if (sha256(Buffer.from(canonicalFactoryText)) !== expectedFactorySha256) throw new Error('pinned canonical CRT factory drift')
@@ -140,8 +147,8 @@ function diff(reference,mutated){let lanes=0,fb=0,rb=0,max=0;const a=bytes(refer
 const exactCopyCases=['alpha-zero-exact-copy-tiled','alpha-negative-clamps-zero-copy']
 const mutationDefinitions=Object.freeze([
   {name:'public-metal-sine-disabled',contract:'uses raw canonical Math.sin instead of required public CRT reduced-turn sine adapter',directRaw:true,mustDiverge:['default-landscape-untiled','landscape-tiled-render-scale-two','square-large-time-max-metadata'],mustMatch:exactCopyCases},
-  {name:'uniform-time-local-alias-offset',contract:'perturbs only the shadow-safe local time copy',r:[{from:'var _local_time_1 = time;',to:'var _local_time_1 = time + 0.125;',count:1}],mustDiverge:['default-landscape-untiled','time-zero-positive-speed'],mustMatch:exactCopyCases.concat(['speed-zero-nonzero-time'])},
-  {name:'uniform-speed-local-alias-offset',contract:'perturbs only the shadow-safe local speed copy',r:[{from:'var _local_speed_1 = speed;',to:'var _local_speed_1 = speed + 0.25;',count:1}],mustDiverge:['default-landscape-untiled','time-zero-positive-speed'],mustMatch:exactCopyCases},
+  {name:'uniform-time-local-alias-offset',contract:'perturbs only the shadow-safe local time copy',r:[{from:'var _local_time_1 = time instanceof Float32Array ? $runtime.copy(time) : time;',to:'var _local_time_1 = (time instanceof Float32Array ? $runtime.copy(time) : time) + 0.125;',count:1}],mustDiverge:['default-landscape-untiled','time-zero-positive-speed'],mustMatch:exactCopyCases.concat(['speed-zero-nonzero-time'])},
+  {name:'uniform-speed-local-alias-offset',contract:'perturbs only the shadow-safe local speed copy',r:[{from:'var _local_speed_1 = speed instanceof Float32Array ? $runtime.copy(speed) : speed;',to:'var _local_speed_1 = (speed instanceof Float32Array ? $runtime.copy(speed) : speed) + 0.25;',count:1}],mustDiverge:['default-landscape-untiled','time-zero-positive-speed'],mustMatch:exactCopyCases},
   {name:'output-alpha-uses-uniform-not-shadowed-input',contract:'writes uniform alpha instead of base_sample alpha, exposing local alpha shadow identity',r:[{from:'fragColor[3] = base_sample[3]',to:'fragColor[3] = alpha',count:1}],mustDiverge:['default-landscape-untiled','alpha-above-one-clamps-and-preserves-input-alpha'],mustMatch:[]},
   {name:'uniform-alpha-clamp-disabled',contract:'uses raw uniform alpha for the early return and final mix',r:[{from:'var alphaVal = clamp(alpha, 0, 1);',to:'var alphaVal = alpha;',count:1}],mustDiverge:['alpha-negative-clamps-zero-copy','alpha-above-one-clamps-and-preserves-input-alpha'],mustMatch:['alpha-zero-exact-copy-tiled']},
   {name:'render-scale-clamp-disabled',contract:'uses raw renderScale for scaled dimensions instead of max(renderScale,1)',r:[{from:'var rs = max(renderScale, 1);',to:'var rs = renderScale;',count:1}],mustDiverge:['render-scale-below-one-clamps'],mustMatch:caseDefinitions.filter(c=>c.uniforms.renderScale>=1).map(c=>c.name)},
@@ -155,14 +162,14 @@ const mutationDefinitions=Object.freeze([
   {name:'saturation-boost-disabled',contract:'removes the 1.125 saturation adjustment',r:[{from:'adjust_saturation(color, 1.125).reduce((res,el,i)=>(res[i] = el, res), color);',to:'color = color;',count:1}],mustDiverge:['default-landscape-untiled','landscape-tiled-render-scale-two'],mustMatch:exactCopyCases},
   {name:'vignette-alpha-forced-zero',contract:'retains vignette calls but forces their blend strength to zero',r:[{from:'var vignette_alpha = (random_scalar(seed_base + 3.1700000762939453)) * 0.17499999701976776;',to:'var vignette_alpha = 0;',count:1}],mustDiverge:['default-landscape-untiled','landscape-tiled-render-scale-two'],mustMatch:exactCopyCases},
   {name:'contrast-gain-1-25-to-1',contract:'removes final local-mean contrast gain',r:[{from:'(color[0] - local_mean) * 1.25 + local_mean',to:'(color[0] - local_mean) * 1 + local_mean',count:1},{from:'(color[1] - local_mean) * 1.25 + local_mean',to:'(color[1] - local_mean) * 1 + local_mean',count:1},{from:'(color[2] - local_mean) * 1.25 + local_mean',to:'(color[2] - local_mean) * 1 + local_mean',count:1}],mustDiverge:['default-landscape-untiled','landscape-tiled-render-scale-two'],mustMatch:exactCopyCases},
-  {name:'local-mean-eager-f32-materialization',contract:'inserts an incorrect eager F32 boundary before multiplying by INV_THREE',r:[{from:'var local_mean = (color[0] + color[1] + color[2]) * INV_THREE;',to:'var local_mean = Math.fround(color[0] + color[1] + color[2]) * INV_THREE;',count:1}],mustDiverge:['default-landscape-untiled'],mustMatch:exactCopyCases},
+  {name:'effect-color-8bit-quantization-disabled',contract:'uses unquantized effect color in the final mix',r:[{from:'var effectColor8 = floor(clamp(color, 0, 1).map(function (_) {return _ * 255;}).map(function (_) {return _ + 0.5;})).map(function (_) {return _ / 255;});',to:'var effectColor8 = color;',count:1}],mustDiverge:['default-landscape-untiled','landscape-tiled-render-scale-two'],mustMatch:exactCopyCases},
   {name:'seed-base-disabled',contract:'removes integer seed from chromatic and vignette random controls',r:[{from:'var seed_base = 17 + (seed) * 73;',to:'var seed_base = 17;',count:1}],mustDiverge:['default-landscape-untiled','landscape-tiled-render-scale-two'],mustMatch:exactCopyCases},
 ])
 function mutationResult(d){let factory,applied=[];if(d.directRaw)factory=canonicalFactory;else{const x=replacedFactory(d.name,d.r);factory=withMetalSine(x.factory);applied=x.applied}const results=caseDefinitions.map(c=>({case:c.name,...diff(publicSurfaces.get(c.name),render(factory,c).output)}));for(const n of d.mustDiverge??[]){const x=results.find(v=>v.case===n);if(!x||x.same_f32_bytes)throw new Error(`${d.name}: missing divergence ${n}`)}for(const n of d.mustMatch??[]){const x=results.find(v=>v.case===n);if(!x||!x.same_f32_bytes||!x.same_rgba8_bytes)throw new Error(`${d.name}: missing identity ${n}`)}return {name:d.name,contract:d.contract,replacements:applied,required_divergence_cases:d.mustDiverge??[],required_identity_cases:d.mustMatch??[],case_results:results}}
 
-function build(){const cases=caseDefinitions.map(caseResult);const mutations=mutationDefinitions.map(mutationResult);return `${JSON.stringify({schema:'noisemaker-for-cpp.task22-crt.public-adapter-oracles.v1',corpus_revision:corpusRevision,provenance:{node:process.version,api:'public kernelFactories CRT adapter + bindCanonicalKernel + runPass + Surface',canonical_kernels_path:'src/effects/generated/canonical-kernels.js',canonical_kernels_sha256:expectedCanonicalKernelsSha256,adapter_path:'src/effects/adapters/crt.js',adapter_file_sha256:expectedAdapterFileSha256,canonical_factory_name:canonicalFactory.name,canonical_factory_to_string_sha256:expectedFactorySha256,adapter_factory_name:adapterFactory.name,adapter_factory_to_string_sha256:expectedAdapterFactorySha256,public_dispatch_is_adapter:true,reference_only:'expected outputs come from the pinned public CPU CRT adapter; raw canonical and counted factory mutations are diagnostics only'},program:{key,source,raw_source_bytes:expectedRawBytes,raw_source_sha256:expectedRawSha256,normalized_source_sha256:expectedNormalizedSha256,defines:{},numeric_literal_contract:'glsl-f32',required_runtime_compatibility:'crt-metal-sine-v1',typed_shape:{source_functions:sourceFunctions,function_count:35,loops:0,call_graph:'acyclic'},function_tuple_fingerprint:expectedFunctionTupleFingerprint,whole_program_fingerprint:expectedWholeProgramFingerprint,uniform_binding_signature:['PI:const float@1','TAU:const float@2','INV_THREE:const float@3','inputTex:sampler2D@4/S1','resolution:vec2@5','tileOffset:vec2@6','fullResolution:vec2@7','time:float@8','speed:float@9','seed:int@10','alpha:float@11','renderScale:float@12'],output_signature:'fragColor:vec4@88',pass_route:{inputs:{inputTex:'inputTex'},outputs:{fragColor:'outputTex'},uniforms:{alpha:'alpha',speed:'speed',seed:'seed'}},metadata_defaults:uniformsRecord(defaults),normal_path_dynamic_fetches_per_pixel:{base:1,red:1,blue:1,total:3,lod:0},shadow_contract:{uniform_time:'time@8',local_time:'time@193',uniform_speed:'speed@9',local_speed:'speed@194',uniform_alpha:'alpha@11',local_alpha:'alpha@205'}},fixture:{input:{construction:'asymmetric top-down Float32Array formula shared with Task21; alpha deliberately outside [0,1]'},fragment_origin:'bottom-left',float_bytes:'host little-endian Float32Array bytes',context:{frame,deltaTime:scalarRecord(deltaTime),runtime_seed:scalarRecord(runtimeSeed)},verification:'fresh double render, exact F32/RGBA8 repeat, finite lanes, input alpha preservation'},cases,mutation_sensitivity:{purpose:'locks public adapter, shadowed symbols, alpha return/mix, render/tile/full coordinates, scanline parity, channel order, hue/saturation/vignette/contrast, seed, and F32 association',mutations}},null,2)}\n`}
+function build(){const cases=caseDefinitions.map(caseResult);const mutations=mutationDefinitions.map(mutationResult);return `${JSON.stringify({schema:'noisemaker-for-cpp.task22-crt.public-adapter-oracles.v1',corpus_revision:corpusRevision,provenance:{node:process.version,cpu_revision:'4307ca9f26fc415e4fc5e75227d429d35cc741cd',cpu_behavioral_sha256:EXPECTED.behavioralLockSha256,api:'public kernelFactories CRT adapter + bindCanonicalKernel + runPass + Surface',canonical_kernels_path:'src/effects/generated/canonical-kernels.js',canonical_kernels_sha256:expectedCanonicalKernelsSha256,adapter_path:'src/effects/adapters/crt.js',adapter_file_sha256:expectedAdapterFileSha256,canonical_factory_name:canonicalFactory.name,canonical_factory_to_string_sha256:expectedFactorySha256,adapter_factory_name:adapterFactory.name,adapter_factory_to_string_sha256:expectedAdapterFactorySha256,public_dispatch_is_adapter:true,reference_only:'expected outputs come from the pinned public CPU CRT adapter; raw canonical and counted factory mutations are diagnostics only'},program:{key,source,raw_source_bytes:expectedRawBytes,raw_source_sha256:expectedRawSha256,normalized_source_sha256:expectedNormalizedSha256,defines:{},numeric_literal_contract:'glsl-f32',required_runtime_compatibility:'crt-metal-sine-v1',typed_shape:{source_functions:sourceFunctions,function_count:35,loops:0,call_graph:'acyclic'},function_tuple_fingerprint:expectedFunctionTupleFingerprint,whole_program_fingerprint:expectedWholeProgramFingerprint,uniform_binding_signature:['PI:const float@1','TAU:const float@2','INV_THREE:const float@3','inputTex:sampler2D@4/S1','resolution:vec2@5','tileOffset:vec2@6','fullResolution:vec2@7','time:float@8','speed:float@9','seed:int@10','alpha:float@11','renderScale:float@12'],output_signature:'fragColor:vec4@88',pass_route:{inputs:{inputTex:'inputTex'},outputs:{fragColor:'outputTex'},uniforms:{alpha:'alpha',speed:'speed',seed:'seed'}},metadata_defaults:uniformsRecord(defaults),normal_path_dynamic_fetches_per_pixel:{base:1,red:1,blue:1,total:3,lod:0},shadow_contract:{uniform_time:'time@8',local_time:'time@193',uniform_speed:'speed@9',local_speed:'speed@194',uniform_alpha:'alpha@11',local_alpha:'alpha@205'}},fixture:{input:{construction:'asymmetric top-down Float32Array formula shared with Task21; alpha deliberately outside [0,1]'},fragment_origin:'bottom-left',float_bytes:'host little-endian Float32Array bytes',context:{frame,deltaTime:scalarRecord(deltaTime),runtime_seed:scalarRecord(runtimeSeed)},verification:'fresh double render, exact F32/RGBA8 repeat, finite lanes, input alpha preservation'},cases,mutation_sensitivity:{purpose:'locks public adapter, shadowed symbols, alpha return/mix, render/tile/full coordinates, scanline parity, channel order, hue/saturation/vignette/contrast, seed, and F32 association',mutations}},null,2)}\n`}
 const expected=build()
-if(process.argv.length===2)process.stdout.write(expected)
-else if(process.argv.length===3&&process.argv[2]==='--write'){fs.writeFileSync(outputPath,expected,'utf8');process.stdout.write(`wrote ${path.basename(outputPath)}\n`)}
-else if(process.argv.length===3&&process.argv[2]==='--check'){if(fs.readFileSync(outputPath,'utf8')!==expected)throw new Error('frozen oracle drift');process.stdout.write(`ok ${path.basename(outputPath)}\n`)}
-else throw new Error('usage: node task-22-oracle-generator.mjs [--write|--check]')
+if(!process.argv.includes('--check')&&!process.argv.includes('--write'))process.stdout.write(expected)
+else if(process.argv.includes('--write')&&!process.argv.includes('--check')){fs.writeFileSync(outputPath,expected,'utf8');process.stdout.write(`wrote ${path.basename(outputPath)}\n`)}
+else if(process.argv.includes('--check')&&!process.argv.includes('--write')){if(fs.readFileSync(outputPath,'utf8')!==expected)throw new Error('frozen oracle drift');process.stdout.write(`ok ${path.basename(outputPath)}\n`)}
+else throw new Error('usage: task-22-oracle-generator.mjs --cpu-root ROOT --ledger FILE [--write|--check]')

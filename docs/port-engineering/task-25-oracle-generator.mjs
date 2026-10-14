@@ -1,25 +1,30 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'task-25-oracles.json')
 const reportPath = path.join(here, 'task-25-oracle-report.md')
-const cpuRoot = '../noisemaker-for-cpu'
-const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const cppRoot = path.resolve(here, '../..')
+const corpusRevision = EXPECTED.upstreamRevision
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
 const adapterIndexPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
-const canonicalSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
+const canonicalSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
 const catalogSha256 = 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'
-const adapterIndexSha256 = '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'
+const adapterIndexSha256 = 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'
 const f = Math.fround
 
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
@@ -40,7 +45,7 @@ const programs = {
     normalizedBytes: 7723,
     normalizedSha256: '6586c49b079a3b0f4aa3538c8e735e70db088ff2e5d2ea1037e9e9c5486fdf52',
     factoryName: 'canonicalFactory10',
-    factorySha256: '151b1e868c7d2f9a446a8778d170260e5003fec540afb2623088bbf34ca8adcf',
+    factorySha256: 'd71a3cee0afc687ea4802da7dc4e9b47de7afab05bfffc887064bede8b328785',
     bindings: [
       'inputTex:sampler2D@1/S1', 'resolution:vec2@2', 'tileOffset:vec2@3', 'fullResolution:vec2@4', 'time:float@5',
       'aspectLens:bool@6', 'shape:int@7', 'tint:vec3@8', 'alpha:float@9', 'vignetteAmt:float@10', 'distortion:float@11',
@@ -55,8 +60,8 @@ const programs = {
     rawSha256: '513eac95fdf7f67a6839ee5d96e5bbfd76b6cfa62d3254df6fed23d8effe380e',
     normalizedBytes: 3907,
     normalizedSha256: '1c157e7f3dc7c9c122cc185812cd2988a98a52024055a482265bded7561a0860',
-    factoryName: 'canonicalFactory117',
-    factorySha256: '2eab8943387658c1c28f4e089edd9b248bf441b2b77145ea137c7f979c5def02',
+    factoryName: 'canonicalFactory114',
+    factorySha256: 'a3f5dbe69fe147663be1db8df4f3cd3a18e76e433051479541da4083437c48fb',
     bindings: [
       'inputTex:sampler2D@1/S1', 'resolution:vec2@2', 'tileOffset:vec2@3', 'fullResolution:vec2@4', 'time:float@5',
       'aberrationAmt:float@6', 'hueRotation:float@7', 'hueRange:float@8', 'modulate:bool@9', 'saturation:float@10',
@@ -250,7 +255,7 @@ function buildData() {
   })
 
   return {
-    schema: 'noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1', corpus_revision: corpusRevision,
+    schema: 'noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
     provenance: { node: process.version, public_api: 'kernelFactories.get(key)', canonical_identity: true, adapter_entries_absent: true, canonical_kernels_sha256: canonicalSha256, public_catalog_sha256: catalogSha256, adapter_index_sha256: adapterIndexSha256 },
     profile: { name: 'literal-vec3-lane-index-v1', keys: Object.values(programs).map(p => p.key).sort(), selected_source_sites: 11, direct_plain_assignment_lvalues: 6, reads: 5, lane_incidence_0_1_2: [7, 3, 1], dynamic_or_generic_vector_index_capability: false },
     programs: Object.fromEntries(Object.entries(programs).map(([name, p]) => [name, { key: p.key, source: p.source, raw_source_bytes: p.rawBytes, raw_source_sha256: p.rawSha256, normalized_source_bytes: p.normalizedBytes, normalized_source_sha256: p.normalizedSha256, defines: {}, canonical_factory_name: p.factoryName, canonical_factory_to_string_sha256: p.factorySha256, public_factory_is_canonical_identity: true, adapter_entry_absent: true, bindings: p.bindings, resources: name === 'lens' ? { samplers: 1, ordinary_uniforms: 20, outputs: 1, uses_texture: true, uses_derivatives: false, static_texture_sites: 3, dynamic_texture_calls_per_pixel: 3, texture_size_calls_per_pixel: 0 } : { samplers: 1, ordinary_uniforms: 10, outputs: 1, uses_texture: true, uses_derivatives: false, static_texture_sites: 3, dynamic_texture_calls_per_pixel: 3, texture_size_calls_per_pixel: 1 } }])),
@@ -277,7 +282,7 @@ function buildReport(data) {
 const data = buildData()
 const json = `${JSON.stringify(data, null, 2)}\n`
 const report = buildReport(data)
-if (process.argv.length === 2) process.stdout.write(json)
-else if (process.argv.length === 3 && process.argv[2] === '--write') { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-25-oracles.json and task-25-oracle-report.md\n') }
-else if (process.argv.length === 3 && process.argv[2] === '--check') { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-25-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-25-oracle-report.md drift'); process.stdout.write('ok task-25-oracles.json and task-25-oracle-report.md\n') }
+if (!process.argv.includes('--write') && !process.argv.includes('--check')) process.stdout.write(json)
+else if (process.argv.includes('--write')) { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-25-oracles.json and task-25-oracle-report.md\n') }
+else if (process.argv.includes('--check')) { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-25-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-25-oracle-report.md drift'); process.stdout.write('ok task-25-oracles.json and task-25-oracle-report.md\n') }
 else throw new Error('usage: node task-25-oracle-generator.mjs [--write|--check]')

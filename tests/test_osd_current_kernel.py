@@ -1,4 +1,4 @@
-"""CPU26d OSD regression for truncated glyph cell indexing."""
+"""Current-CPU OSD regression for truncated glyph cell indexing."""
 from __future__ import annotations
 
 import hashlib
@@ -92,10 +92,10 @@ class OsdCurrentKernelTests(unittest.TestCase):
 
 class OsdCurrentReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
-        for name, digest in {'cases.json': '0a507681df91bbd819a5126bc88c55739ecb17642e3dc81b0849388a32fb9f4b', 'expected.json': 'ef2c7cff76818ada54115890381e6fd65691dba04bd8331bcdb6f2b9bf624d99'}.items():
+        for name, digest in {'cases.json': '0a507681df91bbd819a5126bc88c55739ecb17642e3dc81b0849388a32fb9f4b', 'expected.json': 'fe82647bdce522745350ece90f1d2f8ab4967800ace59f0ad6368ad07e59bc4e'}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "5b686a45b5c56329adf0c63cbcf572eb6f23fad1")
+        self.assertEqual(expected["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
         self.assertEqual(len(expected["source_hashes"]), 5)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual(len(cases), 38)
@@ -140,11 +140,13 @@ class OsdHistoricalKernelTests(unittest.TestCase):
         source = (corpus_census.HISTORICAL_CORPUS / entry["source"]).read_bytes()
         self.assertEqual(hashlib.sha256(source).hexdigest(), entry["raw_sha256"])
         program = analyze_program(parse_program(source.decode(), KEY, {}), KEY)
-        with mock.patch.object(emit_typed_cpp, "OSD_GLYPH_INDEX_TRUNCATES", False):
+        with mock.patch.object(emit_typed_cpp, "OSD_GLYPH_INDEX_TRUNCATES", False), \
+                mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False):
             rendered = render_typed_cpp(program, KEY, entry["raw_sha256"], "typed_93",
                                        "bind_filter_osd_osd", osd_frontend_profile="osd-frontend-admission-v1")
         self.assertEqual(block, (rendered + "\n").encode())
         self.assertTrue(emit_typed_cpp.OSD_GLYPH_INDEX_TRUNCATES)
+        self.assertTrue(emit_typed_cpp.CURRENT_AUTHORITY_HASH_UINT_BY_BODY)
         cmake = (ROOT / "CMakeLists.txt").read_text()
         filename = "tests/fixtures/historical/osd_kernel.cpp"
         self.assertEqual(cmake.count(filename), 1)

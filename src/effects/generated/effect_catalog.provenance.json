@@ -1,15 +1,15 @@
 {
   "authority": {
     "cpu_behavioral_file_count": 95,
-    "cpu_behavioral_lock": "42ea669d94c89e32b2eff03bdbdaf79855fb4550bc305586dbead9832ead43bb",
+    "cpu_behavioral_lock": "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801",
     "cpu_package_lock_sha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
     "cpu_package_sha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
-    "cpu_source_lock_sha256": "0fd19e3ecc38fba001014ace224625d87affd667b474984968b5c73a1184660d",
-    "source_lock_sha256": "dfb565a24c33bd0e3dfaddc3f719d0f252b4c6f8df7059198a5f9e07b6a895d0",
-    "upstream_package_lock_sha256": "85313babc45c8ab92d70116a46bc4581fa93ea6c86f2797cbd1bc126be2addad",
-    "upstream_package_sha256": "412b9210feb975e3d6607a10ab5b1e905edbe253b0307d4b045cec6eca577183",
-    "upstream_revision": "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d",
-    "upstream_tree": "b0729d2bf429e0e7307ff8f4fffe99422870c059"
+    "cpu_source_lock_sha256": "594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c",
+    "source_lock_sha256": "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf",
+    "upstream_package_lock_sha256": "301b650e128c72d00b67f156fbc9929a81ddafea500825bbe275e9e0f78a3c48",
+    "upstream_package_sha256": "ac0bca6bde670ba48096bc28f41421f484aabe14c7f668ead590a76497c218dd",
+    "upstream_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+    "upstream_tree": "f5ea13282fd27ea01c94280ae60fcb59bcb5389f"
   },
   "backend_counts": {
     "definitions": 210,
@@ -17,36 +17,36 @@
       "filter/invert:inv",
       "synth/solid:solid"
     ],
-    "fragment_rows": 292,
+    "fragment_rows": 303,
     "incompatible": 0,
     "incompatible_keys": [],
-    "raw_exact": 295,
+    "raw_exact": 308,
     "reference_passes": 348,
     "reference_program_keys": 308,
-    "registered_scatter_contracts": 4,
+    "registered_scatter_contracts": 6,
     "semantic_exact": 0,
-    "status_compatible": 289,
-    "status_incompatible": 1,
-    "unique_fragment_keys": 290
+    "status_compatible": 301,
+    "status_incompatible": 0,
+    "unique_fragment_keys": 301
   },
   "backend_schema": "noisemaker-cpp.backend-compatibility.v1",
-  "compatibility_sha256": "538f2af4353fd674b5aeb901b06f3e2ed83438fdbd3ee33586cf3c8c6dea8507",
-  "corpus_revision": "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d",
+  "compatibility_sha256": "55cd3ca1ecc17d453333625b60068ca9b333b7442edb1d0e62e672f69151f425",
+  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "counts": {
-    "backend_programs": 295,
-    "compatible_programs": 289,
+    "backend_programs": 308,
+    "compatible_programs": 301,
     "definitions": 210,
-    "executable_definitions": 198,
-    "incompatible_programs": 1,
-    "incomplete_definitions": 12,
-    "missing_passes": 44,
+    "executable_definitions": 210,
+    "incompatible_programs": 0,
+    "incomplete_definitions": 0,
+    "missing_passes": 0,
     "passes": 348,
     "reference_program_keys": 308,
-    "scatter_passes": 5
+    "scatter_passes": 16
   },
   "first_effect_id": "classicNoisedeck/bitEffects",
-  "generated_payload_sha256": "5026dc9bfff1b618bba58cafdda66b2d24c6b98fa136496835f754b2d2922b46",
+  "generated_payload_sha256": "cc84a096e6912426b46f920a6a8832f0fb8d1a4c37e46f2d13f5f4734cb6fa7a",
   "last_effect_id": "synth3d/shape3d",
-  "normalized_record_stream_sha256": "f8f99a758dad34cde8dbcd70e7f367f7a957a230385ef4a94037bebc3e3b5161",
+  "normalized_record_stream_sha256": "03b0c42537995616cf4ff032900d82693c249d2a826fe1eb0317caefec28ab0b",
   "schema": "noisemaker-cpp.effect-catalog-generator.v1"
 }

@@ -22,16 +22,18 @@ const key = "classicNoisedeck/effects:effects",
     "tools/glslcpp/corpus/" +
     rev +
     "/sources/classicNoisedeck/effects/effects.glsl",
-  srcSha = "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457",
+  srcSha = "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316",
   factoryName = "canonicalFactory7",
   nextFactory = "canonicalFactory8",
   factorySha =
-    "ebf43ff45f4a3568854da02b41baf6b1a25efd2bc5bbf2d8cf78f0a11e3dd81a";
+    "6d6adaeff42719de80378bbaf61d1f3c405dc24e34cae99b9354750582b66cd2";
 const names = [
     "inputTex",
     "resolution",
     "tileOffset",
     "fullResolution",
+    "invFullResolution",
+    "aspectInv",
     "renderScale",
     "time",
     "effectAmt",
@@ -47,6 +49,8 @@ const names = [
     resolution: "Vec2",
     tileOffset: "Vec2",
     fullResolution: "Vec2",
+    invFullResolution: "Vec2",
+    aspectInv: "number",
     renderScale: "number",
     time: "number",
     effectAmt: "number",
@@ -60,7 +64,7 @@ const names = [
 const files = {
   canonical_kernels: [
     "src/effects/generated/canonical-kernels.js",
-    "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
+    "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
   ],
   public_catalog: [
     "src/effects/catalog.js",
@@ -68,11 +72,11 @@ const files = {
   ],
   glsl_kernel: [
     "src/csl/glsl-kernel.js",
-    "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
+    "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff",
   ],
   glsl_runtime: [
     "src/csl/glsl-runtime.js",
-    "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+    "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1",
   ],
   pass_runner: [
     "src/runtime/pass-runner.js",
@@ -83,13 +87,11 @@ const files = {
     "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
   ],
 };
-// Recomputed against CPU authority 61aa869. Cardinality grew 22 -> 23 vs the
-// prior e17dd02 authority because src/effects/adapters/index.js now imports
-// src/effects/adapters/remap.js (a canonical `synth/remap:remap` adapter
-// added between e17dd02 and 61aa869).
+// Authenticated CPU9f3 closure has 24 files; definition.js imports
+// runtime/automation.js.
 const closureExpected = {
-  "src/csl/glsl-kernel.js": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
-  "src/csl/glsl-runtime.js": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+  "src/csl/glsl-kernel.js": "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff",
+  "src/csl/glsl-runtime.js": "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1",
   "src/csl/runtime.js": "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee",
   "src/effects/adapters/bit-effects.js": "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7",
   "src/effects/adapters/crt.js": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
@@ -102,12 +104,13 @@ const closureExpected = {
   "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
   "src/effects/adapters/snow.js": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366",
   "src/effects/catalog.js": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
-  "src/effects/definition.js": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02",
+  "src/effects/definition.js": "64d722d6bdeec753ff294c76f4b58c72a38c8182cc8d7bf65c2c113d07a96a6d",
   "src/effects/generated/canonical-adapter-data.js": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab",
-  "src/effects/generated/canonical-kernels.js": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
+  "src/effects/generated/canonical-kernels.js": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
   "src/effects/generated/kernels.js": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01",
-  "src/effects/generated/upstream-snapshot.js": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7",
+  "src/effects/generated/upstream-snapshot.js": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467",
   "src/effects/registry.js": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618",
+  "src/runtime/automation.js": "982b3ea9b83e100aebfb9a9091be058516c41837a40d7731d629f896a4d48c92",
   "src/runtime/pass-runner.js": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
   "src/runtime/sampler.js": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328",
   "src/runtime/surface.js": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
@@ -201,7 +204,7 @@ const { runPass } = await load("src/runtime/pass-runner.js");
 const { Surface } = await load("src/runtime/surface.js");
 if (
   process.version !== "v26.0.0" ||
-  UPSTREAM_REVISION !== "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+  UPSTREAM_REVISION !== "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 )
   throw Error("authority drift");
 const factory = canonicalKernelFactories[key];
@@ -223,7 +226,7 @@ const source = fs.readFileSync(
 if (a < 0 || b < 0 || !source.slice(a, b).startsWith(text))
   throw Error("factory slice drift");
 const glsl = fs.readFileSync(path.join(rootRepo, srcRel));
-if (glsl.length !== 21087 || sha(glsl) !== srcSha) throw Error("GLSL drift");
+if (glsl.length !== 28403 || sha(glsl) !== srcSha) throw Error("GLSL drift");
 const meta = effectRecords.find((x) => x.id === effectKey);
 if (
   !meta ||
@@ -319,11 +322,15 @@ class KernelBindingError extends TypeError {
   }
 }
 function bindingValues(c, tex, o) {
+  const full = o.fullResolution;
+  const aspect = full[0] / full[1];
   return {
     inputTex: tex,
     resolution: new Float32Array([c.w, c.h]),
     tileOffset: o.tileOffset,
     fullResolution: o.fullResolution,
+    invFullResolution: new Float32Array([F(1 / full[0]), F(1 / full[1])]),
+    aspectInv: F(1 / aspect),
     renderScale: o.uniforms.renderScale,
     time: o.uniforms.time,
     effectAmt: o.uniforms.effectAmt,
@@ -345,13 +352,13 @@ function validateBindings(values, c) {
   if (!(sampler instanceof Surface) || sampler.width !== (c.iw || c.w) || sampler.height !== (c.ih || c.h)) {
     throw new KernelBindingError("inputTex", "sampler2D", "Surface dimensions/digest required");
   }
-  for (const name of ["resolution", "tileOffset", "fullResolution"]) {
+  for (const name of ["resolution", "tileOffset", "fullResolution", "invFullResolution"]) {
     const value = values[name];
     if (!(value instanceof Float32Array) || value.length !== 2 || [...value].some((lane) => !Number.isFinite(lane))) {
       throw new KernelBindingError(name, "Vec2", "Float32Array[2] required");
     }
   }
-  for (const name of names.slice(4)) {
+  for (const name of names.slice(5)) {
     const value = values[name];
     if (typeof value !== "number" || !Number.isFinite(value) || F(value) !== value) {
       throw new KernelBindingError(name, "number", "finite exact Float32 scalar required");
@@ -385,7 +392,8 @@ function render(f, c) {
     },
     before = words(tex.data).slice(),
     outp = new Surface(c.w, c.h);
-  validateBindings(bindingValues(c, tex, o), c);
+  const values = bindingValues(c, tex, o);
+  validateBindings(values, c);
   runPass({
     kernel: bindCanonicalKernel(f, o),
     destination: outp,
@@ -394,7 +402,7 @@ function render(f, c) {
   });
   if (before.some((x, i) => x !== words(tex.data)[i]))
     throw Error("input mutation");
-  return { out: outp, tex, o };
+  return { out: outp, tex, o, values };
 }
 function expected(s) {
   return { words: words(s.data).slice(), bytes: new Uint8Array(s.toRgba8()) };
@@ -475,12 +483,17 @@ const renderCases = cases.map((c) => {
       f32_values: Array.from(x.o.fullResolution),
       f32_words_le: Array.from(words(x.o.fullResolution), hex),
     },
+    invFullResolution: {
+      abi: "Vec2",
+      f32_values: Array.from(x.values.invFullResolution),
+      f32_words_le: Array.from(words(x.values.invFullResolution), hex),
+    },
   };
-  for (const n of names.slice(4))
+  for (const n of names.slice(5))
     bind[n] = {
       abi: "number",
-      f32_value: x.o.uniforms[n],
-      f32_word_le: bits(x.o.uniforms[n]),
+      f32_value: x.values[n],
+      f32_word_le: bits(x.values[n]),
     };
   return {
     name: c.name,
@@ -516,7 +529,7 @@ const caseSpecs = cases.map((c, index) => {
     seed: 1,
     tileOffset: b.tileOffset.f32_values,
     fullResolution: b.fullResolution.f32_values,
-    uniforms: Object.fromEntries(names.slice(4).map((name) => [name, b[name].f32_value])),
+    uniforms: Object.fromEntries(names.slice(6).map((name) => [name, b[name].f32_value])),
     input_f32_sha256: rendered.input_texture.f32_sha256,
     output_f32_sha256: rendered.output_expected.f32_sha256,
     output_rgba8_sha256: rendered.output_expected.rgba8_sha256,
@@ -573,7 +586,7 @@ function optsForAbi(c) {
 }
 function wrongVariant(name, c) {
   if (name === "inputTex") return new Surface(1, 1);
-  if (name === "resolution" || name === "tileOffset" || name === "fullResolution") return new Float32Array([1]);
+  if (name === "resolution" || name === "tileOffset" || name === "fullResolution" || name === "invFullResolution") return new Float32Array([1]);
   return "not-a-f32-number";
 }
 function mutant(s) {
@@ -599,13 +612,13 @@ function measure(f) {
 const specs = [
     {
       name: "ceil-dropped",
-      output_live: false,
+      output_live: true,
       anchor: "uv[0] -= ceil(",
       replacement: "uv[0] -= (",
     },
     {
       name: "rotate-angle-map-perturbed",
-      output_live: false,
+      output_live: true,
       anchor: "rot = map(rot, 0, 360, 0, 2);",
       replacement: "rot = map(rot, 0, 360, 0, 1);",
     },
@@ -623,9 +636,9 @@ const specs = [
     },
     {
       name: "aspect-ratio-inverted",
-      output_live: false,
+      output_live: true,
       anchor: "st[0] *= fullResolution[0] / fullResolution[1];",
-      replacement: "fullResolution[1] / fullResolution[0]",
+      replacement: "st[0] *= fullResolution[1] / fullResolution[0];",
     },
   ],
   ledger = specs.map((s) => {
@@ -678,7 +691,7 @@ const fixture = {
   program_key: key,
   corpus_revision: rev,
   defines: { EFFECT: 0, FLIP: 0 },
-  source: { relative_path: srcRel, bytes: 21087, sha256: srcSha },
+  source: { relative_path: srcRel, bytes: 28403, sha256: srcSha },
   canonical_factory: {
     name: factoryName,
     text_sha256: factorySha,

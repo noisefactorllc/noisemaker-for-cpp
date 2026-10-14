@@ -25,9 +25,9 @@ TARGET = ROOT / "tests/oracles/effects188_expected.inc"
 SCHEMA = "noisemaker-for-cpp.effects188.pixel-parity.v1"
 PROGRAM = "classicNoisedeck/effects:effects"
 # Revision authenticated by the immutable oracle capture.
-CORPUS = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 SOURCE_RELATIVE = f"tools/glslcpp/corpus/{CORPUS}/sources/classicNoisedeck/effects/effects.glsl"
-SOURCE_SHA = "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c"
+SOURCE_SHA = "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316"
 CASE_INPUT_DIMS = {
     "rotation-scale": (7, 5),
     "offset-arms": (6, 6),
@@ -43,8 +43,8 @@ CASE_SPECS = [
         "t": 2, "seed": 1, "tileOffset": [0, 0], "fullResolution": [7, 5],
         "uniforms": {"renderScale": 1, "time": 0, "effectAmt": 1, "scaleAmt": 75, "rotation": 45, "offsetX": 0, "offsetY": 0, "intensity": 0, "saturation": 0},
         "input_f32_sha256": "862274e98a2b319fba1cb18ecaba26f5a521ae8cc537557c4ed24fd0182cbd96",
-        "output_f32_sha256": "862274e98a2b319fba1cb18ecaba26f5a521ae8cc537557c4ed24fd0182cbd96",
-        "output_rgba8_sha256": "c3af6f45935649272b891b2caf5a5b33d2a097525493153fefa3da16135ecca9",
+        "output_f32_sha256": "95e858dd839758f21379c460d5553eec2540765a860425731450ba68b6bc4a29",
+        "output_rgba8_sha256": "4c8cdb1ac0f345e6564f8290771cc53f1306b8a53ab777c4006014684e864c46",
     },
     {
         "name": "offset-arms", "coverage": "offset maps", "route": "full",
@@ -52,8 +52,8 @@ CASE_SPECS = [
         "t": 3, "seed": 1, "tileOffset": [0, 0], "fullResolution": [6, 6],
         "uniforms": {"renderScale": 1, "time": 0, "effectAmt": 1, "scaleAmt": 100, "rotation": 0, "offsetX": 40, "offsetY": -30, "intensity": 0, "saturation": 0},
         "input_f32_sha256": "94f49cbd8f40354e97f072e69e31bafaec69637ad14d66b41ad7f26851d7dd33",
-        "output_f32_sha256": "94f49cbd8f40354e97f072e69e31bafaec69637ad14d66b41ad7f26851d7dd33",
-        "output_rgba8_sha256": "aca69166b3954e8cab142b6579a324ed1b091f1e21f2dc6ef3594e0b163488b1",
+        "output_f32_sha256": "d0b1f7d88b461d42e301e395ec2e35c34eb532c9efea7d3f3b49e7fd427c054a",
+        "output_rgba8_sha256": "1c88a5aa541426483d78802427a488e4b6c09ca9d8bdf0569c9313d1389f3637",
     },
     {
         "name": "intensity-negative", "coverage": "negative brightness/saturation", "route": "full",
@@ -96,10 +96,11 @@ NATIVE_PREFLIGHT = [
     {"binding": "inputTex", "abi": "sampler2D", "expected_category": "Sampler2D", "wrong_category": "Number", "wrong_value": {"category": "Number", "number": 1, "vec2": [0, 0]}, "missing_strategy": "omit texture/uniform binding", "wrong_strategy": "set_uniform_same_name_and_omit_texture", "missing_status": "pending_shared_native_integration", "wrong_status": "pending_shared_native_integration"},
 ]
 
-FACTORY_TEXT_SHA = "ebf43ff45f4a3568854da02b41baf6b1a25efd2bc5bbf2d8cf78f0a11e3dd81a"
-FACTORY_SLICE_SHA = "a029e3a32e400d3d9fb0cd9c7e9914f4fd2132ddd848c0a7210f690ed21f3970"
+FACTORY_TEXT_SHA = "6d6adaeff42719de80378bbaf61d1f3c405dc24e34cae99b9354750582b66cd2"
+FACTORY_SLICE_SHA = "867000c90261c0552005b965def567055c13a1221d1c9a568fdaad5a417f549d"
 BINDINGS = [
-    "inputTex", "resolution", "tileOffset", "fullResolution", "renderScale",
+    "inputTex", "resolution", "tileOffset", "fullResolution", "invFullResolution",
+    "aspectInv", "renderScale",
     "time", "effectAmt", "scaleAmt", "rotation", "offsetX", "offsetY",
     "intensity", "saturation",
 ]
@@ -108,6 +109,8 @@ BINDING_ABI = {
     "resolution": "Vec2",
     "tileOffset": "Vec2",
     "fullResolution": "Vec2",
+    "invFullResolution": "Vec2",
+    "aspectInv": "number",
     "renderScale": "number",
     "time": "number",
     "effectAmt": "number",
@@ -132,7 +135,7 @@ TABLE_VALUES = {
 PINNED_FILES = {
     "canonical_kernels": [
         "src/effects/generated/canonical-kernels.js",
-        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
+        "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
     ],
     "public_catalog": [
         "src/effects/catalog.js",
@@ -140,11 +143,11 @@ PINNED_FILES = {
     ],
     "glsl_kernel": [
         "src/csl/glsl-kernel.js",
-        "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
+        "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff",
     ],
     "glsl_runtime": [
         "src/csl/glsl-runtime.js",
-        "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+        "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1",
     ],
     "pass_runner": [
         "src/runtime/pass-runner.js",
@@ -156,8 +159,8 @@ PINNED_FILES = {
     ],
 }
 CLOSURE = {
-    "src/csl/glsl-kernel.js": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
-    "src/csl/glsl-runtime.js": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+    "src/csl/glsl-kernel.js": "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff",
+    "src/csl/glsl-runtime.js": "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1",
     "src/csl/runtime.js": "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee",
     "src/effects/adapters/bit-effects.js": "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7",
     "src/effects/adapters/crt.js": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
@@ -166,26 +169,27 @@ CLOSURE = {
     "src/effects/adapters/index.js": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e",
     "src/effects/adapters/julia.js": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
     "src/effects/adapters/median.js": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583",
-    "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
     "src/effects/adapters/palette.js": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452",
+    "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
     "src/effects/adapters/snow.js": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366",
     "src/effects/catalog.js": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
-    "src/effects/definition.js": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02",
+    "src/effects/definition.js": "64d722d6bdeec753ff294c76f4b58c72a38c8182cc8d7bf65c2c113d07a96a6d",
     "src/effects/generated/canonical-adapter-data.js": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab",
-    "src/effects/generated/canonical-kernels.js": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
+    "src/effects/generated/canonical-kernels.js": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
     "src/effects/generated/kernels.js": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01",
-    "src/effects/generated/upstream-snapshot.js": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7",
+    "src/effects/generated/upstream-snapshot.js": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467",
     "src/effects/registry.js": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618",
+    "src/runtime/automation.js": "982b3ea9b83e100aebfb9a9091be058516c41837a40d7731d629f896a4d48c92",
     "src/runtime/pass-runner.js": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
     "src/runtime/sampler.js": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328",
     "src/runtime/surface.js": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
 }
 EXPECTED_MUTANTS = {
-    "ceil-dropped": "measured-invariant",
-    "rotate-angle-map-perturbed": "measured-invariant",
+    "ceil-dropped": "output-live",
+    "rotate-angle-map-perturbed": "output-live",
     "brightness-coefficient-perturbed": "output-live",
     "saturation-map-perturbed": "output-live",
-    "aspect-ratio-inverted": "measured-invariant",
+    "aspect-ratio-inverted": "output-live",
 }
 EXPECTED_CLAIMS = {
     "tables": "Seven tables write-only at frozen defines; exact stores are structural.",
@@ -294,6 +298,10 @@ def f32_word(value: Any, label: str) -> int:
         raise MaterializationError(f"{label}: not representable as f32") from exc
 
 
+def float32(value: float) -> float:
+    return struct.unpack("<f", struct.pack("<f", value))[0]
+
+
 def validate_vec2(binding: Any, label: str) -> None:
     exact(binding, {"abi", "f32_values", "f32_words_le"}, label)
     if binding["abi"] != "Vec2":
@@ -365,12 +373,15 @@ def validate_binding(binding: Any, name: str, case: dict[str, Any], spec: dict[s
             "resolution": [spec["width"], spec["height"]],
             "tileOffset": spec["tileOffset"],
             "fullResolution": spec["fullResolution"],
+            "invFullResolution": [float32(1 / value) for value in spec["fullResolution"]],
         }[name]
         if binding["f32_values"] != expected:
             raise MaterializationError(f"{label}: semantic Vec2 drift")
     else:
         validate_scalar(binding, label)
-        if binding["f32_value"] != spec["uniforms"][name]:
+        expected = (float32(1 / (spec["fullResolution"][0] / spec["fullResolution"][1]))
+                    if name == "aspectInv" else spec["uniforms"][name])
+        if binding["f32_value"] != expected:
             raise MaterializationError(f"{label}: semantic scalar drift")
 
 
@@ -437,7 +448,7 @@ def validate_payload(data: Any) -> dict[str, Any]:
     if data["schema"] != SCHEMA or data["program_key"] != PROGRAM or data["corpus_revision"] != CORPUS or data["defines"] != {"EFFECT": 0, "FLIP": 0} or data["binding_names"] != BINDINGS or data["binding_abi"] != BINDING_ABI:
         raise MaterializationError("schema/program/defines/binding census drift")
     exact(data["source"], {"relative_path", "bytes", "sha256"}, "source")
-    if data["source"]["relative_path"] != SOURCE_RELATIVE or data["source"]["bytes"] != 21087 or data["source"]["sha256"] != SOURCE_SHA:
+    if data["source"]["relative_path"] != SOURCE_RELATIVE or data["source"]["bytes"] != 28403 or data["source"]["sha256"] != SOURCE_SHA:
         raise MaterializationError("GLSL source identity drift")
     sha_value(data["source"]["sha256"], "source.sha256")
     source_path = ROOT / SOURCE_RELATIVE
@@ -648,7 +659,7 @@ def render(data: dict[str, Any]) -> str:
         "struct NativeSamplerBindingView { std::size_t width; std::size_t height; std::string_view f32_sha256; std::span<const std::uint32_t> words; };",
         "struct NativeVec2BindingView { std::array<float, 2> values; std::array<std::uint32_t, 2> words; };",
         "struct NativeScalarBindingView { float value; std::uint32_t word; };",
-        "struct NativeCaseBindingView { std::string_view name; NativeSamplerBindingView inputTex; NativeVec2BindingView resolution; NativeVec2BindingView tileOffset; NativeVec2BindingView fullResolution; NativeScalarBindingView renderScale; NativeScalarBindingView time; NativeScalarBindingView effectAmt; NativeScalarBindingView scaleAmt; NativeScalarBindingView rotation; NativeScalarBindingView offsetX; NativeScalarBindingView offsetY; NativeScalarBindingView intensity; NativeScalarBindingView saturation; };",
+        "struct NativeCaseBindingView { std::string_view name; NativeSamplerBindingView inputTex; NativeVec2BindingView resolution; NativeVec2BindingView tileOffset; NativeVec2BindingView fullResolution; NativeVec2BindingView invFullResolution; NativeScalarBindingView aspectInv; NativeScalarBindingView renderScale; NativeScalarBindingView time; NativeScalarBindingView effectAmt; NativeScalarBindingView scaleAmt; NativeScalarBindingView rotation; NativeScalarBindingView offsetX; NativeScalarBindingView offsetY; NativeScalarBindingView intensity; NativeScalarBindingView saturation; };",
         f"inline constexpr std::array<NativeCaseBindingView, {len(cases)}> kCaseBindings{{{{",
     ]
     for index, case in enumerate(cases):
@@ -656,11 +667,11 @@ def render(data: dict[str, Any]) -> str:
         sampler = bindings["inputTex"]
         sampler_expr = "NativeSamplerBindingView{" + ", ".join((f"{sampler['width']}U", f"{sampler['height']}U", cpp_string(sampler["f32_sha256"]), f"kCase{index}InputWords")) + "}"
         vec_exprs = []
-        for name in ("resolution", "tileOffset", "fullResolution"):
+        for name in ("resolution", "tileOffset", "fullResolution", "invFullResolution"):
             binding = bindings[name]
             vec_exprs.append("NativeVec2BindingView{{" + ", ".join(cpp_float(value) for value in binding["f32_values"]) + "}, {" + ", ".join(cpp_word(word) for word in binding["f32_words_le"]) + "}}")
         scalar_exprs = []
-        for name in BINDINGS[4:]:
+        for name in BINDINGS[5:]:
             binding = bindings[name]
             scalar_exprs.append("NativeScalarBindingView{" + cpp_float(binding["f32_value"]) + ", " + cpp_word(binding["f32_word_le"]) + "}")
         fields = [cpp_string(case["name"]), sampler_expr, *vec_exprs, *scalar_exprs]
@@ -704,16 +715,19 @@ constexpr bool map_wrong(const BindingPreflightView& row) {
 consteval bool exhaustive() {
   static_assert(std::is_enum_v<decltype(kBindingPreflight[0].expected_category)>);
   static_assert(std::is_enum_v<decltype(kBindingPreflight[0].wrong_category)>);
-  if (kBindingPreflight.size() != 13U || kCaseBindings.size() != 6U) return false;
-  constexpr std::array<NativeBindingCategory, 13> expected{
+  if (kBindingPreflight.size() != 15U || kCaseBindings.size() != 6U) return false;
+  constexpr std::array<NativeBindingCategory, 15> expected{
       NativeBindingCategory::Sampler2D, NativeBindingCategory::Vec2, NativeBindingCategory::Vec2,
-      NativeBindingCategory::Vec2, NativeBindingCategory::Number, NativeBindingCategory::Number,
+      NativeBindingCategory::Vec2, NativeBindingCategory::Vec2, NativeBindingCategory::Number,
+      NativeBindingCategory::Number, NativeBindingCategory::Number,
       NativeBindingCategory::Number, NativeBindingCategory::Number, NativeBindingCategory::Number,
       NativeBindingCategory::Number, NativeBindingCategory::Number, NativeBindingCategory::Number,
       NativeBindingCategory::Number};
   for (std::size_t i = 0; i < expected.size(); ++i)
     if (kBindingPreflight[i].expected_category != expected[i] || !map_wrong(kBindingPreflight[i])) return false;
   if (kCaseBindings[0].resolution.values[0] != 7.0f || kCaseBindings[0].resolution.words[0] != 0x40e00000U) return false;
+  if (kCaseBindings[0].invFullResolution.words != std::array<std::uint32_t, 2>{0x3e124925U, 0x3e4ccccdU}) return false;
+  if (kCaseBindings[0].aspectInv.word != 0x3f36db6eU) return false;
   if (kCaseBindings[5].inputTex.width != 9U || kCaseBindings[5].inputTex.height != 8U) return false;
   if (kCaseBindings[5].tileOffset.values[0] != 2.0f || kCaseBindings[5].fullResolution.values[1] != 8.0f) return false;
   return true;
@@ -762,6 +776,8 @@ def self_test() -> None:
         ("scalar semantic value and word", lambda d: d["render_cases"][0]["bindings"]["time"].update({"f32_value": 42.0, "f32_word_le": "0x42280000"})),
         ("tile offset semantic", lambda d: d["render_cases"][5]["bindings"]["tileOffset"].update({"f32_values": [0, 0], "f32_words_le": ["0x00000000", "0x00000000"]})),
         ("full resolution semantic", lambda d: d["render_cases"][5]["bindings"]["fullResolution"].update({"f32_values": [4, 3], "f32_words_le": ["0x40800000", "0x40400000"]})),
+        ("inverse full resolution semantic", lambda d: d["render_cases"][0]["bindings"]["invFullResolution"].update({"f32_values": [1, 1], "f32_words_le": ["0x3f800000", "0x3f800000"]})),
+        ("inverse aspect semantic", lambda d: d["render_cases"][0]["bindings"]["aspectInv"].update({"f32_value": 1, "f32_word_le": "0x3f800000"})),
         ("case route mismatch", lambda d: d["case_specs"][5].__setitem__("route", "full")),
         ("case rename", lambda d: d["case_specs"][0].__setitem__("name", "renamed")),
         ("case reorder", lambda d: d["case_specs"].reverse()),
