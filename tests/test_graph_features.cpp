@@ -1515,7 +1515,9 @@ TEST(graph_executor_rejects_unseedable_typed_route_and_unknown_route) {
     reauthenticate(plan);
     ExecutionInputs inputs = options(5U, 3U);
     inputs.seed_surfaces.push_back({"o0", patterned_seed(512U, 512U)});
+#if NOISEMAKER_TEST_COUNTS_ALLOCATIONS
     constexpr std::size_t kSeedCopyBytes = 512U * 512U * 4U * sizeof(float);
+#endif
     GraphExecutor executor;
     g_allocated_bytes = 0;
     g_counting_allocations = true;
