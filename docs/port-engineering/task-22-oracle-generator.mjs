@@ -4,6 +4,16 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
 
+
+// Pin every NaN lane to the canonical positive quiet NaN. The C++ pass
+// runner does the same on its side (canonical_output_lane), and the JS
+// authority's own payloads are allocation-history dependent, so the
+// recorded oracles use the canonical form on both sides.
+function canonicalizeNaNLanes(data) {
+  for (let i = 0; i < data.length; i += 1) if (Number.isNaN(data[i])) data[i] = NaN
+  return data
+}
+
 const rootIndex = process.argv.indexOf('--cpu-root')
 const ledgerIndex = process.argv.indexOf('--ledger')
 if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) {
@@ -117,11 +127,11 @@ function makeInput(width, height) {
   return new Surface(width, height, data)
 }
 function points(width, height) { return [[0,0],[width-1,0],[0,height-1],[width-1,height-1],[Math.floor(width/2),Math.floor(height/2)],[1,1],[width-2,height-2]].filter((p,i,a)=>a.findIndex(q=>q[0]===p[0]&&q[1]===p[1])===i) }
-function probe(surface, x, y) { const i=(y*surface.width+x)*4; const values=Array.from(surface.data.slice(i,i+4)); return { at_top_down_xy:[x,y], values, f32_bits_le:values.map(f32Bits) } }
+function probe(surface, x, y) { const offset=(y*surface.width+x)*4; const view=new DataView(surface.data.buffer, surface.data.byteOffset, surface.data.byteLength); const values=Array.from(new Float32Array(surface.data.buffer, surface.data.byteOffset+offset*4, 4)); return { at_top_down_xy:[x,y], values, f32_bits_le:[0,1,2,3].map((lane)=>`0x${view.getUint32((offset+lane)*4, true).toString(16).padStart(8,'0')}`) } }
 function render(factory, definition) {
   const [width,height]=definition.size; const input=makeInput(width,height)
   const kernel=bindCanonicalKernel(factory,{ width,height,time:definition.time,frame,deltaTime,seed:runtimeSeed,tileOffset:new Float32Array(definition.tileOffset),fullResolution:new Float32Array(definition.fullResolution),uniforms:definition.uniforms,textures:{inputTex:input} })
-  const output=new Surface(width,height); runPass({kernel,destination:output,time:definition.time,seed:runtimeSeed}); return {input,output}
+  const output=new Surface(width,height); runPass({kernel,destination:output,time:definition.time,seed:runtimeSeed}); canonicalizeNaNLanes(output.data); return {input,output}
 }
 function metrics(input, output) {
   let finite=0, nonfinite=0, changed=0, changedRgb=0, exactPixels=0, alphaPreserved=0, alphaOutside=0

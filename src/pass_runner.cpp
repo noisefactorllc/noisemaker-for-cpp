@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <limits>
 #include <span>
 #include <unordered_map>
 #include <vector>
@@ -74,6 +75,20 @@ namespace {
   return computed;
 }
 
+// Deterministic NaN payload discipline for every kernel output lane.
+//
+// The JS authority's own NaN payloads are allocation-history dependent: its
+// pooled scratch buffers recycle uninitialized lanes, so the same lane can
+// render ffc00000 on one pass and 7fe00000 on the next, and an -O0 and an
+// -O2 build of this port picked different payloads for the same lane. No
+// build can reproduce a specific payload bit for bit. The port therefore
+// pins every output NaN lane to the canonical positive quiet NaN. NaN lane
+// positions stay exactly as the kernel computed them; finite lanes are
+// untouched.
+float canonical_output_lane(float value) noexcept {
+  return std::isnan(value) ? std::numeric_limits<float>::quiet_NaN() : value;
+}
+
 }  // namespace
 
 Surface run_pass(const BoundKernel& kernel, std::size_t width, std::size_t height,
@@ -85,7 +100,8 @@ Surface run_pass(const BoundKernel& kernel, std::size_t width, std::size_t heigh
 
   const auto store = [&](std::size_t x, std::size_t y, const glsl::Vec4& output) noexcept {
     const std::size_t offset = (y * width + x) * 4U;
-    for (std::size_t lane = 0; lane < 4U; ++lane) pixels[offset + lane] = output[lane];
+    for (std::size_t lane = 0; lane < 4U; ++lane)
+      pixels[offset + lane] = canonical_output_lane(output[lane]);
   };
 
   if (!kernel.uses_derivatives()) {
@@ -218,7 +234,7 @@ std::vector<Surface> run_mrt_pass(const BoundKernelMrt& kernel, std::size_t widt
       const std::size_t offset = (y * width + x) * 4U;
       for (std::size_t slot = 0; slot < output_count; ++slot) {
         for (std::size_t lane = 0; lane < 4U; ++lane) {
-          pixels[slot][offset + lane] = outputs[slot][lane];
+          pixels[slot][offset + lane] = canonical_output_lane(outputs[slot][lane]);
         }
       }
     }

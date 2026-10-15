@@ -4,6 +4,16 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
 
+
+// Pin every NaN lane to the canonical positive quiet NaN. The C++ pass
+// runner does the same on its side (canonical_output_lane), and the JS
+// authority's own payloads are allocation-history dependent, so the
+// recorded oracles use the canonical form on both sides.
+function canonicalizeNaNLanes(data) {
+  for (let i = 0; i < data.length; i += 1) if (Number.isNaN(data[i])) data[i] = NaN
+  return data
+}
+
 const rootIndex = process.argv.indexOf('--cpu-root')
 const ledgerIndex = process.argv.indexOf('--ledger')
 if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) {
@@ -159,13 +169,23 @@ function render(factory, definition) {
   })
   const destination = new Surface(width, height)
   runPass({ kernel, destination, time: definition.time, seed: context.seed })
+  canonicalizeNaNLanes(destination.data)
   return destination
 }
 
 function probe(surface, x, y) {
   const offset = (y * surface.width + x) * 4
-  const values = Array.from(surface.data.slice(offset, offset + 4))
-  return { at: [x, y], values: values.map(printable), f32_bits_le: values.map(f32Bits) }
+  // Read bits from the raw buffer: boxing a Float32Array element into a JS
+  // number canonicalizes some NaN payloads, so element-wise reads disagree
+  // with the byte hash of the same surface on NaN lanes.
+  const view = new DataView(surface.data.buffer, surface.data.byteOffset, surface.data.byteLength)
+  const lanes = [0, 1, 2, 3].map((lane) => view.getUint32((offset + lane) * 4, true))
+  const floats = new Float32Array(surface.data.buffer, surface.data.byteOffset + offset * 4, 4)
+  return {
+    at: [x, y],
+    values: Array.from(floats).map(printable),
+    f32_bits_le: lanes.map((bits) => `0x${bits.toString(16).padStart(8, '0')}`),
+  }
 }
 
 function surfaceMetrics(surface, uniforms) {

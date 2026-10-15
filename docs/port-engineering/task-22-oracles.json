@@ -4,7 +4,7 @@
   "provenance": {
     "node": "v26.0.0",
     "cpu_revision": "4307ca9f26fc415e4fc5e75227d429d35cc741cd",
-    "cpu_behavioral_sha256": "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801",
+    "cpu_behavioral_sha256": "ae01190b9e5c14950f8f27acec69d8b6b6a4b4f5ea7495443155d8a9058ece9a",
     "api": "public kernelFactories CRT adapter + bindCanonicalKernel + runPass + Surface",
     "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
     "canonical_kernels_sha256": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",

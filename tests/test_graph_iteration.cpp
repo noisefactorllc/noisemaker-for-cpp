@@ -185,10 +185,10 @@ TEST(compute_iteration_groups_leaves_ordinary_chain_as_one_group_per_step) {
   REQUIRE(shape(groups) == expected);
 }
 
-TEST(compute_iteration_groups_repeats_animated_noise_with_positive_flow_ticks) {
-  struct Case { double speed; double count; bool grouped; };
-  for (const auto& item : std::vector<Case>{{1.0, 2.0, true}, {0.0, 2.0, false},
-                                          {1.0, 0.0, false}, {1.0, -1.0, false}}) {
+TEST(compute_iteration_groups_keeps_animated_noise_and_flow3d_as_separate_steps) {
+  struct Case { double speed; double count; };
+  for (const auto& item : std::vector<Case>{{1.0, 2.0}, {0.0, 2.0},
+                                            {1.0, 0.0}, {1.0, -1.0}}) {
     ExecutionPlan plan;
     ExecutionChain chain;
     const auto noise = add_effect(
@@ -199,15 +199,10 @@ TEST(compute_iteration_groups_repeats_animated_noise_with_positive_flow_ticks) {
         plan, chain, make_definition("filter3d/flow3d", true, std::nullopt, {}, {}));
     std::get<EffectStep>(chain.steps[flow]).params.push_back(
         {"iterationCount", PlanValue::number_value(item.count)});
-    const auto groups = noisemaker::graph::iteration::compute_iteration_groups(plan, chain);
-    if (item.grouped) {
-      REQUIRE(groups.size() == 1U);
-      REQUIRE(groups[0].iterated);
-      REQUIRE(groups[0].step_indices == (std::vector<std::size_t>{noise, flow}));
-    } else {
-      REQUIRE(shape(groups) ==
-              (std::vector<std::pair<bool, std::size_t>>{{false, 1}, {true, 1}}));
-    }
+    // The range-end authority has no noise3d/flow3d merge: the animated
+    // noise stays its own non-iterated step and flow3d iterates alone.
+    REQUIRE(shape(noisemaker::graph::iteration::compute_iteration_groups(plan, chain)) ==
+            (std::vector<std::pair<bool, std::size_t>>{{false, 1}, {true, 1}}));
   }
 }
 
