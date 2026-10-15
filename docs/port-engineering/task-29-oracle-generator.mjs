@@ -8,16 +8,6 @@ import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.j
 import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
 import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
 
-
-// Pin every NaN lane to the canonical positive quiet NaN. The C++ pass
-// runner does the same on its side (canonical_output_lane), and the JS
-// authority's own payloads are allocation-history dependent, so the
-// recorded oracles use the canonical form on both sides.
-function canonicalizeNaNLanes(data) {
-  for (let i = 0; i < data.length; i += 1) if (Number.isNaN(data[i])) data[i] = NaN
-  return data
-}
-
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outPath = path.join(here, 'task-29-oracles.json')
 const key = 'mixer/focusBlur:focusBlur'
@@ -81,18 +71,13 @@ function render(definition) {
   })
   const output = new Surface(definition.width, definition.height)
   runPass({ kernel, destination: output })
-  canonicalizeNaNLanes(output.data)
   return output
 }
 
 function probe(surface, x, y) {
-  const offset = (y * surface.width + x) * 4
-  // Raw-buffer bit reads: boxing a Float32Array element into a JS number
-  // canonicalizes some NaN payloads, which would disagree with the byte hash
-  // of the same surface on NaN lanes.
-  const view = new DataView(surface.data.buffer, surface.data.byteOffset, surface.data.byteLength)
-  const values = Array.from(new Float32Array(surface.data.buffer, surface.data.byteOffset + offset * 4, 4))
-  return { at_top_down_xy: [x, y], values, f32_bits_le: [0, 1, 2, 3].map((lane) => `0x${view.getUint32((offset + lane) * 4, true).toString(16).padStart(8, '0')}`) }
+  const i = (y * surface.width + x) * 4
+  const values = Array.from(surface.data.slice(i, i + 4))
+  return { at_top_down_xy: [x, y], values, f32_bits_le: values.map(f32Bits) }
 }
 
 function result(surface) {

@@ -2766,21 +2766,29 @@ namespace {
 // The rgba8 hash below is deliberately NOT arch-keyed: to_rgba8() maps any NaN
 // to 0 regardless of sign, so one value is correct on every architecture.
 //
-// The pass runner now pins every kernel output NaN lane to the canonical
-// positive quiet NaN on every architecture (see the canonical_output_lane
-// note in src/pass_runner.cpp). The JS authority's own payload for this lane
-// differs per architecture -- the positive quiet NaN on arm64, the negative
-// one on x86-64 -- and its pooled-buffer lanes are allocation-history
-// dependent besides, so the deterministic contract is the canonical form:
-// the arm64 capture below is exactly that canonical render, and one value
-// is correct on every architecture.
+// The test below is named for what it actually asserts: the blue lane matches
+// the SAME-ARCHITECTURE authority's NaN, which is the positive quiet NaN on
+// arm64 and the negative one on x86-64. It deliberately does not claim a
+// canonical quiet NaN is preserved -- that is true on arm64 only, and a green
+// test whose name states a false invariant gets cited later as evidence the
+// invariant holds.
+#if defined(__aarch64__)
+// arm64 authority capture.
 constexpr std::string_view kTask16WidthOneFloatHash =
     "24f56616adaf6242697f97e5d9420c4bafa1529c99e8e053b9dc0cb6bc87341c";
 constexpr std::uint32_t kTask16WidthOneBlueBits = 0x7fc00000U;
+#elif defined(__x86_64__)
+// x86_64 authority capture.
+constexpr std::string_view kTask16WidthOneFloatHash =
+    "79d1c1af5c1c16157179b44c4a5c04320924e03c6748cbb0eeb40ae4cb8a5582";
+constexpr std::uint32_t kTask16WidthOneBlueBits = 0xffc00000U;
+#else
+#error "typed_task16 width-one: no JS-authority capture is recorded for this architecture. This fixture pins the bytes of a hardware-manufactured NaN whose sign is ISA-specific, so neither recorded capture may be inherited. Capture the authority on this architecture, add it to docs/port-engineering/task-16-oracles.json via the generator, then extend this switch."
+#endif
 
 }  // namespace
 
-TEST(typed_task16_compute_rank_width_one_matches_canonical_authority_nan) {
+TEST(typed_task16_compute_rank_width_one_matches_same_arch_authority_nan) {
   const noisemaker::Surface input = task16_flat_surface(1U, 1U);
   const noisemaker::Surface first = render_task16(input, 1U, 1U);
   const noisemaker::Surface second = render_task16(input, 1U, 1U);
@@ -5831,12 +5839,12 @@ TEST(typed_fractal3d_power_zero_and_one_match_current_cpu_mrt) {
     const char* geometry_rgba;
   };
   const std::array<Case, 8> cases{{
-      {0, 0.0, "ae3da1370a82c2a6c83fa2c64e5f5656565119bb7a886517972248dc017ebca1", "04c2b2eb5686d668a5b78f12411c7341ea810f6e1e7b038b706f6cf975b94a88", "86fb4b02dc95d4d233f4e67a5bfb8ba5a9698ba0cb21d939d5dd0f9ab198f38a", "968b36740064676046a4f8d5e4c8f8026c731b589deb1bfea5aa40b92ddb5194"},
-      {0, 1.0, "869627d6158025a7b2cdf74c44869c64217e7f2f34961fb83857dda14b4fd5f1", "b444a92a5492052e52e1f326660c2c3aa6473786ab2aa55f31118a1b1006f842", "934d51bee47609abb02424515f938edd56f4ce470040778e1742d57831e3e888", "8e6221691a54f8297c08c1baf018ee73628965f5ab061e3bf33f6773674cdc6a"},
+      {0, 0.0, "ec2b545039e21a5101d407c78e457a6e2f1580ab98bcb9e6fc8ece90aa1b98af", "08fcc5e51a6f858b5b7972410fdbda914f07098851fcc7bd7c860353cb79d3df", "86fb4b02dc95d4d233f4e67a5bfb8ba5a9698ba0cb21d939d5dd0f9ab198f38a", "968b36740064676046a4f8d5e4c8f8026c731b589deb1bfea5aa40b92ddb5194"},
+      {0, 1.0, "242359ed227333d1d648b7a3e7a2b77306817b2345127922c96512d95b52c225", "b444a92a5492052e52e1f326660c2c3aa6473786ab2aa55f31118a1b1006f842", "934d51bee47609abb02424515f938edd56f4ce470040778e1742d57831e3e888", "8e6221691a54f8297c08c1baf018ee73628965f5ab061e3bf33f6773674cdc6a"},
       {1, 0.0, "4d37fc81727d18e6aeadc48813c1849d48e7bff0784daf969b313323d9835957", "b86369c7bee089c0aa63065bb6129564ca1a1533344b40f65425864c3ab090b0", "1ee93cb79f87a8cc04161f45d5ce2c791cac48eb4abdfd8fe347f961b35b46d2", "247b77a151c77e71ddb096c926714ad57554d1e4ecf15d329149bdb7c6894285"},
       {1, 1.0, "63b03619882ff737444dc45e7f8e5fc4699f444f981b08cbe6ccfaeef41c91e8", "58dd7a779ef721fb935d9e44fd66f887fcef35699588b53e3d0a4dceb6ffd9bb", "13b2e3b29e258ca2ce0804729c3434819f1096e7f2d2747bd88f25b611c415c4", "4ca55d300bad98d94e5bc32cfd58100a51ad9ba2157e309200c5718d558a3574"},
-      {2, 0.0, "e87b59650181568557edd28aa50467589ca8b361325e8c6905cb6f98e99359af", "46dc76e2417ce7b0d82fb167e6e5fe62384dc1aa5aa3d696ebf34864086389bc", "f538c19dc932cc998936e6daad3e659dd8c03d4875d1757e2a5f7f96ce562380", "296697a2dd7e32e1d981b42f09278e4f7a9f651bc87e0300af025ffd91d2cbfb"},
-      {2, 1.0, "b967bddd17df89320144538aaf686139a555cff0b3a0397da4c7c1c9df815a01", "2fd3fb88cccff5a80a22e7ba0b7cccdb1a2d99e12e1c8e36d19ed3b8286590eb", "50f2c6cf697bed4c390202b803b869901356bd924a8d1b7fd3eb257a1a4db53c", "abe21df81c3b29fcbb52660eaf81089ee1590eeec148c6fd93d548b862a64b7c"},
+      {2, 0.0, "2533eeacc5373359604c2ceb664baf72635fa6047122a70f2f7f7867df6b3df7", "9e18d8f9fec2bd0d299210db3c59fa0b652e0bb05224b89c5691a1c34045d503", "f538c19dc932cc998936e6daad3e659dd8c03d4875d1757e2a5f7f96ce562380", "296697a2dd7e32e1d981b42f09278e4f7a9f651bc87e0300af025ffd91d2cbfb"},
+      {2, 1.0, "7d9ce0cb2f082701be8a33d6b2679bbb30eda8f78385fbf0c186d9ee89e2481b", "2fd3fb88cccff5a80a22e7ba0b7cccdb1a2d99e12e1c8e36d19ed3b8286590eb", "50f2c6cf697bed4c390202b803b869901356bd924a8d1b7fd3eb257a1a4db53c", "abe21df81c3b29fcbb52660eaf81089ee1590eeec148c6fd93d548b862a64b7c"},
       {3, 0.0, "b7ed47dbd53ae47b8874134278290d194b9db1d5deab023888fc207152501463", "b837100ad7a284d5ef7389776f4e013d729ed10be530fa908cecab52eb8ddc8a", "f8cea85141f962be3b9643a906db53a669476d830f1c36e76af13f666babe7c3", "1cff87476511d694a4b466395e8784423c10d6fd3fcefb6687eb3dc455be6f47"},
       {3, 1.0, "e8842a707581e10e47e91958826dc87f7da106e6c1c98ae6457706cc85079ffd", "6d711bd2b72e6a253d257eb6fac377d836f981a59231dc5e4c1895a6ab233ba9", "c0d40cb203c2bd8b87ec0882502d72ad6e46b92721d8913058b502a8a2877f14", "5addffc85fa337c088cab29f47eb54b0a8961ae680130971f396120b0ed4086c"},
   }};

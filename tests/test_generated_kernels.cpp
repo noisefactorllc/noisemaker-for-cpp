@@ -11443,14 +11443,17 @@ struct Task35BitwiseCase {
 // docs/port-engineering/x86-64-divergences/x86-64-divergences-report.md.
 // The case's rgba8 hash is NOT arch-keyed: to_rgba8() maps any NaN to 0
 // regardless of sign. The other five cases are finite and arch-independent.
-//
-// The pass runner pins every kernel output NaN lane to the canonical
-// positive quiet NaN on every architecture (canonical_output_lane in
-// src/pass_runner.cpp), so the mask-zero fixture is no longer arch-keyed:
-// the canonical render equals the arm64 authority capture on every
-// architecture, and one value is correct everywhere.
+#if defined(__aarch64__)
+// arm64 authority capture.
 constexpr std::string_view kTask35MaskZeroFloatHash =
     "720415a4af3de87c558c06dbc5c970ee576379eb01d0e3af743c30b35a93986c";
+#elif defined(__x86_64__)
+// x86_64 authority capture.
+constexpr std::string_view kTask35MaskZeroFloatHash =
+    "72f71c0a368a60c12d9d7cfa112e460e6dccf009df5ecd1754bc43ed86bb6803";
+#else
+#error "task35 mask-zero-divide-by-zero-diagnostic: no JS-authority capture is recorded for this architecture. This fixture pins the bytes of a hardware-manufactured NaN whose sign is ISA-specific, so neither recorded capture may be inherited. Capture the authority on this architecture, add it to tests/oracles/task-35-oracles.json via the generator, then extend this switch."
+#endif
 
 constexpr std::array<Task35BitwiseCase, 6> kTask35BitwiseCases{{
     {"xor-mono-seed-negative-one-signbit-mask", 6U, 5U, 0.0, 0.0, 6.0, 5.0, 1.0, 0, 3.5, 17, -9, (-2147483647 - 1), -1, 0, 0.4, 15.0, 0, 0.0, "6b974a31a2eb50d7d7a809bfafe3a477c1838657941f6a1dd55674b19ec02d8b", "a867f774a9b52de6716665e4f23ed7b0342508511fb112b49fd3d46600e4b209", false},
