@@ -1265,8 +1265,7 @@ TEST(graph_executor_renders_authenticated_volume_viewports) {
 }
 
 TEST(graph_executor_repeats_animated_noise_for_each_flow_tick) {
-  // Range-end (CPU 4307ca9) capture: the animated noise runs once and the
-  // flow3d effect iterates alone (no noise/flow merge in iteration.js).
+  // Fresh CPU 5fd2194 capture; its smoke test pins the same RGBA8 bytes.
   Renderer renderer;
   const auto source =
       "search synth3d, filter3d, render\n"
@@ -1277,11 +1276,11 @@ TEST(graph_executor_repeats_animated_noise_for_each_flow_tick) {
   inputs.time = 0.15333333333333332;
   const auto result = renderer.render(source, inputs);
   REQUIRE(rgba8_sha256(result) ==
-          "330922b386a16492e06eea6370e14d1c1a5003b3c6430f30f0f244d6e046111d");
+          "0165ffddf3120854c80c0e36e8446253a00733b776ff45a5ecd004bd408e5fb1");
   const auto data = result.surface().data();
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
                                           data.size_bytes())) ==
-          "161258d0ee9907acea0dee27df841589b869d0b08e64e5544ac7f6e951796495");
+          "765d50a6bdb2a159bd302efd0affbe8f6680cf33e72d7435b096519837b0525d");
 }
 
 TEST(graph_executor_preserves_double_cubemap_basis_uniforms) {

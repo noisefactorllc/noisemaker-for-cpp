@@ -84,7 +84,7 @@ TEST(scatter_points_render_direct_call_skips_dead_agent) {
   }
 }
 
-TEST(scatter_points_render_density_cull_uses_the_plain_double_sequence_product) {
+TEST(scatter_points_render_density_cull_rounds_the_sequence_product_to_float32) {
   const std::vector<std::uint32_t> xyz_bits{
       0x3f000000, 0x3f000000, 0x00000000, 0x00000000,
       0x3f000000, 0x3f000000, 0x00000000, 0x3f800000,
@@ -99,14 +99,10 @@ TEST(scatter_points_render_density_cull_uses_the_plain_double_sequence_product) 
   uniforms.view_mode = 0;
   uniforms.view_scale = 1;
 
-  // The only live agent is v=1. fract(1 * GOLDEN_RATIO_CONJUGATE) in plain
-  // double is 0.6180339887498949, which is <= the density 61.8034 threshold
-  // (0.618034), so the agent is kept -- the pre-4307ca9 authority narrowed
-  // this product through float32 and culled it.
   noisemaker::Surface below(1, 1);
   uniforms.density = 61.8034;
-  REQUIRE(noisemaker::scatter::points_render::run_deposit(xyz_tex, rgba_tex, uniforms, below) == 1U);
-  for (float channel : below.data()) REQUIRE(channel == 1.0f);
+  REQUIRE(noisemaker::scatter::points_render::run_deposit(xyz_tex, rgba_tex, uniforms, below) == 0U);
+  for (float channel : below.data()) REQUIRE(channel == 0.0f);
 
   noisemaker::Surface above(1, 1);
   uniforms.density = 61.803401;

@@ -19,7 +19,7 @@ std::size_t adapter(const glsl::Bindings& bindings, const ScatterPass& pass, Sur
 }  // namespace
 
 std::size_t run_deposit(const Surface& xyz_tex, const Uniforms& uniforms, Surface& destination,
-                        [[maybe_unused]] TextureFormat destination_format) {
+                        TextureFormat destination_format) {
   namespace pd = points_deposit;
   const auto width = static_cast<std::int64_t>(xyz_tex.width());
   const auto height = static_cast<std::int64_t>(xyz_tex.height());
@@ -27,6 +27,7 @@ std::size_t run_deposit(const Surface& xyz_tex, const Uniforms& uniforms, Surfac
   const auto dest_width = static_cast<std::int64_t>(destination.width());
   const auto dest_height = static_cast<std::int64_t>(destination.height());
   const auto data = destination.data();
+  const bool half_float_blend = destination_format == TextureFormat::rgba16f;
   std::size_t pixels = 0;
 
   for (std::int64_t v = 0; v < count; ++v) {
@@ -41,11 +42,11 @@ std::size_t run_deposit(const Surface& xyz_tex, const Uniforms& uniforms, Surfac
     if (!offset.has_value()) continue;
 
     const double red = static_cast<double>(data[*offset]) + uniforms.deposit_amount;
-    data[*offset] = static_cast<float>(red);
+    data[*offset] = half_float_blend ? float16_truncate(static_cast<float>(red)) : static_cast<float>(red);
     data[*offset + 1] += 0.0;
     data[*offset + 2] += 0.0;
     const double alpha = static_cast<double>(data[*offset + 3]) + 1.0;
-    data[*offset + 3] = static_cast<float>(alpha);
+    data[*offset + 3] = half_float_blend ? float16_truncate(static_cast<float>(alpha)) : static_cast<float>(alpha);
     pixels += 1;
   }
 
