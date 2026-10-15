@@ -6,14 +6,14 @@
       "variants": 20,
       "mode": "sampled",
       "cases": 4731,
-      "manifest_sha256": "1845ba22716ef8e124d5f0cfb3dd484ce3525c70162525e8f2b46d2944f33b0a"
+      "manifest_sha256": "356dccab39a35afef2c7a472c508b05bd780debec6db2b2e28dd215f43ad9d29"
     },
     {
       "seed": 20260916,
       "variants": 24,
       "mode": "define-enum",
       "cases": 4908,
-      "manifest_sha256": "e55c72df94c67f4a5bf1856c128fcafec1dbd7ff236f5f604d76d0d0d93ae2ee"
+      "manifest_sha256": "aa5f0b6bd2e2b56193530eb4144dcab453a0c450130f80701ba6989fa857555c"
     }
   ],
   "swept_effects": 210,

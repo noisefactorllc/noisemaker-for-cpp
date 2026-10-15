@@ -3279,8 +3279,10 @@ glsl::Bindings materialize_scatter_bindings(
 // from the compiled `effects::PassDefinition` -- no per-effect special case
 // (see registry.hpp's `ScatterPass` for exactly which two JS `pass` fields
 // any shipped adapter reads, and why nothing else is carried).
-noisemaker::scatter::ScatterPass scatter_pass_from_definition(const effects::PassDefinition& pass) {
+noisemaker::scatter::ScatterPass scatter_pass_from_definition(
+    const effects::PassDefinition& pass, noisemaker::TextureFormat destination_format) {
   noisemaker::scatter::ScatterPass result;
+  result.destination_format = destination_format;
   // `pass.blend`, ONLY the two-element-factors shape (JS's
   // `Array.isArray(pass.blend)` true branch) -- a boolean-kind blend (or no
   // blend at all, wormhole's own shape) leaves `blend_factors` unset,
@@ -3895,7 +3897,7 @@ struct GroupIterationBundle {
           } else {
             destination.clear();
           }
-          const noisemaker::scatter::ScatterPass scatter_pass = scatter_pass_from_definition(pass);
+          const noisemaker::scatter::ScatterPass scatter_pass = scatter_pass_from_definition(pass, format);
           adapter(bindings, scatter_pass, destination);
           noisemaker::quantize_texture(destination, format);
         } else {
@@ -4074,8 +4076,16 @@ struct GroupPublishResult {
     throw GraphError(GraphErrorCode::execution_failure,
                      "iterated group's owning step is not an effect step");
   }
-  const auto* requested = parameter(*owner_step, "iterationCount");
-  const auto& owner_passes = plan.effects[owner_step->snapshot_index].definition.passes;
+  const EffectStep* iteration_owner = owner_step;
+  for (const auto index : group.step_indices) {
+    const auto* candidate = std::get_if<EffectStep>(&chain.steps[index]);
+    if (candidate != nullptr && plan.effects[candidate->snapshot_index].definition.iterated) {
+      iteration_owner = candidate;
+      break;
+    }
+  }
+  const auto* requested = parameter(*iteration_owner, "iterationCount");
+  const auto& owner_passes = plan.effects[iteration_owner->snapshot_index].definition.passes;
   const bool has_pass_repeat = std::any_of(owner_passes.begin(), owner_passes.end(),
       [](const auto& pass) {
         if (!pass.repeat.has_value()) return false;
@@ -4837,7 +4847,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
               noisemaker::Surface destination =
                   existing != nullptr ? existing->surface().clone()
                                       : noisemaker::Surface(width, height);
-              const noisemaker::scatter::ScatterPass scatter_pass = scatter_pass_from_definition(pass);
+              const noisemaker::scatter::ScatterPass scatter_pass = scatter_pass_from_definition(pass, format);
               adapter(bindings, scatter_pass, destination);
               noisemaker::quantize_texture(destination, format);
               auto& stored = arena.insert(output_route, std::move(destination),

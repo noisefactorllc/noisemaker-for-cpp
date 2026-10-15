@@ -15960,6 +15960,40 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                     program, source_hash, fractal3d_log_profile) is None):
             raise _error(program, program,
                          "authenticated Fractal3D NaN payload proof missing")
+        # These two bulb products preserve the scalar NaN payload when both
+        # double operands are NaN. FloatExpr keeps the existing final f32 round.
+        bulb_scale = (
+            "    z = glsl::Vec3((zr * glsl::FloatExpr<3>("
+            "(static_cast<double>(glsl::sin(newTheta)) * "
+            "static_cast<double>(glsl::cos(newPhi))), "
+            "(static_cast<double>(glsl::sin(newTheta)) * "
+            "static_cast<double>(glsl::sin(newPhi))), "
+            "glsl::cos(newTheta))));")
+        if body.count(bulb_scale) != 2:
+            raise _error(program, program,
+                         "authenticated Fractal3D bulb scale emission mismatch")
+        scaled_bulb = bulb_scale.replace(
+            "zr * glsl::FloatExpr<3>(",
+            "fractal3d_scale_bulb(zr, glsl::FloatExpr<3>(", 1)
+        scaled_bulb = scaled_bulb[:-2] + "));"
+        body = body.replace(bulb_scale, scaled_bulb, 2)
+        namespace_open = f"namespace {namespace} {{\n"
+        if body.count(namespace_open) != 1:
+            raise _error(program, program,
+                         "authenticated Fractal3D namespace emission mismatch")
+        bulb_scale_helper = (
+            "[[nodiscard]] static glsl::FloatExpr<3> fractal3d_scale_bulb(\n"
+            "    double left, const glsl::FloatExpr<3>& right) noexcept {\n"
+            "  std::array<double, 3> lanes{};\n"
+            "  for (std::size_t lane = 0; lane < 3; ++lane) {\n"
+            "    const double operand = right[lane];\n"
+            "    lanes[lane] = (std::isnan(left) && std::isnan(operand))\n"
+            "        ? left : left * operand;\n"
+            "  }\n"
+            "  return glsl::make_float_expr(lanes);\n"
+            "}\n\n")
+        body = body.replace(namespace_open,
+                            namespace_open + bulb_scale_helper, 1)
         # The exact CPU trap min and fragment clamp sites retain an incoming
         # NaN payload. The four bulb pow sites are emitted by node identity.
         for old, new, count in (

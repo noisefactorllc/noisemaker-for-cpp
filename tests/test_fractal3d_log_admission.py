@@ -235,6 +235,46 @@ class AuthorityIntegrationTests(unittest.TestCase):
 
 
 class VectorValueCopyTests(unittest.TestCase):
+    def test_bulb_scale_nan_payload_is_confined_to_current_fractal_closure(self):
+        program = _analyzed()
+        arguments = dict(
+            source_global_literal_int_profile=(
+                SOURCE_GLOBAL_LITERAL_INT_CAPABILITY),
+            fractal3d_log_profile=PROFILE)
+        emitted = emit_typed_cpp.render_typed_cpp(
+            program, KEY, RAW_SHA256, "typed_test", "bind_test", **arguments)
+        self.assertEqual(1, emitted.count(
+            "[[nodiscard]] static glsl::FloatExpr<3> fractal3d_scale_bulb("))
+        self.assertIn("namespace typed_test {\n[[nodiscard]] static "
+                      "glsl::FloatExpr<3> fractal3d_scale_bulb(", emitted)
+        self.assertIn("std::isnan(left) && std::isnan(operand)", emitted)
+        self.assertIn("? left : left * operand;", emitted)
+        self.assertIn("return glsl::make_float_expr(lanes);", emitted)
+        self.assertEqual(2, emitted.count(
+            "z = glsl::Vec3((fractal3d_scale_bulb(zr, "
+            "glsl::FloatExpr<3>("))
+        self.assertNotIn("z = glsl::Vec3((zr * glsl::FloatExpr<3>(", emitted)
+        with mock.patch.object(emit_typed_cpp,
+                               "CURRENT_AUTHORITY_VALUE_COPIES", False):
+            historical = emit_typed_cpp.render_typed_cpp(
+                program, KEY, RAW_SHA256, "typed_test", "bind_test",
+                **arguments)
+        self.assertNotIn("fractal3d_scale_bulb", historical)
+        self.assertEqual(2, historical.count(
+            "z = glsl::Vec3((zr * glsl::FloatExpr<3>("))
+
+    def test_bulb_scale_rejects_changed_source(self):
+        program = _analyzed()
+        forged = dataclasses.replace(
+            program, raw_source=program.raw_source + "\n")
+        with self.assertRaisesRegex(
+                emit_typed_cpp.TypedEmissionError, "lock mismatch"):
+            emit_typed_cpp.render_typed_cpp(
+                forged, KEY, RAW_SHA256, "typed_test", "bind_test",
+                source_global_literal_int_profile=(
+                    SOURCE_GLOBAL_LITERAL_INT_CAPABILITY),
+                fractal3d_log_profile=PROFILE)
+
     def test_four_source_bound_declarations_copy_values(self):
         module = _module()
         program = _analyzed()

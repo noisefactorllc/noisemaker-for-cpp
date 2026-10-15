@@ -84,6 +84,32 @@ TEST(scatter_points_render_direct_call_skips_dead_agent) {
   }
 }
 
+TEST(scatter_points_render_density_cull_rounds_the_sequence_product_to_float32) {
+  const std::vector<std::uint32_t> xyz_bits{
+      0x3f000000, 0x3f000000, 0x00000000, 0x00000000,
+      0x3f000000, 0x3f000000, 0x00000000, 0x3f800000,
+  };
+  const std::vector<std::uint32_t> rgba_bits{
+      0x00000000, 0x00000000, 0x00000000, 0x00000000,
+      0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000,
+  };
+  noisemaker::Surface xyz_tex(2, 1, bits_to_floats(xyz_bits));
+  noisemaker::Surface rgba_tex(2, 1, bits_to_floats(rgba_bits));
+  noisemaker::scatter::points_render::Uniforms uniforms;
+  uniforms.view_mode = 0;
+  uniforms.view_scale = 1;
+
+  noisemaker::Surface below(1, 1);
+  uniforms.density = 61.8034;
+  REQUIRE(noisemaker::scatter::points_render::run_deposit(xyz_tex, rgba_tex, uniforms, below) == 0U);
+  for (float channel : below.data()) REQUIRE(channel == 0.0f);
+
+  noisemaker::Surface above(1, 1);
+  uniforms.density = 61.803401;
+  REQUIRE(noisemaker::scatter::points_render::run_deposit(xyz_tex, rgba_tex, uniforms, above) == 1U);
+  for (float channel : above.data()) REQUIRE(channel == 1.0f);
+}
+
 // oracle case index 8: 6x6 agents -> 2x2 destination, flat view but with
 // non-default density/viewScale (density affects the golden-ratio cull,
 // NOT the flat-view clip transform) -- forces real overlapping

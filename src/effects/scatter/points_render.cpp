@@ -48,6 +48,7 @@ std::size_t run_deposit(const Surface& xyz_tex, const Surface& rgba_tex, const U
   const auto dest_height = static_cast<std::int64_t>(destination.height());
   const auto data = destination.data();
   const double cull_threshold = uniforms.density / 100.0;
+  const float cull_step = static_cast<float>(pd::kGoldenRatioConjugate);
 
   const pd::ClipCenterUniforms clip_uniforms{
       uniforms.view_mode, uniforms.rotate_x, uniforms.rotate_y, uniforms.rotate_z,
@@ -58,7 +59,8 @@ std::size_t run_deposit(const Surface& xyz_tex, const Surface& rgba_tex, const U
   std::size_t pixels = 0;
 
   for (std::int64_t v = 0; v < count; ++v) {
-    const double particle_random = pd::js_fract(static_cast<double>(v) * pd::kGoldenRatioConjugate);
+    const float cull_product = static_cast<float>(static_cast<double>(v) * static_cast<double>(cull_step));
+    const double particle_random = pd::js_fract(static_cast<double>(cull_product));
     if (particle_random > cull_threshold) continue;  // ported literally: cull on `>`, keep on `<=`
 
     const std::int64_t sx = v % width;

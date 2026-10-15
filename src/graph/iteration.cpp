@@ -45,6 +45,14 @@ namespace {
   return definition.loop_role.has_value() && *definition.loop_role == role;
 }
 
+[[nodiscard]] const PlanValue* parameter_of(const EffectStep& step,
+                                           std::string_view name) noexcept {
+  for (const auto& parameter : step.params) {
+    if (parameter.name == name) return &parameter.value;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 bool is_particle_state_name(std::string_view name) noexcept {
@@ -149,6 +157,21 @@ std::vector<IterationGroup> compute_iteration_groups(
     if (open_group.has_value() && references_particle_state(definition)) {
       open_group->step_indices.push_back(index);
       continue;
+    }
+    // CPU 5fd2194 re-runs animated noise3d before each positive flow3d tick.
+    const auto* count = parameter_of(effect_step, "iterationCount");
+    if (!open_group.has_value() && definition.id == "filter3d/flow3d" &&
+        count != nullptr && count->kind == PlanValue::Kind::number && count->number > 0.0 &&
+        !groups.empty() && groups.back().step_indices.size() == 1U) {
+      const auto previous_index = groups.back().step_indices.front();
+      const auto* previous = std::get_if<EffectStep>(&chain.steps[previous_index]);
+      if (previous != nullptr && definition_of(plan, *previous).id == "synth3d/noise3d") {
+        const auto* speed = parameter_of(*previous, "speed");
+        if (speed == nullptr || speed->kind != PlanValue::Kind::number || speed->number != 0.0) {
+          groups.back() = IterationGroup{{previous_index, index}, true, false};
+          continue;
+        }
+      }
     }
     // iteration.js:99-100 -- otherwise: close whatever's open, start this
     // step's own single-step group (iterated iff its own definition is).

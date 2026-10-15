@@ -76,6 +76,48 @@ TEST(scatter_lenia_direct_call_skips_dead_agent) {
   }
 }
 
+TEST(scatter_lenia_rounds_each_additive_half_float_write) {
+  const std::vector<std::uint32_t> xyz_bits{
+      0x3f000000, 0x3f000000, 0x00000000, 0x3f800000,
+      0x3f000000, 0x3f000000, 0x00000000, 0x3f800000,
+  };
+  noisemaker::Surface xyz_tex(2, 1, bits_to_floats(xyz_bits));
+  noisemaker::scatter::lenia::Uniforms uniforms;
+  uniforms.deposit_amount = 0.0006;
+
+  noisemaker::Surface half_destination(1, 1, {1.0f, 0.0f, 0.0f, 2048.0f});
+  REQUIRE(noisemaker::scatter::lenia::run_deposit(
+              xyz_tex, uniforms, half_destination, noisemaker::TextureFormat::rgba16f) == 2U);
+  REQUIRE(noisemaker::float_bits_to_uint(half_destination.data()[0]) == 0x3f800000U);
+  REQUIRE(noisemaker::float_bits_to_uint(half_destination.data()[3]) == 0x45000000U);
+
+  noisemaker::Surface float_destination(1, 1, {1.0f, 0.0f, 0.0f, 2048.0f});
+  REQUIRE(noisemaker::scatter::lenia::run_deposit(
+              xyz_tex, uniforms, float_destination, noisemaker::TextureFormat::rgba32f) == 2U);
+  REQUIRE(noisemaker::float_bits_to_uint(float_destination.data()[0]) == 0x3f802752U);
+  REQUIRE(float_destination.data()[3] == 2050.0f);
+}
+
+TEST(scatter_lenia_registry_uses_destination_format_for_each_blend_write) {
+  const std::vector<std::uint32_t> xyz_bits{
+      0x3f000000, 0x3f000000, 0x00000000, 0x3f800000,
+      0x3f000000, 0x3f000000, 0x00000000, 0x3f800000,
+  };
+  noisemaker::Surface xyz_tex(2, 1, bits_to_floats(xyz_bits));
+  noisemaker::Surface destination(1, 1, {1.0f, 0.0f, 0.0f, 2048.0f});
+  noisemaker::glsl::Bindings bindings;
+  bindings.set_texture("xyzTex", xyz_tex);
+  bindings.set_uniform("depositAmount", 0.0006);
+  noisemaker::scatter::ScatterPass pass;
+  pass.destination_format = noisemaker::TextureFormat::rgba16f;
+  noisemaker::scatter::register_builtin_scatter_adapters();
+  const auto adapter = noisemaker::scatter::resolve_scatter_adapter("points/lenia:deposit");
+  REQUIRE(adapter != nullptr);
+  REQUIRE(adapter(bindings, pass, destination) == 2U);
+  REQUIRE(noisemaker::float_bits_to_uint(destination.data()[0]) == 0x3f800000U);
+  REQUIRE(noisemaker::float_bits_to_uint(destination.data()[3]) == 0x45000000U);
+}
+
 // oracle case index 17: 1x7 agents -> 1x7 destination, depositAmount=0 --
 // exercises the "always deposits the fixed (amount, 0, 0, 1) constant"
 // rule even when amount itself is 0 (alpha still gets +1), via the

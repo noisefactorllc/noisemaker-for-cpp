@@ -42324,6 +42324,17 @@ BoundKernelMrt bind_synth3d_flythrough3d_precompute(const glsl::Bindings& bindin
 // Typed IR program: synth3d/fractal3d:precompute
 // Source SHA-256: 4bc39fb7920cf0829cc6a6fc4670cdac9f5ea68c5438f569050a4732c1e6de19
 namespace typed_295 {
+[[nodiscard]] static glsl::FloatExpr<3> fractal3d_scale_bulb(
+    double left, const glsl::FloatExpr<3>& right) noexcept {
+  std::array<double, 3> lanes{};
+  for (std::size_t lane = 0; lane < 3; ++lane) {
+    const double operand = right[lane];
+    lanes[lane] = (std::isnan(left) && std::isnan(operand))
+        ? left : left * operand;
+  }
+  return glsl::make_float_expr(lanes);
+}
+
 struct State final : KernelState {
   State(std::int32_t volumeSize_value, std::int32_t noiseType_value, double power_value, std::int32_t iterations_value, double bailout_value, double juliaX_value, double juliaY_value, double juliaZ_value, std::int32_t colorMode_value) : volumeSize(volumeSize_value), noiseType(noiseType_value), power(power_value), iterations(iterations_value), bailout(bailout_value), juliaX(juliaX_value), juliaY(juliaY_value), juliaZ(juliaZ_value), colorMode(colorMode_value) {}
   std::int32_t volumeSize;
@@ -42396,7 +42407,7 @@ struct State final : KernelState {
     [[maybe_unused]] double zr = (std::isnan(r) ? ((n) == 0.0 ? 1.0f : std::bit_cast<float>(0x7fc00000U)) : glsl::pow(r, n));
     [[maybe_unused]] double newTheta = (static_cast<double>(theta) * static_cast<double>(n));
     [[maybe_unused]] double newPhi = (static_cast<double>(phi) * static_cast<double>(n));
-    z = glsl::Vec3((zr * glsl::FloatExpr<3>((static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::cos(newPhi))), (static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::sin(newPhi))), glsl::cos(newTheta))));
+    z = glsl::Vec3((fractal3d_scale_bulb(zr, glsl::FloatExpr<3>((static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::cos(newPhi))), (static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::sin(newPhi))), glsl::cos(newTheta)))));
     z = glsl::Vec3((z + c));
     iter = (iter + static_cast<float>(1.0));
   }
@@ -42459,7 +42470,7 @@ struct State final : KernelState {
     [[maybe_unused]] double zr = (std::isnan(r) ? ((n) == 0.0 ? 1.0f : std::bit_cast<float>(0x7fc00000U)) : glsl::pow(r, n));
     [[maybe_unused]] double newTheta = (static_cast<double>(theta) * static_cast<double>(n));
     [[maybe_unused]] double newPhi = (static_cast<double>(phi) * static_cast<double>(n));
-    z = glsl::Vec3((zr * glsl::FloatExpr<3>((static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::cos(newPhi))), (static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::sin(newPhi))), glsl::cos(newTheta))));
+    z = glsl::Vec3((fractal3d_scale_bulb(zr, glsl::FloatExpr<3>((static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::cos(newPhi))), (static_cast<double>(glsl::sin(newTheta)) * static_cast<double>(glsl::sin(newPhi))), glsl::cos(newTheta)))));
     z = glsl::Vec3((z + pos));
     iter = (iter + static_cast<float>(1.0));
   }

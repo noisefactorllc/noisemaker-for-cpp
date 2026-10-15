@@ -76,6 +76,9 @@ class CommittedEmissionTests(unittest.TestCase):
         self.assertIn(("p", "st"), sites)
         self.assertNotIn(("color", "orig"), sites)
         self.assertNotIn(("z", "pos"), sites)
+        self.assertNotIn(("rotatedCentered", "centered"), sites)
+        self.assertEqual(1, _COMMITTED_SLICE.count(
+            "[[maybe_unused]] glsl::Vec2 rotatedCentered = centered;"))
         self.assertEqual(6, _COMMITTED_SLICE.count(
             "[[maybe_unused]] glsl::Vec3 z = pos;"))
         # Every alias binds a bare identifier, never a state field or a call.

@@ -7,12 +7,12 @@
 // lenia's `deposit.vert` has no `rgbaTex` input at all, and `deposit.frag`
 // ignores agent state entirely.
 //
-// Numeric contract: same as dla.hpp -- plain IEEE double throughout, the
-// only narrowing is the destination's own float32 store on `+=`.
+// Numeric contract: each red/alpha addition stores through float32; an
+// rgba16f destination also truncates to half float after each point.
 
 #include <cstddef>
 
-#include "noisemaker/surface.hpp"
+#include "noisemaker/texture_format.hpp"
 
 namespace noisemaker::scatter::lenia {
 
@@ -26,7 +26,8 @@ struct Uniforms {
 // particle-state texture in the current catalog is square -- see
 // points-deposit.js's own header note). Returns the number of agents that
 // actually deposited.
-[[nodiscard]] std::size_t run_deposit(const Surface& xyz_tex, const Uniforms& uniforms, Surface& destination);
+[[nodiscard]] std::size_t run_deposit(const Surface& xyz_tex, const Uniforms& uniforms, Surface& destination,
+                                      TextureFormat destination_format = TextureFormat::rgba32f);
 
 // Registers "points/lenia:deposit". Called from
 // register_builtin_scatter_adapters().

@@ -95,6 +95,7 @@
 
 #include "noisemaker/glsl_runtime.hpp"
 #include "noisemaker/surface.hpp"
+#include "noisemaker/texture_format.hpp"
 
 namespace noisemaker::scatter {
 
@@ -118,6 +119,9 @@ struct ScatterPass {
   // before comparing it against the other two (already-integer-valued)
   // operands.
   std::optional<double> count;
+  // Output format is supplied by the executor; standalone callers default
+  // to the unquantized float32 Surface behavior.
+  TextureFormat destination_format = TextureFormat::rgba32f;
 };
 
 using ScatterAdapter = std::size_t (*)(const glsl::Bindings& bindings, const ScatterPass& pass, Surface& destination);

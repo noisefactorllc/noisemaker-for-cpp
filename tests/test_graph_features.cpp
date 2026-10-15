@@ -1264,6 +1264,25 @@ TEST(graph_executor_renders_authenticated_volume_viewports) {
   }
 }
 
+TEST(graph_executor_repeats_animated_noise_for_each_flow_tick) {
+  // Fresh CPU 5fd2194 capture; its smoke test pins the same RGBA8 bytes.
+  Renderer renderer;
+  const auto source =
+      "search synth3d, filter3d, render\n"
+      "noise3d(seed: 0, volumeSize: x32).flow3d(iterationCount: 2).render3d().write(o0)\n"
+      "render(o0)\n";
+  auto inputs = options(8U, 8U);
+  inputs.seed = 1.0;
+  inputs.time = 0.15333333333333332;
+  const auto result = renderer.render(source, inputs);
+  REQUIRE(rgba8_sha256(result) ==
+          "0165ffddf3120854c80c0e36e8446253a00733b776ff45a5ecd004bd408e5fb1");
+  const auto data = result.surface().data();
+  REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
+                                          data.size_bytes())) ==
+          "765d50a6bdb2a159bd302efd0affbe8f6680cf33e72d7435b096519837b0525d");
+}
+
 TEST(graph_executor_preserves_double_cubemap_basis_uniforms) {
   // CPU4307 retains the nine parameter values until the completed ray is
   // stored as float32. Rounding the matrix first changes one rgba16f step.

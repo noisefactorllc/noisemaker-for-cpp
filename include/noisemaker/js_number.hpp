@@ -97,7 +97,10 @@ namespace noisemaker {
     }
   } else {
     result.push_back(text.front());
-    if (text.size() > 1) result += "." + text.substr(1);
+    if (text.size() > 1) {
+      result.push_back('.');
+      result.append(text, 1, std::string::npos);
+    }
     result += "e";
     if (scientific_exponent >= 0) result += "+";
     result += std::to_string(scientific_exponent);

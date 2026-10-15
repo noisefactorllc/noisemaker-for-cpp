@@ -11631,7 +11631,7 @@ synth/subdivide:subdivide""".splitlines())
         # Scale, and adds the 8ae8e2a current-authority capture table. 5b686a4
         # re-captures the Life matrix under the authority's LCG hash routing.
         self.assertEqual(
-            "322516c840f060c13948c65af3f79092fcb4ee96404521ff6640d3c32588a31c",
+            "a66b7bd37d2585fc686193d15329dd692e54e3a328515afe453aa450537a4a93",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -22815,11 +22815,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3854138,
-                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
+                3854564,
+                "8daa2db780e643f6f8c2df8eb6ba23c6f3237d100d5bdf0ec517f5f384bf8830"),
             "src/typed_generated/typed_manifest.json": (
                 923284,
-                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
+                "119f7dfa95d0055086da5aaf21a4da490a20dfba37b2a0f4da1afeec1cf759b8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23603,11 +23603,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3854138,
-                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
+                3854564,
+                "8daa2db780e643f6f8c2df8eb6ba23c6f3237d100d5bdf0ec517f5f384bf8830"),
             "src/typed_generated/typed_manifest.json": (
                 923284,
-                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
+                "119f7dfa95d0055086da5aaf21a4da490a20dfba37b2a0f4da1afeec1cf759b8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24377,11 +24377,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3854138,
-                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
+                3854564,
+                "8daa2db780e643f6f8c2df8eb6ba23c6f3237d100d5bdf0ec517f5f384bf8830"),
             "src/typed_generated/typed_manifest.json": (
                 923284,
-                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
+                "119f7dfa95d0055086da5aaf21a4da490a20dfba37b2a0f4da1afeec1cf759b8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24916,11 +24916,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3854138,
-                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
+                3854564,
+                "8daa2db780e643f6f8c2df8eb6ba23c6f3237d100d5bdf0ec517f5f384bf8830"),
             "src/typed_generated/typed_manifest.json": (
                 923284,
-                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
+                "119f7dfa95d0055086da5aaf21a4da490a20dfba37b2a0f4da1afeec1cf759b8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25519,11 +25519,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3854138,
-                "913038d2221659a9c07602d2d5155c8eb1b736254c4572fc5a9edb5a06b0dfba"),
+                3854564,
+                "8daa2db780e643f6f8c2df8eb6ba23c6f3237d100d5bdf0ec517f5f384bf8830"),
             "src/typed_generated/typed_manifest.json": (
                 923284,
-                "fab938182683970d14026b9bb44fef2c36d1079e29cfb64abf807ea884eb2d95"),
+                "119f7dfa95d0055086da5aaf21a4da490a20dfba37b2a0f4da1afeec1cf759b8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),

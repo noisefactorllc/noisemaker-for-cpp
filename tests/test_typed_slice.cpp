@@ -4680,7 +4680,9 @@ TEST(typed_local_vec4_arrays_match_authority) {
       for (std::size_t frame = 0; frame <= 8U; ++frame) {
         textures.emplace_back(4U, 3U);
         fill(textures.back(), frame, frame > 0U && item.empty);
-        bindings.set_texture(frame == 0U ? "inputTex" : "h" + std::to_string(frame), textures.back());
+        std::string texture_name = frame == 0U ? "inputTex" : "h";
+        if (frame != 0U) texture_name += std::to_string(frame);
+        bindings.set_texture(texture_name, textures.back());
       }
       output = noisemaker::run_pass(
           noisemaker::generated::bind_filter_temporalAberration_temporalAberration(bindings), item.width, item.height);
