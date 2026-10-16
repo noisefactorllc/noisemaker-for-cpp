@@ -164,8 +164,17 @@ function render(factory, definition) {
 
 function probe(surface, x, y) {
   const offset = (y * surface.width + x) * 4
+  // Read the bit pattern from the raw buffer. Boxing a Float32Array element
+  // into a JS number canonicalizes some NaN payloads, so element-wise reads
+  // disagree with the byte hash of the same surface on NaN lanes.
+  const view = new DataView(surface.data.buffer, surface.data.byteOffset + offset * 4, 16)
+  const lanes = [0, 1, 2, 3].map((lane) => view.getUint32(lane * 4, true))
   const values = Array.from(surface.data.slice(offset, offset + 4))
-  return { at: [x, y], values: values.map(printable), f32_bits_le: values.map(f32Bits) }
+  return {
+    at: [x, y],
+    values: values.map(printable),
+    f32_bits_le: lanes.map((bits) => `0x${bits.toString(16).padStart(8, '0')}`),
+  }
 }
 
 function surfaceMetrics(surface, uniforms) {
