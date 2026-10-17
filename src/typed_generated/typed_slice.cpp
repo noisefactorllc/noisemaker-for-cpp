@@ -3566,65 +3566,56 @@ struct State final : KernelState {
   return xn;
 }
 
-[[nodiscard]] glsl::Vec3 hsv2rgb([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::FloatExpr<3> hsv) noexcept {
-  [[maybe_unused]] double h = (hsv[0] - std::floor(hsv[0]));
-  [[maybe_unused]] double s = hsv[1];
-  [[maybe_unused]] double v = hsv[2];
-  [[maybe_unused]] double c = (v * s);
-  [[maybe_unused]] double h6 = (h * 6.0);
-  [[maybe_unused]] double hue_mod = (h6 - (2.0 * std::floor(h6 / 2.0)));
-  [[maybe_unused]] double x = (c * (1.0 - std::fabs(hue_mod - 1.0)));
-  [[maybe_unused]] double m = (v - c);
-  if (h < (1.0 / 6.0)) return glsl::Vec3(glsl::FloatExpr<3>(c + m, x + m, m));
-  if (h < (2.0 / 6.0)) return glsl::Vec3(glsl::FloatExpr<3>(x + m, c + m, m));
-  if (h < (3.0 / 6.0)) return glsl::Vec3(glsl::FloatExpr<3>(m, c + m, x + m));
-  if (h < (4.0 / 6.0)) return glsl::Vec3(glsl::FloatExpr<3>(m, x + m, c + m));
-  if (h < (5.0 / 6.0)) return glsl::Vec3(glsl::FloatExpr<3>(x + m, m, c + m));
+[[nodiscard]] glsl::Vec3 hsv2rgb([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, glsl::FloatExpr<3> hsv) noexcept {
+  const auto f32 = [](double value) noexcept { return static_cast<double>(noisemaker::f32(value)); };
+  const double h = f32(hsv[0] - std::floor(hsv[0]));
+  const double c = f32(hsv[2] * hsv[1]);
+  const double h6 = f32(h * 6.0);
+  const double hue_mod = f32(h6 - f32(2.0 * std::floor(f32(h6 / 2.0))));
+  const double x = f32(c * f32(1.0 - std::fabs(hue_mod - 1.0)));
+  const double m = f32(hsv[2] - c);
+  if (h < 1.0 / 6.0) return glsl::Vec3(glsl::FloatExpr<3>(c + m, x + m, m));
+  if (h < 2.0 / 6.0) return glsl::Vec3(glsl::FloatExpr<3>(x + m, c + m, m));
+  if (h < 3.0 / 6.0) return glsl::Vec3(glsl::FloatExpr<3>(m, c + m, x + m));
+  if (h < 4.0 / 6.0) return glsl::Vec3(glsl::FloatExpr<3>(m, x + m, c + m));
+  if (h < 5.0 / 6.0) return glsl::Vec3(glsl::FloatExpr<3>(x + m, m, c + m));
   return glsl::Vec3(glsl::FloatExpr<3>(c + m, m, x + m));
 }
 
-[[nodiscard]] double julia([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double input_x, [[maybe_unused]] double input_y) noexcept {
-  [[maybe_unused]] const auto map_number = [](double value, double in_min, double in_max, double out_min, double out_max) noexcept {
-    return out_min + (out_max - out_min) * (value - in_min) / (in_max - in_min);
+[[nodiscard]] double julia([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, double input_x, double input_y) noexcept {
+  const auto f32 = [](double value) noexcept { return static_cast<double>(noisemaker::f32(value)); };
+  const auto map_number = [f32](double value, double in_min, double in_max, double out_min, double out_max) noexcept {
+    return f32(out_min + f32(out_max - out_min) * ((value - in_min) * f32(1.0 / f32(in_max - in_min))));
   };
-  [[maybe_unused]] const auto hypot_number = [](double value_x, double value_y) noexcept {
-    [[maybe_unused]] const double maximum = std::fmax(std::fabs(value_x), std::fabs(value_y));
-    if (std::isinf(maximum)) return maximum;
-    if (maximum == 0.0) return 0.0;
-    [[maybe_unused]] const double scaled_x = value_x / maximum;
-    [[maybe_unused]] const double scaled_y = value_y / maximum;
-    return std::sqrt(scaled_x * scaled_x + scaled_y * scaled_y) * maximum;
-  };
-  [[maybe_unused]] const double aspect = (static_cast<double>(state.fullResolution[0]) / static_cast<double>(state.fullResolution[1]));
-  [[maybe_unused]] const double zoom = map_number(static_cast<double>(state.zoomAmt), 0.0, 100.0, 2.0, 0.5);
-  [[maybe_unused]] const double speedy = map_number(static_cast<double>(state.speed), 0.0, 100.0, 0.0, 1.0);
-  [[maybe_unused]] const double speed = (speedy * 0.05) * (1.0 - speedy) + (speedy * 0.125) * speedy;
-  [[maybe_unused]] const double cx = noisemaker::fdlibm::sin(static_cast<double>(state.time) * 6.28318530718) * speed + map_number(static_cast<double>(state.offsetX), -100.0, 100.0, -0.5, 0.5);
-  [[maybe_unused]] const double cy = noisemaker::fdlibm::cos(static_cast<double>(state.time) * 6.28318530718) * speed + map_number(static_cast<double>(state.offsetY), -100.0, 100.0, -1.0, 1.0);
-  [[maybe_unused]] const double angle = map_number(static_cast<double>(state.rotation), 0.0, 360.0, 0.0, 2.0) * 3.14159265359;
-  [[maybe_unused]] const double px = input_x - 0.5 * aspect;
-  [[maybe_unused]] const double py = input_y - 0.5;
-  [[maybe_unused]] const double cs = noisemaker::fdlibm::cos(angle);
-  [[maybe_unused]] const double sn = noisemaker::fdlibm::sin(angle);
-  [[maybe_unused]] double x = cs * px + sn * py + 0.5 * aspect;
-  [[maybe_unused]] double y = -sn * px + cs * py + 0.5;
-  x = (x - 0.5 * aspect) * zoom + map_number(static_cast<double>(state.centerX), -100.0, 100.0, 1.0, -1.0);
-  y = (y - 0.5) * zoom + map_number(static_cast<double>(state.centerY), -100.0, 100.0, 1.0, -1.0);
-  [[maybe_unused]] const std::int32_t count = state.iterations * std::int32_t(2);
-  [[maybe_unused]] std::int32_t iteration = 0;
-  for ([[maybe_unused]] std::int32_t index = 0; index < count; ++index) {
+  const double aspect = f32(static_cast<double>(state.fullResolution[0]) / static_cast<double>(state.fullResolution[1]));
+  const double zoom = map_number(state.zoomAmt, 0.0, 100.0, 2.0, 0.5);
+  const double speedy = map_number(state.speed, 0.0, 100.0, 0.0, 1.0);
+  const double speed = f32(f32(f32(speedy * 0.05) * f32(1.0 - speedy)) + f32(f32(speedy * 0.125) * speedy));
+  const double phase = f32(f32(state.time) * f32(6.28318530718));
+  const double cx = f32(noisemaker::fdlibm::sin(phase) * speed + map_number(state.offsetX, -100.0, 100.0, -0.5, 0.5));
+  const double cy = f32(noisemaker::fdlibm::cos(phase) * speed + map_number(state.offsetY, -100.0, 100.0, -1.0, 1.0));
+  const double angle = f32(map_number(f32(state.rotation), 0.0, 360.0, 0.0, 2.0) * 3.1415929794311523);
+  const double px = f32(f32(input_x) - f32(0.5 * aspect));
+  const double py = f32(f32(input_y) - 0.5);
+  const double cs = f32(noisemaker::fdlibm::cos(angle));
+  const double sn = f32(noisemaker::fdlibm::sin(angle));
+  double x = f32(sn * py + f32(cs * px));
+  double y = f32(cs * py + f32(-sn * px));
+  x = f32(x * zoom + map_number(state.centerX, -100.0, 100.0, 1.0, -1.0));
+  y = f32(y * zoom + map_number(state.centerY, -100.0, 100.0, 1.0, -1.0));
+  const std::int32_t count = state.iterations * std::int32_t(2);
+  std::int32_t iteration = 0;
+  for (std::int32_t index = 0; index < count; ++index) {
     iteration = index;
-    [[maybe_unused]] const double next_x = x * x - y * y + cx;
-    [[maybe_unused]] const double next_y = y * x + x * y + cy;
-    if (next_x * next_x + next_y * next_y > 4.0) break;
+    const double next_x = f32(f32(x * x + cx) - y * y);
+    const double next_y = f32(y * x + x * y + cy);
+    if (f32(next_x * next_x + next_y * next_y) > 4.0) break;
     x = next_x;
     y = next_y;
   }
   if (count - iteration < glsl::detail::js_to_int32(static_cast<double>(state.cutoff))) return 1.0;
-  if (state.mode == std::int32_t(0)) {
-    return static_cast<double>(iteration) / static_cast<double>(count);
-  }
-  if (state.mode == std::int32_t(1)) return hypot_number(x, y);
+  if (state.mode == std::int32_t(0)) return f32(static_cast<double>(iteration) / static_cast<double>(count));
+  if (state.mode == std::int32_t(1)) return f32(std::sqrt(f32(x * x + y * y)));
   // Fractal mode contract [0,1]; unreachable terminal fallback.
   return 0.0;
 }
@@ -3763,9 +3754,28 @@ struct State final : KernelState {
 
 [[nodiscard]] glsl::Vec3 pal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept {
   [[maybe_unused]] glsl::Vec3 adapter_color = {};
-  adapter_color[0] = noisemaker::f32(static_cast<double>(state.paletteOffset[0]) + static_cast<double>(state.paletteAmp[0]) * noisemaker::fdlibm::cos(6.28318 * (static_cast<double>(state.paletteFreq[0]) * t + static_cast<double>(state.palettePhase[0]))));
-  adapter_color[1] = noisemaker::f32(static_cast<double>(state.paletteOffset[1]) + static_cast<double>(state.paletteAmp[1]) * noisemaker::fdlibm::cos(6.28318 * (static_cast<double>(state.paletteFreq[1]) * t + static_cast<double>(state.palettePhase[1]))));
-  adapter_color[2] = noisemaker::f32(static_cast<double>(state.paletteOffset[2]) + static_cast<double>(state.paletteAmp[2]) * noisemaker::fdlibm::cos(6.28318 * (static_cast<double>(state.paletteFreq[2]) * t + static_cast<double>(state.palettePhase[2]))));
+  const auto f32 = [](double value) noexcept { return static_cast<double>(noisemaker::f32(value)); };
+  if (state.paletteMode == std::int32_t(2)) {
+    adapter_color[0] = noisemaker::f32(static_cast<double>(state.paletteOffset[0]) + static_cast<double>(state.paletteAmp[0]) * noisemaker::fdlibm::cos(6.28318 * (static_cast<double>(state.paletteFreq[0]) * t + static_cast<double>(state.palettePhase[0]))));
+  } else {
+    const double inner = f32(static_cast<double>(state.paletteFreq[0]) * t + static_cast<double>(state.palettePhase[0]));
+    const double cosine = f32(noisemaker::fdlibm::cos(f32(inner * f32(6.28318))));
+    adapter_color[0] = noisemaker::f32(static_cast<double>(state.paletteAmp[0]) * cosine + static_cast<double>(state.paletteOffset[0]));
+  }
+  if (state.paletteMode == std::int32_t(2)) {
+    adapter_color[1] = noisemaker::f32(static_cast<double>(state.paletteOffset[1]) + static_cast<double>(state.paletteAmp[1]) * noisemaker::fdlibm::cos(6.28318 * (static_cast<double>(state.paletteFreq[1]) * t + static_cast<double>(state.palettePhase[1]))));
+  } else {
+    const double inner = f32(static_cast<double>(state.paletteFreq[1]) * t + static_cast<double>(state.palettePhase[1]));
+    const double cosine = f32(noisemaker::fdlibm::cos(f32(inner * f32(6.28318))));
+    adapter_color[1] = noisemaker::f32(static_cast<double>(state.paletteAmp[1]) * cosine + static_cast<double>(state.paletteOffset[1]));
+  }
+  if (state.paletteMode == std::int32_t(2)) {
+    adapter_color[2] = noisemaker::f32(static_cast<double>(state.paletteOffset[2]) + static_cast<double>(state.paletteAmp[2]) * noisemaker::fdlibm::cos(6.28318 * (static_cast<double>(state.paletteFreq[2]) * t + static_cast<double>(state.palettePhase[2]))));
+  } else {
+    const double inner = f32(static_cast<double>(state.paletteFreq[2]) * t + static_cast<double>(state.palettePhase[2]));
+    const double cosine = f32(noisemaker::fdlibm::cos(f32(inner * f32(6.28318))));
+    adapter_color[2] = noisemaker::f32(static_cast<double>(state.paletteAmp[2]) * cosine + static_cast<double>(state.paletteOffset[2]));
+  }
   if (state.paletteMode == std::int32_t(1)) {
     return hsv2rgb(state, context, glsl::FloatExpr<3>(adapter_color));
   }
@@ -3847,21 +3857,21 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   if (d == static_cast<float>(1.0)) {
-    output = glsl::Vec4(glsl::Vec4(state.bgColor, (static_cast<double>(state.bgAlpha) * static_cast<double>(0.01))));
+    output = glsl::Vec4(glsl::Vec4(state.bgColor, noisemaker::f32(static_cast<double>(noisemaker::f32(state.bgAlpha)) * static_cast<double>(noisemaker::f32(static_cast<double>(0.01))))));
     return;
   }
   if (state.cyclePalette == (-std::int32_t(1))) {
-    d = (d - state.time);
+    d = noisemaker::f32(d - state.time);
   } else {
     if (state.cyclePalette == std::int32_t(1)) {
-      d = (d + state.time);
+      d = noisemaker::f32(d + state.time);
     }
   }
-  d = ((static_cast<double>(d) * static_cast<double>(state.repeatPalette)) + (static_cast<double>(state.rotatePalette) * static_cast<double>(0.01)));
-  d = (static_cast<double>(d) - std::floor(static_cast<double>(d)));
+  d = noisemaker::f32(static_cast<double>(d) * static_cast<double>(noisemaker::f32(state.repeatPalette)) + static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(state.rotatePalette)) * static_cast<double>(noisemaker::f32(0.01)))));
+  d = noisemaker::f32(static_cast<double>(d) - std::floor(static_cast<double>(d)));
   if (state.levels > static_cast<float>(0.0)) {
     [[maybe_unused]] double lev = (static_cast<double>(state.levels) + static_cast<double>(static_cast<float>(1.0)));
-    d = (static_cast<double>(glsl::floor((static_cast<double>(d) * static_cast<double>(lev)))) / static_cast<double>(lev));
+    d = noisemaker::f32(std::floor(static_cast<double>(noisemaker::f32(d * static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(state.levels)) + 1.0))))) / static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(state.levels)) + 1.0)));
   }
   if (state.colorMode == std::int32_t(0)) {
     glsl::set_swizzle<0, 1, 2>(color, glsl::FloatExpr<3>(glsl::fract(d)));
@@ -3870,7 +3880,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       glsl::set_swizzle<0, 1, 2>(color, pal(state, context, d));
     } else {
       if (state.colorMode == std::int32_t(6)) {
-        d = ((static_cast<double>(d) * static_cast<double>(state.hueRange)) * static_cast<double>(0.01));
+        d = noisemaker::f32(static_cast<double>(d) * static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(state.hueRange)) * static_cast<double>(noisemaker::f32(0.01)))));
         glsl::set_swizzle<0, 1, 2>(color, hsv2rgb(state, context, glsl::FloatExpr<3>(d, static_cast<float>(1.0), static_cast<float>(1.0))));
       }
     }

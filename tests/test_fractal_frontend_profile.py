@@ -283,7 +283,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                                 program, profile.KEY, profile.RAW_SHA256,
                                 fractal_frontend_profile=profile.PROFILE)
 
-    def test_emits_scalar_julia_mandelbrot_number_paths(self):
+    def test_emits_scalar_julia_float32_and_mandelbrot_number_paths(self):
         program = profile.apply_fractal_frontend(
             analyzed(), profile.RAW_SHA256, profile.PROFILE)
         rendered = emit_typed_cpp.render_typed_cpp(
@@ -294,15 +294,20 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                 f"double {name}(", 0, rendered.index("void pixel"))
             end = rendered.index("\n}\n", start)
             body = rendered[start:end]
+            input_attribute = "" if name == "julia" else "[[maybe_unused]] "
             self.assertIn(
                 f"double {name}([[maybe_unused]] const State& state, "
                 "[[maybe_unused]] const glsl::PixelContext& context, "
-                "[[maybe_unused]] double input_x, "
-                "[[maybe_unused]] double input_y) noexcept {", body)
+                f"{input_attribute}double input_x, "
+                f"{input_attribute}double input_y) noexcept {{", body)
             self.assertNotIn("glsl::Vec2 z", body)
             self.assertNotIn("glsl::dot", body)
             self.assertNotIn("glsl::length(z)", body)
-            self.assertIn("const auto hypot_number", body)
+            if name == "julia":
+                self.assertIn("const double next_x = f32(f32(x * x + cx) - y * y);", body)
+                self.assertIn("return f32(std::sqrt(f32(x * x + y * y)));", body)
+            else:
+                self.assertIn("const auto hypot_number", body)
             self.assertIn("noisemaker::fdlibm::sin", body)
         self.assertIn(
             "julia(state, context, (static_cast<double>(context.frag_coord[0]) + "
@@ -485,22 +490,23 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                 body)
             self.assertTrue(body.endswith("  return 0.0;"))
 
-    def test_emitter_preserves_number_for_only_authenticated_alpha_literal(self):
+    def test_emitter_rounds_only_authenticated_alpha_literal(self):
         program = profile.apply_fractal_frontend(
             analyzed(), profile.RAW_SHA256, profile.PROFILE)
         rendered = emit_typed_cpp.render_typed_cpp(
             program, profile.KEY, profile.RAW_SHA256,
             fractal_frontend_profile=profile.PROFILE)
-        expected = ("static_cast<double>(state.bgAlpha) * "
-                    "static_cast<double>(0.01)")
+        expected = ("noisemaker::f32(static_cast<double>(noisemaker::f32(state.bgAlpha)) * "
+                    "static_cast<double>(noisemaker::f32(static_cast<double>(0.01))))")
         self.assertEqual(1, rendered.count(expected))
         self.assertNotIn(
             "static_cast<double>(state.bgAlpha) * "
             "static_cast<double>(static_cast<float>(0.01))", rendered)
-        checkpoint = struct.unpack("<I", struct.pack("<f", 73.0 * 0.01))[0]
-        self.assertEqual(0x3F3AE148, checkpoint)
+        factor = struct.unpack("<f", struct.pack("<f", 0.01))[0]
+        checkpoint = struct.unpack("<I", struct.pack("<f", 73.0 * factor))[0]
+        self.assertEqual(0x3F3AE147, checkpoint)
 
-    def test_emitter_preserves_adapter_number_hsv_path(self):
+    def test_emitter_preserves_adapter_float32_hsv_path(self):
         program = profile.apply_fractal_frontend(
             analyzed(), profile.RAW_SHA256, profile.PROFILE)
         rendered = emit_typed_cpp.render_typed_cpp(
@@ -509,24 +515,15 @@ class FractalPreparedFrontendTests(unittest.TestCase):
         self.assertIn(
             "glsl::FloatExpr<3> hsv) noexcept {", rendered)
         self.assertIn(
-            "double h = (hsv[0] - std::floor(hsv[0]));", rendered)
+            "const double h = f32(hsv[0] - std::floor(hsv[0]));", rendered)
         self.assertIn(
-            "double h6 = (h * 6.0);", rendered)
+            "const double h6 = f32(h * 6.0);", rendered)
         self.assertIn(
-            "double hue_mod = (h6 - (2.0 * std::floor(h6 / 2.0)));",
+            "const double hue_mod = f32(h6 - f32(2.0 * std::floor(f32(h6 / 2.0))));",
             rendered)
-        self.assertIn(
-            "d = ((static_cast<double>(d) * "
-            "static_cast<double>(state.hueRange)) * "
-            "static_cast<double>(0.01));", rendered)
-        self.assertIn(
-            "d = (static_cast<double>(d) - "
-            "std::floor(static_cast<double>(d)));", rendered)
-        self.assertIn(
-            "d = ((static_cast<double>(d) * "
-            "static_cast<double>(state.repeatPalette)) + "
-            "(static_cast<double>(state.rotatePalette) * "
-            "static_cast<double>(0.01)));", rendered)
+        self.assertIn('d = noisemaker::f32(static_cast<double>(d) * static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(state.hueRange)) * static_cast<double>(noisemaker::f32(0.01)))));', rendered)
+        self.assertIn('d = noisemaker::f32(static_cast<double>(d) - std::floor(static_cast<double>(d)));', rendered)
+        self.assertIn('d = noisemaker::f32(static_cast<double>(d) * static_cast<double>(noisemaker::f32(state.repeatPalette)) + static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(state.rotatePalette)) * static_cast<double>(noisemaker::f32(0.01)))));', rendered)
         self.assertIn(
             "if (state.paletteMode == std::int32_t(1)) {", rendered)
         self.assertIn(
@@ -571,10 +568,11 @@ class FractalPreparedFrontendTests(unittest.TestCase):
         self.assertNotIn(
             "d = (static_cast<double>(d) * static_cast<double>((static_cast<double>(state.hueRange) * "
             "static_cast<double>(static_cast<float>(0.01)))));", rendered)
-        expected = (16.0 / 19.0) * 83.0 * 0.01
-        red = 6.0 * expected - 4.0
+        f32 = lambda value: struct.unpack("<f", struct.pack("<f", value))[0]
+        expected = f32(f32(16.0 / 19.0) * f32(83.0 * f32(0.01)))
+        red = f32(f32(6.0 * expected) - 4.0)
         checkpoint = struct.unpack("<I", struct.pack("<f", red))[0]
-        self.assertEqual(0x3E465527, checkpoint)
+        self.assertEqual(0x3E465520, checkpoint)
 
     @full_run_only
     def test_fractal_render_is_strict_cpp_syntax_clean(self):

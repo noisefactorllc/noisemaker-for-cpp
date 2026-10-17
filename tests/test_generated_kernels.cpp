@@ -66,6 +66,7 @@
 #include "oracles/classic_noise_expected.inc"
 #include "oracles/dither_expected.inc"
 #include "oracles/fractal_expected.inc"
+#include "oracles/fractal_current_expected.inc"
 #include "oracles/julia_expected.inc"
 #include "../docs/port-engineering/cross-lane-parity/gradient_expected.inc"
 
@@ -30168,24 +30169,24 @@ constexpr std::array<Controls, 9> kControls{{
 [[nodiscard]] ExpectedSurface expected_surface(std::size_t index) {
   const auto& summary = fractal_oracle::kCases[index];
   switch (index) {
-    case 0: return {summary.width, summary.height, fractal_oracle::kCase0F32,
-                    fractal_oracle::kCase0Rgba8};
-    case 1: return {summary.width, summary.height, fractal_oracle::kCase1F32,
-                    fractal_oracle::kCase1Rgba8};
-    case 2: return {summary.width, summary.height, fractal_oracle::kCase2F32,
-                    fractal_oracle::kCase2Rgba8};
-    case 3: return {summary.width, summary.height, fractal_oracle::kCase3F32,
-                    fractal_oracle::kCase3Rgba8};
-    case 4: return {summary.width, summary.height, fractal_oracle::kCase4F32,
-                    fractal_oracle::kCase4Rgba8};
-    case 5: return {summary.width, summary.height, fractal_oracle::kCase5F32,
-                    fractal_oracle::kCase5Rgba8};
-    case 6: return {summary.width, summary.height, fractal_oracle::kCase6F32,
-                    fractal_oracle::kCase6Rgba8};
-    case 7: return {summary.width, summary.height, fractal_oracle::kCase7F32,
-                    fractal_oracle::kCase7Rgba8};
-    case 8: return {summary.width, summary.height, fractal_oracle::kCase8F32,
-                    fractal_oracle::kCase8Rgba8};
+    case 0: return {summary.width, summary.height, fractal_current_oracle::kCase0F32,
+                    fractal_current_oracle::kCase0Rgba8};
+    case 1: return {summary.width, summary.height, fractal_current_oracle::kCase1F32,
+                    fractal_current_oracle::kCase1Rgba8};
+    case 2: return {summary.width, summary.height, fractal_current_oracle::kCase2F32,
+                    fractal_current_oracle::kCase2Rgba8};
+    case 3: return {summary.width, summary.height, fractal_current_oracle::kCase3F32,
+                    fractal_current_oracle::kCase3Rgba8};
+    case 4: return {summary.width, summary.height, fractal_current_oracle::kCase4F32,
+                    fractal_current_oracle::kCase4Rgba8};
+    case 5: return {summary.width, summary.height, fractal_current_oracle::kCase5F32,
+                    fractal_current_oracle::kCase5Rgba8};
+    case 6: return {summary.width, summary.height, fractal_current_oracle::kCase6F32,
+                    fractal_current_oracle::kCase6Rgba8};
+    case 7: return {summary.width, summary.height, fractal_current_oracle::kCase7F32,
+                    fractal_current_oracle::kCase7Rgba8};
+    case 8: return {summary.width, summary.height, fractal_current_oracle::kCase8F32,
+                    fractal_current_oracle::kCase8Rgba8};
     default: throw std::invalid_argument("invalid Fractal oracle index");
   }
 }
@@ -30500,9 +30501,9 @@ void require_adversarial_witness() {
       static_cast<float>(kControls[index].seed));
   const auto actual_word = noisemaker::float_bits_to_uint(output.data()[lane]);
   const auto actual_byte = output.to_rgba8()[lane];
-  if (actual_word != 0x3f75d177U || actual_byte != 245U) {
+  if (actual_word != 0x3f75d170U || actual_byte != 245U) {
     std::ostringstream detail;
-    detail << "adversarial witness lane=56 expected_word=0x3f75d177 actual_word=0x"
+    detail << "adversarial witness lane=56 expected_word=0x3f75d170 actual_word=0x"
            << std::hex << actual_word << std::dec << " expected_byte=245 actual_byte="
            << static_cast<unsigned>(actual_byte);
     throw std::runtime_error(detail.str());

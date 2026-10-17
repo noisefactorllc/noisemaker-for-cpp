@@ -198,6 +198,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_snow_kernel.cpp
   tests/test_fdlibm_contract_pin.cpp
   tests/test_palette_override_oracle.cpp
+  tests/test_fractal_precision.cpp
   tests/test_median_kernel.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)

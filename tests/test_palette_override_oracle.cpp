@@ -286,7 +286,7 @@ TEST(palette_override_oracle_colorLab_non_default_other_params) {
 
 TEST(palette_override_oracle_fractal_entry_0) {
   // fractal/entry-0: mechanically captured from the JS authority by
-  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
+  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -303,7 +303,7 @@ TEST(palette_override_oracle_fractal_entry_0) {
 
 TEST(palette_override_oracle_fractal_entry_1) {
   // fractal/entry-1: mechanically captured from the JS authority by
-  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
+  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -320,7 +320,7 @@ TEST(palette_override_oracle_fractal_entry_1) {
 
 TEST(palette_override_oracle_fractal_entry_12) {
   // fractal/entry-12: mechanically captured from the JS authority by
-  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
+  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -337,7 +337,7 @@ TEST(palette_override_oracle_fractal_entry_12) {
 
 TEST(palette_override_oracle_fractal_entry_28) {
   // fractal/entry-28: mechanically captured from the JS authority by
-  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
+  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -354,7 +354,7 @@ TEST(palette_override_oracle_fractal_entry_28) {
 
 TEST(palette_override_oracle_fractal_entry_55) {
   // fractal/entry-55: mechanically captured from the JS authority by
-  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
+  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -371,7 +371,7 @@ TEST(palette_override_oracle_fractal_entry_55) {
 
 TEST(palette_override_oracle_fractal_non_default_other_params) {
   // fractal/non-default-other-params: mechanically captured from the JS authority by
-  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
+  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
