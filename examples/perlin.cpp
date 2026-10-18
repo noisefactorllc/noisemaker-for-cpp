@@ -14,6 +14,9 @@ int main() {
   constexpr std::size_t height = 256;
 
   noisemaker::glsl::Bindings bindings;
+  // The `dimensions` define reaches this kernel as a runtime int; 2 is its
+  // declared default (2D noise).
+  bindings.set_uniform("DIMENSIONS", std::int32_t{2});
   bindings.set_uniform("resolution",
                        noisemaker::glsl::Vec2(static_cast<float>(width),
                                               static_cast<float>(height)));

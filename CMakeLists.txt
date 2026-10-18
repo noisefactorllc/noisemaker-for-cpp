@@ -337,6 +337,22 @@ if(Python3_Interpreter_FOUND)
   set_tests_properties(noisemaker-external-textures-cli PROPERTIES
     FIXTURES_REQUIRED render-cli
     ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;NOISEMAKER_RENDER_CLI=$<TARGET_FILE:noisemaker-render>")
+
+  # `tests/test_example_perlin.py` -- the README's library example runs, exits
+  # 0 and writes a 256x256 `perlin.png` that is not one flat color. CI builds
+  # only `noisemaker-cpu-tests` before ctest, so the example is built by its
+  # own fixture step, as the CLI tests above are.
+  add_test(NAME noisemaker-cpu-example-perlin-build
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
+            --target noisemaker-cpu-example-perlin
+            --config $<CONFIG>)
+  set_tests_properties(noisemaker-cpu-example-perlin-build PROPERTIES FIXTURES_SETUP example-perlin)
+  add_test(NAME noisemaker-cpu-example-perlin
+    COMMAND ${Python3_EXECUTABLE} -B -m unittest -v tests.test_example_perlin
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  set_tests_properties(noisemaker-cpu-example-perlin PROPERTIES
+    FIXTURES_REQUIRED example-perlin
+    ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;NOISEMAKER_EXAMPLE_PERLIN=$<TARGET_FILE:noisemaker-cpu-example-perlin>")
 else()
   # Not fatal: a consumer who only wants the library must still be able to
   # configure. But a test suite that deregisters itself in silence is the
@@ -349,7 +365,9 @@ else()
     "(tests/test_render_cli.py -- the proof that noisemaker-render and "
     "noisemaker-dsl-cpu-case produce byte-identical frames and metadata), "
     "noisemaker-external-textures-cli (tests/test_external_textures.py -- "
-    "the --input/--texture proof against hashes frozen from the JS authority). "
+    "the --input/--texture proof against hashes frozen from the JS authority), "
+    "noisemaker-cpu-example-perlin-build, noisemaker-cpu-example-perlin "
+    "(tests/test_example_perlin.py -- the README library example runs). "
     "Install a Python 3 interpreter to verify this repository; "
     "tests/test_benchmark_cpu_corpus.py, tests/test_dsl_corpus_parity.py and "
     "the typed-generator suites need it too.")
