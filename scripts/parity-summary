@@ -1,31 +1,57 @@
 #!/usr/bin/env python3
-"""Rendered-parity summary for the executable DSL corpus.
+"""Rendered-parity summary for the whole port.
 
-Renders every selected case of the current authority's manifest
-(``tests/fixtures/dsl/executable-corpus.json``, authenticated through its own
-digest) twice -- once with the pinned JavaScript CPU authority runner and once
-with this port's ``noisemaker-dsl-cpu-case`` driver -- from the same
-authenticated source bytes and the same options, then byte-compares the RGBA8
-buffers with the shared comparer. With no arguments every admitted record is
-rendered; with arguments only those manifest case ids (each admitted record's
-``id``, for example ``points/dla#default``).
+With no arguments, the summary counts every case that whole-port parity needs:
+
+1. The corpus lane: every admitted record of the current authority's manifest
+   (``tests/fixtures/dsl/executable-corpus.json``, authenticated through its
+   own digest), rendered twice -- once with the pinned JavaScript CPU
+   authority runner and once with this port's ``noisemaker-dsl-cpu-case``
+   driver -- from the same authenticated source bytes and the same options,
+   then byte-compared on RGBA8 with the shared comparer.
+2. The two sweep gates of the full CI run (``.github/workflows/ci.yml``), run
+   through ``tools/parity/sweep.py`` with the same flags: the parameter sweep
+   (``--variants 6 --gate kit``) and the define enumeration
+   (``--define-enum --gate kit``). Each sweep case compares RGBA8 and the
+   float32 surface. The sweeps render every authority effect, including the
+   volume and loop effects that the corpus lane excludes.
+3. Define liveness: each define parameter of an effect the export kit claims
+   adds one case. It is exact when its isolated define cases gave two or more
+   distinct byte-exact outputs in one draw, and a fail otherwise
+   (``define_liveness`` in ``tools/parity/sweep.py``).
+4. Kit coverage: an effect in ``export-kit/compat-effects.json`` that no
+   corpus record and no sweep case renders adds one missing case.
+
+With arguments, only those manifest case ids of the corpus lane render (each
+admitted record's ``id``, for example ``points/dla#default``); the sweeps do
+not run.
 
 Counting contract (last line of output, and the only machine-readable one)::
 
     PARITY-SUMMARY {"expected":N,"executed":N,"exact":N,"strict":N,"near":N,
                     "defer":N,"skip":N,"fail":N,"missing":N}
 
-``expected`` is the number of selected manifest cases. ``executed`` counts the
-cases both lanes rendered. ``exact`` counts byte-identical buffers; ``strict``
-would count passes under a published numerical contract (the corpus lane is
+``expected`` is the number of selected cases. ``executed`` counts the cases
+both lanes rendered. ``exact`` counts byte-identical outputs; ``strict``
+would count passes under a published numerical contract (every lane here is
 zero-tolerance, so it stays 0). ``near``/``defer`` stay 0 -- a tolerated
-mismatch would be a gate change, not a summary. ``skip`` counts cases the
-authority itself refuses where tests/oracles/dsl_corpus_parity_exclusions.json
+mismatch would be a gate change, not a summary. ``skip`` counts corpus cases
+the authority itself refuses where tests/oracles/dsl_corpus_parity_exclusions.json
 authenticates the record (they remain actionable gaps, never passes). ``fail``
 counts every real divergence: a byte mismatch, one lane refusing where the
-other renders, or a both-lane refusal the exclusions file does not
-authenticate. ``missing`` counts requested
-ids that are not admitted manifest cases.
+other renders, a both-lane refusal the exclusions file does not authenticate,
+any sweep case that is not byte-exact (divergent, refused, timed out or a
+harness error), and each define parameter that is not live. ``missing``
+counts requested ids that are not admitted manifest cases, sweep cases with
+no result, and kit effects that no case renders.
+
+Environment: ``NOISEMAKER_DSL_CPU_CASE`` (driver, default
+``build/noisemaker-dsl-cpu-case``); ``NOISEMAKER_CPU_ROOT`` and
+``NOISEMAKER_CPU_AUTHORITY_LEDGER`` (an authority snapshot), or
+``NOISEMAKER_FOR_CPU`` (a noisemaker-for-cpu checkout to export ``CPU_REV``
+from); ``NOISEMAKER_PARITY_WORKERS`` (sweep workers, default 2, as in
+``ci.yml``); ``NOISEMAKER_PARITY_OUT`` (a directory that keeps the sweep
+reports; a temporary directory otherwise).
 
 Exit status: 0 only when there are no fails and no missing cases and every
 executed case is exact or strict. Skips keep the exit at 0 (they are reported,
@@ -40,6 +66,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass, field
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -52,11 +79,47 @@ from tools.benchmark.corpus_lane import (  # noqa: E402
     record_flags,
 )
 from tools.benchmark.exact_compare import compare_rgba8, format_diagnostics  # noqa: E402
+from tools.parity.sweep import define_liveness, is_live, load_existing  # noqa: E402
 
 CPU_REV = "5e93c23c6cd8c2b3f777bedc40142798be185ba8"
 CPU_CHECKOUT = pathlib.Path(
     os.environ.get("NOISEMAKER_FOR_CPU") or ROOT.parent / "noisemaker-for-cpu")
 DRIVER_ENV = "NOISEMAKER_DSL_CPU_CASE"
+SWEEP = ROOT / "tools/parity/sweep.py"
+KIT = ROOT / "export-kit/compat-effects.json"
+
+# The sweep gates of the full CI run, by the name of their report directory,
+# with the flags of their `ci.yml` steps. tests/test_parity_summary.py fails
+# when these and `ci.yml` disagree.
+SWEEP_GATES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("sweep", ("--variants", "6", "--gate", "kit")),
+    ("sweep-defines", ("--define-enum", "--gate", "kit")),
+)
+SWEEP_LIMITS: tuple[str, ...] = ("--max-seconds-per-case", "3600", "--timeout-retry-factor", "0")
+WORKERS_ENV = "NOISEMAKER_PARITY_WORKERS"
+OUT_ENV = "NOISEMAKER_PARITY_OUT"
+
+
+@dataclass
+class Tally:
+    expected: int = 0
+    executed: int = 0
+    exact: int = 0
+    strict: int = 0
+    near: int = 0
+    defer: int = 0
+    skip: int = 0
+    fail: int = 0
+    missing: int = 0
+    failures: list[str] = field(default_factory=list)
+
+    def line(self) -> str:
+        counts = {name: getattr(self, name) for name in
+                  ("expected", "executed", "exact", "strict", "near", "defer", "skip", "fail", "missing")}
+        return "PARITY-SUMMARY " + json.dumps(counts, separators=(",", ":"))
+
+    def passed(self) -> bool:
+        return self.fail == 0 and self.missing == 0 and self.exact + self.strict == self.executed
 
 
 def resolve_driver() -> pathlib.Path:
@@ -117,24 +180,12 @@ def select_cases(manifest: dict, ids: list[str]) -> list[dict]:
     return selected
 
 
-def main() -> int:
-    ids = sys.argv[1:]
-    manifest = load_corpus()
-    authority_refused = load_exclusions()["authorityRefused"]
-    records = admitted_records(manifest)
-    if len(records) != manifest["counts"]["admitted"]:
-        raise SystemExit("manifest counts.admitted disagrees with the admitted records")
-    selected = select_cases(manifest, ids)
-    driver = resolve_driver()
-    node = os.environ.get("NOISEMAKER_NODE") or "node"
-    env = resolve_authority_env()
-
-    expected = len(selected)
-    executed = exact = strict = near = defer = skip = fail = 0
-    failures: list[str] = []
+def run_corpus(records: list[dict], authority_refused: list[str], driver: pathlib.Path,
+               node: str, env: dict[str, str], tally: Tally) -> None:
     with tempfile.TemporaryDirectory(prefix="noisemaker-parity-summary-") as temporary:
         scratch = pathlib.Path(temporary)
-        for record in selected:
+        for record in records:
+            tally.expected += 1
             name = record["effectId"]
             source = scratch / "case.dsl"
             source.write_text(record["source"], encoding="utf-8")
@@ -157,38 +208,140 @@ def main() -> int:
 
             if js.returncode != 0 and cpp.returncode != 0:
                 if name in authority_refused:
-                    skip += 1
+                    tally.skip += 1
                     continue
-                fail += 1
-                failures.append(
+                tally.fail += 1
+                tally.failures.append(
                     f"{name}: both lanes refuse but the authenticated exclusions "
                     f"file does not list this record as authority-refused")
                 continue
             if js.returncode != 0 or cpp.returncode != 0:
-                fail += 1
+                tally.fail += 1
                 lane = "authority" if js.returncode != 0 else "executor"
-                failures.append(f"{name}: {lane} refused while the other lane rendered bytes")
+                tally.failures.append(f"{name}: {lane} refused while the other lane rendered bytes")
                 continue
-            executed += 1
+            tally.executed += 1
             result = compare_rgba8(options["width"], options["height"],
                                    js_raw.read_bytes(), cpp_raw.read_bytes())
             if result["ok"]:
-                exact += 1
+                tally.exact += 1
             else:
-                fail += 1
-                failures.append(f"{name}: {format_diagnostics(result)}")
+                tally.fail += 1
+                tally.failures.append(f"{name}: {format_diagnostics(result)}")
 
-    missing = max(0, len(ids) - (executed + skip + fail))
-    for line in failures[:10]:
+
+def count_sweep(gate: str, jobs: list[dict], rows: dict[str, dict], tally: Tally) -> None:
+    """Counts one sweep gate's cases; only a byte-exact case passes."""
+    for job in jobs:
+        tally.expected += 1
+        row = rows.get(job["case_id"])
+        if row is None:
+            tally.missing += 1
+            tally.failures.append(f"{gate} {job['case_id']}: no result")
+            continue
+        classification = row.get("classification")
+        rendered = row.get("js_returncode") == 0 and row.get("cpp_returncode") == 0
+        if classification == "byte_exact" and rendered:
+            tally.executed += 1
+            tally.exact += 1
+            continue
+        if rendered:
+            tally.executed += 1
+        tally.fail += 1
+        reason = (row.get("diagnostics") or row.get("divergence_reason") or row.get("cpp_reason")
+                  or row.get("error") or "")
+        tally.failures.append(f"{gate} {job['case_id']}: {classification} {str(reason)[:200]}")
+
+
+def count_liveness(gate: str, jobs: list[dict], rows: dict[str, dict], kit: set[str], tally: Tally) -> None:
+    """Counts one liveness case for each define parameter of a claimed effect."""
+    case_ids = {job["case_id"] for job in jobs}
+    liveness = define_liveness([row for case_id, row in rows.items() if case_id in case_ids])
+    params = {(job["effect_id"], job["case_id"].split("__define__", 1)[1].rsplit("__", 2)[0])
+              for job in jobs if job.get("kind") == "define_isolated"}
+    for effect_id, name in sorted(params):
+        if effect_id not in kit:
+            continue
+        tally.expected += 1
+        tally.executed += 1
+        counts = liveness.get((effect_id, name), [])
+        if is_live(counts):
+            tally.exact += 1
+        else:
+            tally.fail += 1
+            tally.failures.append(f"{gate} {effect_id} `{name}`: NOT DEMONSTRATED "
+                                  f"(distinct per draw: {counts})")
+
+
+def run_sweeps(driver: pathlib.Path, env: dict[str, str], out: pathlib.Path,
+               kit: set[str], tally: Tally) -> set[str]:
+    """Runs each CI sweep gate and counts its cases. Returns the rendered effects."""
+    workers = os.environ.get(WORKERS_ENV) or "2"
+    rendered: set[str] = set()
+    for gate, flags in SWEEP_GATES:
+        report = out / gate
+        command = [sys.executable, "-B", str(SWEEP), "--out", str(report),
+                   "--cpu-root", env["NOISEMAKER_CPU_ROOT"],
+                   "--authority-ledger", env["NOISEMAKER_CPU_AUTHORITY_LEDGER"],
+                   "--cpp-driver", str(driver), *flags, "--workers", workers, *SWEEP_LIMITS]
+        result = subprocess.run(command, capture_output=True, text=True, env=env)
+        mode = flags[flags.index("--gate") + 1]
+        for line in result.stderr.splitlines():
+            if line.startswith(f"[sweep gate] {mode}: "):
+                print(f"{gate}: {line}")
+        manifest_path = report / "run-manifest.json"
+        if not manifest_path.is_file():
+            for line in result.stderr.splitlines()[-5:]:
+                print(f"{gate}: {line}")
+            tally.missing += 1
+            tally.failures.append(f"{gate}: the sweep wrote no case list (exit {result.returncode})")
+            continue
+        jobs = json.loads(manifest_path.read_text(encoding="utf-8"))["jobs"]
+        rows = load_existing(report / "results.jsonl")
+        before = (tally.fail, tally.missing)
+        count_sweep(gate, jobs, rows, tally)
+        count_liveness(gate, jobs, rows, kit, tally)
+        rendered |= {job["effect_id"] for job in jobs} | {e for job in jobs for e in job.get("chain_effects", [])}
+        if result.returncode != 0 and (tally.fail, tally.missing) == before:
+            tally.fail += 1
+            tally.failures.append(f"{gate}: the gate exited {result.returncode} without a counted failure")
+    return rendered
+
+
+def main() -> int:
+    ids = sys.argv[1:]
+    manifest = load_corpus()
+    authority_refused = load_exclusions()["authorityRefused"]
+    records = admitted_records(manifest)
+    if len(records) != manifest["counts"]["admitted"]:
+        raise SystemExit("manifest counts.admitted disagrees with the admitted records")
+    selected = select_cases(manifest, ids)
+    driver = resolve_driver()
+    node = os.environ.get("NOISEMAKER_NODE") or "node"
+    env = resolve_authority_env()
+
+    tally = Tally()
+    run_corpus(selected, authority_refused, driver, node, env, tally)
+    if ids:
+        tally.missing += max(0, len(ids) - (tally.executed + tally.skip + tally.fail))
+    else:
+        kit = set(json.loads(KIT.read_text(encoding="utf-8")))
+        kept = os.environ.get(OUT_ENV)
+        with tempfile.TemporaryDirectory(prefix="noisemaker-parity-sweeps-") as temporary:
+            out = pathlib.Path(kept).resolve() if kept else pathlib.Path(temporary)
+            rendered = run_sweeps(driver, env, out, kit, tally)
+        rendered |= {record["effectId"] for record in selected}
+        for effect_id in sorted(kit - rendered):
+            tally.expected += 1
+            tally.missing += 1
+            tally.failures.append(f"{effect_id}: the kit claims it, but no case renders it")
+
+    for line in tally.failures[:10]:
         print(line)
-    if len(failures) > 10:
-        print(f"... {len(failures) - 10} more failures")
-    print("PARITY-SUMMARY "
-          + json.dumps({"expected": expected, "executed": executed, "exact": exact,
-                        "strict": strict, "near": near, "defer": defer,
-                        "skip": skip, "fail": fail, "missing": missing},
-                       separators=(",", ":")))
-    return 0 if fail == 0 and missing == 0 and exact + strict == executed else 1
+    if len(tally.failures) > 10:
+        print(f"... {len(tally.failures) - 10} more failures")
+    print(tally.line())
+    return 0 if tally.passed() else 1
 
 
 if __name__ == "__main__":
