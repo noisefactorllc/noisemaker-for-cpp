@@ -295,18 +295,35 @@ def build_candidates(name: str, param: dict, count: int, rng: random.Random) -> 
 MAX_WIRED_SURFACES = 6
 
 
+@dataclass(frozen=True)
+class WiredSource:
+    """A surface parameter value: ``program`` renders into its own oN first."""
+    program: str
+    namespace: str
+
+
 def resolve_surface_overrides(effect: dict, overrides: dict[str, Any], aux_rng: random.Random) -> tuple[dict[str, Any], list[str], set[str]]:
     """Replaces WIRE sentinels with real surface names + preamble statements.
 
     A WIRE past ``MAX_WIRED_SURFACES`` falls back to ``None`` (the DSL
-    ``none``) rather than allocating oN past the o0-o7 ceiling.
+    ``none``) rather than allocating oN past the o0-o7 ceiling. A
+    ``WiredSource`` writes its program into the next surface the same way; it
+    has no fallback, so one past the ceiling is an error.
     """
     resolved: dict[str, Any] = {}
     aux_lines: list[str] = []
     namespaces: set[str] = set()
     next_surface = 1
     for name, value in overrides.items():
-        if value == WIRE and next_surface <= MAX_WIRED_SURFACES:
+        if isinstance(value, WiredSource):
+            if next_surface > MAX_WIRED_SURFACES:
+                raise ValueError(f"{effect['id']} `{name}`: no surface left for {value.program}")
+            surface = f"o{next_surface}"
+            next_surface += 1
+            aux_lines.append(f"{value.program}.write({surface})")
+            namespaces.add(value.namespace)
+            resolved[name] = surface
+        elif value == WIRE and next_surface <= MAX_WIRED_SURFACES:
             surface = f"o{next_surface}"
             next_surface += 1
             color = color_hex([aux_rng.random(), aux_rng.random(), aux_rng.random()])
@@ -568,6 +585,57 @@ DEFINE_DRAWS: list[tuple[tuple[int, int], float]] = [(s, t) for s in DEFINE_SIZE
 # gives every pixel a distinct value at 17x11.
 DEFINE_FILTER_INPUT = "noise(seed: 7)"
 
+# Some define parameters select between code paths that the effect's other
+# defaults switch off, so at the defaults every value renders the same bytes
+# and an isolated case proves nothing. ``define_liveness`` reports such a
+# parameter NOT DEMONSTRATED, and the gate fails on it. For each one, this
+# table names the other parameter values that switch its code path on. The
+# isolated cases of that parameter (and only that parameter) hold these
+# values; every other parameter stays at its default. A ``WiredSource`` value
+# feeds a surface parameter from its own generator program.
+DEFINE_ENABLING_CONTEXTS: dict[tuple[str, str], dict[str, Any]] = {
+    # COLOR_SCHEME, FORMULA and INTERP apply only in bitField mode (MODE 0).
+    ("classicNoisedeck/bitEffects", "colorScheme"): {"mode": 0},
+    ("classicNoisedeck/bitEffects", "formula"): {"mode": 0},
+    # INTERP blends the value-noise lattice behind the bit-field modulus. At
+    # the default scale (75) both blends render the same bytes; at scale 5 they
+    # differ at 64x64 and 97x61.
+    ("classicNoisedeck/bitEffects", "interp"): {"mode": 0, "scale": 5},
+    # Each convolution KERNEL offsets its taps by effectWidth, 0 by default.
+    ("classicNoisedeck/cellRefract", "kernel"): {"effectWidth": 5},
+    ("classicNoisedeck/kaleido", "kernel"): {"effectWidth": 5},
+    # METRIC measures the kaleidoscope distance, which needs kaleido > 1.
+    ("classicNoisedeck/noise", "metric"): {"kaleido": 6},
+    # REFRACT_MODE selects how the refraction offset applies; refractAmt is 0.
+    ("classicNoisedeck/noise", "refractMode"): {"refractAmt": 50},
+    # LOOP_OFFSET shapes the blend factor between the input and `tex`, and
+    # `tex` is none by default.
+    ("classicNoisedeck/shapeMixer", "loopOffset"): {"tex": WiredSource("noise(seed: 3)", "synth")},
+    # PATTERN applies only in halftone MODE 1.
+    ("filter/halftone", "pattern"): {"mode": 1},
+}
+
+
+def check_enabling_contexts(catalog: list[dict]) -> None:
+    """Fails closed when a context no longer fits the authority's catalog."""
+    by_id = {effect["id"]: effect for effect in catalog}
+    for (effect_id, name), context in DEFINE_ENABLING_CONTEXTS.items():
+        effect = by_id.get(effect_id)
+        if effect is None:
+            raise ValueError(f"enabling context for {effect_id} `{name}`: the catalog has no {effect_id}")
+        params = effect["params"]
+        if not (params.get(name) or {}).get("define"):
+            raise ValueError(f"enabling context for {effect_id} `{name}`: `{name}` is not a define parameter")
+        for other in context:
+            if other == name or other not in params:
+                raise ValueError(f"enabling context for {effect_id} `{name}`: "
+                                 f"`{other}` is not another parameter of {effect_id}")
+
+
+def _context_text(context: dict[str, Any]) -> str:
+    return ", ".join(f"{key}={value.program if isinstance(value, WiredSource) else value!r}"
+                     for key, value in context.items())
+
 
 def pinned_seed_override(effect: dict, eff_id: str, global_seed: int, draw: int) -> dict[str, Any]:
     """An explicit per-draw `seed` for effects that declare one.
@@ -620,21 +688,24 @@ def build_define_jobs(effect: dict, global_seed: int, joint_samples: int = 8) ->
 
     # Isolated: vary exactly one `define` parameter across its FULL declared
     # domain, holding every other parameter (including every other define)
-    # at its default, at every (size, time) pair in DEFINE_DRAWS, each with
-    # its own render seed.
+    # at its default, or at its DEFINE_ENABLING_CONTEXTS value, at every
+    # (size, time) pair in DEFINE_DRAWS, each with its own render seed.
     for name, param in defines:
         domain = define_domain(param)
+        context = DEFINE_ENABLING_CONTEXTS.get((eff_id, name), {})
+        held = (f"with {_context_text(context)}; every other parameter at its default"
+                if context else "every other parameter at its default")
         for value_index, value in enumerate(domain):
             for draw, (size, t) in enumerate(DEFINE_DRAWS):
                 aux_rng = rng_for(str(global_seed), eff_id, "defenum", name, str(value_index), str(draw))
-                overrides = {**pinned_seed_override(effect, eff_id, global_seed, draw), name: value}
+                overrides = {**pinned_seed_override(effect, eff_id, global_seed, draw), **context, name: value}
                 source = source_for_single(effect, overrides, aux_rng, DEFINE_FILTER_INPUT)
                 seed = stable_uint32(f"{global_seed}:{eff_id}#defenum#{name}#{draw}")
                 jobs.append(Job(
                     case_id=f"{sanitize(eff_id)}__define__{name}__{value_index}__{draw}",
                     effect_id=eff_id, kind="define_isolated",
                     source=source, width=size[0], height=size[1], time=t, seed=seed,
-                    note=f"{name}={value!r} (every other parameter at its default)",
+                    note=f"{name}={value!r} ({held})",
                 ))
 
     # Joint: random draws across the cartesian product of every `define`
@@ -1144,25 +1215,39 @@ def write_summary(all_rows: list[dict], out_dir: Path, meta: dict) -> None:
     (out_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def define_liveness_lines(rows: list[dict]) -> list[str]:
+def define_liveness(rows: list[dict]) -> dict[tuple[str, str], list[int]]:
     """Anti-vacuity check for --define-enum: within one (effect, parameter,
     draw) the render seed, size and time are fixed and only the parameter's
     value changes, so a parameter whose agreed output hash never changes
-    across its values in any draw is not demonstrably reaching the kernel."""
+    across its values in any draw is not demonstrably reaching the kernel.
+
+    Returns, for each (effect, parameter) of the ``define_isolated`` rows, the
+    number of distinct byte-exact RGBA8 outputs in each draw."""
     groups: dict[tuple[str, str, str], set[str]] = {}
-    params: dict[tuple[str, str], int] = {}
+    params: set[tuple[str, str]] = set()
     for row in rows:
+        if row.get("kind") != "define_isolated":
+            continue
         parts = row["case_id"].split("__define__", 1)[1].rsplit("__", 2)
         name, _value_index, draw = parts
-        key = (row["effect_id"], name)
-        params.setdefault(key, 0)
+        params.add((row["effect_id"], name))
         if row.get("classification") != "byte_exact" or "rgba8_sha256" not in row:
             continue
         groups.setdefault((row["effect_id"], name, draw), set()).add(row["rgba8_sha256"])
+    return {
+        (effect_id, name): [len(v) for (e, n, _), v in sorted(groups.items()) if (e, n) == (effect_id, name)]
+        for (effect_id, name) in sorted(params)
+    }
+
+
+def is_live(counts: list[int]) -> bool:
+    return bool(counts) and max(counts) > 1
+
+
+def define_liveness_lines(rows: list[dict]) -> list[str]:
     lines = ["## Define liveness (distinct agreed outputs across a parameter's values, per draw)", ""]
-    for (effect_id, name) in sorted(params):
-        counts = [len(v) for (e, n, _), v in sorted(groups.items()) if (e, n) == (effect_id, name)]
-        verdict = "live" if counts and max(counts) > 1 else "NOT DEMONSTRATED"
+    for (effect_id, name), counts in define_liveness(rows).items():
+        verdict = "live" if is_live(counts) else "NOT DEMONSTRATED"
         lines.append(f"- {effect_id} `{name}`: {verdict} (distinct per draw: {counts})")
     lines.append("")
     return lines
@@ -1232,6 +1317,13 @@ def main() -> int:
     scratch_root.mkdir(parents=True, exist_ok=True)
 
     full_catalog = load_catalog(cpu_root, ledger, out_dir, node)
+    if args.define_enum:
+        # A context for an effect or parameter the authority no longer has
+        # would silently stop applying, so it fails the run instead.
+        try:
+            check_enabling_contexts(full_catalog)
+        except ValueError as error:
+            parser.error(str(error))
     effects = full_catalog
     if args.effects:
         patterns = [p.strip() for p in args.effects.split(",") if p.strip()]
@@ -1332,7 +1424,11 @@ def main() -> int:
 
 
 def gate_failures(rows: list[dict], gate: str, case_ids: set[str]) -> int:
-    """Prints every case that breaks parity and returns the process exit code."""
+    """Prints every case that breaks parity and returns the process exit code.
+
+    A define parameter whose isolated cases never change the agreed output
+    (``define_liveness``) also fails the gate: byte-exact renders that ignore
+    the parameter do not show that its values reach the kernel."""
     kit = set(json.loads((LANE_ROOT / "export-kit/compat-effects.json").read_text(encoding="utf-8")))
     failures = []
     for row in rows:
@@ -1352,9 +1448,18 @@ def gate_failures(rows: list[dict], gate: str, case_ids: set[str]) -> int:
     for row in failures:
         reason = row.get("error") or row.get("cpp_reason") or row.get("divergence_reason") or row.get("diagnostics") or ""
         print(f"[sweep gate] {row['classification']}: {row['case_id']} {str(reason)[:200]}", file=sys.stderr)
+    liveness = define_liveness([row for row in rows if row["case_id"] in case_ids])
+    not_demonstrated = [(effect_id, name, counts) for (effect_id, name), counts in liveness.items()
+                        if (gate == "all" or effect_id in kit) and not is_live(counts)]
+    for effect_id, name, counts in not_demonstrated:
+        print(f"[sweep gate] NOT DEMONSTRATED: {effect_id} `{name}` (distinct per draw: {counts})",
+              file=sys.stderr)
     checked = sum(1 for row in rows if row["case_id"] in case_ids)
     print(f"[sweep gate] {gate}: {len(failures)} failing of {checked} cases", file=sys.stderr)
-    return 1 if failures or not case_ids or checked != len(case_ids) else 0
+    if liveness:
+        print(f"[sweep gate] {gate}: {len(not_demonstrated)} define parameters NOT DEMONSTRATED "
+              f"of {len(liveness)}", file=sys.stderr)
+    return 1 if failures or not_demonstrated or not case_ids or checked != len(case_ids) else 0
 
 
 if __name__ == "__main__":

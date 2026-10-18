@@ -233,5 +233,156 @@ class SweepResumeTest(unittest.TestCase):
         self.assertEqual(self.run_main("--seed", "42", forbid_render=True), 0)
 
 
+class DefineLivenessGateTest(unittest.TestCase):
+    """A define parameter passes only when its isolated cases change the output."""
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory(prefix="parity-liveness-test-")
+        self.addCleanup(self.temporary.cleanup)
+        self.root = pathlib.Path(self.temporary.name)
+        for name in ("driver", "ledger", "node"):
+            (self.root / name).write_text("input\n")
+        self.stderr = ""
+
+    def catalog(self, effect_id: str) -> list[dict]:
+        namespace, func = effect_id.split("/")
+        return [{"id": effect_id, "func": func, "namespace": namespace, "domain": "image",
+                 "kind": "generator", "params": {
+                     "style": {"type": "int", "default": 0, "define": "STYLE",
+                               "choices": {"plain": 0, "fancy": 1}}}}]
+
+    def run_main(self, effect_id: str, gate: str, live: bool) -> int:
+        def render(cmd, timeout):
+            scratch = pathlib.Path(cmd[cmd.index("--rgba8-output") + 1]).parent
+            options = json.loads((scratch / "case.json").read_text())["options"]
+            pixels = options["width"] * options["height"]
+            value = 1 if live and "style: 1" in (scratch / "case.dsl").read_text() else 0
+            pathlib.Path(cmd[cmd.index("--rgba8-output") + 1]).write_bytes(bytes([value]) * pixels * 4)
+            pathlib.Path(cmd[cmd.index("--float32-output") + 1]).write_bytes(bytes([value]) * pixels * 16)
+            return 0, "{}", "", False, 0.0
+
+        out = self.root / f"out-{effect_id.replace('/', '_')}-{gate}-{live}"
+        argv = ["sweep.py", "--cpu-root", str(self.root), "--authority-ledger", str(self.root / "ledger"),
+                "--cpp-driver", str(self.root / "driver"), "--out", str(out),
+                "--workers", "1", "--define-enum", "--gate", gate]
+        captured = io.StringIO()
+        with patch.object(sys, "argv", argv), \
+             patch.object(sweep, "load_catalog", return_value=self.catalog(effect_id)), \
+             patch.object(sweep, "DEFINE_ENABLING_CONTEXTS", {}), \
+             patch.object(sweep.shutil, "which", return_value=str(self.root / "node")), \
+             patch.object(sweep, "_run_proc", render), \
+             patch.object(sweep.concurrent.futures, "ProcessPoolExecutor", concurrent.futures.ThreadPoolExecutor), \
+             contextlib.redirect_stderr(captured):
+            code = sweep.main()
+        self.stderr = captured.getvalue()
+        return code
+
+    def test_a_context_for_an_effect_missing_from_the_catalog_stops_the_run(self) -> None:
+        argv = ["sweep.py", "--cpu-root", str(self.root), "--authority-ledger", str(self.root / "ledger"),
+                "--cpp-driver", str(self.root / "driver"), "--out", str(self.root / "out-stale"),
+                "--workers", "1", "--define-enum", "--gate", "kit"]
+        with patch.object(sys, "argv", argv), \
+             patch.object(sweep, "load_catalog", return_value=self.catalog("synth/solid")), \
+             patch.object(sweep.shutil, "which", return_value=str(self.root / "node")), \
+             contextlib.redirect_stderr(io.StringIO()), \
+             self.assertRaises(SystemExit) as failure:
+            sweep.main()
+        self.assertEqual(failure.exception.code, 2)
+
+    def test_a_define_that_never_changes_the_output_fails_the_gate(self) -> None:
+        for gate in ("kit", "all"):
+            with self.subTest(gate=gate):
+                self.assertEqual(self.run_main("synth/solid", gate, live=False), 1)
+                self.assertIn("NOT DEMONSTRATED: synth/solid `style`", self.stderr)
+
+    def test_a_define_that_changes_the_output_passes_the_gate(self) -> None:
+        for gate in ("kit", "all"):
+            with self.subTest(gate=gate):
+                self.assertEqual(self.run_main("synth/solid", gate, live=True), 0)
+                self.assertNotIn("NOT DEMONSTRATED:", self.stderr)
+                self.assertIn(f"{gate}: 0 define parameters NOT DEMONSTRATED of 1", self.stderr)
+
+    def test_the_kit_gate_checks_only_claimed_effects(self) -> None:
+        self.assertEqual(self.run_main("unclaimed/effect", "kit", live=False), 0)
+        self.assertEqual(self.run_main("unclaimed/effect", "all", live=False), 1)
+
+
+class DefineEnablingContextTest(unittest.TestCase):
+    """Isolated define cases hold the parameter values that switch the define on."""
+
+    # Each of these renders the same bytes for every value at the effect's
+    # defaults (GAP-006), so its isolated cases need an enabling context.
+    DEFAULT_DISABLED = {
+        ("classicNoisedeck/bitEffects", "colorScheme"), ("classicNoisedeck/bitEffects", "formula"),
+        ("classicNoisedeck/bitEffects", "interp"), ("classicNoisedeck/cellRefract", "kernel"),
+        ("classicNoisedeck/kaleido", "kernel"), ("classicNoisedeck/noise", "metric"),
+        ("classicNoisedeck/noise", "refractMode"), ("classicNoisedeck/shapeMixer", "loopOffset"),
+        ("filter/halftone", "pattern"),
+    }
+
+    @staticmethod
+    def effect(effect_id: str, kind: str, params: dict) -> dict:
+        namespace, func = effect_id.split("/")
+        return {"id": effect_id, "func": func, "namespace": namespace, "domain": "image",
+                "kind": kind, "params": params}
+
+    @staticmethod
+    def isolated(jobs: list, name: str) -> list:
+        return [job for job in jobs if job.kind == "define_isolated" and f"__define__{name}__" in job.case_id]
+
+    def bit_effects(self) -> dict:
+        choice = lambda default, define, *values: {  # noqa: E731
+            "type": "int", "default": default, "define": define,
+            "choices": {f"v{value}": value for value in values}}
+        return self.effect("classicNoisedeck/bitEffects", "generator", {
+            "mode": choice(1, "MODE", 0, 1),
+            "interp": choice(0, "INTERP", 0, 1),
+            "maskFormula": choice(10, "MASK_FORMULA", 10, 20),
+            "scale": {"type": "float", "default": 75, "min": 1, "max": 100, "uniform": "scale"},
+        })
+
+    def test_every_default_disabled_define_has_an_enabling_context(self) -> None:
+        self.assertLessEqual(self.DEFAULT_DISABLED, set(sweep.DEFINE_ENABLING_CONTEXTS))
+
+    def test_the_context_applies_only_to_its_own_define(self) -> None:
+        jobs = sweep.build_define_jobs(self.bit_effects(), 20260916)
+        interp = self.isolated(jobs, "interp")
+        self.assertEqual(len(interp), 2 * len(sweep.DEFINE_DRAWS))
+        for job in interp:
+            self.assertIn("mode: 0", job.source)
+            self.assertIn("scale: 5", job.source)
+        for job in self.isolated(jobs, "maskFormula"):
+            self.assertIn("mode: 1", job.source)
+            self.assertIn("scale: 75", job.source)
+
+    def test_a_wired_context_source_feeds_the_surface_parameter(self) -> None:
+        effect = self.effect("classicNoisedeck/shapeMixer", "mixer", {
+            "tex": {"type": "surface", "default": "none"},
+            "loopOffset": {"type": "int", "default": 10, "define": "LOOP_OFFSET",
+                           "choices": {"circle": 10, "triangle": 30}},
+        })
+        jobs = self.isolated(sweep.build_define_jobs(effect, 20260916), "loopOffset")
+        self.assertEqual(len(jobs), 2 * len(sweep.DEFINE_DRAWS))
+        for job in jobs:
+            self.assertIn("noise(seed: 3).write(o1)", job.source)
+            self.assertIn("tex: o1", job.source)
+
+    def test_contexts_are_checked_against_the_catalog(self) -> None:
+        key = ("classicNoisedeck/bitEffects", "interp")
+        effect = self.bit_effects()
+        with patch.object(sweep, "DEFINE_ENABLING_CONTEXTS", {key: sweep.DEFINE_ENABLING_CONTEXTS[key]}):
+            sweep.check_enabling_contexts([effect])
+            with self.assertRaisesRegex(ValueError, "has no classicNoisedeck/bitEffects"):
+                sweep.check_enabling_contexts([])
+            broken = json.loads(json.dumps(effect))
+            del broken["params"]["scale"]
+            with self.assertRaisesRegex(ValueError, "`scale`"):
+                sweep.check_enabling_contexts([broken])
+            broken = json.loads(json.dumps(effect))
+            del broken["params"]["interp"]["define"]
+            with self.assertRaisesRegex(ValueError, "`interp` is not a define parameter"):
+                sweep.check_enabling_contexts([broken])
+
+
 if __name__ == "__main__":
     unittest.main()
