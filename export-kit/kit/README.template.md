@@ -47,9 +47,11 @@ flags required by the renderer. See the
 ## Compatibility
 
 Noisedeck exported this program against Noisemaker `{{NM_ENGINE_VERSION}}`.
-This port is still in progress. The kit's compatibility list excludes effects with unavailable or scatter passes. It also excludes Snow and Test Pattern because of their measured parity exclusions. The renderer can also refuse other parameter or graph combinations. Fibers, Scratches and Stray Hair need an unavailable overlay
-adapter and are excluded too. A refusal reports a reason and writes no image. The kit does
-not guarantee pixel parity with the current browser engine.
+This port is still in progress. The kit's compatibility list names each effect whose
+every pass has an admitted C++ kernel or scatter adapter and that the parameter sweep
+verified against the pinned JavaScript authority. The renderer can also refuse other
+parameter or graph combinations. A refusal reports a reason and writes no image. The kit
+does not guarantee pixel parity with the current browser engine.
 
 ## Effects used by this program
 
