@@ -49,8 +49,8 @@ Environment: ``NOISEMAKER_DSL_CPU_CASE`` (driver, default
 ``build/noisemaker-dsl-cpu-case``); ``NOISEMAKER_CPU_ROOT`` and
 ``NOISEMAKER_CPU_AUTHORITY_LEDGER`` (an authority snapshot), or
 ``NOISEMAKER_FOR_CPU`` (a noisemaker-for-cpu checkout to export ``CPU_REV``
-from); ``NOISEMAKER_PARITY_WORKERS`` (sweep workers, default 2, as in
-``ci.yml``); ``NOISEMAKER_PARITY_OUT`` (a directory that keeps the sweep
+from); ``NOISEMAKER_PARITY_WORKERS`` (sweep workers; by default each gate
+uses the worker count of its ``ci.yml`` step); ``NOISEMAKER_PARITY_OUT`` (a directory that keeps the sweep
 reports; a temporary directory otherwise).
 
 Exit status: 0 only when there are no fails and no missing cases and every
@@ -89,11 +89,11 @@ SWEEP = ROOT / "tools/parity/sweep.py"
 KIT = ROOT / "export-kit/compat-effects.json"
 
 # The sweep gates of the full CI run, by the name of their report directory,
-# with the flags of their `ci.yml` steps. tests/test_parity_summary.py fails
-# when these and `ci.yml` disagree.
-SWEEP_GATES: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("sweep", ("--variants", "6", "--gate", "kit")),
-    ("sweep-defines", ("--define-enum", "--gate", "kit")),
+# with the flags and worker count of their `ci.yml` steps.
+# tests/test_parity_summary.py fails when these and `ci.yml` disagree.
+SWEEP_GATES: tuple[tuple[str, tuple[str, ...], str], ...] = (
+    ("sweep", ("--variants", "6", "--gate", "kit"), "2"),
+    ("sweep-defines", ("--define-enum", "--gate", "kit"), "4"),
 )
 SWEEP_LIMITS: tuple[str, ...] = ("--max-seconds-per-case", "3600", "--timeout-retry-factor", "0")
 WORKERS_ENV = "NOISEMAKER_PARITY_WORKERS"
@@ -276,9 +276,9 @@ def count_liveness(gate: str, jobs: list[dict], rows: dict[str, dict], kit: set[
 def run_sweeps(driver: pathlib.Path, env: dict[str, str], out: pathlib.Path,
                kit: set[str], tally: Tally) -> set[str]:
     """Runs each CI sweep gate and counts its cases. Returns the rendered effects."""
-    workers = os.environ.get(WORKERS_ENV) or "2"
     rendered: set[str] = set()
-    for gate, flags in SWEEP_GATES:
+    for gate, flags, ci_workers in SWEEP_GATES:
+        workers = os.environ.get(WORKERS_ENV) or ci_workers
         report = out / gate
         command = [sys.executable, "-B", str(SWEEP), "--out", str(report),
                    "--cpu-root", env["NOISEMAKER_CPU_ROOT"],

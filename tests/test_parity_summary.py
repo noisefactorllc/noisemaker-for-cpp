@@ -13,6 +13,7 @@ import importlib.machinery
 import importlib.util
 import io
 import json
+import os
 import pathlib
 import re
 import shlex
@@ -65,13 +66,32 @@ class SweepGateFlagsTest(unittest.TestCase):
     def test_the_summary_runs_the_ci_sweep_gates_with_their_flags(self) -> None:
         summary = load_summary()
         ci = ci_sweep_commands()
-        self.assertEqual({name for name, _ in summary.SWEEP_GATES}, set(ci))
-        for name, flags in summary.SWEEP_GATES:
+        self.assertEqual({name for name, _, _ in summary.SWEEP_GATES}, set(ci))
+        for name, flags, workers in summary.SWEEP_GATES:
             with self.subTest(gate=name):
                 args = ci[name]
-                workers = args.index("--workers")
-                self.assertEqual("2", args[workers + 1])
-                self.assertEqual([*flags, *summary.SWEEP_LIMITS], args[:workers] + args[workers + 2:])
+                index = args.index("--workers")
+                self.assertEqual(workers, args[index + 1])
+                self.assertEqual([*flags, *summary.SWEEP_LIMITS], args[:index] + args[index + 2:])
+
+    def test_each_sweep_gate_uses_its_ci_worker_count_by_default(self) -> None:
+        summary = load_summary()
+        commands: list[list[str]] = []
+
+        def run(command, **_kwargs):
+            commands.append(command)
+            return type("Completed", (), {"returncode": 2, "stderr": "", "stdout": ""})()
+
+        environment = {key: value for key, value in os.environ.items() if key != summary.WORKERS_ENV}
+        with tempfile.TemporaryDirectory(prefix="parity-summary-workers-") as directory, \
+             patch.object(summary.subprocess, "run", run), \
+             patch.dict("os.environ", environment, clear=True), \
+             contextlib.redirect_stdout(io.StringIO()):
+            summary.run_sweeps(pathlib.Path(directory) / "driver",
+                               {"NOISEMAKER_CPU_ROOT": directory, "NOISEMAKER_CPU_AUTHORITY_LEDGER": directory},
+                               pathlib.Path(directory), set(), summary.Tally())
+        used = [command[command.index("--workers") + 1] for command in commands]
+        self.assertEqual(used, [workers for _, _, workers in summary.SWEEP_GATES])
 
 
 class SweepCountTest(unittest.TestCase):

@@ -5,7 +5,8 @@ name: CI
 #   determinism, the package consumer and the fast Python subset, about ten
 #   minutes in all;
 # - the full run (weekly schedule, workflow_dispatch): everything above plus
-#   the full Python suite and the byte-exact corpus parity, about two hours.
+#   the full Python suite, the byte-exact corpus parity with the parameter
+#   sweep, and the define-parameter enumeration in its own job.
 # Export kit releases only after a successful full run on main.
 
 on:
@@ -269,14 +270,6 @@ jobs:
           NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
         run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep" --variants 6 --gate kit --workers 2 --max-seconds-per-case 3600 --timeout-retry-factor 0
 
-      - name: Define-parameter enumeration parity gate
-        if: ${{ !cancelled() && steps.build-driver.outcome == 'success' }}
-        env:
-          NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
-          NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
-          NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
-        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep-defines" --define-enum --gate kit --workers 2 --max-seconds-per-case 3600 --timeout-retry-factor 0
-
       - name: Keep the sweep reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -287,6 +280,74 @@ jobs:
             ${{ runner.temp }}/sweep/results.json
             ${{ runner.temp }}/sweep/results.jsonl
             ${{ runner.temp }}/sweep/run-manifest.json
+          if-no-files-found: warn
+
+  # The define-parameter enumeration has its own job and time budget. Its 4908
+  # cases measured 647 minutes of serial render time on an Apple M2 (2026-10-18,
+  # authority 5e93c23c): about 323 minutes on 2 workers, more than the corpus
+  # job above can hold beside its other lanes. ubuntu-latest has 4 vCPUs, so
+  # the gate uses 4 workers (about 162 minutes at that measured rate) and the
+  # job keeps the 360-minute maximum as headroom. A failure of this job fails
+  # the CI run, so the export kit (export-kit.yml) does not release.
+  define-parity:
+    name: define-parameter enumeration parity (C++ vs JS authority)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      # The same frozen authority as the corpus-parity job.
+      - uses: actions/checkout@v4
+        with:
+          repository: noisefactorllc/noisemaker-for-cpu
+          ref: 5e93c23c6cd8c2b3f777bedc40142798be185ba8
+          path: cpu-authority-checkout
+
+      - name: Stage authority outside the repository tree
+        run: |
+          mv "$GITHUB_WORKSPACE/cpu-authority-checkout" "$RUNNER_TEMP/cpu-authority"
+          rm -rf "$RUNNER_TEMP/cpu-authority/.git"
+
+      - name: Write the authority ledger
+        run: |
+          python3 - "$RUNNER_TEMP/cpu-authority" "$RUNNER_TEMP/cpu-authority-ledger.sha256" <<'PY'
+          import hashlib, pathlib, sys
+          root, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+          lines = [f"{hashlib.sha256(f.read_bytes()).hexdigest()}  {f}"
+                   for f in sorted(p for p in root.rglob("*") if p.is_file())]
+          out.write_text("\n".join(lines) + "\n")
+          print(f"ledger entries: {len(lines)}")
+          PY
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      - name: Install zlib
+        run: sudo apt-get update && sudo apt-get install -y zlib1g-dev
+
+      - name: Build the C++ corpus driver
+        run: |
+          cmake -S . -B build-parity -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-parity --target noisemaker-dsl-cpu-case -j
+
+      # Every compile-define parameter at each value in its domain, plus joint
+      # samples. The gate also fails when a define parameter's isolated cases
+      # never change the agreed output (define liveness).
+      - name: Define-parameter enumeration parity gate
+        env:
+          NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
+          NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
+          NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
+        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep-defines" --define-enum --gate kit --workers 4 --max-seconds-per-case 3600 --timeout-retry-factor 0
+
+      - name: Keep the define sweep reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: parity-sweep-defines
+          path: |
             ${{ runner.temp }}/sweep-defines/summary.md
             ${{ runner.temp }}/sweep-defines/results.json
             ${{ runner.temp }}/sweep-defines/results.jsonl
