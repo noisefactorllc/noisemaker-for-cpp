@@ -13,8 +13,8 @@ unmodified JavaScript reference and emits a `--check`-deterministic fixture.
 
 | Path | Contents |
 |---|---|
-| `NEXT_CODING_AGENT_HANDOFF.md` | Live state: current git/checkout facts, measured test counts, and the open work queue. Its top block supersedes every older status block. **Start here.** |
-| `REMAINING-WORK-ROADMAP.md` | Historical consolidated state **as of 2026-08-12** (it reports 131 typed programs against a corpus of 212). Its hazard write-ups are still worth reading; its counts are not current — take those from the handoff above. |
+| `NEXT_CODING_AGENT_HANDOFF.md` | Historical continuation plan. Its newest block is the 2026-10-03 checkpoint, so its counts and work queue are not current. Open gaps are GitHub issues labelled `gap` in this repository. |
+| `REMAINING-WORK-ROADMAP.md` | Historical consolidated state **as of 2026-08-12** (it reports 131 typed programs against a corpus of 212). Its hazard write-ups are still worth reading; its counts are not current — take those from the Coverage table of the repository README. |
 | `census/` | Authoritative per-program terminal blockers for the unported frontier |
 | `derivatives/` | `dFdx`/`dFdy`/`fwidth` architecture, gap-closure proofs, and oracle |
 | `wormhole/` | The scatter-pass port and its oracle |

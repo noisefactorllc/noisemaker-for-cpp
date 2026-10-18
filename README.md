@@ -40,41 +40,41 @@ differs by a single byte. CI runs that check on pushes affecting source or valid
 
 ## Coverage
 
-This port is **incomplete**. It does not yet render every effect its JavaScript authority renders.
+This port is **incomplete**. Its pinned authority trails the authority's `main`, and against `main` some effects render different pixels (GAP-001).
 
 The pinned authority is `noisemaker-for-cpu` at `5b686a45b5c56329adf0c63cbcf572eb6f23fad1`, which pins the upstream Noisemaker shaders at `5976b7a6b77f69c47c41f4ee296a54d5318e1f9d` (v1.0.271). CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes, so a newer authority fails it until the port is synced to that authority.
 
 | | Count | Derived from |
 |---|---:|---|
 | Effects the pinned authority renders | 210 | the authority's `sourceEffectIds` minus its `excludedEffects` (`export-kit/check-authority-coverage.mjs`) |
-| Effects this port's export kit claims | 139 | `export-kit/compat-effects.json` |
-| Effects in the sweep-verified list | 139 | the `effects` array in `export-kit/verified-effects.json` |
-| Effects whose every pass has an admitted kernel | 191 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
+| Effects this port's export kit claims | 210 | `export-kit/compat-effects.json` |
+| Effects in the sweep-verified list | 210 | the `effects` array in `export-kit/verified-effects.json` |
+| Effects whose every pass has an admitted kernel | 210 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
 | Authority GLSL programs | 308 | `counts.reference_program_keys` in the same file |
-| Corpus programs vendored here | 287 | the `programs` array in `tools/glslcpp/corpus/5976b7a6b77f69c47c41f4ee296a54d5318e1f9d/manifest.json` |
-| Typed-slice programs | 281 | the `programs` array in `src/typed_generated/typed_manifest.json` |
+| Corpus programs vendored here | 308 | the `programs` array in `tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/manifest.json` |
+| Typed-slice programs | 300 | the `programs` array in `src/typed_generated/typed_manifest.json` |
 
 The kit claims an effect only when the parameter sweep verified it. An admitted kernel is not enough.
 
-The effects still missing need the following work:
+At the pinned authority, both CI sweep gates pass. The parameter sweep renders every effect the kit claims byte for byte, including the volume and loop effects. The define enumeration renders every value of every compile-define parameter byte for byte, and every define parameter changes the output. The open work is:
 
-- Complete runtime execution and differential coverage of iterated simulations, particle groups, volume atlases and loop regions. Their admission and partial runtime wiring do not establish parity.
-- The 21 authority programs tracked in the corpus's `pending.json`.
-- Every value of each compile-define parameter, where some effects still refuse non-default values.
-- Complete numerical, render-option, and stateful coverage in Debug and Release.
+- Sync the port to the authority's current `main` (GAP-001). Until then the `Authority drift` workflow fails.
+- Debug evidence: the corpus lane and both sweeps run a Release build of the C++ driver only.
+- Render options and state: the sweeps render frame 0 at `renderScale` 1. Later frames and other render scales are not measured.
 
-The live list is the top block of [`docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md`](docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md).
+Open gaps are tracked as [GitHub issues labelled `gap`](https://github.com/noisefactorllc/noisemaker-for-cpp/issues?q=is%3Aissue+is%3Aopen+label%3Agap).
 
 ### How parity is measured
 
 - **Corpus lane** (`tests/test_dsl_corpus_parity.py`): every admitted effect renders once at 17x11 with default parameters, and must match the authority byte for byte. This single point is not enough on its own to prove parity.
 - **Parameter sweep** (`tools/parity/sweep.py --gate kit`): every authority effect renders at many sizes, including 1x1 and non-square, with many seeds and times, randomized parameter values, and generator/filter/mixer chains. Each render is compared on RGBA8 and on the float32 surface behind it.
-- **Define enumeration** (`--define-enum`): every compile-define parameter renders at each value in its domain.
+- **Define enumeration** (`--define-enum`): every compile-define parameter renders at each value in its domain. The gate also fails when no draw gives two or more distinct byte-exact outputs across a parameter's values.
+- **Whole-port summary** (`scripts/parity-summary` with no arguments): counts the corpus lane, every case of both sweep gates, each claimed define parameter's liveness, and each kit effect that no case renders, in one `PARITY-SUMMARY` line.
 - **Automation lane** (`tests/test_osc_automation_parity.py`): `osc(...)` parameter automation renders byte for byte at several times, including nested, frequency-modulated and noise oscillators.
 - **Gates**: both sweeps run in CI with `--gate kit`, which checks cases whose participating effects are all claimed by the kit. Cases outside that set remain reported gaps. Full closure requires `--gate all`, complete authority coverage, and Debug and Release evidence.
 - **Kit coverage** (`export-kit/check-authority-coverage.mjs`): fails until the kit claims every effect the authority renders.
 
-The corpus itself is vendored, not authored here. Its GLSL sources under `tools/glslcpp/corpus/` come from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at revision `5976b7a6b77f69c47c41f4ee296a54d5318e1f9d`, and are MIT-licensed there.
+The corpus itself is vendored, not authored here. Its GLSL sources under `tools/glslcpp/corpus/` come from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at revision `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`, and are MIT-licensed there.
 
 ### Parity and its documented exceptions
 
@@ -152,7 +152,7 @@ Float and int parameters also accept `osc(type, min, max, speed, offset, seed)` 
 
 Rendering is fail-closed. If the executor refuses a program, the command reports the executor's reason and returns a nonzero exit status. It writes nothing:
 
-For example, `points/buddhabrot:agent` is admitted, but its pipeline still refuses multi-output passes inside an iterated group and returns exit code 4. Snow's former measured exclusion has been removed after its CPU adapter was ported.
+For example, a program that reads `o0` before any chain writes it (`read(o0).blur(radiusX: 2, radiusY: 5).write(o1)`) is refused with the reason `named read surface is missing` and exit code 4.
 
 `--help` prints the full option list and these exit codes:
 
@@ -265,4 +265,4 @@ MIT. See [LICENSE](LICENSE).
 
 The vendored GLSL corpus under `tools/glslcpp/corpus/` is MIT-licensed source
 from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker),
-pinned at revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`.
+pinned at revision `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`.
