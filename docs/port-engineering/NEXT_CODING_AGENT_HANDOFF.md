@@ -771,10 +771,10 @@
 > ### External export-kit delivery blocker
 >
 > [Dispatch 35986078288](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35986078288)
-> succeeded for `5a0c3be`, but the Scaffold release
+> succeeded for `5a0c3be`, but the downstream release
 > failed. The served `cpp/0/kit.json` still names `e331a3d88f298d5643de888375df0f60ceacb79a`.
-> Retain the earlier bounded Scaffold test-reconciliation action and served-file/hash/render acceptance.
-> This job cannot edit Scaffold or manually dispatch a release. Handoff/checksum-only publication
+> Retain the earlier bounded release-system test-reconciliation action and served-file/hash/render acceptance.
+> This job cannot edit the release system or manually dispatch a release. Handoff/checksum-only publication
 > triggers CI and Authority drift through the checksum path; it does not trigger Export kit.
 >
 > The runtime and authority corrections above require multi-pass/state and independent JS evidence;
@@ -1169,7 +1169,7 @@
 >
 > The incoming [Export kit dispatch](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35763411182)
 > succeeded, but the downstream release
-> failed in Scaffold's C++ kit tests: the compatibility assertion
+> failed in the release system's C++ kit tests: the compatibility assertion
 > reports `synth/noise` at line 31, and the render test expects the now-supported Snow effect to refuse
 > at line 74 (`Missing expected rejection`). Other historical refusal expectations also need review
 > against the current runtime. Do not restore an obsolete C++ refusal or enlarge kit claims to satisfy them.
@@ -1188,13 +1188,13 @@
 > container only: no verification receipt has yet carried deployment evidence for it, so the delivery is
 > NOT independently confirmed. Treat the delivery as unverified until an automated-review readback or
 > deployment check reproduces it. The downstream criteria therefore remain open at this SHA: independent
-> confirmation of the served delivery, and the assembled-kit acceptance-image render (Scaffold-side).
+> confirmation of the served delivery, and the assembled-kit acceptance-image render (release-system side).
 >
-> **Bounded external action:** reconcile the Scaffold compatibility/refusal tests with authenticated current
+> **Bounded external action:** reconcile the release system's compatibility/refusal tests with authenticated current
 > kit claims and demonstrated runtime behavior while preserving genuine negative cases. Acceptance:
 > existing downstream validation passes on the intended C++ SHA, the normal publication path succeeds,
 > served metadata/files match that SHA and their manifest hashes, and the assembled kit renders the
-> acceptance images. This review is restricted to this repository and cannot modify Scaffold or manually
+> acceptance images. This review is restricted to this repository and cannot modify the release system or manually
 > dispatch/release. Its documentation pushes do not trigger kit publication. Retain this dependency until
 > the existing publication system provides that evidence.
 >
@@ -2554,7 +2554,7 @@
 > /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
 > ```
 >
-> Stable Scaffold link:
+> Stable link:
 >
 > ```text
 > (path retained privately)
@@ -2749,7 +2749,7 @@
 > /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
 > ```
 >
-> Scaffold exposes it as:
+> Exposed as:
 >
 > ```text
 > (path retained privately)
