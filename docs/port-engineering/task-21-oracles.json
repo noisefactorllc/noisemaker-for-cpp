@@ -3,8 +3,8 @@
   "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "provenance": {
     "node": "v26.0.0",
-    "cpu_revision": "7f473400ac744025d46221bf527b43c1b5c1ef4e",
-    "cpu_behavioral_sha256": "6716656e0d81e23960dffc626d56f7f558abdd0bd4c53fd4eb555f7fa63dd608",
+    "cpu_revision": "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6",
+    "cpu_behavioral_sha256": "30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b",
     "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
     "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
     "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",

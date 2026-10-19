@@ -447,7 +447,7 @@ function build() {
     corpus_revision: corpusRevision,
     provenance: {
       node: process.version,
-      cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e',
+      cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6',
       cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
       api: 'canonicalKernelFactories+bindCanonicalKernel+runPass+Surface',
       canonical_kernels_path: 'src/effects/generated/canonical-kernels.js',
