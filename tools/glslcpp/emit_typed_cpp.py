@@ -74,6 +74,11 @@ AUTHORITY_ADAPTER_PROGRAMS = frozenset({
 # adapter (src/effects/crt.cpp is its port). Historical reconstructions keep
 # the typed-emitter route.
 CURRENT_AUTHORITY_CRT_ADAPTER = True
+# The canonical JS of points/hydraulic:agent's hash2 wraps every step
+# unsigned (`cpu_umul(...)`, `>>> 0`) at 5e93c23c and 7f47340, which is the
+# GLSL uint lowering. The signed-Number lambda reproduced an older authority.
+# Historical reconstructions keep the lambda.
+CURRENT_AUTHORITY_HYDRAULIC_UINT_HASH2 = True
 # Since 7f47340 the transpiled kernels select a nearest texel as the GPU does
 # (sampleNearestTexelBottomLeft). Historical reconstructions turn this off.
 CURRENT_AUTHORITY_GPU_NEAREST_TEXEL = True
@@ -140,8 +145,8 @@ _CURRENT_REWRITE_SOURCES = {
     "synth3d/cellularAutomata3d:simulate": "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a",
     "synth3d/reactionDiffusion3d:simulate": "23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17",
 }
-# Every lowering added by the 7f47340 sync. Historical reconstructions turn
-# all of them off.
+# Every lowering added by the 7f47340 sync, including the hydraulic hash2
+# repair. Historical reconstructions turn all of them off.
 AUTHORITY_7F47340_FLAGS = (
     "HASH_PRECISION_FENCE_INCLUDES_SCATTER",
     "CURRENT_AUTHORITY_METAL_DIVISION",
@@ -155,6 +160,7 @@ AUTHORITY_7F47340_FLAGS = (
     "CURRENT_AUTHORITY_EXTRUDE_REWRITE",
     "CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES",
     "CURRENT_AUTHORITY_CRT_ADAPTER",
+    "CURRENT_AUTHORITY_HYDRAULIC_UINT_HASH2",
 )
 
 
@@ -9350,12 +9356,14 @@ class _Emitter:
                     f"}}({arguments[0]}, state.seed))")
             if (value.kind == "call" and value.callee == "hash2"
                     and self.program.key == "points/hydraulic:agent"
+                    and not CURRENT_AUTHORITY_HYDRAULIC_UINT_HASH2
                     and self.authorized_hash_scalar_uint_xors
                     and self.authorized_hash_scalar_uint_rshifts):
                 # Unlike hash_uint, this exact source-authenticated function
-                # is not replaced by compile-glsl.js. Its canonical JS keeps
-                # Number temporaries and signed bitwise operators; only umul
-                # wraps unsigned, and the returned vector rounds to float32.
+                # is not replaced by compile-glsl.js. The canonical JS this
+                # branch reproduces kept Number temporaries and signed bitwise
+                # operators; only umul wrapped unsigned, and the returned
+                # vector rounds to float32.
                 if (len(value.children) != 1
                         or value.children[0].type.display() != "uint"
                         or value.type.display() != "vec2"):

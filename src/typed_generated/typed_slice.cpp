@@ -30850,7 +30850,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     return;
   }
   if (seed_f == static_cast<float>(0.0)) {
-    seed_f = glsl::swizzle<0>(([](std::uint32_t seed) noexcept { double state = static_cast<double>(noisemaker::umul(seed, 747796405U)) + 2891336453.0; const auto word_for = [](double s) noexcept { return static_cast<double>(glsl::detail::js_bitwise_xor(glsl::detail::js_shift_right(s, glsl::detail::js_shift_right(s, 28.0) + 4.0), s)) * 277803737.0; }; double word = word_for(state); const auto x = glsl::detail::js_bitwise_xor(glsl::detail::js_shift_right(word, 22.0), word); state = static_cast<double>(noisemaker::umul(static_cast<std::uint32_t>(x), 747796405U)) + 2891336453.0; word = word_for(state); const auto y = glsl::detail::js_bitwise_xor(glsl::detail::js_shift_right(word, 22.0), word); return glsl::Vec2(static_cast<float>(static_cast<double>(x) / 4294967296.0), static_cast<float>(static_cast<double>(y) / 4294967296.0)); }((agent_id + std::uint32_t(99999)))));
+    seed_f = glsl::swizzle<0>(hash2(state, context, (agent_id + std::uint32_t(99999))));
   }
   [[maybe_unused]] double inertia = (static_cast<double>(static_cast<float>(0.7)) + static_cast<double>((static_cast<double>(seed_f) * static_cast<double>(static_cast<float>(0.3)))));
   [[maybe_unused]] std::int32_t xi = wrap_int(state, context, glsl::detail::glsl_int_cast(glsl::floor(x)), width);
