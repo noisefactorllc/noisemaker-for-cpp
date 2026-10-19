@@ -17,7 +17,7 @@ Frozen JavaScript ground truth for `synth/gabor:gabor`. The package authenticate
 - Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - GLSL source: 3870 bytes, SHA-256 `91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5`
-- Canonical factory: `canonicalFactory257`, 4452 bytes, SHA-256 `3a5a7e2a325d419b2a10360a1010c4036ba309e1d181fbc0d3940c11e49a3226`
+- Canonical factory: `canonicalFactory257`, 4480 bytes, SHA-256 `1b1a5e306c24eeb679d656dc568d768dc9ca45be3635c7f44e9f8873b8477533`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
 - The canonical define map is exactly empty. The pass has no samplers and writes only `fragColor`.
 
@@ -26,13 +26,13 @@ Frozen JavaScript ground truth for `synth/gabor:gabor`. The package authenticate
 | Case | Size | Density | Octaves | Speed | Time | Seed | Tile offset | Float32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
 | default-landscape | 5x4 | 3 | 1 | 1 | 0 | 1 | 0,0 | `f14e9426f45d5992436727ef36c163f096414f41483cb7f8bf627163ed98aac0` | `ad5a765ae88df34f85415ccd5f478adfe1d746a68b1019f86ae909233810f14e` |
-| max-depth-density-octaves | 4x3 | 8 | 5 | 5 | 0.125 | 100 | 0,0 | `fec494791b3b11e2b49c3b72221cb5384949421b58adf30a7eb2cefeaf369e4f` | `54c377ff0fab8e0478ea10876628e146a7f88944037794d6807df9b1a035fe71` |
-| minimum-work-speed-zero-time-a | 3x5 | 1 | 1 | 0 | 0 | 37 | 0,0 | `93184964f806a9d9d9fe626f7b0f34799daf92c08bdcbfc55ba18e0c08cc57e2` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
-| minimum-work-speed-zero-time-b | 3x5 | 1 | 1 | 0 | 0.987500011920929 | 37 | 0,0 | `93184964f806a9d9d9fe626f7b0f34799daf92c08bdcbfc55ba18e0c08cc57e2` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
+| max-depth-density-octaves | 4x3 | 8 | 5 | 5 | 0.125 | 100 | 0,0 | `bfb3cbdd464e9053b3b56f3831918fbfee929ae8805082b0ad0d247f16b68dc4` | `54c377ff0fab8e0478ea10876628e146a7f88944037794d6807df9b1a035fe71` |
+| minimum-work-speed-zero-time-a | 3x5 | 1 | 1 | 0 | 0 | 37 | 0,0 | `cbb7c9ed02e147630e7468a9abf625aaa2aafd96742ae572e565d570a337b6d5` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
+| minimum-work-speed-zero-time-b | 3x5 | 1 | 1 | 0 | 0.987500011920929 | 37 | 0,0 | `cbb7c9ed02e147630e7468a9abf625aaa2aafd96742ae572e565d570a337b6d5` | `ff07db1d76a8b532315c6eb4461059471a5477df3386d7270958be848143ef6d` |
 | intermediate-anisotropic | 6x2 | 5 | 3 | 2 | 0.375 | 17 | 0,0 | `41b341a40bb1f22bcbfe6ce72d01e8fe5b360da7a1d1e7edac848bfa06ac7803` | `6d598eb2147ac6bb562018b9e611abdd4c86c6ef2b3dbe693414a78cea431222` |
-| opposite-angle-random-orientation | 2x6 | 6 | 4 | 3 | 0.0625 | 63 | 0,0 | `cc8a3aa41558fdb9587420cba5ca08b849fb111da8bdd3730991f72acd2a2912` | `9ea610c1737fa332cbe4d15f8737a619a92829dd90d1e2533caf8c7f2d60120c` |
-| tile-full-reference | 7x5 | 7 | 4 | 4 | 0.21875 | 29 | 0,0 | `2b96eab7fd32b02a81decd8e752a74a8f06803d92fc35b1cc64bc3d18c8e875a` | `9d82032633c1043c30f27b2e7c71392738684ed536f11ea57643d1efbc18fdd0` |
-| tile-3x2-bottom-offset-2x1 | 3x2 | 7 | 4 | 4 | 0.21875 | 29 | 2,1 | `d2db62258d55dc4e5ebe517d6b4cd87c8fec4a5f80590a1a04c68e69da02df33` | `a13a3979f466a34c0e3e4d9c6cd5ca81f4f41073f9575c93266be5fca0f95456` |
+| opposite-angle-random-orientation | 2x6 | 6 | 4 | 3 | 0.0625 | 63 | 0,0 | `a7f8b2e148adbac178ccebeb8b77a4c38bc188911a8c6c32c5bffd70f8fe3d38` | `9ea610c1737fa332cbe4d15f8737a619a92829dd90d1e2533caf8c7f2d60120c` |
+| tile-full-reference | 7x5 | 7 | 4 | 4 | 0.21875 | 29 | 0,0 | `6bb6719f04c248d5ce5365ac57bdcd475b3482015f4527433b61a0f6f6dae307` | `9d82032633c1043c30f27b2e7c71392738684ed536f11ea57643d1efbc18fdd0` |
+| tile-3x2-bottom-offset-2x1 | 3x2 | 7 | 4 | 4 | 0.21875 | 29 | 2,1 | `1b6e3fc5742b2f75dfe97612e3f5011a89965274a8287c81f661414992b236d6` | `a13a3979f466a34c0e3e4d9c6cd5ca81f4f41073f9575c93266be5fca0f95456` |
 
 Every valid-domain case requires finite exact-grayscale output with exact alpha one, exact repeated-render identity, and direct-canonical/public-catalog equality. The paired speed-zero cases prove time identity and unused frame/external-seed identity. The tile case must exactly equal the corresponding bottom-left-origin crop from the full render.
 
@@ -53,8 +53,8 @@ Every valid-domain case requires finite exact-grayscale output with exact alpha 
 | density-break-removed | default-landscape, minimum-work-speed-zero-time-a | default-landscape, minimum-work-speed-zero-time-a, minimum-work-speed-zero-time-b, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference, tile-3x2-bottom-offset-2x1 |
 | octave-break-removed | default-landscape, intermediate-anisotropic | default-landscape, minimum-work-speed-zero-time-a, minimum-work-speed-zero-time-b, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference, tile-3x2-bottom-offset-2x1 |
 | octave-coordinate-update-before-sample | max-depth-density-octaves | default-landscape, max-depth-density-octaves, minimum-work-speed-zero-time-a, minimum-work-speed-zero-time-b, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference, tile-3x2-bottom-offset-2x1 |
-| inner-sum-premature-f32 | max-depth-density-octaves | default-landscape, max-depth-density-octaves, minimum-work-speed-zero-time-a, minimum-work-speed-zero-time-b, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference |
-| octave-sum-premature-f32 | max-depth-density-octaves | default-landscape, max-depth-density-octaves, minimum-work-speed-zero-time-a, minimum-work-speed-zero-time-b, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference, tile-3x2-bottom-offset-2x1 |
+| inner-sum-premature-f32 | intermediate-anisotropic | default-landscape, minimum-work-speed-zero-time-a, minimum-work-speed-zero-time-b, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference |
+| octave-sum-premature-f32 | intermediate-anisotropic | default-landscape, minimum-work-speed-zero-time-a, minimum-work-speed-zero-time-b, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference |
 | octave-coordinate-doubling-removed | max-depth-density-octaves | max-depth-density-octaves, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference, tile-3x2-bottom-offset-2x1 |
 | octave-amplitude-decay-removed | max-depth-density-octaves | max-depth-density-octaves, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference, tile-3x2-bottom-offset-2x1 |
 | normalization-removed | max-depth-density-octaves, intermediate-anisotropic | max-depth-density-octaves, intermediate-anisotropic, opposite-angle-random-orientation, tile-full-reference, tile-3x2-bottom-offset-2x1 |

@@ -4,10 +4,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
+import { authenticateCpuRoot } from '../../../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+
 const here = path.dirname(fileURLToPath(import.meta.url))
-const platformRoot = path.resolve(here, '../../../../..')
-const cppRoot = path.join(platformRoot, 'noisemaker-for-cpp')
-const cpuRoot = process.env.NOISEMAKER_FOR_CPU || path.join(platformRoot, 'noisemaker-for-cpu')
+const cppRoot = path.resolve(here, '../../../..')
 
 const {
   canonicalAdapterFactories,
@@ -133,12 +137,12 @@ function compareSurfaces(reference, candidate) {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
   upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -157,7 +161,7 @@ const sourceText = sourceBytes.toString('utf8')
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
 if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory257') throw new Error('canonical Gabor factory identity drift')
-if (Buffer.byteLength(canonicalFactory.toString()) !== 4452 || sha256(canonicalFactory.toString()) !== '3a5a7e2a325d419b2a10360a1010c4036ba309e1d181fbc0d3940c11e49a3226') {
+if (Buffer.byteLength(canonicalFactory.toString()) !== 4480 || sha256(canonicalFactory.toString()) !== '1b1a5e306c24eeb679d656dc568d768dc9ca45be3635c7f44e9f8873b8477533') {
   throw new Error('canonical Gabor factory body drift')
 }
 if (publicFactory !== canonicalFactory) throw new Error('public catalog Gabor factory is not the canonical factory identity')
@@ -370,7 +374,7 @@ const renderMutants = [
   compileMutant('octave-coordinate-doubling-removed', 'pOct = new $runtime.PooledFloat32Array([pOct[0] * 2, pOct[1] * 2]);', 'pOct = new $runtime.PooledFloat32Array([pOct[0], pOct[1]]);'),
   compileMutant('octave-amplitude-decay-removed', 'amplitude *= 0.5;', 'amplitude *= 1;'),
   compileMutant('normalization-removed', 'value /= totalAmp;', 'value = value;'),
-  compileMutant('full-resolution-y-replaced-by-x', 'globalCoord[0] / fullResolution[1], globalCoord[1] / fullResolution[1]', 'globalCoord[0] / fullResolution[0], globalCoord[1] / fullResolution[0]'),
+  compileMutant('full-resolution-y-replaced-by-x', '$runtime.fdiv(globalCoord[0], fullResolution[1]), $runtime.fdiv(globalCoord[1], fullResolution[1])', '$runtime.fdiv(globalCoord[0], fullResolution[0]), $runtime.fdiv(globalCoord[1], fullResolution[0])'),
   compileMutant('tile-offset-removed', 'gl_FragCoord[0] + tileOffset[0], gl_FragCoord[1] + tileOffset[1]', 'gl_FragCoord[0], gl_FragCoord[1]'),
   compileMutant('time-binding-ignored', 'var t = (time * 6.2831854820251465) * spd;', 'var t = 0;'),
   compileMutant('effect-seed-ignored', 'seed + fi * 17', '1 + fi * 17'),
@@ -580,8 +584,8 @@ function buildData() {
     'density-break-removed': ['default-landscape', 'minimum-work-speed-zero-time-a'],
     'octave-break-removed': ['default-landscape', 'intermediate-anisotropic'],
     'octave-coordinate-update-before-sample': ['max-depth-density-octaves'],
-    'inner-sum-premature-f32': ['max-depth-density-octaves'],
-    'octave-sum-premature-f32': ['max-depth-density-octaves'],
+    'inner-sum-premature-f32': ['intermediate-anisotropic'],
+    'octave-sum-premature-f32': ['intermediate-anisotropic'],
     'octave-coordinate-doubling-removed': ['max-depth-density-octaves'],
     'octave-amplitude-decay-removed': ['max-depth-density-octaves'],
     'normalization-removed': ['max-depth-density-octaves', 'intermediate-anisotropic'],
