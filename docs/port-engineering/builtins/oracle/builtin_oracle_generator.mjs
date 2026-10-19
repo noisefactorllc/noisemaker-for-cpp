@@ -108,11 +108,11 @@ function isVectorLocal(value) { return ArrayBuffer.isView(value) || Array.isArra
 // ---------------------------------------------------------------------------
 const RUNTIME_PROVENANCE = {
   glsl_kernel_sha256: 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
-  glsl_runtime_sha256: 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1',
+  glsl_runtime_sha256: 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd',
   pass_runner_sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   surface_sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  canonical_kernels_sha256: 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
   adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
 }
 for (const [file, hash] of [
@@ -434,7 +434,7 @@ const REFLECT_MUTATIONS = [
 const PROGRAM_DEFS = [
   {
     id: 'posterize', key: 'filter/posterize:posterize', sourceFile: 'posterize/posterize.glsl',
-    factoryName: 'canonicalFactory113', factorySha256: 'f7051166df1a4b7ab62675e250898e009b34f4f0e9f7f393dfba4198624d36f1',
+    factoryName: 'canonicalFactory113', factorySha256: 'd324c8326af2e650370ee53c1208dab45235149bdf79320f0216613c8d514eeb',
     sourceRawBytes: 2630, sourceSha256: '460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2',
     builtin: 'round', mutations: ROUND_MUTATIONS,
     uniformTypes: { levels: 'float', gamma: 'float', antialias: 'bool' },
@@ -448,7 +448,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'waves', key: 'filter/waves:waves', sourceFile: 'waves/waves.glsl',
-    factoryName: 'canonicalFactory173', factorySha256: '36330df619f8b6b6b9be94008bc3f59532e16b43487eb80cc128be2668c2d671',
+    factoryName: 'canonicalFactory173', factorySha256: '14f96a5b18005367bca1b899b0d910b6a8d76171dab78e99f778dac797a22d40',
     sourceRawBytes: 2622, sourceSha256: 'f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa',
     builtin: 'any', mutations: ANY_MUTATIONS,
     uniformTypes: { strength: 'float', scale: 'float', speed: 'int', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -462,7 +462,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'lighting', key: 'filter/lighting:lighting', sourceFile: 'lighting/lighting.glsl',
-    factoryName: 'canonicalFactory75', factorySha256: '7e4c772f74b0c981a2006e5e28337d26af4f18f2e7a28739df3c3b9243ad2526',
+    factoryName: 'canonicalFactory75', factorySha256: 'cbf42feb2b3450f367fcec2dd68a0753dd8a5114c1396803ccb43ab56b6260a4',
     sourceRawBytes: 6049, sourceSha256: 'a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f',
     builtin: 'reflect', mutations: REFLECT_MUTATIONS,
     uniformTypes: { diffuseColor: 'vec3', specularColor: 'vec3', specularIntensity: 'float', shininess: 'float', ambientColor: 'vec3', lightDirection: 'vec3', normalStrength: 'float', smoothing: 'float', renderScale: 'float', reflection: 'float', refraction: 'float', aberration: 'float' },
@@ -492,7 +492,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'grain', key: 'filter/grain:grain', sourceFile: 'grain/grain.glsl',
-    factoryName: 'canonicalFactory63', factorySha256: 'f809a771b71039a89a89cf58568f6cb3068c73b529dfeb6573eed78828811ce3',
+    factoryName: 'canonicalFactory63', factorySha256: 'bef92b99f11dbfd6c30eb5c9d716e9bab55f2a54335a07355e21aa4761bb2ff4',
     sourceRawBytes: 8796, sourceSha256: '6edf8deec35e2fa3a32fc150c2be8cb6d71a9356c1c7a3cff5bd3c6c7df764f0',
     builtin: 'round', mutations: ROUND_MUTATIONS,
     uniformTypes: { renderScale: 'float', alpha: 'float', pause: 'float' },
@@ -507,7 +507,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'snow', key: 'filter/snow:snow', sourceFile: 'snow/snow.glsl',
-    factoryName: 'canonicalFactory139', factorySha256: 'd7824584022fad9119fbfcbf6636be7ec0098089ae4b0fb5463df11e17e13937',
+    factoryName: 'canonicalFactory139', factorySha256: 'a9c7d5d3bcd9271afb96944e80300e8e968c71cacb18692380dc43cad457ec53',
     sourceRawBytes: 2982, sourceSha256: 'ae057787cc101755743c17b4cdf46b51d70ed8b9896fed9535a058c8b252f48a',
     builtin: 'round', mutations: ROUND_MUTATIONS,
     uniformTypes: { alpha: 'float', pause: 'float', density: 'float' },
@@ -596,6 +596,10 @@ const EXPECTED_ZERO = {
   'fxaa/round-away-from-zero-naive-cpp': 'ALL',
   'grain/round-bankers-spec-tiebreak': 'ALL',
   'grain/round-away-from-zero-naive-cpp': 'ALL',
+  // grain: measured at authority 7f47340, the tiled case no longer observes
+  // round-minus-one (the max(round(value), 0) floor absorbs it there); the
+  // other three grain cases still diverge and prove the call site is live.
+  'grain/round-minus-one-liveness': ['tiled-grain-round-reachable-integer-only'],
   // snow: round() is entirely dead code -- every mutation is a no-op on
   // every case.
   'snow/round-minus-one-liveness': 'ALL',
@@ -749,7 +753,7 @@ function build() {
   }
   return {
     schema: 'noisemaker-for-cpp.builtins.builtin-admission-cluster-closure-oracles.v1',
-    corpus_revision: revision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
     provenance: { ...RUNTIME_PROVENANCE, node: process.version, public_identity: true },
     authorized_defines: {},
     defines_axis_note: 'All six programs compile at exact defines {} -- confirmed live via tools.glslcpp.generate_typed_slice._defaults() for all six keys, and independently by grep: the only preprocessor directive present in any of the six sources is the universal `#ifdef GL_ES` guard. No "different define map" axis exists for this cluster.',

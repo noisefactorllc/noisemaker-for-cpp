@@ -11279,16 +11279,16 @@ TEST(typed_posterize_round_matches_vendored_oracle_bit_exact) {
   }
   REQUIRE(finite == 120U);
   REQUIRE(task23_hex(task23_sha256(task23_float_bytes(first))) ==
-          "de3da045f7e6511cba3ebdc15e27a86ba1db82ab0cee679805f1414021742da3");
+          "3b144d4f874eeb71c768c5aa713d27c07c225fa3386dc0ae6f8643671e7f5034");
   REQUIRE(task23_hex(task23_sha256(first.to_rgba8())) ==
           "024b11f0647844d469eaae4f80d0a68ea6d2b2513f50aec867a2e23793299f8e");
   struct Probe { std::size_t x, y; std::array<std::uint32_t, 4> bits; };
   const std::array<Probe, 5> probes{{
-      {0U, 0U, {0x3f492942U, 0x3f54b6d0U, 0x3f2958acU, 0x3ee23b89U}},
-      {5U, 0U, {0x00000000U, 0x3f2a58ebU, 0x3e15b224U, 0x3f14d653U}},
+      {0U, 0U, {0x3f492943U, 0x3f54b6d1U, 0x3f2958acU, 0x3ee23b89U}},
+      {5U, 0U, {0x00000000U, 0x3f2a58ebU, 0x3e15b222U, 0x3f14d653U}},
       {0U, 4U, {0x3f091c86U, 0x3f189c5cU, 0x3f4a380dU, 0x3dee23b9U}},
-      {5U, 4U, {0x3ee57568U, 0x3ed0279aU, 0x3ef38262U, 0x3e82fa0cU}},
-      {3U, 2U, {0x3ee6c021U, 0x3ee8689dU, 0x3ea5623cU, 0x3dbe82faU}}}};
+      {5U, 4U, {0x3ee57569U, 0x3ed0279aU, 0x3ef38262U, 0x3e82fa0cU}},
+      {3U, 2U, {0x3ee6c021U, 0x3ee8689dU, 0x3ea5623dU, 0x3dbe82faU}}}};
   for (const Probe& probe : probes) {
     const std::size_t offset = (probe.y * width + probe.x) * 4U;
     for (std::size_t lane = 0; lane < 4U; ++lane) {
