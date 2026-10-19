@@ -1,6 +1,8 @@
 // Re-derivation script for `typed_task13_all_twenty_one_external_oracles_are_exact_and_repeatable`
 // (tests/test_typed_slice.cpp). Mirrors populate_task13_bindings()/render_task13() exactly:
 // tileOffset and fullResolution reach the canonical options only for the programs that bind them.
+// Each row renders the authority's effective factory from its kernelFactories map, so the
+// filter/pixelSort:luminance and filter/reindex:nmReindexApply adapters override their GLSL factories.
 //
 // Usage: NOISEMAKER_CPU_ROOT=<authority dir> node task13_oracle_regenerator.mjs
 
@@ -20,7 +22,7 @@ function resolveCpuRoot() {
 }
 const cpuRoot = resolveCpuRoot()
 const authority = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
-const { canonicalKernelFactories } = await authority('src/effects/catalog.js')
+const { kernelFactories } = await authority('src/effects/catalog.js')
 const { bindCanonicalKernel } = await authority('src/csl/glsl-kernel.js')
 const { runPass } = await authority('src/runtime/pass-runner.js')
 const { Surface } = await authority('src/runtime/surface.js')
@@ -112,7 +114,7 @@ function render(key, variant) {
     else if (Array.isArray(value)) rounded[name] = value.map(f)
     else rounded[name] = f(value)
   }
-  const factory = canonicalKernelFactories[key]
+  const factory = kernelFactories.get(key)
   if (!factory) throw new Error(`no canonical kernel factory for ${key}`)
   const options = { width: 9, height: 7, time: 0.375, seed: 7, uniforms: rounded, textures }
   if (rounded.tileOffset) options.tileOffset = new Float32Array(rounded.tileOffset)
