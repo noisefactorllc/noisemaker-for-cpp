@@ -23,8 +23,8 @@ const original={
  moodscape:JSON.parse(fs.readFileSync(path.join(cppRoot,'docs/port-engineering/moodscape-parity/moodscape-oracles.json'))),
 }
 const contracts={
- noise:{key:'classicNoisedeck/noise:noise',effect:'classicNoisedeck/noise',factory:'canonicalFactory12',factoryHash:'aa489d990e14a0bdd45b63383953282bc2e42083940af755583bc7f32e3141bf',base:'negative-speed-offset',alt:'max-ridges'},
- moodscape:{key:'classicNoisedeck/moodscape:moodscape',effect:'classicNoisedeck/moodscape',factory:'canonicalFactory11',factoryHash:'1ed6bdafbced57679854e7502909d052875c5a9814a2e49fa4e86bd56abc1516',base:'tile-offset',alt:'negative-intensity'},
+ noise:{key:'classicNoisedeck/noise:noise',effect:'classicNoisedeck/noise',factory:'canonicalFactory12',factoryHash:'1a082f9e24533bf5e7f0e4cdb61469fb8a3c01c580c468f4760a3d9463b095a2',base:'negative-speed-offset',alt:'max-ridges'},
+ moodscape:{key:'classicNoisedeck/moodscape:moodscape',effect:'classicNoisedeck/moodscape',factory:'canonicalFactory11',factoryHash:'b5fe9e225f841e285dace48441ae3945b035b269e2a2e7e4d4938a3357d60fc6',base:'tile-offset',alt:'negative-intensity'},
 }
 const defaultDefines={noise:{COLOR_MODE:6,LOOP_OFFSET:300,METRIC:0,NOISE_TYPE:10,REFRACT_MODE:2},moodscape:{COLOR_MODE:2,NOISE_TYPE:10}}
 function sourceFactory(label){const c=contracts[label],v=canonicalKernelFactories[c.key];if(typeof v!=='function'||v.name!==c.factory||sha(v.toString())!==c.factoryHash||kernelFactories.get(c.key)!==v||canonicalAdapterFactories[c.key]!==undefined)throw Error(`${label}: CPU canonical factory identity drift`);return v}
