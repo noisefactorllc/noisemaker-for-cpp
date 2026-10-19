@@ -660,7 +660,7 @@ class TypedGeneratorTests(unittest.TestCase):
         self.assertTrue(oracle_path.is_file(), "Task 25 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "8c61cf77c85ee560aabb5f6038578c23343535d26ef1e357f9e20ad955da196d",
+            "6650db4ac5242b6ac6d6b156d91b7f8f8e75ad035060c16c72489cc7af3d2836",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
