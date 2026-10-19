@@ -11,7 +11,7 @@ const reportPath = path.join(here, 'shape-mixer-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'shape_mixer_frontend_probe.py')
 const programKey = 'classicNoisedeck/shapeMixer:shapeMixer'
-const authorityCommit = '7f473400ac744025d46221bf527b43c1b5c1ef4e'
+const authorityCommit = '36e875283678b9b666fa332639953abfabf711ef'
 const authorityNode = 'v26.0.0'
 const upstreamRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 
