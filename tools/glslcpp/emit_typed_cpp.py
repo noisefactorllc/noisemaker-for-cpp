@@ -74,6 +74,11 @@ AUTHORITY_ADAPTER_PROGRAMS = frozenset({
 # adapter (src/effects/crt.cpp is its port). Historical reconstructions keep
 # the typed-emitter route.
 CURRENT_AUTHORITY_CRT_ADAPTER = True
+# The authority renders filter/pixelSort:luminance and filter/reindex's stats
+# and apply passes with its float32 f32-color.js adapters (at 5e93c23c and
+# 7f47340); src/effects/f32_color.cpp is their port. Historical
+# reconstructions keep the typed-emitter routes.
+CURRENT_AUTHORITY_F32_COLOR_ADAPTERS = True
 # The canonical JS of points/hydraulic:agent's hash2 wraps every step
 # unsigned (`cpu_umul(...)`, `>>> 0`) at 5e93c23c and 7f47340, which is the
 # GLSL uint lowering. The signed-Number lambda reproduced an older authority.
@@ -161,6 +166,7 @@ AUTHORITY_7F47340_FLAGS = (
     "CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES",
     "CURRENT_AUTHORITY_CRT_ADAPTER",
     "CURRENT_AUTHORITY_HYDRAULIC_UINT_HASH2",
+    "CURRENT_AUTHORITY_F32_COLOR_ADAPTERS",
 )
 
 

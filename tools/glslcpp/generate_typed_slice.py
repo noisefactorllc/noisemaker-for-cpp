@@ -331,6 +331,7 @@ if __package__ in (None, ""):
         CUSTOM_ADAPTER_SOURCE as CRT_CUSTOM_ADAPTER_SOURCE,
         custom_adapter_binding_abi as crt_custom_adapter_binding_abi,
         verify_custom_adapter_binding_abi as crt_verify_custom_adapter_binding_abi)
+    from tools.glslcpp.frontend import f32_color_adapter_profile
     from tools.glslcpp.frontend.snow_profile import (
         KEY as SNOW_KEY,
         CUSTOM_ADAPTER_FACTORY as SNOW_CUSTOM_ADAPTER_FACTORY,
@@ -800,6 +801,7 @@ else:
         CUSTOM_ADAPTER_SOURCE as CRT_CUSTOM_ADAPTER_SOURCE,
         custom_adapter_binding_abi as crt_custom_adapter_binding_abi,
         verify_custom_adapter_binding_abi as crt_verify_custom_adapter_binding_abi)
+    from .frontend import f32_color_adapter_profile
     from .frontend.snow_profile import (
         KEY as SNOW_KEY,
         CUSTOM_ADAPTER_FACTORY as SNOW_CUSTOM_ADAPTER_FACTORY,
@@ -2976,6 +2978,10 @@ def _custom_adapter_factories() -> dict[str, str]:
     factories = dict(_HISTORICAL_CUSTOM_ADAPTER_FACTORIES)
     if _emit_typed_cpp.CURRENT_AUTHORITY_CRT_ADAPTER:
         factories[CRT_ADAPTER_KEY] = CRT_CUSTOM_ADAPTER_FACTORY
+    if _emit_typed_cpp.CURRENT_AUTHORITY_F32_COLOR_ADAPTERS:
+        # The authority's f32-color.js adapters (pixelSort luminance, reindex
+        # stats and apply) replace their transpiled kernels.
+        factories.update(f32_color_adapter_profile.CUSTOM_ADAPTER_FACTORIES)
     return factories
 
 
@@ -3057,6 +3063,33 @@ def _crt_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     }
 
 
+def _f32_color_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / f32_color_adapter_profile.CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise GeneratorError(f"{key}: custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    binder = f32_color_adapter_profile.bind_function(key)
+    if not re.search(rf"BoundKernel\s+{binder}\s*\([^)]*\)", source):
+        raise GeneratorError(f"{key}: custom factory identity missing")
+    try:
+        f32_color_adapter_profile.verify_custom_adapter_binding_abi(repository, key)
+    except ValueError as error:
+        raise GeneratorError(f"{key}: {error}") from error
+    calls = list(f32_color_adapter_profile.custom_adapter_binding_abi(key))
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": f32_color_adapter_profile.CUSTOM_ADAPTER_FACTORIES[key],
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha256(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
 def _median_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     source_path = repository / MEDIAN_CUSTOM_ADAPTER_SOURCE
     if source_path.is_symlink() or not source_path.is_file():
@@ -3100,6 +3133,8 @@ def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
         return _snow_factory_route(repository, key)
     if key == CRT_ADAPTER_KEY:
         return _crt_factory_route(repository, key)
+    if key in f32_color_adapter_profile.KEYS:
+        return _f32_color_factory_route(repository, key)
     if key == MEDIAN_KEY:
         return _median_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
@@ -11432,6 +11467,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
            "#include \"noisemaker/effects/bit_effects.hpp\"",
            *(["#include \"noisemaker/effects/crt.hpp\""]
              if _emit_typed_cpp.CURRENT_AUTHORITY_CRT_ADAPTER else []),
+           *(["#include \"noisemaker/effects/f32_color.hpp\""]
+             if _emit_typed_cpp.CURRENT_AUTHORITY_F32_COLOR_ADAPTERS else []),
            "#include \"noisemaker/effects/median.hpp\"",
            "#include \"noisemaker/effects/remap.hpp\"",
            "#include \"noisemaker/effects/snow.hpp\"", "", *standard_headers,

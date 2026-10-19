@@ -31,6 +31,7 @@ add_library(noisemaker-cpu
   src/effects/cpu/worm_overlay.cpp
   src/effects/snow.cpp
   src/effects/crt.cpp
+  src/effects/f32_color.cpp
   src/effects/median.cpp
   src/generated/synth_solid.cpp
   src/generated/filter_invert.cpp

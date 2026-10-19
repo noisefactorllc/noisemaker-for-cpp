@@ -409,9 +409,10 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
     if (route.route_kind == "typed_emitter") ++typed_emitter;
     if (route.route_kind == "custom_adapter") ++custom_adapter;
   }
-  // Five hand-written custom adapters (bitEffects, crt, median, remap, snow);
-  // every other single-output corpus program is a typed-emitter route.
-  REQUIRE(custom_adapter == 5U);
+  // Eight hand-written custom adapters (bitEffects, crt, median, the
+  // pixelSort luminance pass, the reindex stats and apply passes, remap,
+  // snow); every other single-output corpus program is a typed-emitter route.
+  REQUIRE(custom_adapter == 8U);
   REQUIRE(whole_pass == 1U);
   REQUIRE(typed_emitter == corpus_census::expected_single_output_route_rows() - custom_adapter);
 }

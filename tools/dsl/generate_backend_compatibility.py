@@ -40,6 +40,7 @@ from tools.glslcpp.frontend.crt_adapter_profile import (
     CUSTOM_ADAPTER_SOURCE as CRT_CUSTOM_ADAPTER_SOURCE,
     custom_adapter_binding_abi as crt_custom_adapter_binding_abi,
     verify_custom_adapter_binding_abi as crt_verify_custom_adapter_binding_abi)
+from tools.glslcpp.frontend import f32_color_adapter_profile
 from tools.glslcpp.frontend.snow_profile import (
     KEY as SNOW_KEY,
     CUSTOM_ADAPTER_FACTORY as SNOW_CUSTOM_ADAPTER_FACTORY,
@@ -1293,7 +1294,7 @@ def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]])
 # reads is a literal call) but is declared explicitly anyway, to register
 # exactly the way remap does.
 _CUSTOM_ADAPTER_KEYS = frozenset({"classicNoisedeck/bitEffects:bitEffects", REMAP_KEY, SNOW_KEY, MEDIAN_KEY,
-                                  CRT_ADAPTER_KEY})
+                                  CRT_ADAPTER_KEY, *f32_color_adapter_profile.KEYS})
 
 
 def _median_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
@@ -1404,6 +1405,33 @@ def _crt_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, A
     }
 
 
+def _f32_color_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / f32_color_adapter_profile.CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise CompatibilityError("custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    binder = f32_color_adapter_profile.bind_function(key)
+    if not re.search(rf"BoundKernel\s+{binder}\s*\([^)]*\)", source):
+        raise CompatibilityError(f"{key}: custom factory identity missing")
+    try:
+        f32_color_adapter_profile.verify_custom_adapter_binding_abi(repository, key)
+    except ValueError as error:
+        raise CompatibilityError(f"{key}: {error}") from error
+    calls = list(f32_color_adapter_profile.custom_adapter_binding_abi(key))
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": f32_color_adapter_profile.CUSTOM_ADAPTER_FACTORIES[key],
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
 def _custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     if key not in _CUSTOM_ADAPTER_KEYS:
         raise CompatibilityError(f"unknown custom factory route: {key}")
@@ -1413,6 +1441,8 @@ def _custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
         return _snow_custom_factory_route(repository, key)
     if key == CRT_ADAPTER_KEY:
         return _crt_custom_factory_route(repository, key)
+    if key in f32_color_adapter_profile.KEYS:
+        return _f32_color_custom_factory_route(repository, key)
     if key == MEDIAN_KEY:
         return _median_custom_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
