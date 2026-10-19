@@ -15,7 +15,7 @@ const programKey = 'filter/emboss:emboss'
 // This package reproduces the immutable historical source capture.
 const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const corpusRevision = HISTORICAL_CORPUS_REVISION
-const authorityCommit = '36e875283678b9b666fa332639953abfabf711ef'
+const authorityCommit = '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6'
 const authorityNode = 'v26.0.0'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/filter/emboss/emboss.glsl')
 const f = Math.fround

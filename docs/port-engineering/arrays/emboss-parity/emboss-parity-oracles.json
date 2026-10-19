@@ -11,7 +11,7 @@
     "comparison_order": "dimensions, lane count, every Float32 word, independently supplied byte count, every RGBA8 byte"
   },
   "provenance": {
-    "authority_commit": "36e875283678b9b666fa332639953abfabf711ef",
+    "authority_commit": "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6",
     "authority_checkout_clean": true,
     "node_version": "v26.0.0",
     "files": {
