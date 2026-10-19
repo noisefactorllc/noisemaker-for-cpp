@@ -26,7 +26,7 @@
       "height": 80,
       "input": "photo-64x40.png",
       "textures": [],
-      "rgba8Sha256": "4537a446132d52fed09bb0fe3098246e9e092bdbe202a157ef2bfd14263ba31e"
+      "rgba8Sha256": "7f1b8939dfceef405bfff20d1f2492da8c9374cd47afd0a4aae5eb44277f4b58"
     },
     {
       "name": "synth-media-texture",
@@ -44,7 +44,7 @@
       "height": 55,
       "input": "photo-64x40.png",
       "textures": ["textTex=overlay-37x53.png"],
-      "rgba8Sha256": "ba4db1ccc4fd50e76a45572b5d3d2848512a950cf3a2d7ea502231498414c7e4"
+      "rgba8Sha256": "77b1be7c2e8040713a4630a67ce7643f932b8980db31d16a4cf15d67509c7a9f"
     }
   ]
 }
