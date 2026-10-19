@@ -29802,11 +29802,11 @@ void require_oracle_metadata() {
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kProgramKey) ==
           "classicNoisedeck/noise:noise");
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kFactorySha256) ==
-          "aa489d990e14a0bdd45b63383953282bc2e42083940af755583bc7f32e3141bf");
+          "1a082f9e24533bf5e7f0e4cdb61469fb8a3c01c580c468f4760a3d9463b095a2");
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kSourceSha256) ==
           "d86306e285a2f80dae86fe79cde92ceb89ec898ef78e6a15d140bfdf0e030bb2");
   REQUIRE(noisemaker_classic_noise_oracle::kSourceBytes == 32527U);
-  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 24U);
+  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 27U);
   REQUIRE(noisemaker_classic_noise_oracle::kRuntimeBindingCardinality == 29U);
   constexpr std::array<std::string_view, 29> names{
       "NOISE_TYPE", "REFRACT_MODE", "LOOP_OFFSET", "METRIC", "COLOR_MODE", "time", "seed",
@@ -29839,16 +29839,16 @@ void require_oracle_metadata() {
   constexpr std::array<std::string_view, 8> f32_hashes{
       "c53c479135e1e0199b4c286bd113cce3ad26caf18b6ab60f04a11ba1d302e0a3",
       "391971ab136b949f7e363b81b81950aacf525187568278b7b4e32f66f2592040",
-      "c3f57c55dadee9446a65280c103ec8ef673eca60b6f2a9a458f2edfbacbd0f0e",
+      "56af3fd81d1487a42dbaa102322ca25dd3dc2ac2cee3643f341461fb12828854",
       "1637ea3a41cfca75edb1786373ab36f3086d924b489bff617821607d8e5ca199",
-      "c49b4781a362e17398b77b388b6e67aae67b1e388bff663cd4847d50bcb85527",
-      "c9b0f090afe7f24e3cf14779f619792bb5eabd08a18c668a544d626f20a6f3f5",
-      "c49b4781a362e17398b77b388b6e67aae67b1e388bff663cd4847d50bcb85527",
-      "c49b4781a362e17398b77b388b6e67aae67b1e388bff663cd4847d50bcb85527"};
+      "04ac1ed4755002c283086ccc8bd0c3383aeb9da6918b4b992f0dba38e8762034",
+      "676d60c13eae209a5f14a26cd3f9173fd94cfd101a6688761c19139ff57c5b16",
+      "04ac1ed4755002c283086ccc8bd0c3383aeb9da6918b4b992f0dba38e8762034",
+      "04ac1ed4755002c283086ccc8bd0c3383aeb9da6918b4b992f0dba38e8762034"};
   constexpr std::array<std::string_view, 8> rgba8_hashes{
       "f8f6e67d01a7404b190b09bac91dc9498f9d4a27b61c0e10bb583905cfe0c381",
       "76e7e623ad3d71f05ee6a26dd4ac5595ab2419a49b0c448599ea618770ef77cc",
-      "5806d404588da9b8f591eb482e50bb450a791d100fba2173ea13473725b071bc",
+      "bb9d425b85882693b50b679aadb998a74a5cf44daeaaed6879a01062b1a24c26",
       "b58492ef631d67080ed512c6e98a7365acd04cd69c8d37cea49cfc66bb373ed6",
       "3c6261100abb90d27416ab4c9dc0e161448a6bffed1179129371cf65b3294c8e",
       "dc52c608d6424cdb1e4dac1f3fc60261faaa0de147fc4d8a6276722c4f28dcb8",
@@ -29884,11 +29884,11 @@ void require_oracle_metadata() {
       "c824a77821a780c002f0d69846d5102485f65c977d1132ce888566eac5c4744b",
       "d92b010a2a28001378b41faf78f27b9bde10a2daf0a253853eed38fdc2e51afd"};
   constexpr std::array<std::string_view, 5> factories{
-      "fa2bd000f4390a4a4da1eabf299d67cff46dfd447032ddb3084bb5aaf677cd24",
-      "f8e299661ace8045d131b3252074126be33b36eb2bc8722c7541f6efe3d29b81",
-      "06aff61b4c35bfc5b4612fe5fac5dc9f2f5a709fd72e76c96d36f00605204511",
-      "3d0a607e26068fb30bf6d562542aec70b06065fc60b11a69d2fdd1a166264aaa",
-      "b6a5e0dacc1e68433171a02fc6f4b61fe5285213d0b638c60b6ff6f008bfdbf9"};
+      "fa0c8a044dbd143345afa959d65a199501a49ae4c58095396f3b571e4413ca26",
+      "4fb763f368fbc67fe647ea42a4bacb41c186b5490ac1e7b42994771b31ffe623",
+      "e1c9acecbc43b1e66484cb3e37ab84dba04867fc8251cf0843bf945ee179854f",
+      "6735695eef839b5298fe873d85f98222624239f7fd857e7d3cf836d72bca953f",
+      "b6122af5afbd0895bdb362ab84581914ff15a55f230eab4c14f65759ec7da831"};
   constexpr std::array<std::string_view, 5> anchor_texts{
       "var globalCoord = new $runtime.PooledFloat32Array([gl_FragCoord[0] + tileOffset[0], gl_FragCoord[1] + tileOffset[1]]);",
       "for (var i = 1; i <= octaves; i++) {",
