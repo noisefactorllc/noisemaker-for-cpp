@@ -6,6 +6,11 @@
 namespace noisemaker {
 
 [[nodiscard]] float f32(double value) noexcept;
+// The authority's fma32 (src/effects/adapters/crt.js): the exactly rounded
+// float32 fused multiply-add of float32 operands. The double product is
+// exact; TwoSum recovers the addition error, so a float32 tie produced by the
+// double sum resolves toward the exact result. Returns a float32 value.
+[[nodiscard]] double fma32(double a, double b, double c) noexcept;
 [[nodiscard]] double glsl_mod(double x, double y) noexcept;
 [[nodiscard]] double glsl_round(double value) noexcept;
 [[nodiscard]] std::uint32_t umul(std::uint32_t a, std::uint32_t b) noexcept;

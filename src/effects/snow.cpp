@@ -20,15 +20,11 @@
 // operator (`add`/`sub`/`mul`/`div`/`fract`) in `Math.fround`
 // individually -- unlike remap.js, which rounds once at the final store
 // -- so this port applies `noisemaker::f32()` at exactly the same points,
-// not just at the four `out[]` writes. Two asymmetries in snow.js are
-// intentional and are NOT normalized here:
-//   * `cosine()` calls `Math.cos` directly; `sine()` first reduces its
-//     argument to a `[0, 1)` "turns" fraction before calling `Math.sin`.
-//     `cosine()`'s one call site (`snowNoise`) never needs the reduction
-//     (its argument is already small), so the authority never added it.
-//   * `snowHash`'s two cross terms round differently: the first
-//     (`sx * add(sy, ...)`) is a bare, unrounded `double` multiply; the
-//     second (`mul(sy, add(sz, ...))`) rounds to float32 before the add.
+// not just at the four `out[]` writes. One asymmetry in snow.js is
+// intentional and is NOT normalized here: `cosine()` calls `Math.cos`
+// directly; `sine()` first reduces its argument to a `[0, 1)` "turns"
+// fraction before calling `Math.sin`. `snowHash`'s dot product is the
+// authority's exact float32 fused multiply-add chain (noisemaker::fma32).
 namespace noisemaker::effects {
 namespace {
 
@@ -69,24 +65,21 @@ constexpr double kInvTau = 1.0 / 6.283185307179586;  // rounded to float32 below
   return mul(add(sine(mul(sub(time, value), f32(kTau))), 1.0), 0.5);
 }
 
-// Mirrors snowHash(vec3) exactly, including which of its two cross terms
-// round to float32 before the add and which stay a bare double product
-// (see the file header).
+// Mirrors snowHash(vec3) exactly. The authority evaluates the dot product as
+// the fused multiply-add chain fma(z, bz, fma(y, by, x * bx)) and the M4
+// reassociation (x + dot) + (y + dot) -> (x + y) + 2 * dot.
 [[nodiscard]] double snow_hash(double x, double y, double z) noexcept {
   // Every literal below is rounded to float32 individually BEFORE it
   // reaches `add`/`mul` (`mul(x, F32(0.1031))`, `add(sy, F32(33.33))`, ...
-  // in snow.js) -- passing the raw double literal instead would multiply
-  // or add against a different (unrounded) operand and can shift the
-  // final float32 rounding by a bit.
+  // in snow.js).
   const double k0_1031 = f32(0.1031);
   const double k33_33 = f32(33.33);
   const double sx = fract(mul(x, k0_1031));
   const double sy = fract(mul(y, k0_1031));
   const double sz = fract(mul(z, k0_1031));
-  const double inner = f32((sx * add(sy, k33_33)) + mul(sy, add(sz, k33_33)));
-  const double dot_val = f32(inner + (sz * add(sx, k33_33)));
-  const double shifted_xy = f32((sx + sy) + f32(2.0 * dot_val));
-  return clamp01(fract(f32(shifted_xy * add(sz, dot_val))));
+  const double dot_val = noisemaker::fma32(
+      sz, add(sx, k33_33), noisemaker::fma32(sy, add(sz, k33_33), mul(sx, add(sy, k33_33))));
+  return clamp01(fract(mul(add(add(sx, sy), 2.0 * dot_val), add(sz, dot_val))));
 }
 
 // Mirrors snowNoise(vec2, float, float, vec3) exactly.
@@ -94,7 +87,7 @@ constexpr double kInvTau = 1.0 / 6.283185307179586;  // rounded to float32 below
                                 const std::array<double, 3>& seed) noexcept {
   const double angle = mul(time, f32(kTau));
   const double cosine_value = cosine(angle);
-  const double z_base = std::fabs(cosine_value) < f32(0.0000001) ? 0.0 : mul(cosine_value, speed);
+  const double z_base = mul(cosine_value, speed);
   const double base_value =
       snow_hash(add(x, seed[0]), add(y, seed[1]), add(z_base, seed[2]));
   if (speed == 0.0 || time == 0.0) return base_value;

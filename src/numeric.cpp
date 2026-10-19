@@ -1,5 +1,6 @@
 #include "noisemaker/numeric.hpp"
 
+#include <algorithm>
 #include <bit>
 #include <cmath>
 #include <limits>
@@ -8,6 +9,26 @@ namespace noisemaker {
 
 float f32(double value) noexcept {
   return static_cast<float>(value);
+}
+
+double fma32(double a, double b, double c) noexcept {
+  const double product = a * b;
+  const double sum = product + c;
+  const double back = sum - product;
+  const double error = (product - (sum - back)) + (c - back);
+  const double rounded = static_cast<double>(f32(sum));
+  if (error == 0.0 || rounded == sum) return rounded;
+  const double toward_sum = sum > rounded ? 1.0 : -1.0;
+  double neighbor;
+  if (rounded == 0.0) {
+    neighbor = toward_sum * static_cast<double>(std::bit_cast<float>(std::uint32_t{1}));
+  } else {
+    const std::uint32_t bits = std::bit_cast<std::uint32_t>(static_cast<float>(rounded));
+    const bool same_direction = (rounded > 0.0) == (toward_sum > 0.0);
+    neighbor = static_cast<double>(std::bit_cast<float>(same_direction ? bits + 1U : bits - 1U));
+  }
+  if ((rounded + neighbor) / 2.0 != sum) return rounded;
+  return error > 0.0 ? std::max(rounded, neighbor) : std::min(rounded, neighbor);
 }
 
 double glsl_mod(double x, double y) noexcept {
