@@ -1,30 +1,35 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'task-28-oracles.json')
 const reportPath = path.join(here, 'task-28-oracle-report.md')
-const cpuRoot = '../noisemaker-for-cpu'
-const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const cppRoot = path.resolve(here, '../..')
+const corpusRevision = EXPECTED.upstreamRevision
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
 const adapterIndexPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
-const canonicalSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
+const canonicalSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
 const catalogSha256 = 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'
-const adapterIndexSha256 = '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'
+const adapterIndexSha256 = 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'
 const key = 'filter/rotate:rot'
 const sourceRelative = 'sources/filter/rotate/rot.glsl'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, sourceRelative)
-const factoryName = 'canonicalFactory127'
-const factorySha256 = '4dd2ffadbcf25ec3f88c090b014da6cd3ee7faa3ddea970f21714c873dfcf903'
+const factoryName = 'canonicalFactory124'
+const factorySha256 = '4704177c72d8caf2642875b798e9a1ddf7820d47f27b93c05677eaaa32de24c8'
 const f = Math.fround
 
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
@@ -214,7 +219,7 @@ function buildReport(data) {
 const data = buildData()
 const json = `${JSON.stringify(data, null, 2)}\n`
 const report = buildReport(data)
-if (process.argv.length === 2) process.stdout.write(json)
-else if (process.argv.length === 3 && process.argv[2] === '--write') { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-28-oracles.json and task-28-oracle-report.md\n') }
-else if (process.argv.length === 3 && process.argv[2] === '--check') { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-28-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-28-oracle-report.md drift'); process.stdout.write('ok task-28-oracles.json and task-28-oracle-report.md\n') }
+if (!process.argv.includes('--write') && !process.argv.includes('--check')) process.stdout.write(json)
+else if (process.argv.includes('--write')) { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-28-oracles.json and task-28-oracle-report.md\n') }
+else if (process.argv.includes('--check')) { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-28-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-28-oracle-report.md drift'); process.stdout.write('ok task-28-oracles.json and task-28-oracle-report.md\n') }
 else throw new Error('usage: node task-28-oracle-generator.mjs [--write|--check]')

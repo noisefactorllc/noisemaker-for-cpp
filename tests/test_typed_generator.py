@@ -16208,7 +16208,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         oracle_bytes = pathlib.Path(
             REPOSITORY / "tests/oracles/task-28-oracles.json").read_bytes()
         self.assertEqual(
-            "db74b7e1883c1d9f71ec00caa80451793c404039bfd26943be4844faaeef3b44",
+            "98fa18b0cb353e40493240016b0c9f657ac2bbb718af2a34dd808dd62c24381e",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
         cpp = (REPOSITORY / "tests/test_generated_kernels.cpp").read_text()
@@ -16329,7 +16329,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
                 continue
             self.assertNotEqual(parsed, changed, f"executable token {ordinal}: {old}")
         self.assertEqual(
-            "db74b7e1883c1d9f71ec00caa80451793c404039bfd26943be4844faaeef3b44",
+            "98fa18b0cb353e40493240016b0c9f657ac2bbb718af2a34dd808dd62c24381e",
             hashlib.sha256(oracle_bytes).hexdigest())
 
 

@@ -11,7 +11,7 @@ The public dispatch is the exact canonical factory and has no adapter. Every cas
 | Case | Size | Wrap / speed | Output F32 SHA-256 | Output RGBA8 SHA-256 |
 | --- | --- | --- | --- | --- |
 | mirror-zero-stationary | 11x7 | 0 / 0 | `3709622bba358109b11d4db19416b92ee536566f831cf0422bf39fab80372304` | `fdd0aaa3a244b6f82bf8cd31d4f721a24a0df27bc8c9c2628df9ec8297e45587` |
-| repeat-quarter-turn-stationary | 9x6 | 1 / 0 | `de121a78dbd9dca3da1a045d9745471fd78f259e3299ada738467c2137683d45` | `536341787c2e5ad102b1810fbd5ca8068072ad9a0773f0da59edde5900af1ad7` |
+| repeat-quarter-turn-stationary | 9x6 | 1 / 0 | `46d06d73575d24f8aebd5d915878e9ced208ec1f20d0593f86c8fc92c9ed65bd` | `ba9a0b66f147a665bcaef0a6bee2db47aaebb027d9111d6db21a69347733c740` |
 | clamp-negative-oblique-stationary | 12x7 | 2 / 0 | `481e60cd62fd8a220c64bebd9734833db3ce3fee9844ef50b6f03007cb2497f4` | `a89fbf2153c7bfb4f0ea2f0fabcc830e9e60b15f16c389a73bbfd7f498f55a10` |
 | mirror-positive-animation | 10x6 | 0 / 2 | `544f50f37cd84a98bb0b935e3fd05fed47a49fc4552171f3293fad060d829190` | `37fdf71d303dcc97f4ba0eb6acf2720da1195974e8689981e653a41d501d20b9` |
 | repeat-negative-animation | 13x8 | 1 / -3 | `9e9528a344e390e6503da8731f2b105d422585ed37dd5ab14675a7d5f8c0e8d4` | `9d586478e50550322e3ec8eef0b14bd4efff63b43fb120bad77a8267740f25e1` |

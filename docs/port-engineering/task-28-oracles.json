@@ -1,14 +1,14 @@
 {
   "schema": "noisemaker-for-cpp.task28.rotate-mat2-return.public-canonical-oracles.v1",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "provenance": {
-    "node": "v24.7.0",
+    "node": "v26.9.0",
     "public_api": "kernelFactories.get(key)",
     "canonical_identity": true,
     "adapter_entry_absent": true,
-    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
     "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
-    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+    "adapter_index_sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
   },
   "program": {
     "key": "filter/rotate:rot",
@@ -19,8 +19,8 @@
     "normalized_source_sha256": "e0e2b723289b08cbfcd6f1fc0a8481869e674de3cfedc0ec5df6d96f64748bb5",
     "defines": {},
     "profile": "rotate-mat2-return-v1",
-    "canonical_factory_name": "canonicalFactory127",
-    "canonical_factory_to_string_sha256": "4dd2ffadbcf25ec3f88c090b014da6cd3ee7faa3ddea970f21714c873dfcf903",
+    "canonical_factory_name": "canonicalFactory124",
+    "canonical_factory_to_string_sha256": "4704177c72d8caf2642875b798e9a1ddf7820d47f27b93c05677eaaa32de24c8",
     "binding_signature": [
       "inputTex:sampler2D@1/S1",
       "rotation:float@2",
@@ -373,8 +373,8 @@
         ]
       },
       "output": {
-        "f32_sha256": "de121a78dbd9dca3da1a045d9745471fd78f259e3299ada738467c2137683d45",
-        "rgba8_sha256": "536341787c2e5ad102b1810fbd5ca8068072ad9a0773f0da59edde5900af1ad7",
+        "f32_sha256": "46d06d73575d24f8aebd5d915878e9ced208ec1f20d0593f86c8fc92c9ed65bd",
+        "rgba8_sha256": "ba9a0b66f147a665bcaef0a6bee2db47aaebb027d9111d6db21a69347733c740",
         "probes": [
           {
             "at_top_down_xy": [
@@ -382,15 +382,15 @@
               0
             ],
             "values": [
-              0.8050000071525574,
+              0.8349999785423279,
               0.12363636493682861,
-              0.2108333259820938,
+              0.1899999976158142,
               0.2988888919353485
             ],
             "f32_bits_le": [
-              "0x3f4e147b",
+              "0x3f55c28f",
               "0x3dfd3510",
-              "0x3e57e4b1",
+              "0x3e428f5c",
               "0x3e9907f7"
             ]
           },
@@ -400,15 +400,15 @@
               0
             ],
             "values": [
-              0.18000000715255737,
+              0.16500000655651093,
               0.294545441865921,
-              0.8758333325386047,
+              0.8550000190734863,
               0.6411111354827881
             ],
             "f32_bits_le": [
-              "0x3e3851ec",
+              "0x3e28f5c3",
               "0x3e96cea9",
-              "0x3f60369d",
+              "0x3f5ae148",
               "0x3f241fdc"
             ]
           },
@@ -418,15 +418,15 @@
               5
             ],
             "values": [
-              0.10999999940395355,
+              0.14000000059604645,
               0.7790908813476562,
-              0.25083333253860474,
+              0.23000000417232513,
               0.46444445848464966
             ],
             "f32_bits_le": [
-              "0x3de147ae",
+              "0x3e0f5c29",
               "0x3f477280",
-              "0x3e806d3a",
+              "0x3e6b851f",
               "0x3eedcbaa"
             ]
           },
@@ -436,16 +436,16 @@
               5
             ],
             "values": [
-              0.9049999713897705,
-              0.7390909194946289,
-              0.08583333343267441,
-              0.7844444513320923
+              0.8999999761581421,
+              0.7300000190734863,
+              0.06499999761581421,
+              0.8066666722297668
             ],
             "f32_bits_le": [
-              "0x3f67ae14",
-              "0x3f3d3510",
-              "0x3dafc963",
-              "0x3f48d15a"
+              "0x3f666666",
+              "0x3f3ae148",
+              "0x3d851eb8",
+              "0x3f4e81b5"
             ]
           },
           {
@@ -454,16 +454,16 @@
               3
             ],
             "values": [
-              0.14499999582767487,
-              0.7609090805053711,
+              0.10999999940395355,
+              0.7518181800842285,
               0.2175000011920929,
-              0.4699999988079071
+              0.4533333480358124
             ],
             "f32_bits_le": [
-              "0x3e147ae1",
-              "0x3f42caf0",
+              "0x3de147ae",
+              "0x3f407728",
               "0x3e5eb852",
-              "0x3ef0a3d7"
+              "0x3ee81b4f"
             ]
           }
         ],
@@ -1354,11 +1354,11 @@
           "case": "repeat-quarter-turn-stationary",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_lanes": 205,
-          "different_rgba8_bytes": 205,
-          "max_abs_f32_delta": 0.794999971985817,
-          "candidate_f32_sha256": "f766d19ccf47cdaa626c6a69e6b402659d2304677b367d5c36511520fb686867",
-          "candidate_rgba8_sha256": "07ac302976145442303109d3a810c11b9d4a230327e02dc9fc9fb5ca126ae418"
+          "different_f32_lanes": 207,
+          "different_rgba8_bytes": 207,
+          "max_abs_f32_delta": 0.805000014603138,
+          "candidate_f32_sha256": "d470a86edb845681095c047ab8ec73f6b24708e6f79c83f1149380d7c03839d9",
+          "candidate_rgba8_sha256": "0975a42116309faa369ee899ddea219e32e55f4f8382dc7cad1c65577a27fb6a"
         },
         {
           "case": "clamp-negative-oblique-stationary",
@@ -1421,8 +1421,8 @@
           "case": "repeat-quarter-turn-stationary",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_lanes": 211,
-          "different_rgba8_bytes": 211,
+          "different_f32_lanes": 208,
+          "different_rgba8_bytes": 208,
           "max_abs_f32_delta": 0.8108333349227905,
           "candidate_f32_sha256": "b15848bf07afc191e338cbc7f5c55d0b72c560dcd8464f5762e437d794a64da5",
           "candidate_rgba8_sha256": "8d444e1ee3fc076def8698221be018626bd02a92d02515154850c05313ac70f0"
@@ -1488,9 +1488,9 @@
           "case": "repeat-quarter-turn-stationary",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_lanes": 198,
-          "different_rgba8_bytes": 198,
-          "max_abs_f32_delta": 0.8200000077486038,
+          "different_f32_lanes": 201,
+          "different_rgba8_bytes": 201,
+          "max_abs_f32_delta": 0.8150000125169754,
           "candidate_f32_sha256": "9cf98a09a795c8bf440e11542a95c5001744b51f5e3969487aef3c83b7d291fd",
           "candidate_rgba8_sha256": "355bda8782cf51a86e570ffd7690926546b2f43fdcd474a0e50e2b7715f08f8d"
         },
@@ -1555,11 +1555,11 @@
           "case": "repeat-quarter-turn-stationary",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_lanes": 205,
-          "different_rgba8_bytes": 205,
-          "max_abs_f32_delta": 0.794999971985817,
-          "candidate_f32_sha256": "f766d19ccf47cdaa626c6a69e6b402659d2304677b367d5c36511520fb686867",
-          "candidate_rgba8_sha256": "07ac302976145442303109d3a810c11b9d4a230327e02dc9fc9fb5ca126ae418"
+          "different_f32_lanes": 207,
+          "different_rgba8_bytes": 207,
+          "max_abs_f32_delta": 0.805000014603138,
+          "candidate_f32_sha256": "d470a86edb845681095c047ab8ec73f6b24708e6f79c83f1149380d7c03839d9",
+          "candidate_rgba8_sha256": "0975a42116309faa369ee899ddea219e32e55f4f8382dc7cad1c65577a27fb6a"
         },
         {
           "case": "clamp-negative-oblique-stationary",
@@ -1625,8 +1625,8 @@
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_abs_f32_delta": 0,
-          "candidate_f32_sha256": "de121a78dbd9dca3da1a045d9745471fd78f259e3299ada738467c2137683d45",
-          "candidate_rgba8_sha256": "536341787c2e5ad102b1810fbd5ca8068072ad9a0773f0da59edde5900af1ad7"
+          "candidate_f32_sha256": "46d06d73575d24f8aebd5d915878e9ced208ec1f20d0593f86c8fc92c9ed65bd",
+          "candidate_rgba8_sha256": "ba9a0b66f147a665bcaef0a6bee2db47aaebb027d9111d6db21a69347733c740"
         },
         {
           "case": "clamp-negative-oblique-stationary",
