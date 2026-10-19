@@ -351,7 +351,7 @@ def load() -> tuple[dict[str, Any], str]:
     if (provenance.get("authority_commit") !=
             "7f473400ac744025d46221bf527b43c1b5c1ef4e"
             or provenance.get("authority_checkout_clean") is not True
-            or provenance.get("node_version") != "v26.9.0"
+            or provenance.get("node_version") != "v26.0.0"
             or provenance.get("public_factory_is_canonical_identity") is not True
             or provenance.get("adapter_override_absent") is not True):
         raise OracleError("Shape Mixer authority provenance mismatch")

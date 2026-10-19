@@ -4,7 +4,7 @@
 
 namespace shape_mixer182_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "e1aa802cd65e1a60b62f68bb5f23974c7cee6bfb61c873a3b88f2110c44c0e65";
+inline constexpr std::string_view kOracleSha256 = "be0ea59bd330959038cded4f5c2174ab90bb7ee1e274d96e58d77b394ab226f1";
 inline constexpr std::string_view kProgramKey = "classicNoisedeck/shapeMixer:shapeMixer";
 inline constexpr std::string_view kCorpusRevision = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d";
 inline constexpr std::size_t kCaseCount = 42U;

@@ -12,7 +12,7 @@ const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'shape_mixer_frontend_probe.py')
 const programKey = 'classicNoisedeck/shapeMixer:shapeMixer'
 const authorityCommit = '7f473400ac744025d46221bf527b43c1b5c1ef4e'
-const authorityNode = 'v26.9.0'
+const authorityNode = 'v26.0.0'
 const upstreamRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 
 const modes = new Set(['--write', '--check'])
