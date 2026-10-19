@@ -94,7 +94,7 @@ int main() {
             path = pathlib.Path(raw) / "probe.cpp"
             binary = pathlib.Path(raw) / "probe"
             path.write_text(unit)
-            sources = ["surface", "numeric", "sampler", "glsl_runtime", "kernel"]
+            sources = ["surface", "numeric", "sampler", "glsl_runtime", "kernel", "metal_division", "metal_reciprocal_data"]
             built = subprocess.run(
                 [compiler, "-std=c++20", "-ffp-contract=off", "-I", str(ROOT / "include"),
                  str(path), *(str(ROOT / f"src/{name}.cpp") for name in sources),

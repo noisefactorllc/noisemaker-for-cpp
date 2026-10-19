@@ -384,7 +384,8 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_slice.cpp"]).hexdigest())
         self.assertEqual(
-            "129eca19d6dfead03f71699df21f1453744d37c0a8bae82c6c2f0995d15ca604",
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "e29553672282738e4d0381ea6b778788425680e0bbada107abfa0e423412c56a",
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_manifest.json"]).hexdigest())
 

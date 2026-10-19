@@ -107,7 +107,8 @@ int main() {
             source.write_text(unit)
             result = subprocess.run([compiler, '-std=c++20', '-ffp-contract=off', '-I', str(ROOT / 'include'),
                                      str(source), *(str(ROOT / 'src' / f'{name}.cpp') for name in
-                                     ['surface', 'numeric', 'sampler', 'glsl_runtime', 'kernel']), '-o', str(binary)],
+                                     ['surface', 'numeric', 'sampler', 'glsl_runtime', 'kernel',
+                                      'metal_division', 'metal_reciprocal_data']), '-o', str(binary)],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             result = subprocess.run([str(binary)], capture_output=True, text=True)

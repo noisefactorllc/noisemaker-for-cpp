@@ -8250,7 +8250,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "439b0d5c5f8ad9b5b46ae6a0556905ea148e4f1bae5c2b8738aae14c0421d6d9",
             "src/typed_generated/typed_manifest.json":
-                "7e05bc80fdcc2c37d40475df441d92e9ee5ff58c5576e7cd1d3d1646f85d14e8",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "e86e34b457a1f6c684c8d0705b03e468c246684737fa5a10d8004872a6051e2a",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8258,7 +8259,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "a7b3bafa1dd7411f3ff77e6dbea18e528bfe9f76157ac5faf1f1168005aa9fd2",
             "src/typed_generated/typed_manifest.json":
-                "f2bea0b47f7c9e0a79f2485a17fae37386565ad4d0dc78a51433a39fc2297aaf",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "609898c30e66d1d0faa5fea5558b6f5749fc705d6e2a7a0e1949781d566e2e8f",
             "include/noisemaker/generated/catalog.hpp":
                 "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
         }
@@ -8385,7 +8387,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "a132a10c8ea70580678f1143861155491375795b87525363dd0b64db4823242a",
             "src/typed_generated/typed_manifest.json":
-                "ae47417e068181e1d89d849008019cb5eed527fe492943dbcf04f9d046118263",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "222b5329a1f1b4b41c50135fdc9071aa5901a4c3274ef106319bec8f80509b60",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8393,7 +8396,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "439b0d5c5f8ad9b5b46ae6a0556905ea148e4f1bae5c2b8738aae14c0421d6d9",
             "src/typed_generated/typed_manifest.json":
-                "7e05bc80fdcc2c37d40475df441d92e9ee5ff58c5576e7cd1d3d1646f85d14e8",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "e86e34b457a1f6c684c8d0705b03e468c246684737fa5a10d8004872a6051e2a",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8521,7 +8525,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "d2bea2ad2ae5ebb517db31701aa43ed4b6dc69330a844acfcc6717b42b52a3a0",
             "src/typed_generated/typed_manifest.json":
-                "cd48a9e584fbc7844da347b66d9e3862cac7c09185ca4ab44953e920cc7927f6",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "ecddf1307c41cce60776ae3a91de873dbaa9442bbbe4a7d71446db3950b52ac8",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -8529,7 +8534,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "a132a10c8ea70580678f1143861155491375795b87525363dd0b64db4823242a",
             "src/typed_generated/typed_manifest.json":
-                "ae47417e068181e1d89d849008019cb5eed527fe492943dbcf04f9d046118263",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "222b5329a1f1b4b41c50135fdc9071aa5901a4c3274ef106319bec8f80509b60",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8655,7 +8661,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "9873428846e1d18d15d01fe1dafe22e6aa0a1c3f23d99b7ca58de6c259b5615f",
             "src/typed_generated/typed_manifest.json":
-                "f37ba2592383b8205a789b9b076103daaf5347846c00d7ccdffa510377050ca3",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "d1077a363c24635506f629d6ab3c2766a4296c0b56fce17c6e1ed7f191ea6e6d",
             "include/noisemaker/generated/catalog.hpp":
                 "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
         }
@@ -8663,7 +8670,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "src/typed_generated/typed_slice.cpp":
                 "d2bea2ad2ae5ebb517db31701aa43ed4b6dc69330a844acfcc6717b42b52a3a0",
             "src/typed_generated/typed_manifest.json":
-                "cd48a9e584fbc7844da347b66d9e3862cac7c09185ca4ab44953e920cc7927f6",
+                # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+                "ecddf1307c41cce60776ae3a91de873dbaa9442bbbe4a7d71446db3950b52ac8",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -20245,7 +20253,8 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
             "5cfdf388a0d3807b81317b8abddd060a51208f78279ee16555de996daa759ce7"),
         "src/typed_generated/typed_manifest.json": (
             525837,
-            "200bf0b63273792c0046d45fd7cb9c507d0f988198d82c3b008bec74e1891cfe"),
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "7f5deab36f803e4efd2cfedfe8a4e675712e07206661231ca269d80ad9995182"),
         "include/noisemaker/generated/catalog.hpp": (
             17919,
             "c0a37f0c625ba0a2feaa8c9193cbfdf5a81bea2f8bf52e06f92890f38fb8a76d"),
@@ -20970,7 +20979,8 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
             "abec9fea699f3c63e0228a3ad1d07061b2f032f89ea521515ec4e4138677b6f4"),
         "src/typed_generated/typed_manifest.json": (
             528955,
-            "b9f004dd6616287600f0a22b86a584fe3c2073c2be04913cc6f9ba9666109a77"),
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "b62df228e799ecae5e85c9111a560d5c46dec62b14d295212254b480bcd8610e"),
         "include/noisemaker/generated/catalog.hpp": (
             18001,
             "84df05fade5267b58a4569f57e1fce65907ced14e799d55d3036f620472b2a65"),
@@ -22196,7 +22206,8 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
             "d2e4a60ccd70498972df5ccd298a60e0a9ff11dc69c37d0d6eb200a2cabe1eb6"),
         "src/typed_generated/typed_manifest.json": (
             531600,
-            "270af8519617f7dd09194de78f79c0f2531aeb89ef33c5dccdb834f024fcd9f5"),
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "e2ff8305f36cfd2442e10f4ec80a061f06c428a070b06508447bf1a2bb001da7"),
         "include/noisemaker/generated/catalog.hpp": (
             18092,
             "88eabb05a709bf85c91186cdbc3bf9a546339b0c1c2d009971c3a9313c6b4f64"),
@@ -23060,7 +23071,8 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
             "f770a3ad046148c509c0b42312bea3b64f49ae876d7128ad4b0e876abb92e01c"),
         "src/typed_generated/typed_manifest.json": (
             535233,
-            "d166d0136d27550a05b903b778a710f26caf61d927b35dabab141ce301f89916"),
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "ff71dd0e0590d551ba72b04551b867e7a7f182311ce469e642128f8a76fc7839"),
         "include/noisemaker/generated/catalog.hpp": (
             18197,
             "3a1ea13b5080947064ca559f2723cde386f6b4c154d9f0ced82e87d592e673a3"),
@@ -24459,7 +24471,8 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
             "5c28be7997eebfddb428826b3398072480bb126e5970c9917c59bda502fe12b5"),
         "src/typed_generated/typed_manifest.json": (
             538586,
-            "4b3dc426fa7977c313dcf89f2092d678697435dc463f8c6b68d6b66cfa7f8a43"),
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "ede8196bd4c524bbec9e5dfac68d33ce849205ec1d3f42cfba6482b9f4cec6f8"),
         "include/noisemaker/generated/catalog.hpp": (
             18294,
             "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
@@ -24998,7 +25011,8 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
             "b7657e7fe0e0231fab3452206eef26ac5e3e0185175a79d443eaf81052297e48"),
         "src/typed_generated/typed_manifest.json": (
             542085,
-            "ac801dbfbcae9278806e4cdf8713ad6527cf56649c2df7964e4e1c64b0fc62b3"),
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "047654b20020e54dd6935a97b81ae29e9cdc3dcf2ba041fe50d44143bbcda6eb"),
         "include/noisemaker/generated/catalog.hpp": (
             18391,
             "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
@@ -25604,7 +25618,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "f61ca07848dbb28c86dfbab94cca5f550d29d2a883838387c86d99fbd076d109"),
         "src/typed_generated/typed_manifest.json": (
             544674,
-            "aa4d32af6cb8abb61951efddfc32f5a11647256abc1d4a06fda6f6540babdd05"),
+            # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
+            "479d1bae64b166f83f2b4aa9cea685f0ab22a0cec480674951ab7b0de42e08f7"),
         "include/noisemaker/generated/catalog.hpp": (
             18476,
             "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),

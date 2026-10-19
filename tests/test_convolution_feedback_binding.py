@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
         source = directory / "binding-check.cpp"
         source.write_text("\n".join(harness), encoding="utf-8")
         sources = ("surface", "numeric", "sampler", "fdlibm", "fdlibm_off",
-                   "glsl_runtime", "kernel")
+                   "glsl_runtime", "kernel", "metal_division", "metal_reciprocal_data")
         compiled = subprocess.run([
             compiler, "-std=c++20", "-O0", "-Wall", "-Wextra", "-Wpedantic",
             "-Werror", "-ffp-contract=off", "-I", str(ROOT / "include"),
