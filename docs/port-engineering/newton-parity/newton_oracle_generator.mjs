@@ -19,31 +19,35 @@ const corpusRevision = HISTORICAL_CORPUS_REVISION
 const sourceRelative = `tools/glslcpp/corpus/${corpusRevision}/sources/synth/newton/newton.glsl`
 const sourceSha256 = '603090e299ccb08fd4db4bf54a2aa6668ed81be971a84a8b679c7f560e5c27ac'
 const factoryName = 'canonicalFactory272'
-const factoryTextSha256 = 'ecd6c15bf91ce96c9a0f1e36691c848129942ad2ec292194c66a78816e5f2df1'
-const upstreamRevision = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const factoryTextSha256 = '75c306dcb6df750cfe3312654336613603e37910d5f8aac907f30b98f200dbc9'
+const upstreamRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const expectedClosure = Object.freeze([
-  ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
+  ['src/csl/metal-division.js', '104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8'],
+  ['src/csl/metal-reciprocal-data.js', '08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87'],
+  ['src/csl/metal-reciprocal-grid.js', 'bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39'],
   ['src/csl/runtime.js', 'a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee'],
   ['src/effects/adapters/bit-effects.js', '5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7'],
-  ['src/effects/adapters/crt.js', 'c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],
+  ['src/effects/adapters/crt.js', 'c37f70e15b6481b2f870761bf103529cd45cf6e5e714a0a6fd731dbe90c1c73f'],
   ['src/effects/adapters/f32-color.js', 'b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],
-  ['src/effects/adapters/fractal.js', '0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],
+  ['src/effects/adapters/fractal.js', '73bb60668d98a142edcd535c146527945af445baa694595da2a19fe0a649e804'],
   ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
   ['src/effects/adapters/julia.js', '0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],
   ['src/effects/adapters/median.js', 'e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],
   ['src/effects/adapters/palette.js', '8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],
   ['src/effects/adapters/remap.js', '91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
-  ['src/effects/adapters/snow.js', '202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],
+  ['src/effects/adapters/snow.js', '9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c'],
   ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  ['src/effects/definition.js', 'fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],
+  ['src/effects/definition.js', 'e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886'],
   ['src/effects/generated/canonical-adapter-data.js', 'ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
-  ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+  ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   ['src/effects/generated/kernels.js', 'b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
-  ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
+  ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
   ['src/effects/registry.js', '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
+  ['src/runtime/automation.js', '957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e'],
   ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
-  ['src/runtime/sampler.js', '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
+  ['src/runtime/sampler.js', '5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5'],
   ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 ])
 const bindingNames = ['resolution', 'tileOffset', 'fullResolution', 'time', 'degree', 'relaxation', 'iterations', 'tolerance', 'poi', 'centerHiX', 'centerHiY', 'centerLoX', 'centerLoY', 'zoomSpeed', 'zoomDepth', 'degreeSpeed', 'degreeRange', 'relaxSpeed', 'relaxRange', 'rotation', 'outputMode', 'invert']
@@ -152,8 +156,8 @@ const mutationDefs = [
   { name: 'transform-call-materialization', group: 'out-materialization', mechanism: 'replace transformCoords out carrier owner', anchor: '(transformCoords_df64(globalCoord, new $runtime.PooledFloat32Array([cHi[0], cLo[0]]), new $runtime.PooledFloat32Array([cHi[1], cLo[1]]), zoom, rotation, re_df, im_df), [re_df, im_df] = transformCoords_df64.__out__, transformCoords_df64.__return__);', replacement: '(transformCoords_df64(globalCoord, new $runtime.PooledFloat32Array([cHi[0], cLo[0]]), new $runtime.PooledFloat32Array([cHi[1], cLo[1]]), zoom, rotation, re_df, im_df), [re_df, im_df] = [transformCoords_df64.__out__[0], new $runtime.PooledFloat32Array([0, 0])], transformCoords_df64.__return__);' },
   { name: 'iteration-outer-bound', group: 'control-axis', mechanism: 'shorten Newton iteration bound', anchor: 'for (var n = 0; n < 500; n++)', replacement: 'for (var n = 0; n < 1; n++)' },
   { name: 'iteration-power-bound', group: 'control-axis', mechanism: 'shorten repeated-power bound', anchor: 'for (var j = 0; j < 7; j++)', replacement: 'for (var j = 0; j < 1; j++)' },
-  { name: 'degree-control-axis', group: 'control-axis', mechanism: 'offset effective degree control', anchor: 'var effDegree = degree;', replacement: 'var effDegree = degree + 1;' },
-  { name: 'relaxation-control-axis', group: 'control-axis', mechanism: 'offset effective relaxation control', anchor: 'var effRelax = relaxation;', replacement: 'var effRelax = relaxation + 0.25;' },
+  { name: 'degree-control-axis', group: 'control-axis', mechanism: 'offset effective degree control', anchor: 'var effDegree = degree instanceof Float32Array ? $runtime.copy(degree) : degree;', replacement: 'var effDegree = (degree instanceof Float32Array ? $runtime.copy(degree) : degree) + 1;' },
+  { name: 'relaxation-control-axis', group: 'control-axis', mechanism: 'offset effective relaxation control', anchor: 'var effRelax = relaxation instanceof Float32Array ? $runtime.copy(relaxation) : relaxation;', replacement: 'var effRelax = (relaxation instanceof Float32Array ? $runtime.copy(relaxation) : relaxation) + 0.25;' },
   { name: 'tolerance-control-axis', group: 'control-axis', mechanism: 'widen convergence tolerance control', anchor: 'if (d < tolerance) {', replacement: 'if (d < (tolerance * 2)) {' },
   { name: 'rotation-control-axis', group: 'control-axis', mechanism: 'reverse rotation control', anchor: 'var angle = (-rot * TAU) / 360;', replacement: 'var angle = (rot * TAU) / 360;' },
   { name: 'invert-control-axis', group: 'control-axis', mechanism: 'remove inversion control', anchor: 'value = 1 - value;', replacement: 'value = value;' },
