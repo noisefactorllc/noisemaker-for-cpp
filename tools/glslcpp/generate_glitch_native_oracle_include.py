@@ -17,7 +17,7 @@ ORACLE = (ROOT / "docs/port-engineering/matrix/glitch-parity"
           / "glitch-parity-oracles.json")
 SIDECAR = ORACLE.with_suffix(ORACLE.suffix + ".sha256")
 OUTPUT = ROOT / "tests/oracles/glitch-parity-native.inc"
-ORACLE_SHA256 = "327ae25acaa6c73ba27625b3fd1a0310133ae8eb55417c2d356407990265bda0"
+ORACLE_SHA256 = "0d4280ecf0d668621f5f6730e187ee24fca269310c47c9801f273f72a00e5c7f"
 PROGRAM_KEY = "classicNoisedeck/glitch:glitch"
 # Revision authenticated by the immutable oracle capture.
 CORPUS_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"

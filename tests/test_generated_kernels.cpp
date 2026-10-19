@@ -15515,7 +15515,7 @@ TEST(typed_glitch_exact_comparer_rejects_shape_and_signed_zero) {
 
 TEST(typed_glitch_matches_all_eight_authoritative_js_oracles) {
   REQUIRE(glitch_native_oracle::kOracleSha256 ==
-          "327ae25acaa6c73ba27625b3fd1a0310133ae8eb55417c2d356407990265bda0");
+          "0d4280ecf0d668621f5f6730e187ee24fca269310c47c9801f273f72a00e5c7f");
   REQUIRE(glitch_native_oracle::kProgramKey ==
           "classicNoisedeck/glitch:glitch");
   REQUIRE(glitch_native_oracle::kTotalFloatWords == 2468U);

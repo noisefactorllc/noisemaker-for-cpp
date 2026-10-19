@@ -90,7 +90,7 @@
       ],
       [
         "src/effects/definition.js",
-        "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"
+        "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"
       ],
       [
         "src/effects/generated/canonical-adapter-data.js",
@@ -114,7 +114,7 @@
       ],
       [
         "src/runtime/automation.js",
-        "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"
+        "7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f"
       ],
       [
         "src/runtime/pass-runner.js",
