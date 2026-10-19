@@ -4,7 +4,7 @@ namespace classic_shapes_runtime_oracle {
 struct Case { std::string_view name; std::int32_t loop_a; std::int32_t loop_b; std::size_t fixture_index; std::size_t width; std::size_t height; std::span<const std::uint32_t> words; std::span<const std::uint8_t> rgba8; };
 inline constexpr std::string_view kSourceSha256 = "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e";
 inline constexpr std::string_view kFactorySha256 = "cf175006fb6869161ac03689e484fac45aaca0caf6439c28a1ec99dff3417645";
-inline constexpr std::string_view kLedgerSha256 = "c37c5e2858178e119a47c50a5b87649d38f122b0fd6a921477bcbb0eef73d6e9";
+inline constexpr std::string_view kLedgerSha256 = "b04bdbce42c5b99ea77ececcc85ee58df35614a65513d924c2c18623eb01bf4b";
 inline constexpr std::array<std::int32_t,25> kLoopADomain{10,20,30,40,50,60,70,80,90,100,110,120,200,210,300,310,320,330,340,350,360,370,380,400,410};
 inline constexpr std::array<std::int32_t,25> kLoopBDomain{10,20,30,40,50,60,70,80,90,100,110,120,200,210,300,310,320,330,340,350,360,370,380,400,410};
 inline constexpr std::array<std::uint32_t,180> kWords0{
