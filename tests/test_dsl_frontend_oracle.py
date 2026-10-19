@@ -164,7 +164,8 @@ class DslFrontendOracleTest(unittest.TestCase):
         authority_root = require_cpu_root(self)
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-forge-") as temporary:
             root = pathlib.Path(temporary) / "root"
-            for relative in ("src/dsl/compiler.js", "src/dsl/error.js", "src/dsl/parser.js", "src/dsl/tokenize.js", "src/effects/definition.js", "src/effects/registry.js", "src/effects/generated/upstream-snapshot.js"):
+            # Since 7f47340 src/dsl/compiler.js imports src/runtime/automation.js.
+            for relative in ("src/dsl/compiler.js", "src/dsl/error.js", "src/dsl/parser.js", "src/dsl/tokenize.js", "src/effects/definition.js", "src/runtime/automation.js", "src/effects/registry.js", "src/effects/generated/upstream-snapshot.js"):
                 destination = root / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(authority_root / relative, destination)
