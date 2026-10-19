@@ -1652,36 +1652,36 @@ struct Task14Case {
        {0x3f1a9a9bU,0x3ef0f0f1U,0x3e189899U,0x3f800000U,0x3f1a9a9bU,0x3ef0f0f1U,0x3e189899U,0x3f800000U,0x3f1a9a9bU,0x3ef0f0f1U,0x3e189899U,0x3f800000U},
        {0.57999998331069946f,0.9100000262260437f,0.11999999731779099f,71.0f,8.6000003814697266f}, {std::int32_t{9},std::int32_t{0},std::int32_t{0}}, true,
        noisemaker::glsl::Vec2(-17.0f, -3.0f), noisemaker::glsl::Vec2(37.0f, 21.0f), 0.375f, 1U, 0U},
-      {"synth/osc2d:osc2d", "sine", "3d0bfb246f96bd368c74b278ac196caf115ba13ac604a256487992ada8b4fa03", "4c9320618debef0e689ff75c2c94d006987b22e71073698db7c02fc6292b261d",
-       {0x3f7f5834U,0x3f7f5834U,0x3f7f5834U,0x3f800000U,0x3f692e4bU,0x3f692e4bU,0x3f692e4bU,0x3f800000U,0x3f361fa6U,0x3f361fa6U,0x3f361fa6U,0x3f800000U},
+      {"synth/osc2d:osc2d", "sine", "a61c2e3162b18715155a00279875229f618222ef2e4dcb0c3d78f29193ff285a", "4bfec778c247090c5d41c9190ef0334ad8be400b9cfe2a3f70e6153f1e720614",
+       {0x3f7fa3b9U,0x3f7fa3b9U,0x3f7fa3b9U,0x3f800000U,0x3f71d9fcU,0x3f71d9fcU,0x3f71d9fcU,0x3f800000U,0x3f40465aU,0x3f40465aU,0x3f40465aU,0x3f800000U},
        {0.0f,-137.0f,0.0f,0.0f,0.0f}, {std::int32_t{0},std::int32_t{3},std::int32_t{7}}, false,
        noisemaker::glsl::Vec2(-7.0f, 5.0f), noisemaker::glsl::Vec2(17.0f, 13.0f), 0.0f, 0U, 0U},
-      {"synth/osc2d:osc2d", "linear", "0a8f1f1176f3a08c13c391a4cb65a40ade56dfe8f37e23ab4a35374384fb9661", "c2c4520a15b3a63c7df06fc34d90ef86635296fd8c4397b9344beb75b2124570",
-       {0x3ea3beecU,0x3ea3beecU,0x3ea3beecU,0x3f800000U,0x3e3a5ed0U,0x3e3a5ed0U,0x3e3a5ed0U,0x3f800000U,0x3f2f0ed4U,0x3f2f0ed4U,0x3f2f0ed4U,0x3f800000U},
+      {"synth/osc2d:osc2d", "linear", "7a485417e8ccef4600b83f86a835dcc3d8020f397a68b11d0c839bd6562098bc", "c2e38caaccb5587a1bc3cad4f4649eb3554f58d0f3f2e9145ef5dea5e204f780",
+       {0x3f208ddcU,0x3f208ddcU,0x3f208ddcU,0x3f800000U,0x3e91a3b0U,0x3e91a3b0U,0x3e91a3b0U,0x3f800000U,0x3f4dce82U,0x3f4dce82U,0x3f4dce82U,0x3f800000U},
        {2.5f,-45.0f,0.0f,0.0f,0.0f}, {std::int32_t{1},std::int32_t{5},std::int32_t{19}}, false,
        noisemaker::glsl::Vec2(11.0f, -4.0f), noisemaker::glsl::Vec2(29.0f, 17.0f), 0.375f, 0U, 0U},
-      {"synth/osc2d:osc2d", "saw", "16bf15e0500ab4b685d92fe51a9f2301f44eaa56e8daabaa4f03fe1b875d6a6e", "116f3bcee7193882d637f80e80b34d6d92a5f00a8378b485b2d56c44b8b0bb5a",
+      {"synth/osc2d:osc2d", "saw", "9e6de7bafe1b231fb1aead2b29d51e0d56a3294e3b1e0249774a40b02e563514", "116f3bcee7193882d637f80e80b34d6d92a5f00a8378b485b2d56c44b8b0bb5a",
        {0x3f6de50cU,0x3f6de50cU,0x3f6de50cU,0x3f800000U,0x3f52f286U,0x3f52f286U,0x3f52f286U,0x3f800000U,0x3f380000U,0x3f380000U,0x3f380000U,0x3f800000U},
        {4.25f,0.0f,0.0f,0.0f,0.0f}, {std::int32_t{2},std::int32_t{7},std::int32_t{37}}, false,
        noisemaker::glsl::Vec2(-13.0f, 9.0f), noisemaker::glsl::Vec2(23.0f, 19.0f), 0.875f, 0U, 0U},
-      {"synth/osc2d:osc2d", "saw_inverse", "c3bf2586c7294ef362a06a46d5bbe3f1c099ce085d64cb7ca1e6dc6420db3b49", "589043f6e20d86f79963741190f30cc5fb7f6b5df661aba097a94f8a5f89f728",
-       {0x3e186a58U,0x3e186a58U,0x3e186a58U,0x3f800000U,0x3eebf8eeU,0x3eebf8eeU,0x3eebf8eeU,0x3f800000U,0x3f45de58U,0x3f45de58U,0x3f45de58U,0x3f800000U},
+      {"synth/osc2d:osc2d", "saw_inverse", "0ee1dcff5b021bd61d9da61e9b8edd4bdcbb8bf7f09f1a9a989ff275b12e89a6", "90874942992564638fcce2eb5d18071d3fe0ec92bb272060e6f054c26caf083a",
+       {0x3f3cfa26U,0x3f3cfa26U,0x3f3cfa26U,0x3f800000U,0x3f1d4f72U,0x3f1d4f72U,0x3f1d4f72U,0x3f800000U,0x3efb4950U,0x3efb4950U,0x3efb4950U,0x3f800000U},
        {1.5f,67.0f,0.0f,0.0f,0.0f}, {std::int32_t{3},std::int32_t{11},std::int32_t{61}}, false,
        noisemaker::glsl::Vec2(5.0f, -11.0f), noisemaker::glsl::Vec2(31.0f, 13.0f), 1.125f, 0U, 0U},
-      {"synth/osc2d:osc2d", "square", "c415113794700179b9c794b7cba5572b16bc04b7ab7ad6fd4f9239d68b7687e7", "8953dc58857c436bae5206d5ddaac64fb40f70ae82e94dcb57ca4157de7f3ca5",
-       {0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x00000000U,0x00000000U,0x00000000U,0x3f800000U},
+      {"synth/osc2d:osc2d", "square", "23b9c9abc5ed2ee739721091b7943a9b1ccae4afb25c3c4e7428cb5b4b7b00e5", "c93df3a479520043925f5e5599fa0fa88dd52897666cce725e9869d656bbf7ff",
+       {0x3f800000U,0x3f800000U,0x3f800000U,0x3f800000U,0x00000000U,0x00000000U,0x00000000U,0x3f800000U,0x00000000U,0x00000000U,0x00000000U,0x3f800000U},
        {3.75f,179.0f,0.0f,0.0f,0.0f}, {std::int32_t{4},std::int32_t{13},std::int32_t{83}}, false,
        noisemaker::glsl::Vec2(-17.0f, -3.0f), noisemaker::glsl::Vec2(37.0f, 21.0f), 1.75f, 0U, 0U},
-      {"synth/osc2d:osc2d", "noise1d_resolution_fallback", "4b54a28e78e2497e7992c9a04d31528bae33b1e55a050d56caa587bc0aaed6e7", "28daee9425522af780767abebb66850acbde072a7432a7f329fcfa34bef5eaa2",
-       {0x3e6ff3aaU,0x3e6ff3aaU,0x3e6ff3aaU,0x3f800000U,0x3f687a52U,0x3f687a52U,0x3f687a52U,0x3f800000U,0x3f678264U,0x3f678264U,0x3f678264U,0x3f800000U},
+      {"synth/osc2d:osc2d", "noise1d_resolution_fallback", "8bd374ca709e7f920773c9d3ed4d23152f468bf9cd33e52837e7483e76a2e830", "dfd849d2041931900a7789de24b9ebb1455eef8b12f70d461c222238aac5ee47",
+       {0x7fc00000U,0x7fc00000U,0x7fc00000U,0x3f800000U,0x7fc00000U,0x7fc00000U,0x7fc00000U,0x3f800000U,0x7fc00000U,0x7fc00000U,0x7fc00000U,0x3f800000U},
        {5.5f,-91.0f,0.0f,0.0f,0.0f}, {std::int32_t{5},std::int32_t{17},std::int32_t{101}}, false,
        noisemaker::glsl::Vec2(-19.0f, 7.0f), noisemaker::glsl::Vec2(0.0f, 0.0f), 0.625f, 0U, 0U},
-      {"synth/osc2d:osc2d", "noise2d", "ad76c4e9256f71d664e126e8ea4ee91dc3aee60f0b9ba2dd92d0c777bb64cb7b", "8666cb93f507308b60424089005b684b5d84214f7e6bd6ef83ef4802d961847c",
-       {0x3f2a8491U,0x3f2a8491U,0x3f2a8491U,0x3f800000U,0x3f359a15U,0x3f359a15U,0x3f359a15U,0x3f800000U,0x3f4229e0U,0x3f4229e0U,0x3f4229e0U,0x3f800000U},
+      {"synth/osc2d:osc2d", "noise2d", "f168e2f7bf106b39e942d01670aaf1a1dda13d8739af905028d28c036023d469", "7c8248ee174fed8f16df9ca208c6ff6cb333d56dcc74d2b3cff731593d997582",
+       {0x3e54e3a2U,0x3e54e3a2U,0x3e54e3a2U,0x3f800000U,0x3edfa807U,0x3edfa807U,0x3edfa807U,0x3f800000U,0x3f445678U,0x3f445678U,0x3f445678U,0x3f800000U},
        {7.25f,31.0f,0.0f,0.0f,0.0f}, {std::int32_t{6},std::int32_t{23},std::int32_t{251}}, false,
        noisemaker::glsl::Vec2(9.0f, -15.0f), noisemaker::glsl::Vec2(41.0f, 27.0f), 0.9375f, 0U, 0U},
-      {"synth/osc2d:osc2d", "fallback_noise2d", "203bd767c621c1255aa9f0a3eec757c7f01b105cc52f21e28b4dd2b34ba8c802", "874ae97afa8a6e16971eb36f6b12fd73555b8af8975b6eeff288b930761a6232",
-       {0x3ec18727U,0x3ec18727U,0x3ec18727U,0x3f800000U,0x3f7ae1e1U,0x3f7ae1e1U,0x3f7ae1e1U,0x3f800000U,0x3b8269c0U,0x3b8269c0U,0x3b8269c0U,0x3f800000U},
+      {"synth/osc2d:osc2d", "fallback_noise2d", "abd33859158ce69787a758d085ed0fa4cc146b8fe26441e56004ff7db2cc0e44", "4d1b274fc2d3ce198ff08813ee102af65afe6c7b2eb77c367a89794b5c7bf5a9",
+       {0x3c783120U,0x3c783120U,0x3c783120U,0x3f800000U,0x3e942562U,0x3e942562U,0x3e942562U,0x3f800000U,0x3efed66bU,0x3efed66bU,0x3efed66bU,0x3f800000U},
        {9.75f,143.0f,0.0f,0.0f,0.0f}, {std::int32_t{9},std::int32_t{29},std::int32_t{503}}, false,
        noisemaker::glsl::Vec2(-23.0f, -9.0f), noisemaker::glsl::Vec2(43.0f, 31.0f), 1.375f, 0U, 0U},
   }};
@@ -1747,7 +1747,10 @@ void populate_task14_bindings(noisemaker::glsl::Bindings& bindings,
   } else if (fixture.key == "synth/osc2d:osc2d") {
     uniform("resolution", noisemaker::glsl::Vec2(9.0f, 7.0f));
     uniform("tileOffset", fixture.tile_offset); uniform("fullResolution", fixture.full_resolution);
-    uniform("aspect", 1.2857142686843872f); uniform("time", fixture.time);
+    // createCanonicalBindings derives aspect from fullResolution (NaN for 0 / 0).
+    uniform("aspect", static_cast<float>(static_cast<double>(fixture.full_resolution[0]) /
+                                         static_cast<double>(fixture.full_resolution[1])));
+    uniform("time", fixture.time);
     uniform("oscType", fixture.integers[0]); uniform("frequency", fixture.integers[1]);
     uniform("speed", fixture.values[0]); uniform("rotation", fixture.values[1]);
     uniform("seed", fixture.integers[2]);
