@@ -19,6 +19,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
     from tools.glslcpp import check_corpus, check_semantics
     from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
+    from tools.glslcpp import emit_typed_cpp as _emit_typed_cpp
     from tools.glslcpp.frontend import parse_program
     from tools.glslcpp.frontend.physical_unused_sampler import omitted_physical_samplers
     from tools.glslcpp.frontend.corrupt_value_copy_profile import authenticate_corrupt_value_copy
@@ -324,6 +325,12 @@ if __package__ in (None, ""):
         custom_adapter_binding_abi as remap_custom_adapter_binding_abi,
         verify_custom_adapter_binding_abi as remap_verify_custom_adapter_binding_abi,
         preflight_remap_bindings)
+    from tools.glslcpp.frontend.crt_adapter_profile import (
+        KEY as CRT_ADAPTER_KEY,
+        CUSTOM_ADAPTER_FACTORY as CRT_CUSTOM_ADAPTER_FACTORY,
+        CUSTOM_ADAPTER_SOURCE as CRT_CUSTOM_ADAPTER_SOURCE,
+        custom_adapter_binding_abi as crt_custom_adapter_binding_abi,
+        verify_custom_adapter_binding_abi as crt_verify_custom_adapter_binding_abi)
     from tools.glslcpp.frontend.snow_profile import (
         KEY as SNOW_KEY,
         CUSTOM_ADAPTER_FACTORY as SNOW_CUSTOM_ADAPTER_FACTORY,
@@ -481,6 +488,7 @@ if __package__ in (None, ""):
 else:
     from . import check_corpus, check_semantics
     from .emit_typed_cpp import TypedEmissionError, render_typed_cpp
+    from . import emit_typed_cpp as _emit_typed_cpp
     from .frontend import parse_program
     from .frontend.physical_unused_sampler import omitted_physical_samplers
     from .frontend.corrupt_value_copy_profile import authenticate_corrupt_value_copy
@@ -786,6 +794,12 @@ else:
         custom_adapter_binding_abi as remap_custom_adapter_binding_abi,
         verify_custom_adapter_binding_abi as remap_verify_custom_adapter_binding_abi,
         preflight_remap_bindings)
+    from .frontend.crt_adapter_profile import (
+        KEY as CRT_ADAPTER_KEY,
+        CUSTOM_ADAPTER_FACTORY as CRT_CUSTOM_ADAPTER_FACTORY,
+        CUSTOM_ADAPTER_SOURCE as CRT_CUSTOM_ADAPTER_SOURCE,
+        custom_adapter_binding_abi as crt_custom_adapter_binding_abi,
+        verify_custom_adapter_binding_abi as crt_verify_custom_adapter_binding_abi)
     from .frontend.snow_profile import (
         KEY as SNOW_KEY,
         CUSTOM_ADAPTER_FACTORY as SNOW_CUSTOM_ADAPTER_FACTORY,
@@ -2950,6 +2964,8 @@ _CUSTOM_ADAPTER_FACTORIES: dict[str, str] = {
     REMAP_KEY: REMAP_CUSTOM_ADAPTER_FACTORY,
     SNOW_KEY: SNOW_CUSTOM_ADAPTER_FACTORY,
     MEDIAN_KEY: MEDIAN_CUSTOM_ADAPTER_FACTORY,
+    # Since 7f47340 the authority dispatches its float32 crt.js adapter.
+    CRT_ADAPTER_KEY: CRT_CUSTOM_ADAPTER_FACTORY,
 }
 
 
@@ -3005,6 +3021,32 @@ def _snow_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     }
 
 
+def _crt_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / CRT_CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise GeneratorError(f"{key}: custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    if not re.search(r"BoundKernel\s+bind_crt\s*\([^)]*\)", source):
+        raise GeneratorError(f"{key}: custom factory identity missing")
+    try:
+        crt_verify_custom_adapter_binding_abi(repository)
+    except ValueError as error:
+        raise GeneratorError(f"{key}: {error}") from error
+    calls = list(crt_custom_adapter_binding_abi())
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": CRT_CUSTOM_ADAPTER_FACTORY,
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha256(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
 def _median_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     source_path = repository / MEDIAN_CUSTOM_ADAPTER_SOURCE
     if source_path.is_symlink() or not source_path.is_file():
@@ -3046,6 +3088,8 @@ def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
         return _remap_factory_route(repository, key)
     if key == SNOW_KEY:
         return _snow_factory_route(repository, key)
+    if key == CRT_ADAPTER_KEY:
+        return _crt_factory_route(repository, key)
     if key == MEDIAN_KEY:
         return _median_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
@@ -3548,7 +3592,11 @@ def apply_compatibility_transform(typed, transform_name: str):
                         rewritten_children = triangle_block(statement_value.children, child_guarded)
                         current = dataclasses.replace(statement_value, children=rewritten_children)
                         split = None
-                        if guarded and k is not None and len(current.expressions) == 1:
+                        if (guarded and k is not None and len(current.expressions) == 1
+                                and not _emit_typed_cpp.CURRENT_AUTHORITY_STAGED_VECTOR_WRITES):
+                            # Since 7f47340 the canonical compiler stages this
+                            # write (scripts/upstream/vector-writes.js), so the
+                            # whole-vector GLSL assignment stays intact.
                             split = split_triangle_assignment(current.expressions[0], p, k)
                         if split is None:
                             result.append(current)
@@ -3604,7 +3652,7 @@ def apply_compatibility_transform(typed, transform_name: str):
                 functions.append(dataclasses.replace(function, body=star_block(function.body)))
             else:
                 functions.append(function)
-        if triangle_matches != 1:
+        if triangle_matches != (0 if _emit_typed_cpp.CURRENT_AUTHORITY_STAGED_VECTOR_WRITES else 1):
             raise GeneratorError(
                 f"{typed.key}: shape-mask-sequential-lanes-v1 expected exactly one triangle match, got {triangle_matches}")
         if star_matches != 2:
@@ -10162,6 +10210,10 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         typed = attach_fixed_array_in_parameter_proof(typed)
         typed = attach_fixed_affine_centers13_proof(typed)
         literal_contract = slice_spec["numeric_literal_contracts"].get(key, "glsl-f32")
+        if key == "filter/scatter:scatterJitter" and _emit_typed_cpp.CURRENT_AUTHORITY_SCATTER_FLOAT_LITERALS:
+            # Since 7f47340 the canonical compiler lowers filter/scatter's float
+            # literals to float32 like every other program's.
+            literal_contract = "glsl-f32"
         gather_sorted_round_profile = slice_spec["programs"][index].get(
             "gather_sorted_round_profile")
         if gather_sorted_round_profile is not None:
@@ -11368,6 +11420,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
     cpp = ["// Generated by typed GLSL IR emitter. Do not edit.", f"// Revision: {slice_spec['revision']}",
            "#include \"noisemaker/generated/catalog.hpp\"",
            "#include \"noisemaker/effects/bit_effects.hpp\"",
+           "#include \"noisemaker/effects/crt.hpp\"",
            "#include \"noisemaker/effects/median.hpp\"",
            "#include \"noisemaker/effects/remap.hpp\"",
            "#include \"noisemaker/effects/snow.hpp\"", "", *standard_headers,

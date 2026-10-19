@@ -43,6 +43,89 @@ NOISE3D_NUMBER_SEED_SOURCE_SHA256 = (
 # reconstructions turn this off to regenerate the function-name gate
 # (hash12/hash22) the frozen milestones were emitted with.
 HASH_PRECISION_FENCE_BY_SHAPE = True
+# Since 7f47340 the canonical compiler also fences filter/scatter's hashes,
+# which it used to skip. Historical reconstructions turn this off.
+HASH_PRECISION_FENCE_INCLUDES_SCATTER = True
+# Since 7f47340 the canonical compiler lowers a float division by a run-time
+# divisor to Metal division (`$runtime.fdiv`, src/csl/metal-division.js) at
+# the sites that frontend/metal_division.py selects. Historical
+# reconstructions turn this off to regenerate the float64 `/`.
+CURRENT_AUTHORITY_METAL_DIVISION = True
+# Programs whose authority runtime is a hand-written adapter
+# (src/effects/adapters/index.js) that never runs the transpiled kernel, so
+# none of their divisions is a `$runtime.fdiv` site. classicNoisedeck/bitEffects
+# is not listed: its adapter runs the transpiled kernel for MODE 0.
+AUTHORITY_ADAPTER_PROGRAMS = frozenset({
+    "classicNoisedeck/fractal:fractal",
+    "filter/crt:crt",
+    "filter/historicPalette:historicPalette",
+    "filter/median:median",
+    "filter/palette:palette",
+    "filter/pixelSort:luminance",
+    "filter/reindex:nmReindexApply",
+    "filter/reindex:nmReindexStats",
+    "filter/snow:snow",
+    "synth/julia:julia",
+    "synth/remap:remap",
+})
+# Since 7f47340 the transpiled kernels select a nearest texel as the GPU does
+# (sampleNearestTexelBottomLeft). Historical reconstructions turn this off.
+CURRENT_AUTHORITY_GPU_NEAREST_TEXEL = True
+# Since 7f47340 the canonical compiler routes filter/spookyTicker's murmur
+# `hash_mix` to the exact uint32 finalizer (stdlib.hashUint, routed by body)
+# and truncates its int divisions (Math.trunc). Historical reconstructions turn
+# this off to regenerate the signed-shift hash and the untruncated division.
+CURRENT_AUTHORITY_SPOOKY_TICKER_UINT_HASH = True
+# Since 7f47340 the canonical compiler evaluates every component of an
+# in-place vector write before it stores any (scripts/upstream/vector-writes.js)
+# where a later component reads the target: Edge's center splat, the scatter
+# jitter cross-lane projection, Shape Mask's triangle fold, Mandelbrot's dz
+# update and Navier-Stokes' hash22. Historical reconstructions turn this off to
+# regenerate the sequential lane stores.
+CURRENT_AUTHORITY_STAGED_VECTOR_WRITES = True
+# Since 7f47340 the canonical compiler rewrites synth/navierStokes nsSplat's
+# `return fract(sin(x * 12.9898) * 43758.5453);` to
+# `return fract(float(float(sin(float(float(x) * 12.9898))) * 43758.5453));`,
+# rounding its argument, the scaled sine input, the sine and the product to
+# float32. Historical reconstructions turn this off.
+CURRENT_AUTHORITY_NAVIER_HASH11_FENCE = True
+# Since 7f47340 the canonical compiler rewrites the mirror-wrap idiom
+# `mod(x + 1.0, 2.0) - 1.0` to `(x - 2.0 * floor((x + 1.0) * 0.5))`, as Metal's
+# fast math reassociates it. Historical reconstructions turn this off.
+CURRENT_AUTHORITY_MOD_MIRROR_REWRITE = True
+# Since 7f47340 the canonical compiler rounds filter/scatter's seed term
+# `float(seed) * 101.7` to float32 before it adds the hash coordinate
+# (`hash22(hashCoord + float((seed) * 101.7))`). Historical reconstructions
+# turn this off.
+CURRENT_AUTHORITY_SCATTER_SEED_TERM = True
+SCATTER_JITTER_KEY = "filter/scatter:scatterJitter"
+# Since 7f47340 the canonical compiler lowers filter/scatter's float literals
+# to float32 (lowerFloatLiterals), which it used to skip, so its numeric
+# literal contract is glsl-f32. Historical reconstructions turn this off.
+CURRENT_AUTHORITY_SCATTER_FLOAT_LITERALS = True
+# Since 7f47340 the canonical compiler rewrites filter/extrude's block scale
+# `float s = 1.0 + h * (depth / 100.0) * 0.4;` to `float s = float(...)` and its
+# top-face test `abs(P - faceCenter)` to
+# `abs((P - imgCenter) - (cellC - imgCenter) * s)`, as the Metal compile keeps
+# `s` in float32 and reassociates the test. Historical reconstructions turn
+# this off.
+CURRENT_AUTHORITY_EXTRUDE_REWRITE = True
+EXTRUDE_KEY = "filter/extrude:extrude"
+# Since 7f47340 the canonical compiler rewrites the seeded hashes of the
+# lattice noises (lowerSeededLatticeHashes): the seed term
+# `float(seed) * 0.1` rounds to float32 first, the compile-time offset of each
+# call (noise3d and perlin's corner offsets and gradient offsets, cell3d's
+# neighbor) folds with it before the lattice coordinate is added, and the
+# fract-based volume seeding hash of reactionDiffusion3d and cellularAutomata3d
+# sums in the Metal order. Historical reconstructions turn this off.
+CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES = True
+NOISE3D_LATTICE_KEY = "synth3d/noise3d:precompute"
+PERLIN_LATTICE_KEY = "synth/perlin:perlin"
+CELL3D_LATTICE_KEY = "synth3d/cell3d:precompute"
+VOLUME_SEED_HASH_KEYS = frozenset({
+    "synth3d/reactionDiffusion3d:simulate", "synth3d/cellularAutomata3d:simulate"})
+_LATTICE_KEYS = frozenset({NOISE3D_LATTICE_KEY, PERLIN_LATTICE_KEY, CELL3D_LATTICE_KEY}) | VOLUME_SEED_HASH_KEYS
+NAVIER_SPLAT_KEY = "synth/navierStokes:nsSplat"
 
 from .frontend.loop_proof import (
     COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE, COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT,
@@ -80,6 +163,8 @@ from .frontend.fixed_affine_centers13_proof import (
     prove_fixed_affine_centers13,
     source_provenance_error as fixed_affine_source_provenance_error)
 from .frontend.typed_ir import TypedExpression, TypedProgram, TypedStatement
+from .frontend.metal_division import MetalDivisionSites, metal_division_sites
+from .frontend.body_semantic import _BUILTIN_IDS
 from .frontend.gather_sorted_round_profile import (
     GATHER_SORTED_KEY, PROFILE as GATHER_SORTED_ROUND_PROFILE,
     authenticate_gather_sorted_round_to_int)
@@ -448,6 +533,12 @@ def authenticate_dither_frontend(program: TypedProgram, source_hash: str | None,
     proof = _authenticate_dither_frontend(program, source_hash, profile)
     _DITHER_AUTHENTICATED_CARRIERS[id(proof)] = proof
     return proof
+
+
+def _texture_sampler() -> str:
+    """The sampler behind a transpiled kernel's texture() (GlslCpuRuntime #texture)."""
+    return ("sample_texture_bottom_left" if CURRENT_AUTHORITY_GPU_NEAREST_TEXEL
+            else "sample_nearest_bottom_left")
 
 
 class TypedEmissionError(ValueError):
@@ -1945,8 +2036,29 @@ class _Emitter:
 
     audio_uniform_proof: object | None = field(init=False, default=None)
     emitted_audio_reads: list[TypedExpression] = field(init=False, default_factory=list)
+    lattice_expressions: dict[int, object] = field(init=False, default_factory=dict)
+    lattice_statements: dict[int, object] = field(init=False, default_factory=dict)
+    lattice_calls: list[TypedExpression] = field(init=False, default_factory=list)
+    lattice_hash_function: object | None = field(init=False, default=None)
+    lattice_grad_function: object | None = field(init=False, default=None)
+    lattice_noise_function: object | None = field(init=False, default=None)
+    lattice_width: int = field(init=False, default=0)
+    lattice_cell_positions: dict[int, TypedExpression] = field(init=False, default_factory=dict)
+    extrude_scale_initializer: TypedExpression | None = field(init=False, default=None)
+    extrude_face_center_initializer: TypedExpression | None = field(init=False, default=None)
+    emitting_extrude_scale: bool = field(init=False, default=False)
+    metal_divisions: MetalDivisionSites = field(
+        init=False, default_factory=lambda: MetalDivisionSites(()))
+    emitted_metal_divisions: list[TypedExpression] = field(
+        init=False, default_factory=list)
 
     def __post_init__(self) -> None:
+        if CURRENT_AUTHORITY_METAL_DIVISION and self.program.key not in AUTHORITY_ADAPTER_PROGRAMS:
+            self.metal_divisions = metal_division_sites(self.program)
+        if CURRENT_AUTHORITY_EXTRUDE_REWRITE and self.program.key == EXTRUDE_KEY:
+            self._locate_extrude_rewrites()
+        if CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES and self.program.key in _LATTICE_KEYS:
+            self._locate_lattice_rewrites()
         if (self.program.key == "filter/hatch:hatch"
                 and len(self.program.preprocessor_defines) == 1
                 and (self.program.preprocessor_defines[0].name,
@@ -7711,6 +7823,9 @@ class _Emitter:
         if any(value is item for item in getattr(
                 self, "authorized_rotate_expressions", ())):
             self.emitted_rotate_expressions.append(value)
+        lattice_expression = self.lattice_expressions.get(id(value))
+        if lattice_expression is not None:
+            return lattice_expression(value)
         if value.kind == "id": return self.name(value)
         if value.kind == "literal":
             if value is self.authorized_fractal_alpha_literal:
@@ -8394,6 +8509,21 @@ class _Emitter:
                 raise _error(self.program, value, "unsupported typed expression index")
             return f"{self.expression(value.children[0])}[{self.expression(value.children[1])}]"
         if value.kind == "binary":
+            mirrored = self._mod_mirror_rewrite(value)
+            if mirrored is not None:
+                return self.expression(mirrored)
+            seed_term = self._scatter_seed_term(value)
+            if seed_term is not None:
+                return seed_term
+            top_face = self._extrude_top_face_offset(value)
+            if top_face is not None:
+                return self.expression(top_face)
+            if value is self.extrude_scale_initializer and not self.emitting_extrude_scale:
+                self.emitting_extrude_scale = True
+                try:
+                    return f"static_cast<double>(noisemaker::f32({self.expression(value)}))"
+                finally:
+                    self.emitting_extrude_scale = False
             median_shift = (
                 self.authorized_median_frontend_proof is not None
                 and any(value is item
@@ -8954,6 +9084,9 @@ class _Emitter:
                     raise _error(
                         self.program, value,
                         "malformed authenticated Emboss materialization")
+                if value in self.metal_divisions:
+                    self.emitted_metal_divisions.append(value)
+                    return f"glsl::metal_divide(glsl::Vec2({left}), {right})"
                 return f"(glsl::Vec2({left}) / {right})"
             spooky = self.authorized_spooky_ticker_proof
             if (spooky is not None
@@ -8966,6 +9099,10 @@ class _Emitter:
                         self.program, value,
                         "malformed authenticated SpookyTicker Number division")
                 self.emitted_spooky_ticker_number_divisions.append(value)
+                if CURRENT_AUTHORITY_SPOOKY_TICKER_UINT_HASH:
+                    return (
+                        f"std::trunc(static_cast<double>({left}) / "
+                        f"static_cast<double>({right}))")
                 return (
                     f"(static_cast<double>({left}) / "
                     f"static_cast<double>({right}))")
@@ -9022,7 +9159,12 @@ class _Emitter:
             # precision until the typed local/assignment/builtin boundary. The
             # C++ spelling makes that storage rule explicit instead of allowing
             # native float operator chaining to narrow each intermediate.
+            metal = value.operator == "/" and value in self.metal_divisions
+            if metal:
+                self.emitted_metal_divisions.append(value)
             if value.type.display() == "float":
+                if metal:
+                    return f"glsl::metal_divide(static_cast<double>({left}), static_cast<double>({right}))"
                 return f"(static_cast<double>({left}) {value.operator} static_cast<double>({right}))"
             vector_with_boundary = (value.type.display() in {"vec2", "vec3", "vec4"}
                                     and self._contains_vector_value_boundary(value)
@@ -9040,7 +9182,8 @@ class _Emitter:
                             left = materialized
                         else:
                             right = materialized
-            result = f"({left} {value.operator} {right})"
+            result = (f"glsl::metal_divide({left}, {right})" if metal
+                      else f"({left} {value.operator} {right})")
             if vector_with_boundary:
                 # Vector-vector helpers return an ordinary Array with rounded
                 # lanes. A following scalar map retains Number precision.
@@ -10111,6 +10254,7 @@ class _Emitter:
                     and value.signature_id == 70
                     and value is self.authorized_landscape_perspective_call):
                 prefix += ", fragColor, geoOut"
+            arguments = self._lattice_call_arguments(value, arguments)
             prefix += ", " if arguments else ""
             return f"{self.function_names[value.signature_id]}(" + prefix + ", ".join(arguments) + ")"
         if value.kind == "assign" and any(
@@ -10164,6 +10308,363 @@ class _Emitter:
                     f"{self.expression(operand)})")
         raise _error(self.program, value, f"unsupported typed expression {value.kind}")
 
+    # -- Seeded lattice hashes (CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES) ----------
+
+    def _lattice_fail(self, message: str):
+        raise _error(self.program, self.program, f"seeded lattice hash rewrite: {message}")
+
+    @staticmethod
+    def _lattice_seed_term(value: TypedExpression) -> TypedExpression | None:
+        """The `seed` id of `float(seed) * 0.1`, or None."""
+        if (value.kind != "binary" or value.operator != "*" or len(value.children) != 2
+                or value.children[1].kind != "literal" or value.children[1].literal != "0.1"):
+            return None
+        cast = value.children[0]
+        if (cast.kind != "construct" or cast.type.display() != "float" or len(cast.children) != 1
+                or cast.children[0].kind != "id" or cast.children[0].symbol is None
+                or cast.children[0].symbol.name != "seed"):
+            return None
+        return cast.children[0]
+
+    def _lattice_seed_offset(self, seed: TypedExpression) -> str:
+        # cpuSeedOffset = float((seed) * 0.1)
+        return (f"static_cast<double>(noisemaker::f32(static_cast<double>({self.expression(seed)}) * "
+                f"static_cast<double>(static_cast<float>(0.1))))")
+
+    def _lattice_functions(self) -> dict[str, object]:
+        return {function.name: function for function in self.program.functions}
+
+    def _locate_lattice_rewrites(self) -> None:
+        key = self.program.key
+        functions = self._lattice_functions()
+        if key in VOLUME_SEED_HASH_KEYS:
+            self._locate_volume_seed_hash(functions.get("hash3"))
+            return
+        hash_name, grad_name, noise_name, width = {
+            NOISE3D_LATTICE_KEY: ("hash4", "grad4", "noise4D", 4),
+            PERLIN_LATTICE_KEY: ("hash3", "grad3", "noise3D", 3),
+            CELL3D_LATTICE_KEY: ("hash3", None, "cellNoise3D", 3),
+        }[key]
+        hash_function = functions.get(hash_name)
+        if hash_function is None or len(hash_function.parameters) != 1 or not hash_function.body:
+            self._lattice_fail(f"{hash_name} changed")
+        first = hash_function.body[0]
+        seed_expression = first.expressions[0] if len(first.expressions) == 1 else None
+        if first.kind == "decl":
+            # noise3d: vec4 ps = p + float(seed) * 0.1;
+            initializer = (seed_expression.children[0]
+                           if seed_expression is not None and seed_expression.kind == "declaration"
+                           and len(seed_expression.children) == 1 else None)
+        elif seed_expression is not None and seed_expression.kind == "assign" and seed_expression.operator == "=":
+            # perlin, cell3d: p = p + float(seed) * 0.1;
+            initializer = seed_expression.children[1]
+        else:
+            initializer = None
+        if (initializer is None or initializer.kind != "binary" or initializer.operator != "+"
+                or initializer.children[0].kind != "id"
+                or initializer.children[0].symbol_id != hash_function.parameters[0].id):
+            self._lattice_fail(f"{hash_name} seed term changed")
+        seed = self._lattice_seed_term(initializer.children[1])
+        if seed is None:
+            self._lattice_fail(f"{hash_name} seed term changed")
+        point = initializer.children[0]
+        vector = f"glsl::Vec{width}"
+
+        if key == NOISE3D_LATTICE_KEY:
+            def hash_seed(_value, point=point, seed=seed):
+                # cpuLatticeOffset = k + cpuSeedOffset; ps = p + cpuLatticeOffset
+                lattice = f"{vector}((k + {self._lattice_seed_offset(seed)}))"
+                return f"{vector}(({self.expression(point)} + {lattice}))"
+        elif key == PERLIN_LATTICE_KEY:
+            def hash_seed(_value, point=point, seed=seed):
+                # p = vec3(p.x + cpuLatticeOffset.x, p.y + cpuLatticeOffset.y,
+                #          float(p.z + cpuSeedOffset) + k.z), cpuLatticeOffset = k.xy + cpuSeedOffset
+                offset = self._lattice_seed_offset(seed)
+                p = self.expression(point)
+                lattice = lambda lane: f"static_cast<double>(noisemaker::f32(static_cast<double>(k[{lane}]) + {offset}))"
+                return (f"glsl::FloatExpr<3>(static_cast<double>({p}[0]) + {lattice(0)}, "
+                        f"static_cast<double>({p}[1]) + {lattice(1)}, "
+                        f"static_cast<double>(noisemaker::f32(static_cast<double>({p}[2]) + {offset})) + "
+                        f"static_cast<double>(k[2]))")
+        else:
+            seed_cast = initializer.children[1].children[0]
+
+            def hash_seed(_value, seed=seed, seed_cast=seed_cast):
+                # p = vec3(base.x + float(neighbor.x + cpuSeedOffset),
+                #          cpuCellPos.y + cpuSeedOffset, cpuCellPos.z + cpuSeedOffset)
+                cell3d = self.cell3d_hash3_proof
+                if cell3d is not None and seed_cast is not cell3d.seed_cast:
+                    self._lattice_fail("cell3d seed cast changed")
+                if cell3d is not None and not any(
+                        item is cell3d.seed_cast for item in self.emitted_cell3d_hash3_nodes):
+                    self.emitted_cell3d_hash3_nodes.append(cell3d.seed_cast)
+                offset = self._lattice_seed_offset(seed)
+                cell = "glsl::Vec3((base + neighbor))"
+                return (f"glsl::FloatExpr<3>(static_cast<double>(base[0]) + "
+                        f"static_cast<double>(noisemaker::f32(static_cast<double>(neighbor[0]) + {offset})), "
+                        f"static_cast<double>({cell}[1]) + {offset}, "
+                        f"static_cast<double>({cell}[2]) + {offset})")
+        self.lattice_expressions[id(initializer)] = hash_seed
+        self.lattice_hash_function = hash_function
+        self.lattice_grad_function = functions.get(grad_name) if grad_name else None
+        self.lattice_noise_function = functions.get(noise_name)
+        self.lattice_width = width
+        if (self.lattice_noise_function is None
+                or (grad_name is not None and self.lattice_grad_function is None)):
+            self._lattice_fail("lattice functions changed")
+        if key == CELL3D_LATTICE_KEY:
+            # cellPos = i + neighbor; hash3(cellPos) -> hash3(i, neighbor)
+            self.lattice_cell_positions = {}
+
+            def statement(value):
+                if value.kind == "decl":
+                    for declaration in value.expressions:
+                        if (declaration.symbol is not None and declaration.symbol.name == "cellPos"
+                                and declaration.children):
+                            self.lattice_cell_positions[declaration.symbol.id] = declaration.children[0]
+                for child in value.children:
+                    statement(child)
+            for item in self.lattice_noise_function.body:
+                statement(item)
+            if len(self.lattice_cell_positions) != 1:
+                self._lattice_fail("cell3d cellPos changed")
+
+    def _locate_volume_seed_hash(self, function) -> None:
+        """reactionDiffusion3d and cellularAutomata3d's fract seeding hash."""
+        body = function.body if function is not None else ()
+        if function is None or len(function.parameters) != 1 or len(body) != 4:
+            self._lattice_fail("volume seeding hash3 changed")
+        seed_statement, _fract_statement, dot_statement, return_statement = body
+        seed_assign = seed_statement.expressions[0] if len(seed_statement.expressions) == 1 else None
+        dot_assign = dot_statement.expressions[0] if len(dot_statement.expressions) == 1 else None
+        if (seed_assign is None or seed_assign.kind != "assign" or seed_assign.operator != "="
+                or seed_assign.children[1].kind != "binary" or seed_assign.children[1].operator != "+"
+                or dot_assign is None or dot_assign.kind != "assign" or dot_assign.operator != "+="
+                or dot_assign.children[1].kind != "builtin" or dot_assign.children[1].callee != "dot"
+                or return_statement.kind != "return"):
+            self._lattice_fail("volume seeding hash3 changed")
+        initializer = seed_assign.children[1]
+        seed = self._lattice_seed_term(initializer.children[1])
+        if seed is None or initializer.children[0].kind != "id":
+            self._lattice_fail("volume seeding hash3 seed term changed")
+        point = initializer.children[0]
+        dot = dot_assign.children[1]
+
+        def seeded(_value):
+            # p = p + float((seed) * 0.1)
+            return f"({self.expression(point)} + {self._lattice_seed_offset(seed)})"
+
+        def hash_dot(_statement):
+            # float cpuHashDot = dot(p, p.yxz + 33.33);
+            return [f"[[maybe_unused]] const double cpuHashDot = static_cast<double>({self.expression(dot)});"]
+
+        def hash_return(_statement):
+            # fract(float(float(float(p.x + p.y) + float(cpuHashDot + cpuHashDot)) * float(p.z + cpuHashDot)))
+            p = self.expression(point)
+            rounded = lambda text: f"static_cast<double>(noisemaker::f32({text}))"
+            lane = lambda index: f"static_cast<double>({p}[{index}])"
+            total = rounded(f"{rounded(f'{lane(0)} + {lane(1)}')} + {rounded('cpuHashDot + cpuHashDot')}")
+            product = rounded(f"{total} * {rounded(f'{lane(2)} + cpuHashDot')}")
+            return [f"return glsl::fract({product});"]
+
+        self.lattice_expressions[id(initializer)] = seeded
+        self.lattice_statements[id(dot_statement)] = hash_dot
+        self.lattice_statements[id(return_statement)] = hash_return
+
+    def _lattice_parameters(self, function) -> list[str] | None:
+        if not self.lattice_expressions or self.program.key in VOLUME_SEED_HASH_KEYS:
+            return None
+        vector = f"glsl::Vec{self.lattice_width}"
+        if self.program.key == CELL3D_LATTICE_KEY:
+            if function is self.lattice_hash_function:
+                return [f"[[maybe_unused]] {vector} base", f"[[maybe_unused]] {vector} neighbor"]
+            return None
+        if function is self.lattice_hash_function or function is self.lattice_grad_function:
+            point = function.parameters[0]
+            return [f"[[maybe_unused]] {vector} {_safe_identifier(point.name, point.id)}",
+                    f"[[maybe_unused]] {vector} k"]
+        return None
+
+    def _lattice_prologue(self, function) -> list[str]:
+        if (self.lattice_expressions and self.program.key == CELL3D_LATTICE_KEY
+                and function is self.lattice_hash_function):
+            point = function.parameters[0]
+            return [f"  [[maybe_unused]] glsl::Vec3 {_safe_identifier(point.name, point.id)}{{}};"]
+        return []
+
+    def _lattice_call_arguments(self, value: TypedExpression, arguments: list[str]) -> list[str]:
+        if not self.lattice_expressions or self.program.key in VOLUME_SEED_HASH_KEYS:
+            return arguments
+        vector = f"glsl::Vec{self.lattice_width}"
+        hash_function = self.lattice_hash_function
+        callee = value.signature_id
+        if (callee == hash_function.signature.id
+                and self.current_function_signature_id is not None
+                and self.lattice_grad_function is not None
+                and self.current_function_signature_id == self.lattice_grad_function.signature.id):
+            # grad: hash(p) -> hash(p, k); hash(p + c) -> hash(p, k + c)
+            argument = value.children[0]
+            point = self.lattice_grad_function.parameters[0]
+            if argument.kind == "id" and argument.symbol_id == point.id:
+                self.lattice_calls.append(value)
+                return [arguments[0], "k"]
+            if (argument.kind == "binary" and argument.operator == "+" and len(argument.children) == 2
+                    and argument.children[0].kind == "id" and argument.children[0].symbol_id == point.id
+                    and argument.children[1].kind == "literal"):
+                self.lattice_calls.append(value)
+                return [self.expression(argument.children[0]),
+                        f"{vector}((k + {self.expression(argument.children[1])}))"]
+            self._lattice_fail("gradient hash call changed")
+        target = self.lattice_grad_function if self.lattice_grad_function is not None else hash_function
+        if (callee == target.signature.id and self.current_function_signature_id is not None
+                and self.current_function_signature_id == self.lattice_noise_function.signature.id):
+            argument = value.children[0]
+            if self.program.key == CELL3D_LATTICE_KEY:
+                # hash3(cellPos) -> hash3(i, neighbor)
+                position = (self.lattice_cell_positions.get(argument.symbol_id)
+                            if argument.kind == "id" else None)
+                if (position is None or position.kind != "binary" or position.operator != "+"
+                        or len(position.children) != 2):
+                    self._lattice_fail("cell3d hash3 call changed")
+                self.lattice_calls.append(value)
+                return [self.expression(position.children[0]), self.expression(position.children[1])]
+            # grad(vecN(...) + vecN(corner)) -> grad(vecN(...), vecN(corner))
+            if (argument.kind != "binary" or argument.operator != "+" or len(argument.children) != 2
+                    or any(child.kind != "construct" for child in argument.children)):
+                self._lattice_fail("lattice corner call changed")
+            self.lattice_calls.append(value)
+            return [f"{vector}({self.expression(argument.children[0])})",
+                    f"{vector}({self.expression(argument.children[1])})"]
+        return arguments
+
+    def _locate_extrude_rewrites(self) -> None:
+        """The two filter/extrude initializers that the canonical compiler rewrites."""
+        found: dict[str, list[TypedExpression]] = {"s": [], "faceCenter": []}
+
+        def statement(value: TypedStatement) -> None:
+            if value.kind == "decl":
+                for declaration in value.expressions:
+                    name = declaration.symbol.name if declaration.symbol is not None else ""
+                    if name in found and declaration.children:
+                        found[name].append(declaration.children[0])
+            for child in value.children:
+                statement(child)
+
+        main = [function for function in self.program.functions if function.name == "main"]
+        for function in main:
+            for item in function.body:
+                statement(item)
+        if len(main) != 1 or len(found["s"]) != 1 or len(found["faceCenter"]) != 1:
+            raise _error(self.program, self.program, "filter/extrude rewrite sites changed")
+        scale, center = found["s"][0], found["faceCenter"][0]
+        if (scale.kind != "binary" or scale.operator != "+" or scale.type.display() != "float"
+                or center.kind != "binary" or center.operator != "+" or len(center.children) != 2
+                or center.children[0].kind != "id" or center.children[0].symbol.name != "imgCenter"
+                or center.children[1].kind != "binary" or center.children[1].operator != "*"):
+            raise _error(self.program, self.program, "filter/extrude rewrite sites changed")
+        self.extrude_scale_initializer = scale
+        self.extrude_face_center_initializer = center
+
+    def _extrude_top_face_offset(self, value: TypedExpression) -> TypedExpression | None:
+        """`P - faceCenter` as `(P - imgCenter) - (cellC - imgCenter) * s` (see the flag)."""
+        center = self.extrude_face_center_initializer
+        if (center is None or value.operator != "-" or len(value.children) != 2
+                or value.children[0].kind != "id" or value.children[0].symbol.name != "P"
+                or value.children[1].kind != "id" or value.children[1].symbol.name != "faceCenter"):
+            return None
+        image_center, scaled = center.children
+        relative = TypedExpression("binary", value.type, value.span, "rvalue",
+                                   children=(value.children[0], image_center), operator="-")
+        return TypedExpression("binary", value.type, value.span, "rvalue",
+                               children=(relative, scaled), operator="-")
+
+    def _scatter_seed_term(self, value: TypedExpression) -> str | None:
+        """filter/scatter's `float(seed) * 101.7`, rounded to float32 (see the flag)."""
+        if (not CURRENT_AUTHORITY_SCATTER_SEED_TERM or self.program.key != SCATTER_JITTER_KEY
+                or value.operator != "*" or len(value.children) != 2):
+            return None
+        cast, factor = value.children
+        if (factor.kind != "literal" or factor.literal != "101.7" or cast.kind != "construct"
+                or cast.type.display() != "float" or len(cast.children) != 1
+                or cast.children[0].kind != "id" or cast.children[0].symbol is None
+                or cast.children[0].symbol.name != "seed"):
+            return None
+        return (f"static_cast<double>(noisemaker::f32(static_cast<double>({self.expression(cast)}) * "
+                f"static_cast<double>({self.expression(factor)})))")
+
+    @staticmethod
+    def _mod_mirror_rewrite(value: TypedExpression) -> TypedExpression | None:
+        """`mod(x + 1.0, 2.0) - 1.0` as `x - 2.0 * floor((x + 1.0) * 0.5)` (see the flag).
+
+        compile-glsl.js rewrites the source text when `x` is a name or a
+        swizzle of a name; every pinned occurrence is a bare name.
+        """
+        if (not CURRENT_AUTHORITY_MOD_MIRROR_REWRITE or value.operator != "-"
+                or len(value.children) != 2):
+            return None
+        wrapped, one = value.children
+        if (one.kind != "literal" or one.literal != "1.0" or wrapped.kind != "builtin"
+                or wrapped.callee != "mod" or len(wrapped.children) != 2):
+            return None
+        shifted, two = wrapped.children
+        if (two.kind != "literal" or two.literal != "2.0" or shifted.kind != "binary"
+                or shifted.operator != "+" or len(shifted.children) != 2):
+            return None
+        name, shift = shifted.children
+        if shift.kind != "literal" or shift.literal != "1.0":
+            return None
+        base = name.children[0] if name.kind == "swizzle" and len(name.children) == 1 else name
+        if (base.kind != "id" or (name is not base and not re.fullmatch(r"[xyzw]{1,4}", name.member or ""))
+                or name.type != value.type or shifted.type != value.type):
+            return None
+        span = value.span
+        literal = lambda text: TypedExpression("literal", one.type, span, "rvalue",
+                                                literal=text, literal_value=float(text))
+        half = TypedExpression("binary", value.type, span, "rvalue",
+                               children=(shifted, literal("0.5")), operator="*")
+        floored = TypedExpression("builtin", value.type, span, "rvalue",
+                                  signature_id=_BUILTIN_IDS["floor"],
+                                  children=(half,), callee="floor")
+        scaled = TypedExpression("binary", value.type, span, "rvalue",
+                                 children=(literal("2.0"), floored), operator="*")
+        return TypedExpression("binary", value.type, span, "rvalue", children=(name, scaled), operator="-")
+
+    def _navier_hash11_fence(self, value: TypedExpression) -> str | None:
+        """nsSplat hash11 as the canonical compiler rewrites it (see the flag)."""
+        if (not CURRENT_AUTHORITY_NAVIER_HASH11_FENCE or self.program.key != NAVIER_SPLAT_KEY
+                or self.current_function_name != "hash11"):
+            return None
+        shape = (value.kind == "builtin" and value.callee == "fract" and len(value.children) == 1
+                 and value.children[0].kind == "binary" and value.children[0].operator == "*")
+        if shape:
+            sine, scale = value.children[0].children
+            shape = (sine.kind == "builtin" and sine.callee == "sin" and len(sine.children) == 1
+                     and scale.kind == "literal" and scale.literal == "43758.5453"
+                     and sine.children[0].kind == "binary" and sine.children[0].operator == "*")
+        if shape:
+            x, factor = sine.children[0].children
+            shape = (x.kind == "id" and x.symbol is not None and x.symbol.name == "x"
+                     and x.type.display() == "float"
+                     and factor.kind == "literal" and factor.literal == "12.9898")
+        if not shape:
+            raise _error(self.program, value, "malformed Navier-Stokes hash11 return")
+        argument = self.expression(x)
+        f32 = lambda text: f"static_cast<double>(noisemaker::f32({text}))"
+        product = f32(f"{f32(argument)} * static_cast<double>(static_cast<float>(12.9898))")
+        sine_value = f32(f"glsl::sin({product})")
+        return f"glsl::fract({f32(f'{sine_value} * static_cast<double>(static_cast<float>(43758.5453))')})"
+
+    @staticmethod
+    def _staged_vector_write(indent: str, target: str, lanes: tuple[str, ...]) -> list[str]:
+        """Every component evaluated into a Number before any store (vector-writes.js)."""
+        lines = [f"{indent}{{"]
+        lines.extend(f"{indent}  const double cpu_vector_write_{index} = static_cast<double>({lane});"
+                     for index, lane in enumerate(lanes))
+        lines.extend(f"{indent}  glsl::set_swizzle<{index}>({target}, cpu_vector_write_{index});"
+                     for index in range(len(lanes)))
+        lines.append(f"{indent}}}")
+        return lines
+
     @staticmethod
     def _swizzle_base(value: TypedExpression, member: str) -> TypedExpression | None:
         if value.kind != "swizzle" or value.member != member or len(value.children) != 1:
@@ -10187,7 +10688,8 @@ class _Emitter:
         fence applies to exactly that returned shape over a variable named
         `p3`. These are hash idioms, not general GLSL fract semantics.
         """
-        if self.program.key.startswith("filter/scatter:") or value.kind != "binary" or value.operator != "*":
+        if ((self.program.key.startswith("filter/scatter:") and not HASH_PRECISION_FENCE_INCLUDES_SCATTER)
+                or value.kind != "binary" or value.operator != "*"):
             return None
         if HASH_PRECISION_FENCE_BY_SHAPE:
             if not returned:
@@ -10362,6 +10864,9 @@ class _Emitter:
 
     def statement(self, value: TypedStatement, indent: str = "  ",
                   loop_depth: int = 0) -> list[str]:
+        lattice_statement = self.lattice_statements.get(id(value))
+        if lattice_statement is not None:
+            return [f"{indent}{line}" for line in lattice_statement(value)]
         balanced = self._shape_mixer_balanced_statement(
             value, indent, loop_depth)
         if balanced is not None:
@@ -11047,6 +11552,17 @@ class _Emitter:
                 self.emitted_edge_splat_assignments.append(assignment)
                 target = self.expression(edge_splat.target)
                 right = self.expression(dot)
+                if CURRENT_AUTHORITY_STAGED_VECTOR_WRITES:
+                    return [
+                        f"{indent}{{",
+                        f"{indent}  const double cpu_vector_write_0 = static_cast<double>({right});",
+                        f"{indent}  const double cpu_vector_write_1 = static_cast<double>({right});",
+                        f"{indent}  const double cpu_vector_write_2 = static_cast<double>({right});",
+                        f"{indent}  glsl::set_swizzle<0>({target}, cpu_vector_write_0);",
+                        f"{indent}  glsl::set_swizzle<1>({target}, cpu_vector_write_1);",
+                        f"{indent}  glsl::set_swizzle<2>({target}, cpu_vector_write_2);",
+                        f"{indent}}}",
+                    ]
                 return [
                     f"{indent}glsl::set_swizzle<0>({target}, {right});",
                     f"{indent}glsl::set_swizzle<1>({target}, {right});",
@@ -11104,6 +11620,8 @@ class _Emitter:
                         self.program, assignment,
                         "authenticated scatter jitter cross-lane assignment emitted twice")
                 self.emitted_scatter_jitter_cross_lane_assignment.append(assignment)
+                if CURRENT_AUTHORITY_STAGED_VECTOR_WRITES:
+                    return self._staged_vector_write(indent, target, (first, second))
                 return [
                     f"{indent}glsl::set_swizzle<0>({target}, {first});",
                     f"{indent}glsl::set_swizzle<1>({target}, {second});",
@@ -11120,6 +11638,8 @@ class _Emitter:
                 target = self.expression(navier.target)
                 first = self.expression(navier.first)
                 second = self.expression(navier.second)
+                if CURRENT_AUTHORITY_STAGED_VECTOR_WRITES:
+                    return self._staged_vector_write(indent, target, (first, second))
                 return [
                     f"{indent}glsl::set_swizzle<0>({target}, {first});",
                     f"{indent}glsl::set_swizzle<1>({target}, {second});",
@@ -11150,6 +11670,8 @@ class _Emitter:
                         self.program, assignment,
                         "authenticated Mandelbrot sequential dz assignment emitted twice")
                 self.emitted_mandelbrot_sequential_dz_assignment.append(assignment)
+                if CURRENT_AUTHORITY_STAGED_VECTOR_WRITES:
+                    return self._staged_vector_write(indent, target, (first, second))
                 return [
                     f"{indent}glsl::set_swizzle<0>({target}, {first});",
                     f"{indent}glsl::set_swizzle<1>({target}, {second});",
@@ -11346,13 +11868,20 @@ class _Emitter:
                 # `vector_type(...)` wrapper below -- the single
                 # materialization point that matches the authority's own
                 # single store.
-                combined = f"({target} {operation[:-1]} {right})"
+                if operation == "/=" and assignment in self.metal_divisions:
+                    self.emitted_metal_divisions.append(assignment)
+                    combined = f"glsl::metal_divide({target}, {right})"
+                else:
+                    combined = f"({target} {operation[:-1]} {right})"
                 if vector_type is not None: combined = f"{vector_type}({combined})"
                 return [f"{indent}{target} = {combined};"]
             if operation == "=":
                 return [f"{indent}glsl::set_swizzle<{swizzle}>({target}, {right});"]
             operator = operation[:-1]
             current = self.expression(assignment.children[0])
+            if operation == "/=" and assignment in self.metal_divisions:
+                self.emitted_metal_divisions.append(assignment)
+                return [f"{indent}glsl::set_swizzle<{swizzle}>({target}, glsl::metal_divide({current}, {right}));"]
             return [f"{indent}glsl::set_swizzle<{swizzle}>({target}, ({current} {operator} {right}));"]
         if value.kind == "return":
             # A return inside a proved counted-for loop is admitted (landed with
@@ -11365,6 +11894,9 @@ class _Emitter:
             # enclosing loop is proved; an unproved loop never reaches here.
             if len(value.expressions) == 0: return [f"{indent}return;"]
             if len(value.expressions) != 1: raise _error(self.program, value, "unsupported return")
+            fenced_hash11 = self._navier_hash11_fence(value.expressions[0])
+            if fenced_hash11 is not None:
+                return [f"{indent}return {fenced_hash11};"]
             self.current_return_value = value.expressions[0]
             try:
                 expression = self.expression(value.expressions[0])
@@ -11657,6 +12189,17 @@ class _Emitter:
         self.emitted_spooky_ticker_number_umuls.extend(
             proof.number_umul_nodes)
         self.emitted_spooky_ticker_hash_definitions += 1
+        if CURRENT_AUTHORITY_SPOOKY_TICKER_UINT_HASH:
+            # stdlib.hashUint: ToUint32 of the Number argument, then the exact
+            # uint32 murmur finalizer.
+            return [
+                "[[nodiscard]] double hash_mix([[maybe_unused]] const State& state, "
+                "[[maybe_unused]] const glsl::PixelContext& context, "
+                "[[maybe_unused]] double v) noexcept {",
+                "  return static_cast<double>(noisemaker::hash_uint32("
+                "static_cast<std::uint32_t>(glsl::detail::js_to_int32(v))));",
+                "}",
+            ]
         return [
             "[[nodiscard]] double hash_mix([[maybe_unused]] const State& state, "
             "[[maybe_unused]] const glsl::PixelContext& context, "
@@ -12283,9 +12826,10 @@ class _Emitter:
         self.locals = {parameter.id: _safe_identifier(parameter.name, parameter.id)
                        for parameter in function.parameters}
         parameters = ", ".join([*self._emitter_bound_parameters(function), *(
-            f"[[maybe_unused]] {self.function_parameter_type(function, ordinal, parameter)} "
-            f"{_safe_identifier(parameter.name, parameter.id)}"
-            for ordinal, parameter in enumerate(function.parameters))])
+            self._lattice_parameters(function) or (
+                f"[[maybe_unused]] {self.function_parameter_type(function, ordinal, parameter)} "
+                f"{_safe_identifier(parameter.name, parameter.id)}"
+                for ordinal, parameter in enumerate(function.parameters)))])
         return_type = self._function_return_type(function)
         # [[nodiscard]] is ill-formed on a void-returning function under
         # -Werror -Wignored-attributes (there is never a discardable return
@@ -12294,6 +12838,7 @@ class _Emitter:
         nodiscard = "" if return_type == "void" else "[[nodiscard]] "
         emitted_name = self.function_names[function.signature.id]
         lines = [f"{nodiscard}{return_type} {emitted_name}({parameters}) noexcept {{"]
+        lines.extend(self._lattice_prologue(function))
         lines.extend(self.source_global_locals(function.body))
         for statement in function.body: lines.extend(self.statement(statement))
         if (self.program.key == "classicNoisedeck/kaleido:kaleido"
@@ -12452,9 +12997,10 @@ class _Emitter:
             raise _error(self.program, function,
                          "unauthenticated matrix-return function declaration")
         parameters = ", ".join([*self._emitter_bound_parameters(function), *(
-            f"[[maybe_unused]] {self.function_parameter_type(function, ordinal, parameter, record_out_inout=False)} "
-            f"{_safe_identifier(parameter.name, parameter.id)}"
-            for ordinal, parameter in enumerate(function.parameters))])
+            self._lattice_parameters(function) or (
+                f"[[maybe_unused]] {self.function_parameter_type(function, ordinal, parameter, record_out_inout=False)} "
+                f"{_safe_identifier(parameter.name, parameter.id)}"
+                for ordinal, parameter in enumerate(function.parameters)))])
         return_type = self._function_return_type(function)
         nodiscard = "" if return_type == "void" else "[[nodiscard]] "
         emitted_name = self.function_names[function.signature.id]
@@ -13527,7 +14073,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         if self.authorized_median_frontend_proof is not None:
             lines.append("  std::int32_t median_radius;")
         lines.extend(["};", "", "[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {",
-                      "  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);",
+                      f"  const Rgba sample = {_texture_sampler()}(surface, uv[0], uv[1]);",
                       "  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);", "}",
                       "[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {",
                       "  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);",
@@ -14425,7 +14971,7 @@ def _render_dither_typed_cpp(program: TypedProgram, source_hash: str,
         "  return table[static_cast<std::size_t>(y * 8 + x)];",
         "}",
         "[[nodiscard]] inline glsl::Vec4 dither_sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {",
-        "  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);",
+        f"  const Rgba sample = {_texture_sampler()}(surface, uv[0], uv[1]);",
         "  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);",
         "}",
         "[[nodiscard]] inline glsl::Vec4 dither_fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {",
@@ -14496,7 +15042,9 @@ def _render_dither_typed_cpp(program: TypedProgram, source_hash: str,
         "  const glsl::IVec2 local(dither_i32(static_cast<double>(cell[0]) - static_cast<double>(blockOrigin[0])), dither_i32(static_cast<double>(cell[1]) - static_cast<double>(blockOrigin[1])));",
         "  const glsl::UVec3 jitter = dither_pcg(glsl::UVec3(dither_u32_after_i32(static_cast<double>(blockOriginFloat[0]) + 1.0), dither_u32_after_i32(static_cast<double>(blockOriginFloat[1]) + 1.0), 0x517cc1b7U));  // C08/C09",
         "  const std::int32_t apronX = FS_APRON_MIN + static_cast<std::int32_t>(jitter[0] % static_cast<std::uint32_t>(FS_APRON_MAX - FS_APRON_MIN + 1)); const std::int32_t apronY = FS_APRON_MIN + static_cast<std::int32_t>(jitter[1] % static_cast<std::uint32_t>(FS_APRON_MAX - FS_APRON_MIN + 1));",
-        "  const double stepScale = state.palette == 0 ? 1.0 / static_cast<double>(state.levels) : 0.25;  // C29 Number carrier",
+        ("  const double stepScale = state.palette == 0 ? glsl::metal_divide(1.0, static_cast<double>(state.levels)) : 0.25;  // C29 Number carrier"
+         if CURRENT_AUTHORITY_METAL_DIVISION else
+         "  const double stepScale = state.palette == 0 ? 1.0 / static_cast<double>(state.levels) : 0.25;  // C29 Number carrier"),
         "  const glsl::Vec3 bias(noisemaker::f32(state.threshold * stepScale));",
         "  std::array<glsl::Vec3, 18> errRow{glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F)};  // A-ERR_ROW/F21",
         "  for (std::int32_t i = 0; i < FS_ERR_W; ++i) { const glsl::Vec3 seed = fsSeedNoise(blockOriginFloat, i); errRow[static_cast<std::size_t>(i)] = glsl::Vec3(noisemaker::f32(static_cast<double>(seed[0]) * stepScale), noisemaker::f32(static_cast<double>(seed[1]) * stepScale), noisemaker::f32(static_cast<double>(seed[2]) * stepScale)); }  // L-ERR-SEED",
@@ -14511,7 +15059,9 @@ def _render_dither_typed_cpp(program: TypedProgram, source_hash: str,
         "void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {",
         "  const auto& state = static_cast<const State&>(kernel_base);",
         "  const glsl::IVec2 texSize = dither_texture_size(*state.inputTex);  // F40",
-        "  const glsl::Vec2 uv(noisemaker::f32(static_cast<double>(context.frag_coord[0]) / texSize[0]), noisemaker::f32(static_cast<double>(context.frag_coord[1]) / texSize[1]));  // F41",
+        ("  const glsl::Vec2 uv(noisemaker::f32(glsl::metal_divide(static_cast<double>(context.frag_coord[0]), texSize[0])), noisemaker::f32(glsl::metal_divide(static_cast<double>(context.frag_coord[1]), texSize[1])));  // F41"
+         if CURRENT_AUTHORITY_METAL_DIVISION else
+         "  const glsl::Vec2 uv(noisemaker::f32(static_cast<double>(context.frag_coord[0]) / texSize[0]), noisemaker::f32(static_cast<double>(context.frag_coord[1]) / texSize[1]));  // F41"),
         "  const auto color4 = dither_sample_texture(*state.inputTex, uv);  // F42",
         "  const glsl::Vec3 color(color4[0], color4[1], color4[2]);",
         "  const glsl::Vec2 fragCoord(noisemaker::f32(context.frag_coord[0]), noisemaker::f32(context.frag_coord[1]));",
@@ -14798,6 +15348,17 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        scatter_jitter_cross_lane_assignment_profile=scatter_jitter_cross_lane_assignment_profile)
     lines = [f"// Typed IR program: {program_key}", f"// Source SHA-256: {source_hash}"]
     lines.extend(emitter.render_body(namespace, factory))
+    if emitter.lattice_expressions and program.key not in VOLUME_SEED_HASH_KEYS:
+        expected_calls = {NOISE3D_LATTICE_KEY: 4 + 16, PERLIN_LATTICE_KEY: 3 + 8, CELL3D_LATTICE_KEY: 1}[program.key]
+        if len(emitter.lattice_calls) != expected_calls:
+            raise _error(program, program,
+                         f"seeded lattice hash rewrite emitted {len(emitter.lattice_calls)} calls, "
+                         f"expected {expected_calls}")
+    emitted_metal = {id(node) for node in emitter.emitted_metal_divisions}
+    unrouted_metal = [node for node in emitter.metal_divisions.nodes if id(node) not in emitted_metal]
+    if unrouted_metal:
+        raise _error(program, unrouted_metal[0],
+                     f"{len(unrouted_metal)} authority Metal division site(s) emitted without Metal division")
     if (emitter.authorized_hatch_multiplier is not None
             and (len(emitter.emitted_hatch_multipliers) != 1
                  or emitter.emitted_hatch_multipliers[0]
