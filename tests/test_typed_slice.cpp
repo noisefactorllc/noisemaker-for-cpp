@@ -5690,14 +5690,14 @@ TEST(typed_extrude_runtime_cpu9f3_exact) {
     float tile_x, tile_y, full_x, full_y; double size, depth; bool solid_front;
     const char* f32; const char* rgba; };
   const std::array<Case, 8> cases{{
-    {"wide-DEPTH_SOURCE0,EXTRUDE_TYPE0", 13U, 9U, 1, 0, 0, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "2769823da76429112ad41c40349a720a4e5ece03b6dafa0ea541d30ba8004071", "31c4ea799aa9bf5fea7ea1de9532133a60466135db6f65dcff41871b1b259658"},
-    {"wide-DEPTH_SOURCE0,EXTRUDE_TYPE1", 13U, 9U, 1, 0, 1, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "c6f8fee6dc46e4b91d4009b0ea553e8d18f328d7bcdb811e8c85e184127b7f40", "3c64aee6f85a05ebc7314bd66ce68ca7ea16ead1548177147593e2406bfe3fe5"},
-    {"wide-DEPTH_SOURCE1,EXTRUDE_TYPE0", 13U, 9U, 1, 1, 0, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "6921bbfe7bc6f319592eff66128024b51925c4003cad17c8b9dc879794dfbaf3", "d3049815432eabb87d143d555f9e91d7d04579bab5290e158532bee90271e05e"},
-    {"wide-DEPTH_SOURCE1,EXTRUDE_TYPE1", 13U, 9U, 1, 1, 1, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "e07bde6e68a3675e59f76b7bfad10cbf9e07650e705ba857d93fa2042030e3d5", "898566d1a73ec7101491780019bb3886d37dd34fea1986e3904eeae845d4b682"},
-    {"tiled-DEPTH_SOURCE0,EXTRUDE_TYPE0", 9U, 6U, 4, 0, 0, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "10facb6d9139a28cfffb23bc8be0434342793362c3b8e177baf594832661859e", "f206a9ee9540263d5343efd82e88ba575b9af2ee0233d3ca2f89279844d5fc34"},
-    {"tiled-DEPTH_SOURCE0,EXTRUDE_TYPE1", 9U, 6U, 4, 0, 1, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "ff978d49a691d22e54a07ae3ddb1b67b89895a155fd678341da7edef07e9c502", "490f4f7dd6aff54e7be2e4e3727392a52154a1010e82b84f8797bc67e2d8d02b"},
-    {"tiled-DEPTH_SOURCE1,EXTRUDE_TYPE0", 9U, 6U, 4, 1, 0, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "6de04778bfa7aa14b19565701ffbcd7664b443c1666c7a900b0205730f6922ac", "ffba9516c69a317c3020a435824ecc6c5ed806fd3d0aced33b94993dde6726b2"},
-    {"tiled-DEPTH_SOURCE1,EXTRUDE_TYPE1", 9U, 6U, 4, 1, 1, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "fcb31ac06b6b1ede3a41581f530200af233b763ec2de2f9cbf34f31ef65e24c4", "0f1ff4d35b8c776198fba0fc25558b8d1d4ec115ef341d6ecb5731a752789335"},
+    {"wide-DEPTH_SOURCE0,EXTRUDE_TYPE0", 13U, 9U, 1, 0, 0, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "8d86661e6036c045791b5c4c8e284055838b44ae479903631c97405134e274e5", "054594bfd42b605f9d5e860ffba16b364805eac5cd295296f1a7eace8c64ddee"},
+    {"wide-DEPTH_SOURCE0,EXTRUDE_TYPE1", 13U, 9U, 1, 0, 1, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "710bd00b7da425fb4b11e148fbc68824f97d2c244f32131db67ee138b2b63874", "3c64aee6f85a05ebc7314bd66ce68ca7ea16ead1548177147593e2406bfe3fe5"},
+    {"wide-DEPTH_SOURCE1,EXTRUDE_TYPE0", 13U, 9U, 1, 1, 0, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "8d86661e6036c045791b5c4c8e284055838b44ae479903631c97405134e274e5", "054594bfd42b605f9d5e860ffba16b364805eac5cd295296f1a7eace8c64ddee"},
+    {"wide-DEPTH_SOURCE1,EXTRUDE_TYPE1", 13U, 9U, 1, 1, 1, 0.0f, 0.0f, 13.0f, 9.0f, 4.0, 60.0, true, "dbe13f748c84241d568ca980dedb95d6cf97104e0048e4d1792454aa28f062c3", "898566d1a73ec7101491780019bb3886d37dd34fea1986e3904eeae845d4b682"},
+    {"tiled-DEPTH_SOURCE0,EXTRUDE_TYPE0", 9U, 6U, 4, 0, 0, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "ce7aa94490b2818b563ff14b63dde27413895c8671bf353c2ea3bcd073c8b803", "56aa737c935141d4bcd76d2009ad22ed8f1a3e8a888a18ff8bef05f386c54e55"},
+    {"tiled-DEPTH_SOURCE0,EXTRUDE_TYPE1", 9U, 6U, 4, 0, 1, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "f0b524125754c3f9e511518e72204b2752beb021fadefd6b1e7dd67fce4d1f26", "490f4f7dd6aff54e7be2e4e3727392a52154a1010e82b84f8797bc67e2d8d02b"},
+    {"tiled-DEPTH_SOURCE1,EXTRUDE_TYPE0", 9U, 6U, 4, 1, 0, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "f51264d0791305275a7d18b9e9ffe04c9e26be191b110b7e950bfbb4bf3948f8", "55e7f3f398ab98f450f6f8c11d9ccf0fe503c1b98d0a41e4c81eb83cda9b4221"},
+    {"tiled-DEPTH_SOURCE1,EXTRUDE_TYPE1", 9U, 6U, 4, 1, 1, 3.0f, 2.0f, 17.0f, 13.0f, 5.0, 85.0, false, "6a5f2aeec784ccade03cc12b09dc46e2a42605c72090624a200a9ae7c1dab3ea", "0f1ff4d35b8c776198fba0fc25558b8d1d4ec115ef341d6ecb5731a752789335"},
   }};
   for (const auto& item : cases) {
     std::vector<float> pattern(item.width * item.height * 4U);
