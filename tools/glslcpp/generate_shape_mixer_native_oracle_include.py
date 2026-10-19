@@ -349,18 +349,18 @@ def load() -> tuple[dict[str, Any], str]:
         raise OracleError("Shape Mixer schema/program/define mismatch")
     provenance = oracle.get("provenance", {})
     if (provenance.get("authority_commit") !=
-            "4307ca9f26fc415e4fc5e75227d429d35cc741cd"
+            "7f473400ac744025d46221bf527b43c1b5c1ef4e"
             or provenance.get("authority_checkout_clean") is not True
-            or provenance.get("node_version") != "v26.0.0"
+            or provenance.get("node_version") != "v26.9.0"
             or provenance.get("public_factory_is_canonical_identity") is not True
             or provenance.get("adapter_override_absent") is not True):
         raise OracleError("Shape Mixer authority provenance mismatch")
     factory = provenance.get("canonical_factory", {})
     if factory != {
-            "name": "canonicalFactory15", "bytes": 26411,
-            "sha256": "66117b01865863338e638a22e6f676b01d4f75e3f2864b2dc67af199785f0a68",
-            "source_slice_bytes": 26413,
-            "source_slice_sha256": "8eca60a170872c6def34bf6a264c50b2856dd27cec95dc16daf8b64509f494e4"}:
+            "name": "canonicalFactory15", "bytes": 26599,
+            "sha256": "5660e79b478a7e0bba5c0c5be389d2ef84ebfda57c760866ce225668d73faeed",
+            "source_slice_bytes": 26601,
+            "source_slice_sha256": "9d14527f8f0e18267a812f2ae691f9d7debc7844a534ed971323fc334eef7f28"}:
         raise OracleError("Shape Mixer canonical factory provenance mismatch")
     source = provenance.get("source", {})
     if (source.get("bytes"), source.get("sha256"),
@@ -468,11 +468,11 @@ def load() -> tuple[dict[str, Any], str]:
         ("vector-reflect-dot-child-order", 102,
          "4c662c611eb3791504489059e1bfaf333d04eeeed1936f4107e1fead1e09fb5f",
          "2bb7127394627068b074ac2a20dcd2b2da7c621859d0d6c7fdf4b779c683b70c",
-         "eeba744c6ac9a3bae397511e2ed771cad0e3134d28c8462d94dd90806d6df61a"),
+         "76dacc26b66aa4527b703680c1b442f02a6d7a49fe78752e29b1c1f11a73ce18"),
         ("vector-refract-dot-child-order", 378,
          "9b4ef5725fe268e68a4122b69a575941d0413d50e6266ae062f969f20327753b",
          "e5881f966c801880cb99af96997b5e6a130b71fa6cb7caea9a036d8e2490072e",
-         "20e7279d6908cb8e135457ef7cb1651593db5f7a9cebe61d32a8e8f0ee966bfa"),
+         "86b9b3be385dadf4881ae2337a61abb4b485c32b50925028541e96c143c9e4ba"),
     )
     for row, (name, owner_bytes, owner_hash, mutant_hash,
               mutated_runtime_hash) in zip(
@@ -482,7 +482,7 @@ def load() -> tuple[dict[str, Any], str]:
                 "pinned noisemaker-for-cpu GLSL runtime owner slice"
                 or row.get("runtime_relative_path") != "src/csl/glsl-runtime.js"
                 or row.get("runtime_sha256") !=
-                "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1"
+                "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
                 or row.get("owner_bytes") != owner_bytes
                 or row.get("owner_sha256") != owner_hash
                 or row.get("anchor_occurrences_in_owner") != 1

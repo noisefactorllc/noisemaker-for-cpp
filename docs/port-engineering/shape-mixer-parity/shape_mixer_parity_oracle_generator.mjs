@@ -11,8 +11,8 @@ const reportPath = path.join(here, 'shape-mixer-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'shape_mixer_frontend_probe.py')
 const programKey = 'classicNoisedeck/shapeMixer:shapeMixer'
-const authorityCommit = '4307ca9f26fc415e4fc5e75227d429d35cc741cd'
-const authorityNode = 'v26.0.0'
+const authorityCommit = '7f473400ac744025d46221bf527b43c1b5c1ef4e'
+const authorityNode = 'v26.9.0'
 const upstreamRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 
 const modes = new Set(['--write', '--check'])
@@ -282,12 +282,12 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
   upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -305,12 +305,12 @@ const publicFactory = kernelFactories.get(programKey)
 const canonicalText = canonicalFactory?.toString() ?? ''
 const canonicalSource = fs.readFileSync(canonicalPath, 'utf8')
 const runtimeSource = fs.readFileSync(runtimePath, 'utf8')
-if (Buffer.byteLength(runtimeSource) !== 22496 || sha256(runtimeSource) !== provenanceFiles.glsl_runtime[1]) throw new Error('pinned GLSL runtime source drift')
+if (Buffer.byteLength(runtimeSource) !== 22907 || sha256(runtimeSource) !== provenanceFiles.glsl_runtime[1]) throw new Error('pinned GLSL runtime source drift')
 const sliceStart = canonicalSource.indexOf('function canonicalFactory15')
 const sliceEnd = canonicalSource.indexOf('function canonicalFactory16', sliceStart)
 const canonicalSlice = canonicalSource.slice(sliceStart, sliceEnd)
-if (canonicalFactory?.name !== 'canonicalFactory15' || Buffer.byteLength(canonicalText) !== 26411 || sha256(canonicalText) !== '66117b01865863338e638a22e6f676b01d4f75e3f2864b2dc67af199785f0a68') throw new Error('canonical Shape Mixer factory drift')
-if (Buffer.byteLength(canonicalSlice) !== 26413 || sha256(canonicalSlice) !== '8eca60a170872c6def34bf6a264c50b2856dd27cec95dc16daf8b64509f494e4') throw new Error('canonical Shape Mixer source slice drift')
+if (canonicalFactory?.name !== 'canonicalFactory15' || Buffer.byteLength(canonicalText) !== 26599 || sha256(canonicalText) !== '5660e79b478a7e0bba5c0c5be389d2ef84ebfda57c760866ce225668d73faeed') throw new Error('canonical Shape Mixer factory drift')
+if (Buffer.byteLength(canonicalSlice) !== 26601 || sha256(canonicalSlice) !== '9d14527f8f0e18267a812f2ae691f9d7debc7844a534ed971323fc334eef7f28') throw new Error('canonical Shape Mixer source slice drift')
 if (publicFactory !== canonicalFactory) throw new Error('public Shape Mixer factory is not canonical identity')
 if (canonicalAdapterFactories[programKey] !== undefined) throw new Error('unexpected Shape Mixer adapter override')
 const effect = effectRecords.find((item) => item.id === 'classicNoisedeck/shapeMixer')
@@ -627,12 +627,12 @@ addMutation('vector-posterize-order', 'return (floor(d * lev)) / lev;', 'return 
 addMutation('cycle-palette-sign-reversed', 'color = [0, 1, 2, null].map(function (idx, i) { return idx == null ? color[i] : this[idx]; }, pal(d - time));', 'color = [0, 1, 2, null].map(function (idx, i) { return idx == null ? color[i] : this[idx]; }, pal(d + time));', ['cycle-plus'])
 addMutation('animate-sign-reversed', 't = time + offset(st, freq);', 't = time - offset(st, freq);', ['animate-minus'])
 
-addMutation('input-textures-swapped', 'var color1 = texture(inputTex, vec2.divide([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(inputTex, 0)));', 'var color1 = texture(tex, vec2.divide([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(tex, 0)));', ['mode-0-vector', 'tiled-fractional-ratio', 'sampler-edge-y'])
-addMutation('second-texture-substituted-with-first', 'var color2 = texture(tex, vec2.divide([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(tex, 0)));', 'var color2 = texture(inputTex, vec2.divide([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(inputTex, 0)));', ['mode-0-vector', 'tiled-fractional-ratio', 'sampler-edge-y'])
+addMutation('input-textures-swapped', 'var color1 = texture(inputTex, vec2.divideMetal([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(inputTex, 0)));', 'var color1 = texture(tex, vec2.divideMetal([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(tex, 0)));', ['mode-0-vector', 'tiled-fractional-ratio', 'sampler-edge-y'])
+addMutation('second-texture-substituted-with-first', 'var color2 = texture(tex, vec2.divideMetal([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(tex, 0)));', 'var color2 = texture(inputTex, vec2.divideMetal([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(inputTex, 0)));', ['mode-0-vector', 'tiled-fractional-ratio', 'sampler-edge-y'])
 addMutation('input-texture-size-substituted', 'textureSize(inputTex, 0)));', 'textureSize(tex, 0)));', ['tiled-fractional-ratio', 'sampler-edge-y'])
 addMutation('second-texture-size-substituted', 'textureSize(tex, 0)));', 'textureSize(inputTex, 0)));', ['tiled-fractional-ratio', 'sampler-edge-y'])
-const firstSample = 'texture(inputTex, vec2.divide([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(inputTex, 0)))'
-const secondSample = 'texture(tex, vec2.divide([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(tex, 0)))'
+const firstSample = 'texture(inputTex, vec2.divideMetal([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(inputTex, 0)))'
+const secondSample = 'texture(tex, vec2.divideMetal([], new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]), textureSize(tex, 0)))'
 const nearestClone = (name) => `Object.assign(Object.create(Object.getPrototypeOf(${name})), ${name}, {filter: 'nearest'})`
 addMutation('input-filter-forced-nearest', firstSample, firstSample.replace('inputTex,', `${nearestClone('inputTex')},`), ['mode-1-scalar', 'mode-3-vector'])
 addMutation('second-filter-forced-nearest', secondSample, secondSample.replace('tex,', `${nearestClone('tex')},`), ['mode-3-vector', 'sampler-edge-y'])
@@ -643,7 +643,7 @@ addMutation('alpha-forced-one', 'color[3] = max(color1[3], color2[3]);', 'color[
 addMutation('alpha-only-input-a', 'color[3] = max(color1[3], color2[3]);', 'color[3] = color1[3];', ['alpha-three-way'])
 addMutation('alpha-only-input-b', 'color[3] = max(color1[3], color2[3]);', 'color[3] = color2[3];', ['alpha-three-way'])
 addMutation('tile-offset-omitted', 'var globalCoord = new $runtime.PooledFloat32Array([gl_FragCoord[0] + tileOffset[0], gl_FragCoord[1] + tileOffset[1]]);', 'var globalCoord = new $runtime.PooledFloat32Array([gl_FragCoord[0], gl_FragCoord[1]]);', ['tiled-fractional-ratio'])
-addMutation('full-resolution-replaced-by-local', 'var st = new $runtime.PooledFloat32Array([globalCoord[0] / fullResolution[0], globalCoord[1] / fullResolution[1]]);', 'var st = new $runtime.PooledFloat32Array([globalCoord[0] / resolution[0], globalCoord[1] / resolution[1]]);', ['tiled-fractional-ratio'])
+addMutation('full-resolution-replaced-by-local', 'var st = new $runtime.PooledFloat32Array([$runtime.fdiv(globalCoord[0], fullResolution[0]), $runtime.fdiv(globalCoord[1], fullResolution[1])]);', 'var st = new $runtime.PooledFloat32Array([$runtime.fdiv(globalCoord[0], resolution[0]), $runtime.fdiv(globalCoord[1], resolution[1])]);', ['tiled-fractional-ratio'])
 addMutation('local-resolution-replaced-by-full', 'textureSize(inputTex, 0)));', 'fullResolution));', ['tiled-fractional-ratio'])
 addMutation('loop-offset-ten-changed', 'if (LOOP_OFFSET == 10) {', 'if (LOOP_OFFSET == 11) {', ['loopscale-min', 'loopscale-max', 'tiled-fractional-ratio'])
 addMutation('rotate-palette-omitted', 't = t * repeatPalette + rotatePalette * 0.009999999776482582;', 't = t * repeatPalette;', ['palette-rgb-extremes', 'palette-hsv', 'palette-oklab-lanes'])
