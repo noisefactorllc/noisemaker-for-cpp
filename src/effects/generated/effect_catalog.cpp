@@ -38588,9 +38588,9 @@ const EffectCatalog& effect_catalog() {
     c.provenance.schema = "noisemaker-cpp.effect-catalog-generator.v1";
     c.provenance.backend_schema = "noisemaker-cpp.backend-compatibility.v1";
     c.provenance.corpus_revision = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d";
-    c.provenance.cpu_behavioral_lock = "6716656e0d81e23960dffc626d56f7f558abdd0bd4c53fd4eb555f7fa63dd608";
+    c.provenance.cpu_behavioral_lock = "0629e77da51a018e4eda43bfddd6a8f1bed67e44d980375f7083e6fe1f5bf89c";
     c.provenance.cpu_behavioral_file_count = 98;
-    c.provenance.cpu_revision = "6716656e0d81e23960dffc626d56f7f558abdd0bd4c53fd4eb555f7fa63dd608";
+    c.provenance.cpu_revision = "0629e77da51a018e4eda43bfddd6a8f1bed67e44d980375f7083e6fe1f5bf89c";
     c.provenance.source_lock_sha256 = "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf";
     c.provenance.cpu_package_sha256 = "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21";
     c.provenance.cpu_package_lock_sha256 = "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d";
@@ -38599,9 +38599,9 @@ const EffectCatalog& effect_catalog() {
     c.provenance.upstream_tree = "f5ea13282fd27ea01c94280ae60fcb59bcb5389f";
     c.provenance.upstream_package_sha256 = "ac0bca6bde670ba48096bc28f41421f484aabe14c7f668ead590a76497c218dd";
     c.provenance.upstream_package_lock_sha256 = "301b650e128c72d00b67f156fbc9929a81ddafea500825bbe275e9e0f78a3c48";
-    c.provenance.generated_payload_sha256 = "83775e91c1d992a22153d9a9e42b2850f5e0760a7402b2931cf10942b4af21c3";
+    c.provenance.generated_payload_sha256 = "ed5e2073212c7863da0cc0fe05292ffdd15f450a1aa1bf867b6048e667e0cd8c";
     c.provenance.normalized_record_stream_sha256 = "03b0c42537995616cf4ff032900d82693c249d2a826fe1eb0317caefec28ab0b";
-    c.provenance.compatibility_sha256 = "a4fb9674496522a26c268aa566aa2d0b12231fb995ff59d1cff5b3a291bef3c6";
+    c.provenance.compatibility_sha256 = "6bb48291e3e6f2c82e9ad41b703e7583b4b3fe448c9d3ce8371a6009f35268f5";
     c.provenance.first_effect_id = "classicNoisedeck/bitEffects";
     c.provenance.last_effect_id = "synth3d/shape3d";
     c.provenance.counts.definitions = 210;
