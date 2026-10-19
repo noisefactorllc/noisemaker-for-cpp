@@ -20,10 +20,10 @@ Seventeen canonical STYLE=0 fixtures store complete Float32 words and independen
 | full-frame-default-nonsquare | 9x6 | 404a2059a72ae159c58c6121f861718b522d26c14da5051b6cc000aefbff5169 | 6eebe43e9af4ec3dbfbe173fc4fd60a64b329441f85db349e4da863785d70048 |
 | general-angle-only | 9x6 | d5af05b34869e361dc97f42222727304d8c2738e7345409396d946a06a44098d | 557f763622a06da633e32826f7bf5b2d8cdaae38ea48212ca7327fb701a98145 |
 | general-height-only | 9x6 | e0dd4d5f0e033010a3414be8f9b131d42a6fb605060cfb6de4850ba634217319 | 7649a5c8f7fb8180303344279f6f87c1cc82a688f84012016777228ef40aa0c4 |
-| general-rotation-extreme | 5x5 | be647da89e7b9f9abeaf14ab9fa45032a8ad53a177ff0fd929f78daeca9779a2 | 3eb5a944996d30bd5856285d3f2a0f7454f3e74f14f4398fa4ce5a63ff9d6f8d |
-| default-fractional-scale | 8x5 | 24d0bd85f05c15ecf38d54fa259148b1e48c8602bde49b8f235a453b4df90b39 | e76fd0f9d5562794e84d3e5631fce4df289fda4ce71d761e3411feb9692cbfb2 |
+| general-rotation-extreme | 5x5 | ef71580f2f4444af4bf465843e3484b4dadec3936f3a932dc3b2e8112db0ee80 | 5eaea83d78f04258a21a751ad8b8897e34e773d489ae094a69ce19f62c580b86 |
+| default-fractional-scale | 8x5 | 2ceef0094981a60f49bd69c8659b518504383a9071315ffa9ec1c7223d1949e9 | e76fd0f9d5562794e84d3e5631fce4df289fda4ce71d761e3411feb9692cbfb2 |
 | general-fractional-scale | 2x2 | b0e203dba0a9c14435f2e4ee9f77a70deee31018db5213890affa41ae1ab49de | b9b8a2205fd354bd2e3b1652018a01189823ec36461f22f3743e4ce55ba3b270 |
-| fullresolution-x-mismatch-only | 7x5 | 06c0d51704b1a3225716859306154e883174dbd504046cd3c1f1b3693f9f4c17 | d15d6eb7e3d2e26f8f5914f549cdf807690753a3ef2294b7fe7f8e0454d0e6a2 |
+| fullresolution-x-mismatch-only | 7x5 | 97ecacdf86f9137ed8bbb3b6de92973eed9bfb7c907beaba9bf27e4af9d780d3 | d15d6eb7e3d2e26f8f5914f549cdf807690753a3ef2294b7fe7f8e0454d0e6a2 |
 | fullresolution-both-mismatch | 7x5 | 191c1a6fe28163781bbf5cd9a92d31319e5a46400b14540e3a051b4a0749e240 | 8db7a84d158c36c1645ed9af719f29d3d8242e5548892e9156c6b8542b3ff526 |
 | tile-x-offset-only | 7x5 | fb58dab3ed5e338478313f58d96419025913957f8cc4a797df2b3c18f874291b | 89679eef24ad071e7da755d9fafce12bb9379d9eab451585260480f1e8d9cb84 |
 | both-frame-terms-false | 7x5 | 72ecebc40fbc3a390d069bdb8eab8422886905ad057fc3bd4acc9c3d4da7684f | c362448f3e95843c2e665cc29cacb1c19a6a2a8c2294455a279c431eb419a490 |
@@ -39,8 +39,7 @@ Seventeen canonical STYLE=0 fixtures store complete Float32 words and independen
 
 | Mutation | Required witness | Changed lanes at first divergent case | First x,y/channel |
 | --- | --- | ---: | --- |
-| dispatch-force-general | default-asymmetric-impulse | 3 | 1,5/r |
-| dispatch-force-default | general-rotation-extreme | 74 | 0,0/g |
+| dispatch-force-default | general-rotation-extreme | 71 | 0,0/g |
 | dispatch-drop-angle-half | general-angle-only | 127 | 0,0/r |
 | dispatch-drop-height-half | general-height-only | 135 | 0,0/r |
 | dispatch-and-to-or | general-angle-only | 127 | 0,0/r |
@@ -50,8 +49,8 @@ Seventeen canonical STYLE=0 fixtures store complete Float32 words and independen
 | general-loop-eight | general-asymmetric-impulse | 148 | 3,0/r |
 | default-offset-0-flip-x | default-asymmetric-impulse | 9 | 2,1/r |
 | general-base-offset-0-flip-x | general-asymmetric-impulse | 30 | 1,0/r |
-| general-rotation-y-sign | general-rotation-extreme | 52 | 0,0/r |
-| rotatedpx-no-f32-array | general-rotation-extreme | 12 | 0,1/r |
+| general-rotation-y-sign | general-rotation-extreme | 42 | 0,1/r |
+| rotatedpx-no-f32-array | general-rotation-extreme | 13 | 0,1/r |
 | offsetuv-no-f32-array | general-fractional-scale | 5 | 0,0/g |
 | default-omit-amount | default-fractional-scale | 118 | 0,0/r |
 | general-omit-amount | general-fractional-scale | 10 | 0,0/g |
@@ -60,7 +59,7 @@ Seventeen canonical STYLE=0 fixtures store complete Float32 words and independen
 | resolution-equal-to-notequal | fullresolution-both-mismatch | 82 | 0,0/b |
 | resolution-all-to-any | fullresolution-x-mismatch-only | 64 | 0,0/b |
 | fullframe-and-to-or | fullresolution-x-mismatch-only | 64 | 0,0/b |
-| true-arm-swizzle | full-frame-default-nonsquare | 89 | 0,0/r |
+| true-arm-swizzle | full-frame-default-nonsquare | 77 | 0,0/r |
 | false-arm-use-local-size | both-frame-terms-false | 73 | 0,0/g |
 | fullframe-force-true | both-frame-terms-false | 73 | 0,0/g |
 | sample-numerator-use-local-size | both-frame-terms-false | 77 | 0,0/g |
@@ -79,8 +78,9 @@ Each row is an independent exact one-anchor/one-replacement mutant. Every named 
 | tile-all-to-any | structurally authenticated rejection; pixel identity is algebraically expected |
 | true-arm-use-canvas-size | structurally authenticated rejection; pixel identity is algebraically expected |
 | fullframe-force-false | structurally authenticated rejection; pixel identity is algebraically expected |
+| dispatch-force-general | measured pixel identity: at authority 7f47340 no fixture diverges, because the general kernel at angle 135 and height 1 reproduces the default kernel exactly; exact source authentication rejects it |
 
-These four rows are intentionally not assigned false pixel witnesses: their shipped-pixel behavior is algebraically unobservable, while exact source authentication rejects them.
+These rows are intentionally not assigned false pixel witnesses: their shipped-pixel behavior is unobservable (algebraically, or as measured where the contract says so), while exact source authentication rejects them.
 
 ## Regeneration
 

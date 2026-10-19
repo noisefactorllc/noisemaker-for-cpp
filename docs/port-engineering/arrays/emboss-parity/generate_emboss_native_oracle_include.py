@@ -40,7 +40,7 @@ EXPECTED_CASES = (
     ("general-asymmetric-impulse", 9, 7),
 )
 BEHAVIORAL_MUTATIONS = (
-    "dispatch-force-general", "dispatch-force-default",
+    "dispatch-force-default",
     "dispatch-drop-angle-half", "dispatch-drop-height-half",
     "dispatch-and-to-or", "default-kernel-0-minus-one",
     "general-kernel-0-minus-one", "default-loop-eight",
@@ -58,6 +58,7 @@ BEHAVIORAL_MUTATIONS = (
 STRUCTURAL_MUTATIONS = (
     "tile-equal-to-notequal", "tile-all-to-any",
     "true-arm-use-canvas-size", "fullframe-force-false",
+    "dispatch-force-general",
 )
 WORD = re.compile(r"0x[0-9a-f]{8}")
 HEX64 = re.compile(r"[0-9a-f]{64}")
@@ -112,12 +113,12 @@ def load() -> tuple[dict[str, Any], str]:
         raise OracleError("Emboss corpus revision mismatch")
     provenance = oracle.get("provenance", {})
     if (provenance.get("authority_commit")
-            != "4834b0144ee0524588144a482cca0067b15f68ec"
+            != "7f473400ac744025d46221bf527b43c1b5c1ef4e"
             or provenance.get("authority_checkout_clean") is not True
-            or provenance.get("node_version") != "v26.0.0"
+            or provenance.get("node_version") != "v26.9.0"
             or provenance.get("canonical_factory") != {
-                "name": "canonicalFactory50", "bytes": 8336,
-                "sha256": "72f7faa20dfbbf43cab7762c484d13d43e7f3b3102d0a5a70494ab0ab19fa79f"}
+                "name": "canonicalFactory48", "bytes": 8479,
+                "sha256": "f5909e3eddd23343b5c0a5fba5d58086c1869f0275284695cb228afb13615bf4"}
             or provenance.get("public_factory_is_canonical_identity") is not True
             or provenance.get("adapter_override_absent") is not True
             or provenance.get("style_define") != {

@@ -15,8 +15,8 @@ const programKey = 'filter/emboss:emboss'
 // This package reproduces the immutable historical source capture.
 const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const corpusRevision = HISTORICAL_CORPUS_REVISION
-const authorityCommit = '4834b0144ee0524588144a482cca0067b15f68ec'
-const authorityNode = 'v26.0.0'
+const authorityCommit = '7f473400ac744025d46221bf527b43c1b5c1ef4e'
+const authorityNode = 'v26.9.0'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/filter/emboss/emboss.glsl')
 const f = Math.fround
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
@@ -135,28 +135,32 @@ const importClosureRecords = [...cpuImportClosure]
   .sort((left, right) => left.relative_path_from_noisemaker_for_cpu
     .localeCompare(right.relative_path_from_noisemaker_for_cpu))
 const expectedImportClosure = Object.freeze([
-  ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
+  ['src/csl/metal-division.js', '104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8'],
+  ['src/csl/metal-reciprocal-data.js', '08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87'],
+  ['src/csl/metal-reciprocal-grid.js', 'bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39'],
   ['src/csl/runtime.js', 'a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee'],
   ['src/effects/adapters/bit-effects.js', '5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7'],
-  ['src/effects/adapters/crt.js', 'c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],
+  ['src/effects/adapters/crt.js', 'c37f70e15b6481b2f870761bf103529cd45cf6e5e714a0a6fd731dbe90c1c73f'],
   ['src/effects/adapters/f32-color.js', 'b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],
-  ['src/effects/adapters/fractal.js', '0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],
+  ['src/effects/adapters/fractal.js', '73bb60668d98a142edcd535c146527945af445baa694595da2a19fe0a649e804'],
   ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
   ['src/effects/adapters/julia.js', '0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],
   ['src/effects/adapters/median.js', 'e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],
   ['src/effects/adapters/palette.js', '8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],
   ['src/effects/adapters/remap.js', '91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
-  ['src/effects/adapters/snow.js', '202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],
+  ['src/effects/adapters/snow.js', '9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c'],
   ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  ['src/effects/definition.js', 'fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],
+  ['src/effects/definition.js', 'e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886'],
   ['src/effects/generated/canonical-adapter-data.js', 'ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
-  ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+  ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   ['src/effects/generated/kernels.js', 'b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
-  ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
+  ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
   ['src/effects/registry.js', '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
+  ['src/runtime/automation.js', '957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e'],
   ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
-  ['src/runtime/sampler.js', '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
+  ['src/runtime/sampler.js', '5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5'],
   ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 ])
 const actualImportClosure = importClosureRecords.map((entry) => [
@@ -378,12 +382,12 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
-  glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -399,10 +403,10 @@ if (sourceBytes.length !== 5160 || sha256(sourceBytes) !== '872eff00bdfe411a0dce
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
 const canonicalText = canonicalFactory?.toString() ?? ''
-if (canonicalFactory?.name !== 'canonicalFactory50' || Buffer.byteLength(canonicalText) !== 8336 || sha256(canonicalText) !== '72f7faa20dfbbf43cab7762c484d13d43e7f3b3102d0a5a70494ab0ab19fa79f') throw new Error('canonical Emboss factory drift')
+if (canonicalFactory?.name !== 'canonicalFactory48' || Buffer.byteLength(canonicalText) !== 8479 || sha256(canonicalText) !== 'f5909e3eddd23343b5c0a5fba5d58086c1869f0275284695cb228afb13615bf4') throw new Error('canonical Emboss factory drift')
 if (publicFactory !== canonicalFactory) throw new Error('public Emboss factory is not canonical identity')
 if (canonicalAdapterFactories[programKey] !== undefined) throw new Error('unexpected Emboss adapter override')
-if (UPSTREAM_REVISION !== '0ed489ec46842bffba33ee2ec65a218b6dda51f5') throw new Error('upstream revision drift')
+if (UPSTREAM_REVISION !== '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d') throw new Error('upstream revision drift')
 
 const effect = effectRecords.find((item) => item.id === 'filter/emboss')
 const expectedParams = {
@@ -504,7 +508,6 @@ const rotated = 'var rotatedPx = new $runtime.PooledFloat32Array([(ct * basePx[0
 const offsetUv = 'var offsetUV = new $runtime.PooledFloat32Array([((rotatedPx[0] * texelSize[0]) * amount) * renderScale, ((rotatedPx[1] * texelSize[1]) * amount) * renderScale]);'
 const fullFrame = 'var fullFrame = (all(equal(tileOffset, new $runtime.PooledFloat32Array([0, 0])))) && (all(equal(fullResolution, resolution)));'
 const mutants = [
-  compileMutant('dispatch-force-general', dispatch, 'if (false) {', ['default-asymmetric-impulse']),
   compileMutant('dispatch-force-default', dispatch, 'if (true) {', ['general-rotation-extreme']),
   compileMutant('dispatch-drop-angle-half', dispatch, 'if (height == 1) {', ['general-angle-only']),
   compileMutant('dispatch-drop-height-half', dispatch, 'if (angle == 135) {', ['general-height-only']),
@@ -526,7 +529,7 @@ const mutants = [
   compileMutant('resolution-all-to-any', 'all(equal(fullResolution, resolution))', '$runtime.stdlib.any(equal(fullResolution, resolution))', ['fullresolution-x-mismatch-only']),
   compileMutant('fullframe-and-to-or', fullFrame, fullFrame.replace(' && ', ' || '), ['fullresolution-x-mismatch-only']),
   compileMutant('true-arm-swizzle', 'var colorTexelSize = fullFrame ? texelSize :', 'var colorTexelSize = fullFrame ? new $runtime.PooledFloat32Array([texelSize[1], texelSize[0]]) :', ['full-frame-default-nonsquare']),
-  compileMutant('false-arm-use-local-size', 'var colorTexelSize = fullFrame ? texelSize : new $runtime.PooledFloat32Array([1 / fullResolution[0], 1 / fullResolution[1]]);', 'var colorTexelSize = fullFrame ? texelSize : texelSize;', ['both-frame-terms-false']),
+  compileMutant('false-arm-use-local-size', 'var colorTexelSize = fullFrame ? texelSize : new $runtime.PooledFloat32Array([$runtime.fdiv(1, fullResolution[0]), $runtime.fdiv(1, fullResolution[1])]);', 'var colorTexelSize = fullFrame ? texelSize : texelSize;', ['both-frame-terms-false']),
   compileMutant('fullframe-force-true', fullFrame, 'var fullFrame = true;', ['both-frame-terms-false']),
   compileMutant('sample-numerator-use-local-size', '(uv[0] + offsetUV[0]) * fullResolution[0]', '(uv[0] + offsetUV[0]) * textureSize(inputTex, 0)[0]', ['both-frame-terms-false']),
   compileMutant('sample-denominator-use-full-size', 'offsetUV[1]) * fullResolution[1] - tileOffset[1]])), textureSize(inputTex, 0)))));', 'offsetUV[1]) * fullResolution[1] - tileOffset[1]])), fullResolution))));', ['both-frame-terms-false']),
@@ -538,12 +541,13 @@ const mutants = [
 const structuralMutations = [
   ['tile-equal-to-notequal', 'equal(tileOffset, new $runtime.PooledFloat32Array([0, 0]))', '$runtime.stdlib.notEqual(tileOffset, new $runtime.PooledFloat32Array([0, 0]))'],
   ['tile-all-to-any', 'all(equal(tileOffset, new $runtime.PooledFloat32Array([0, 0])))', '$runtime.stdlib.any(equal(tileOffset, new $runtime.PooledFloat32Array([0, 0])))'],
-  ['true-arm-use-canvas-size', 'fullFrame ? texelSize :', 'fullFrame ? new $runtime.PooledFloat32Array([1 / fullResolution[0], 1 / fullResolution[1]]) :'],
+  ['true-arm-use-canvas-size', 'fullFrame ? texelSize :', 'fullFrame ? new $runtime.PooledFloat32Array([$runtime.fdiv(1, fullResolution[0]), $runtime.fdiv(1, fullResolution[1])]) :'],
   ['fullframe-force-false', fullFrame, 'var fullFrame = false;'],
-].map(([name, from, to]) => {
+  ['dispatch-force-general', dispatch, 'if (false) {', 'measured pixel identity: at authority 7f47340 no fixture diverges, because the general kernel at angle 135 and height 1 reproduces the default kernel exactly; exact source authentication rejects it'],
+].map(([name, from, to, expectation]) => {
   const count = canonicalText.split(from).length - 1
   if (count !== 1) throw new Error(`${name}: structural anchor matched ${count} times`)
-  return { name, anchor_sha256: sha256(from), replacement_sha256: sha256(to), mutated_factory_sha256: sha256(canonicalText.replace(from, to)), pixel_expectation: 'structurally authenticated rejection; pixel identity is algebraically expected' }
+  return { name, anchor_sha256: sha256(from), replacement_sha256: sha256(to), mutated_factory_sha256: sha256(canonicalText.replace(from, to)), pixel_expectation: expectation ?? 'structurally authenticated rejection; pixel identity is algebraically expected' }
 })
 
 function makeInput(definition) {
@@ -733,7 +737,7 @@ function reportFor(data) {
   const caseRows = data.render_cases.map((item) => `| ${item.name} | ${item.width}x${item.height} | ${item.output_f32_sha256} | ${item.output_rgba8_sha256} |`).join('\n')
   const mutationRows = data.behavioral_mutation_ledger.map((item) => `| ${item.name} | ${item.required_witnesses.join(', ')} | ${item.changed_lane_count_at_first_required_witness} | ${item.first_mismatch_at_first_required_witness.top_down_xy.join(',')}/${item.first_mismatch_at_first_required_witness.channel} |`).join('\n')
   const structuralRows = data.structural_only_mutation_ledger.map((item) => `| ${item.name} | ${item.pixel_expectation} |`).join('\n')
-  return `# Emboss181 exact-parity oracle\n\nProgram \`${data.program_key}\`; corpus revision \`${data.corpus_revision}\`.\n\n## Result\n\nSeventeen canonical STYLE=0 fixtures store complete Float32 words and independently captured RGBA8 bytes. The suite covers both dispatch helpers, all four full-frame equality combinations, fractional scale, rotation/extrema, clamp/alpha, retained-but-dead colorAmount, external context, and asymmetric table witnesses. No C++ render contributes expected data.\n\n## Exact contract\n\n- Dimensions and lane/byte counts are checked before payloads.\n- Float32 equality is raw-word equality, including signed zero and NaN payloads.\n- RGBA8 is compared separately from independently supplied canonical bytes.\n- Every case proves repeat identity, direct/public identity, finite output, input immutability, hashes, and at least five probes.\n\n## Render fixtures\n\n| Case | Size | Float32 SHA-256 | RGBA8 SHA-256 |\n| --- | --- | --- | --- |\n${caseRows}\n\n## Behavioral mutations\n\n| Mutation | Required witness | Changed lanes at first divergent case | First x,y/channel |\n| --- | --- | ---: | --- |\n${mutationRows}\n\nEach row is an independent exact one-anchor/one-replacement mutant. Every named witness differs in at least one raw Float32 word.\n\n## Structural-only mutations\n\n| Mutation | Contract |\n| --- | --- |\n${structuralRows}\n\nThese four rows are intentionally not assigned false pixel witnesses: their shipped-pixel behavior is algebraically unobservable, while exact source authentication rejects them.\n\n## Regeneration\n\n\`\`\`sh\nnode docs/port-engineering/arrays/emboss-parity/emboss_parity_oracle_generator.mjs --write\nnode docs/port-engineering/arrays/emboss-parity/emboss_parity_oracle_generator.mjs --check\npython3 docs/port-engineering/arrays/emboss-parity/generate_emboss_native_oracle_include.py --write\npython3 docs/port-engineering/arrays/emboss-parity/generate_emboss_native_oracle_include.py --check\n\`\`\`\n\nBoth generators validate pinned authority, complete arrays, checksums, the fixture census, and the full mutation ledger before accepting checked output.\n`
+  return `# Emboss181 exact-parity oracle\n\nProgram \`${data.program_key}\`; corpus revision \`${data.corpus_revision}\`.\n\n## Result\n\nSeventeen canonical STYLE=0 fixtures store complete Float32 words and independently captured RGBA8 bytes. The suite covers both dispatch helpers, all four full-frame equality combinations, fractional scale, rotation/extrema, clamp/alpha, retained-but-dead colorAmount, external context, and asymmetric table witnesses. No C++ render contributes expected data.\n\n## Exact contract\n\n- Dimensions and lane/byte counts are checked before payloads.\n- Float32 equality is raw-word equality, including signed zero and NaN payloads.\n- RGBA8 is compared separately from independently supplied canonical bytes.\n- Every case proves repeat identity, direct/public identity, finite output, input immutability, hashes, and at least five probes.\n\n## Render fixtures\n\n| Case | Size | Float32 SHA-256 | RGBA8 SHA-256 |\n| --- | --- | --- | --- |\n${caseRows}\n\n## Behavioral mutations\n\n| Mutation | Required witness | Changed lanes at first divergent case | First x,y/channel |\n| --- | --- | ---: | --- |\n${mutationRows}\n\nEach row is an independent exact one-anchor/one-replacement mutant. Every named witness differs in at least one raw Float32 word.\n\n## Structural-only mutations\n\n| Mutation | Contract |\n| --- | --- |\n${structuralRows}\n\nThese rows are intentionally not assigned false pixel witnesses: their shipped-pixel behavior is unobservable (algebraically, or as measured where the contract says so), while exact source authentication rejects them.\n\n## Regeneration\n\n\`\`\`sh\nnode docs/port-engineering/arrays/emboss-parity/emboss_parity_oracle_generator.mjs --write\nnode docs/port-engineering/arrays/emboss-parity/emboss_parity_oracle_generator.mjs --check\npython3 docs/port-engineering/arrays/emboss-parity/generate_emboss_native_oracle_include.py --write\npython3 docs/port-engineering/arrays/emboss-parity/generate_emboss_native_oracle_include.py --check\n\`\`\`\n\nBoth generators validate pinned authority, complete arrays, checksums, the fixture census, and the full mutation ledger before accepting checked output.\n`
 }
 
 function sidecarPath(target) { return `${target}.sha256` }

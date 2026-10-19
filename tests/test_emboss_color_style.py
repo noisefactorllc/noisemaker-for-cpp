@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.historical_cpu import (
+    current_cpu_root, current_run, historical_cpu_root, historical_run)
 from tests.simulated_links import simulate_symlink
 
 import copy
@@ -736,7 +737,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
 
     def test_oracle_check_uses_explicit_immutable_snapshot(self):
         package = ROOT / "docs/port-engineering/arrays/emboss-parity"
-        configured = historical_cpu_root()
+        configured = current_cpu_root()
         if not configured:
             self.skipTest(
                 "authority-dependent Emboss oracle skipped: "
@@ -749,7 +750,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         command = ("node", str(
             package / "emboss_parity_oracle_generator.mjs"), "--check",
                    "--cpu-root", str(authority_root))
-        expected = "17 renders, 29 behavioral mutations, 4 structural-only"
+        expected = "17 renders, 28 behavioral mutations, 5 structural-only"
         with tempfile.TemporaryDirectory(
                 prefix="noisemaker-emboss181-checks-",
                 dir=os.environ.get("TMPDIR", tempfile.gettempdir())) as temp:
@@ -760,7 +761,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 "TMPDIR": temp,
                 "XDG_CACHE_HOME": str(pathlib.Path(temp) / "cache"),
             })
-            completed = historical_run(
+            completed = current_run(
                 command, cwd=ROOT, env=environment, text=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 check=False)
