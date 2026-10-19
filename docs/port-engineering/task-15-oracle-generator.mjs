@@ -180,7 +180,7 @@ const oracle = {
     p: 'F32 RGBA probes at [0,0],[4,3],[8,6]', c: 'coverage tags',
   },
   provenance: {
-    cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+    cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e',
     cpu_source_revision: EXPECTED.upstreamRevision,
     cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
     node: process.version,
