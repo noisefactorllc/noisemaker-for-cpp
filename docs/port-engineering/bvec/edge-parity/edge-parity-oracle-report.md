@@ -7,7 +7,7 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 - Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - GLSL source: 6530 bytes, SHA-256 `841f9f547d06aace8444953f401009abd02758f9dff271097b2799424c1db5d0`
-- Canonical factory: `canonicalFactory47`, 9070 bytes, SHA-256 `7bcb99c03e4c1b0dbd026aecf1e61d45a4d69d02ce8228b6900d632fe16f9212`
+- Canonical factory: `canonicalFactory47`, 9305 bytes, SHA-256 `803105b512871071bea0224710b125113d72270e171bfd78cdfcaf9ba9de6709`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
 
 ## Captured pre-admission C++ frontend boundary
@@ -21,7 +21,7 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 
 - Without the profile, validator first error: `filter/edge:edge: exact Edge bvec3 contour profile carrier required`
 - Without the profile, emitter first error: `filter/edge:edge:1:1: exact Edge bvec3 contour profile carrier required`
-- The exact profile makes both independent authorities pass without widening global vocabularies; rendered C++ is 14819 bytes, SHA-256 `1485c72f06f691e06515a337ed3d534695a8da2f4590043e3d6bd65cd7dcffba`.
+- The exact profile makes both independent authorities pass without widening global vocabularies; rendered C++ is 15107 bytes, SHA-256 `97180b31e60ba0c37074c003dc1078acf08bbca0d131fba457aa2c444acbfb3a`.
 - The center self-splat assignment is source-authenticated at `135:13-135:57`, SHA-256 `2559b7d881b9aaf4f425d0ab9df528e000fa3279a58a31ff839e4a5aaaf51064`, including its complete five-statement ancestry and target/constructor/dot child identities.
 - Do not widen the global type or builtin vocabularies. The validator and emitter independently re-authenticate the key/hash/interface, all typed nodes and lane reads, the center-splat route, and the absence of any extra admitted site.
 
@@ -29,7 +29,7 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 
 - `glsl::BVec3` already exists. Edge additionally needs exact-profile-only `greaterThanEqual(Vec3, FloatExpr<3>)` and `lessThan(Vec3, FloatExpr<3>)` lowering, constrained to width 3 rather than widening Extrude’s width-2 helpers.
 - The FloatExpr right operand must first materialize through `glsl::Vec3`, narrowing every retained-double lane to Float32 exactly as canonical `new PooledFloat32Array([lvl, lvl, lvl])` does. Direct comparison against the retained double is observably wrong and explicitly rejected.
-- Canonical JavaScript stores `dot(centerSample, LUMA)` into lanes 0, 1, and 2 sequentially; each later dot observes earlier Float32 stores. The C++ lowering is exactly three contiguous ordered `set_swizzle<0/1/2>` calls. A simultaneous whole-Vec splat is rejected.
+- Canonical JavaScript evaluates all three `dot(centerSample, LUMA)` values before it stores lanes 0, 1, and 2; no dot observes an earlier store. The C++ lowering computes the three dots into temporaries, then makes three ordered `set_swizzle<0/1/2>` calls. A sequential splat, where later dots observe earlier Float32 stores, diverges from the authority.
 - 9 general direct fixtures cover mixed/equal lanes, signed zero, infinities, NaNs, and adjacent Float32 values. Their relational/selection/construction bytes hash to `10711bcdfaa5d8b385bea12fa417b91d4191295078a3111f2e795f710a5fa243`.
 - 3 native-style Vec3/FloatExpr fixtures require calls to the actual overload shape. Expected boolean bytes hash to `f24cd192230e518c01b9bc9500e541124193fd69c4785333666357a6f641ab7a`; the rejected raw-double comparison hashes to `18c31b960782f23b04be9c4e2531e4bee85cb47d1e022fb3ffdff3d23031a1ab`.
 
@@ -39,7 +39,7 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
 | fine-color-radius-two | 9x7 | 0 | 0 | 0 | 50 | 6 | `9bdc913e82fe60bcc33a4ac648931dba39cc9c5ed3c5da950717d7ae3c5ed0b7` | `2b8a923bcd69f3f76af214760c7ea95476afbe1b94f9080e5c0a4fe0213529a9` |
 | bold-color-radius-three | 9x7 | 1 | 0 | 0 | 50 | 6 | `1bfcb17c50f4995dbd7b7a69e643e26c050fec3567552b4901bb916cd85be2ed` | `e55142c54cc2fd6ae26fc900fedef1cc179fc86d53fc3e4d603d57f2188c9811` |
-| fine-luma-threshold-invert | 8x6 | 0 | 1 | 0 | 50 | 2 | `07bab121e47a4b3d1fe8a438ed0045d58d2261b981477af75c3fc54629b233db` | `af85175b54cf35725ac3422ab182daa7ed0c0be1f56f62a184349ed0e47566cf` |
+| fine-luma-threshold-invert | 8x6 | 0 | 1 | 0 | 50 | 2 | `1cac8b8da04207270c6bfd00d00710c9badc5affadfa96d3aeee15a07203483a` | `5a8b278e1e26b1d1249e8a7c3975fb2aa4766773e4995aa32c4ec12773feb998` |
 | radius-one-scale-zero | 6x5 | 1 | 0 | 0 | 50 | 6 | `ecae9908875b965929fed9b4843d923ef92b392b1ff2b3a0c51e4cfcda2acb5d` | `a458c8d9851ee8aa034a83b41c731ca060f3831d06d0ab53129c46272f3429b4` |
 | amount-zero-normal | 6x5 | 1 | 0 | 0 | 50 | 6 | `64c5f118731fe83feb6639e7cf63c9a900b88579d5927ab89a414a5baf89f2bd` | `2bca1d79171282f6d9f10be2f677e3c020bcc9ceb0d2b0b85e1b2ddbb9acc6f4` |
 | mix-zero-input-identity | 6x5 | 1 | 0 | 0 | 50 | 8 | `e859cd989a0632253c5907945d750eadf61d9c4eea58c7f40a708eff2e6c1b99` | `ebf4857f69d6f9912ad6fb6ecbdfb5658d88a22910a4601d2ff6538a957cafe1` |
@@ -51,13 +51,13 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 | contour-color-lower-level-hundred | 7x7 | 2 | 0 | 0 | 100 | 6 | `68adab5f5048a75880de1bff341845272093f617bcf260276e4010a59ba63e32` | `d9b19470109ba436c8af9cfaf76d6acfc665e464dbff54510150703de5e7791e` |
 | contour-luma-lower | 7x7 | 2 | 1 | 0 | 43 | 6 | `fdb8c70d0df49093c617414bf289c98ec74ef29f525a2373ccbc8f296b73b783` | `73cba512a2700ddfb4f18975668ed150ceac309eaa1d59e417c0496c60187ca6` |
 | contour-luma-upper | 7x7 | 2 | 1 | 1 | 57 | 6 | `940dd932fbaa810359783a70f3ac944835e8c4922f0b6fca9c325f18b479a257` | `fd391208d91ab6bac9d159205ba396e908a8cdd52a4d1b6023a4ef8ec25a5b14` |
-| blend-0 | 5x4 | 0 | 1 | 0 | 50 | 0 | `92a0be3ba6c49163c700998598706eb33fd40bec5bed7a0f73a7e2dbb9cd86af` | `e7e0a9c04be65179e4bf11c5427ebb26b362035f0393fdaa44c13624e64b11c8` |
+| blend-0 | 5x4 | 0 | 1 | 0 | 50 | 0 | `8f4b28939691636f4489e2ea33d44735a512b0e87917b6793240741e39d70314` | `f8ac9644193200ec40e3284efc75f4509069fb164c940a352eb26a101d28d136` |
 | blend-1 | 5x4 | 1 | 0 | 0 | 50 | 1 | `e256dff7e091bb45017e1314011d8e315fcdf20d7eb83051a9aa0cd8fc94eb7d` | `d1848e5103b7ec96ec4618946e248428b021efed7a55918eb14a4292ef9af08d` |
 | blend-2 | 5x4 | 0 | 0 | 0 | 50 | 2 | `f6d83885968ccf8a861da4bbf8964a97e4b886a0764d01460f4cec43959f4296` | `8a0f78424e1739d7262be4c843c5f3300d5bff48fb3b2f92395daf56e2608c82` |
-| blend-3 | 5x4 | 1 | 1 | 0 | 50 | 3 | `559ba7b503e76f3edb950d1080cab5769608dd838f3b98e518263580ecbcadf3` | `824fef9d490445780263e86c2a3f29f22f04d947583d26f9a42c547b380bb77b` |
+| blend-3 | 5x4 | 1 | 1 | 0 | 50 | 3 | `585782d799f06fbf673189b75148cddb5113cd7fb6847794433507c8d3880c41` | `6dc144acebc96a0d3f5d6372c6060fc955491e3681427f8fbbac93867dc59f49` |
 | blend-4 | 5x4 | 0 | 0 | 0 | 50 | 4 | `cec42b1fea3dc977143de14c8e250095b001c66d3e1981a30c129841d35fc544` | `305951cd1a2b7bd7ccc43c047d6827ab4f9b46661be5a55ccec3b239fc14cab5` |
 | blend-5 | 5x4 | 1 | 0 | 0 | 50 | 5 | `477835e29a7a8bc7bc41662f4a636c11330548372cd68036d34f7fe6c90e7d89` | `ba808de4275704cb050ccb3a0140288f372924bba80ee4b26b82d31518478e0c` |
-| blend-6 | 5x4 | 0 | 1 | 0 | 50 | 6 | `cfc86731c04f8c9691547753537a2773f432dd51eaffd6e3df5169db21ee60e1` | `bd69518a512f924723b76dadc4bd8b2df091561bcb85a06a9d64e48356a6027c` |
+| blend-6 | 5x4 | 0 | 1 | 0 | 50 | 6 | `c9e3de273d5d1e00368e6ec73298ccffd480bf3475e70f9a6d8fef597699ddbb` | `307d1896a9cf5ba317dfd149fd17908da927c13bbfe15605525bd34d1ab4082e` |
 | blend-7 | 5x4 | 1 | 0 | 0 | 50 | 7 | `050adc9953c661a799e5cdc89abc710d6059f5c73b89f1c5617827a5e2b4100e` | `1e063cc897584d917015416effa3a4a9a7efd8e006796c3f3fcb95af699bd9af` |
 | blend-8 | 5x4 | 0 | 0 | 0 | 50 | 8 | `745af9d1ed86f0ddde432621873be18d75fdadea4a6a773ff011492f206c68b9` | `7f5bb075b78111d281aea79b9abbcffade27e2ca9408f9bbcbf434e449d6378c` |
 | external-context-base | 8x5 | 1 | 0 | 0 | 50 | 7 | `a17a831e563747209feb779d03aa22e717ab27b7275332b00896f87e889af97b` | `2d3c553f02d4fa5e0ff58ab4a1dd926d56252fd28b02634e60ba5653c1a201a2` |
@@ -78,9 +78,9 @@ Every case requires exact repeated-render identity, exact input-bit immutability
 | contour-rhs-f32-broadcast-bypassed | contour-color-lower-level57-f32-equality, contour-color-upper-level57-f32-equality | contour-color-lower-level57-f32-equality, contour-color-upper-level57-f32-equality |
 | contour-dispatch-disabled | contour-color-lower, contour-luma-upper | contour-color-lower, contour-color-upper, contour-color-lower-level57-f32-equality, contour-color-upper-level57-f32-equality, contour-color-upper-level-zero, contour-color-lower-level-hundred, contour-luma-lower, contour-luma-upper |
 | channel-branch-inverted | fine-color-radius-two, fine-luma-threshold-invert, contour-color-lower, contour-luma-lower | fine-color-radius-two, bold-color-radius-three, fine-luma-threshold-invert, contour-color-lower, contour-color-upper, contour-color-lower-level57-f32-equality, contour-color-upper-level57-f32-equality, contour-color-lower-level-hundred, contour-luma-lower, contour-luma-upper, blend-0, blend-1, blend-2, blend-3, blend-4, blend-5, blend-6, blend-7, blend-8, external-context-base, external-context-extreme |
-| center-self-splat-simultaneous | fine-luma-threshold-invert, blend-0, blend-3, blend-6 | fine-luma-threshold-invert, blend-0, blend-3, blend-6 |
+| center-self-splat-sequential | fine-luma-threshold-invert, blend-0, blend-3, blend-6 | fine-luma-threshold-invert, blend-0, blend-3, blend-6 |
 
-The simultaneous center-splat mutant diverges in exactly four cases. Its first frozen mismatch is lane 25, top-down (6,0), channel g: canonical 0x3ef9ec6f, simultaneous 0x3e69ed28.
+The sequential center-splat mutant diverges in exactly four cases. Its first frozen mismatch is lane 25, top-down (6,0), channel g: canonical 0x3e69ed28, sequential 0x3ef9ec6f.
 
 Frontend negatives reject wrong profile/key/hash, both relational substitutions, two bvec lane-route changes, an extra stored bvec3 site, a reversed center-splat dot route, and an extra self-splat. The whole-program, interface, and exact node/ancestry hashes make unrelated source drift fail closed.
 

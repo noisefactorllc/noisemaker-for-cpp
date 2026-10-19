@@ -79,9 +79,9 @@ EXPECTED_CURRENT_PROFILE_FRONTIER = {
             "self-splat as three ordered lane stores"),
         "validator": "pass",
         "emitter": "pass",
-        "rendered_cpp_bytes": 14819,
+        "rendered_cpp_bytes": 15107,
         "rendered_cpp_sha256": (
-            "1485c72f06f691e06515a337ed3d534695a8da2f4590043e3d6bd65cd7dcffba"),
+            "97180b31e60ba0c37074c003dc1078acf08bbca0d131fba457aa2c444acbfb3a"),
     },
 }
 

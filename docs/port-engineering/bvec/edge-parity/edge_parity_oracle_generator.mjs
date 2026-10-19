@@ -4,10 +4,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
+import { authenticateCpuRoot } from '../../../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+
 const here = path.dirname(fileURLToPath(import.meta.url))
-const platformRoot = path.resolve(here, '../../../../..')
-const cppRoot = path.join(platformRoot, 'noisemaker-for-cpp')
-const cpuRoot = process.env.NOISEMAKER_FOR_CPU || path.join(platformRoot, 'noisemaker-for-cpu')
+const cppRoot = path.resolve(here, '../../../..')
 
 const {
   canonicalAdapterFactories,
@@ -175,12 +179,12 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
   upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -200,7 +204,7 @@ if ((sourceText.match(/bvec3/g) ?? []).length !== 3 || (sourceText.match(/greate
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
 if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory47') throw new Error('canonical Edge factory identity drift')
-if (Buffer.byteLength(canonicalFactory.toString()) !== 9070 || sha256(canonicalFactory.toString()) !== '7bcb99c03e4c1b0dbd026aecf1e61d45a4d69d02ce8228b6900d632fe16f9212') {
+if (Buffer.byteLength(canonicalFactory.toString()) !== 9305 || sha256(canonicalFactory.toString()) !== '803105b512871071bea0224710b125113d72270e171bfd78cdfcaf9ba9de6709') {
   throw new Error('canonical Edge factory body drift')
 }
 if (publicFactory !== canonicalFactory) throw new Error('public Edge factory is not canonical identity')
@@ -390,9 +394,9 @@ const renderMutants = [
   compileMutant('contour-dispatch-disabled', 'if (kernelType == 2) {', 'if (kernelType == 3) {'),
   compileMutant('channel-branch-inverted', 'var useLuma = channel > 0.5;', 'var useLuma = channel <= 0.5;'),
   compileMutant(
-    'center-self-splat-simultaneous',
-    '(centerSample[0] = dot(centerSample, LUMA), centerSample[1] = dot(centerSample, LUMA), centerSample[2] = dot(centerSample, LUMA), centerSample)',
-    '(centerSample.fill(dot(centerSample, LUMA)), centerSample)'),
+    'center-self-splat-sequential',
+    '(cpu_vector_write_0_0 = dot(centerSample, LUMA), cpu_vector_write_0_1 = dot(centerSample, LUMA), cpu_vector_write_0_2 = dot(centerSample, LUMA), centerSample[0] = cpu_vector_write_0_0, centerSample[1] = cpu_vector_write_0_1, centerSample[2] = cpu_vector_write_0_2, centerSample)',
+    '(centerSample[0] = dot(centerSample, LUMA), centerSample[1] = dot(centerSample, LUMA), centerSample[2] = dot(centerSample, LUMA), centerSample)'),
 ]
 
 function makeInput(definition) {
@@ -676,7 +680,7 @@ function buildData() {
     'contour-rhs-f32-broadcast-bypassed': ['contour-color-lower-level57-f32-equality', 'contour-color-upper-level57-f32-equality'],
     'contour-dispatch-disabled': ['contour-color-lower', 'contour-luma-upper'],
     'channel-branch-inverted': ['fine-color-radius-two', 'fine-luma-threshold-invert', 'contour-color-lower', 'contour-luma-lower'],
-    'center-self-splat-simultaneous': ['fine-luma-threshold-invert', 'blend-0', 'blend-3', 'blend-6'],
+    'center-self-splat-sequential': ['fine-luma-threshold-invert', 'blend-0', 'blend-3', 'blend-6'],
   }
   const renderMutationSummary = renderMutants.map((mutant) => {
     const witnesses = caseResults.filter((record) => !record.mutation_comparisons[mutant.name].float32.exact_f32_bits).map((record) => record.name)
@@ -684,10 +688,10 @@ function buildData() {
       if (!witnesses.includes(required)) throw new Error(`${mutant.name}: required witness ${required} did not diverge; got ${witnesses.join(', ')}`)
     }
     let frozenFirstMismatch
-    if (mutant.name === 'center-self-splat-simultaneous') {
+    if (mutant.name === 'center-self-splat-sequential') {
       if (JSON.stringify(witnesses) !== JSON.stringify(requiredWitnesses[mutant.name])) throw new Error(`${mutant.name}: exact four-case witness set drift: ${witnesses.join(', ')}`)
       const mismatch = caseResults.find((record) => record.name === 'fine-luma-threshold-invert').mutation_comparisons[mutant.name].float32.first_mismatch
-      const expected = { lane_index: 25, pixel_index: 6, top_down_xy: [6, 0], channel: 'g', reference_bits_le: '0x3ef9ec6f', candidate_bits_le: '0x3e69ed28' }
+      const expected = { lane_index: 25, pixel_index: 6, top_down_xy: [6, 0], channel: 'g', reference_bits_le: '0x3e69ed28', candidate_bits_le: '0x3ef9ec6f' }
       for (const [key, value] of Object.entries(expected)) {
         if (JSON.stringify(mismatch?.[key]) !== JSON.stringify(value)) throw new Error(`${mutant.name}: frozen first mismatch ${key} drift`)
       }
@@ -766,7 +770,7 @@ function makeReport(data) {
     '## Runtime shape', '',
     '- `glsl::BVec3` already exists. Edge additionally needs exact-profile-only `greaterThanEqual(Vec3, FloatExpr<3>)` and `lessThan(Vec3, FloatExpr<3>)` lowering, constrained to width 3 rather than widening Extrude’s width-2 helpers.',
     '- The FloatExpr right operand must first materialize through `glsl::Vec3`, narrowing every retained-double lane to Float32 exactly as canonical `new PooledFloat32Array([lvl, lvl, lvl])` does. Direct comparison against the retained double is observably wrong and explicitly rejected.',
-    '- Canonical JavaScript stores `dot(centerSample, LUMA)` into lanes 0, 1, and 2 sequentially; each later dot observes earlier Float32 stores. The C++ lowering is exactly three contiguous ordered `set_swizzle<0/1/2>` calls. A simultaneous whole-Vec splat is rejected.',
+    '- Canonical JavaScript evaluates all three `dot(centerSample, LUMA)` values before it stores lanes 0, 1, and 2; no dot observes an earlier store. The C++ lowering computes the three dots into temporaries, then makes three ordered `set_swizzle<0/1/2>` calls. A sequential splat, where later dots observe earlier Float32 stores, diverges from the authority.',
     `- ${data.direct_bvec3_relational_and_storage.records.length} general direct fixtures cover mixed/equal lanes, signed zero, infinities, NaNs, and adjacent Float32 values. Their relational/selection/construction bytes hash to \`${data.direct_bvec3_relational_and_storage.aggregate_boolean_bytes_sha256}\`.`,
     `- ${data.direct_bvec3_relational_and_storage.vec3_float_expr_rhs.records.length} native-style Vec3/FloatExpr fixtures require calls to the actual overload shape. Expected boolean bytes hash to \`${data.direct_bvec3_relational_and_storage.vec3_float_expr_rhs.aggregate_expected_boolean_bytes_sha256}\`; the rejected raw-double comparison hashes to \`${data.direct_bvec3_relational_and_storage.vec3_float_expr_rhs.rejected_raw_scalar_boolean_bytes_sha256}\`.`, '',
     '## Render cases', '',
@@ -780,8 +784,8 @@ function makeReport(data) {
   lines.push('', 'Every case requires exact repeated-render identity, exact input-bit immutability, finite output, and direct-canonical/public-catalog equality. The external-context pair must remain exactly identical.', '')
   lines.push('## Mutation discrimination', '', '| Mutation | Required witnesses | All divergent cases |', '| --- | --- | --- |')
   for (const mutation of data.render_mutation_summary) lines.push(`| ${mutation.name} | ${mutation.required_witnesses.join(', ')} | ${mutation.all_divergent_cases.join(', ')} |`)
-  const selfSplat = data.render_mutation_summary.find((item) => item.name === 'center-self-splat-simultaneous')
-  lines.push('', `The simultaneous center-splat mutant diverges in exactly four cases. Its first frozen mismatch is lane ${selfSplat.frozen_first_mismatch.lane_index}, top-down (${selfSplat.frozen_first_mismatch.top_down_xy.join(',')}), channel ${selfSplat.frozen_first_mismatch.channel}: canonical ${selfSplat.frozen_first_mismatch.reference_bits_le}, simultaneous ${selfSplat.frozen_first_mismatch.candidate_bits_le}.`, '')
+  const selfSplat = data.render_mutation_summary.find((item) => item.name === 'center-self-splat-sequential')
+  lines.push('', `The sequential center-splat mutant diverges in exactly four cases. Its first frozen mismatch is lane ${selfSplat.frozen_first_mismatch.lane_index}, top-down (${selfSplat.frozen_first_mismatch.top_down_xy.join(',')}), channel ${selfSplat.frozen_first_mismatch.channel}: canonical ${selfSplat.frozen_first_mismatch.reference_bits_le}, sequential ${selfSplat.frozen_first_mismatch.candidate_bits_le}.`, '')
   lines.push('Frontend negatives reject wrong profile/key/hash, both relational substitutions, two bvec lane-route changes, an extra stored bvec3 site, a reversed center-splat dot route, and an extra self-splat. The whole-program, interface, and exact node/ancestry hashes make unrelated source drift fail closed.', '')
   lines.push('## Regeneration', '', 'From the repository root:', '', '```sh', 'python3 docs/port-engineering/bvec/edge-parity/edge_frontend_probe.py --check', 'python3 docs/port-engineering/bvec/edge-parity/edge_frontend_probe.py --live-frontier', 'node docs/port-engineering/bvec/edge-parity/edge_parity_oracle_generator.mjs', 'node docs/port-engineering/bvec/edge-parity/edge_parity_oracle_generator.mjs --check', '```', '')
   return `${lines.join('\n')}\n`
