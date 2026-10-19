@@ -86,7 +86,7 @@ TEST(mesh_whole_pass_route_authentication_rejects_forged_metadata_and_abi) {
   REQUIRE_THROWS_AS(bind_factory_route(step, admission, definition, glsl::Bindings{}), GraphError);
 }
 
-TEST(mesh_whole_pass_controls_and_missing_external_data_fail_closed) {
+TEST(mesh_whole_pass_controls_fail_closed_and_missing_mesh_data_draws_the_empty_mesh) {
   Renderer renderer;
   const auto plan = renderer.compile(source("meshRender()"));
   const auto& step = mesh_step(plan);
@@ -106,13 +106,23 @@ TEST(mesh_whole_pass_controls_and_missing_external_data_fail_closed) {
     mutate(forged);
     REQUIRE_THROWS_AS(preflight_pass_abi(step, admission, forged, context), GraphError);
   }
+  // CPU 3cc7a036: with no meshData the authority binds emptyMeshData(), the
+  // zero-filled 256x256 mesh, so no triangle draws over the clear pass.
   auto missing = options;
   missing.mesh_data.reset();
-  try {
-    (void)renderer.render(plan, missing);
-    REQUIRE(false);
-  } catch (const GraphError& error) {
-    REQUIRE(error.code() == GraphErrorCode::missing_resource);
+  auto zero = options;
+  zero.mesh_data = MeshData{256U, 256U, std::vector<float>(256U * 256U * 4U, 0.0F),
+                            std::vector<float>(256U * 256U * 4U, 0.0F)};
+  const auto empty = renderer.render(plan, missing);
+  const auto explicit_zero = renderer.render(plan, zero);
+  const auto bytes = empty.to_rgba8();
+  REQUIRE(empty.pass_count() == 3U);
+  REQUIRE(bytes == explicit_zero.to_rgba8());
+  for (std::size_t pixel = 0; pixel < 9U * 7U; ++pixel) {
+    REQUIRE(bytes[pixel * 4U] == 25U);
+    REQUIRE(bytes[pixel * 4U + 1U] == 25U);
+    REQUIRE(bytes[pixel * 4U + 2U] == 38U);
+    REQUIRE(bytes[pixel * 4U + 3U] == 255U);
   }
 }
 

@@ -285,11 +285,16 @@ TEST(graph_mesh_loader_binds_packed_data_with_upload_row_orientation) {
   REQUIRE(opts.mesh_data->position_data == original);
 }
 
-TEST(graph_mesh_loader_requires_external_data_and_preserves_default_dimensions) {
+TEST(graph_mesh_loader_samples_the_empty_mesh_without_data_and_preserves_default_dimensions) {
   Renderer renderer;
   const auto source = "search render\nmeshLoader().write(o0)\nrender(o0)\n";
   auto opts = options(1U, 1U);
-  REQUIRE_THROWS_AS(renderer.render(source, opts), GraphError);
+  // CPU 3cc7a036: with no meshData the authority samples emptyMeshData(), the
+  // zero-filled 256x256 mesh textures.
+  const auto empty = renderer.render(source, opts);
+  REQUIRE(empty.pass_count() == 1U);
+  const auto lanes = empty.surface().data();
+  REQUIRE(std::vector<float>(lanes.begin(), lanes.end()) == std::vector<float>({0.5F, 0.5F, 0.5F, 1.0F}));
   opts.mesh_data.emplace();
   REQUIRE(opts.mesh_data->tex_width == 256U);
   REQUIRE(opts.mesh_data->tex_height == 256U);

@@ -305,6 +305,16 @@ struct BindingAbiSections {
          (resource == "global_mesh0_positions" || resource == "global_mesh0_normals");
 }
 
+// The mesh a program samples. With no meshData the authority binds
+// emptyMeshData() (renderer.js bindExternalInputs, mesh-render.js): the
+// zero-filled 256x256 position and normal textures upstream samples before an
+// OBJ upload. Every vertex has w = 0, so no triangle is drawn.
+[[nodiscard]] const MeshData& bound_mesh_data(const ExecutionInputs& inputs) {
+  static const MeshData empty{256U, 256U, std::vector<float>(256U * 256U * 4U, 0.0F),
+                              std::vector<float>(256U * 256U * 4U, 0.0F)};
+  return inputs.mesh_data.has_value() ? *inputs.mesh_data : empty;
+}
+
 [[nodiscard]] std::unordered_set<std::string> initialized_declared_textures(
     const effects::EffectDefinition& definition) {
   std::unordered_set<std::string> produced;
@@ -1278,11 +1288,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                snapshot.definition.id == "render/meshRender";
       });
   if (needs_mesh) {
-    if (!inputs.mesh_data.has_value()) {
-      throw GraphError(GraphErrorCode::missing_resource,
-                       "mesh effect requires external mesh data");
-    }
-    const auto& mesh = *inputs.mesh_data;
+    const auto& mesh = bound_mesh_data(inputs);
     if (mesh.tex_width == 0U || mesh.tex_height == 0U ||
         mesh.tex_height > noisemaker::kMaxSurfacePixels / mesh.tex_width) {
       throw GraphError(GraphErrorCode::invalid_dimension, "mesh texture dimensions are invalid");
@@ -3179,7 +3185,7 @@ void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
                           "sampler ABI route is invalid");
     }
     if (direct_mesh_resource(admission, sampler.resource)) {
-      if (context.inputs == nullptr || !context.inputs->mesh_data.has_value()) {
+      if (context.inputs == nullptr) {
         throw binding_error(step, admission, GraphErrorCode::missing_resource,
                             "declared mesh data resource is unavailable");
       }
@@ -4463,10 +4469,9 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
 
   // Only meshLoader samples uploaded mesh textures. meshRender's whole-pass
   // adapter consumes the same validated external data directly.
-  if (inputs.mesh_data.has_value() &&
-      std::any_of(plan.effects.begin(), plan.effects.end(),
+  if (std::any_of(plan.effects.begin(), plan.effects.end(),
           [](const auto& snapshot) { return snapshot.definition.id == "render/meshLoader"; })) {
-    const auto& mesh = *inputs.mesh_data;
+    const auto& mesh = bound_mesh_data(inputs);
     const auto bind_mesh_texture = [&](const char* name, const std::vector<float>& packed) {
       noisemaker::Surface surface(mesh.tex_width, mesh.tex_height);
       surface.set_filter(noisemaker::TextureFilter::nearest);
@@ -5000,10 +5005,6 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             auto rendered = [&]() -> noisemaker::Surface {
             if (mesh_adapter_available(admission)) {
               (void)authenticate_factory_route(step, admission);
-              if (!inputs.mesh_data.has_value()) {
-                throw binding_error(step, admission, GraphErrorCode::missing_binding,
-                                    "mesh whole-pass adapter requires external mesh data");
-              }
               noisemaker::Surface destination(width, height);
               const auto* previous = arena.find(output_route);
               if (previous != nullptr && previous->surface().data().size() == destination.data().size()) {
@@ -5011,7 +5012,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
               } else {
                 destination.clear();
               }
-              (void)effects::render_triangles(*inputs.mesh_data, bindings, destination);
+              (void)effects::render_triangles(bound_mesh_data(inputs), bindings, destination);
               return destination;
             }
             auto kernel = bind_factory_route(step, admission, snapshot.definition, bindings);

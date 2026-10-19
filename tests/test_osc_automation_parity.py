@@ -234,5 +234,49 @@ class FloatOnIntUniformParityTest(_BothLanes, unittest.TestCase):
                     self.assertEqual(3, len({renders["none"], renders["fwd"], renders["back"]}))
 
 
+class EmptyMeshParityTest(_BothLanes, unittest.TestCase):
+    """A mesh program with no mesh data renders the authority's empty mesh on both lanes.
+
+    renderer.js bindExternalInputs and mesh-render.js bind emptyMeshData(), the
+    zero-filled 256x256 mesh upstream samples before an OBJ upload, so meshRender
+    draws no triangle over its clear pass and meshLoader samples zeros.
+    """
+
+    PROGRAMS = {
+        "render/meshRender": ("search synth, render\nsolid(color: #3a7).meshRender().write(o0)\nrender(o0)\n",
+                              (25, 25, 38, 255)),
+        "render/meshLoader": ("search synth, render\nsolid(color: #3a7).meshLoader().write(o0)\nrender(o0)\n",
+                              (128, 128, 128, 255)),
+    }
+
+    def test_mesh_programs_without_mesh_data_are_byte_exact(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-empty-mesh-") as temporary:
+            scratch = pathlib.Path(temporary)
+            for effect, (source, pixel) in self.PROGRAMS.items():
+                with self.subTest(effect=effect):
+                    source_path = scratch / "case.dsl"
+                    source_path.write_text(source, encoding="utf-8", newline="")
+                    record = _record(source, 0.25)
+                    record["options"].update(width=16, height=16)
+                    self.assertNotIn("externalInputs", record)
+                    (scratch / "case.json").write_text(json.dumps(record), encoding="utf-8")
+                    js = subprocess.run(
+                        [self.node, str(JS_RUNNER), "--cpu-root", str(self.cpu_root), "--case", str(scratch / "case.json"),
+                         "--rgba8-output", str(scratch / "js.rgba8"), "--metadata-output", str(scratch / "js.json"),
+                         "--float32-output", str(scratch / "js.f32")],
+                        capture_output=True, text=True)
+                    cpp = subprocess.run(
+                        [str(self.driver), *record_flags(record, source_path),
+                         "--rgba8-output", str(scratch / "cpp.rgba8"), "--metadata-output", str(scratch / "cpp.json"),
+                         "--float32-output", str(scratch / "cpp.f32")],
+                        capture_output=True, text=True)
+                    self.assertEqual(0, js.returncode, js.stderr)
+                    self.assertEqual(0, cpp.returncode, cpp.stdout + cpp.stderr)
+                    for suffix in ("f32", "rgba8"):
+                        self.assertEqual((scratch / f"js.{suffix}").read_bytes(),
+                                         (scratch / f"cpp.{suffix}").read_bytes(), suffix)
+                    self.assertEqual(bytes(pixel) * 256, (scratch / "js.rgba8").read_bytes())
+
+
 if __name__ == "__main__":
     unittest.main()
