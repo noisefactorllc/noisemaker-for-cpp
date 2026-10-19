@@ -16375,7 +16375,7 @@ TEST(typed_shape_mixer_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape_mixer_matches_all_forty_two_independent_js_oracles) {
   REQUIRE(shape_mixer182_oracle::kOracleSha256 ==
-          "8fa79f38c945abaf7cfc3e81b02a7ec09283ecb1503fbaad3e7fff3f1825d361");
+          "0c8ed329f15818d1e16bbb6541b4efd89aa3102dbf82e98ea6a3e4b8ce4d2a89");
   REQUIRE(shape_mixer182_oracle::kProgramKey ==
           "classicNoisedeck/shapeMixer:shapeMixer");
   REQUIRE(shape_mixer182_oracle::kCorpusRevision ==
