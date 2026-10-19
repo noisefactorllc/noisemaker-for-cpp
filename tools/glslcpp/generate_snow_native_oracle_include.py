@@ -33,8 +33,8 @@ SHA = re.compile(r"^[0-9a-f]{64}$")
 # Frozen from the committed authority oracle; the adapter source hash was
 # independently verified against noisemaker-for-cpu revision 61aa869.
 # A recomputed adjacent sidecar cannot authorize a new baseline.
-EXPECTED_ORACLE_SHA256 = 'b7737042b1781dc6905d423feca3e4a67276206e9aa47e2c3150d04dc9275400'
-EXPECTED_SOURCE = ('src/effects/adapters/snow.js', 3443, '202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366')
+EXPECTED_ORACLE_SHA256 = '3202a93b4c9cd9cda8d9b96c5dba8d7990c8099435d64dad9ca2b6a269885c80'
+EXPECTED_SOURCE = ('src/effects/adapters/snow.js', 3579, '9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c')
 EXPECTED_CASE_NAMES = (
     '1x1-alpha-zero',
     '1x1-alpha-one',

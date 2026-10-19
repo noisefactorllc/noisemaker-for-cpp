@@ -110,6 +110,13 @@ function byteFromFloat(value) {
   return Math.floor(value * 255 + 0.5)
 }
 
+// A mutated copy lives outside the snapshot, so its relative imports (snow.js
+// imports './crt.js') are resolved against the snapshot's adapter directory.
+function resolveRelativeImports(source) {
+  return source.replace(/(\bfrom\s*)(['"])(\.{1,2}\/[^'"\n]+)\2/g, (_, from, quote, specifier) =>
+    `${from}${quote}${pathToFileURL(path.resolve(path.dirname(factoryPath), specifier)).href}${quote}`)
+}
+
 async function loadFactory(sourcePath) {
   const module = await import(pathToFileURL(sourcePath).href + `?cachebust=${process.pid}-${Math.random()}`)
   return module.snowFactory
@@ -218,7 +225,7 @@ const mutations = [
   },
   {
     name: 'zbase-epsilon',
-    anchor: 'const zBase = Math.abs(cosineValue) < F32(0.0000001) ? 0 : mul(cosineValue, speed)',
+    anchor: 'const zBase = mul(cosineValue, speed)',
     replacement: 'const zBase = Math.abs(cosineValue) < F32(0.5) ? 0 : mul(cosineValue, speed)',
     requiredWitnessCases: ['9x2-cosine-just-above-epsilon'],
   },
@@ -252,7 +259,7 @@ async function main() {
       if (occurrences !== 1) {
         throw new Error(`mutation ${mutation.name}: anchor must occur exactly once (found ${occurrences})`)
       }
-      const mutatedSource = factorySource.replace(mutation.anchor, mutation.replacement)
+      const mutatedSource = resolveRelativeImports(factorySource.replace(mutation.anchor, mutation.replacement))
       const mutatedPath = path.join(scratchDir, `snow.${mutation.name}.mjs`)
       fs.writeFileSync(mutatedPath, mutatedSource)
       const mutatedFactory = await loadFactory(mutatedPath)

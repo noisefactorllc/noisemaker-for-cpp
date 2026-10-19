@@ -1,6 +1,6 @@
 # filter/snow:snow pixel-parity oracle
 
-Source: `src/effects/adapters/snow.js` (3443 bytes, sha256 202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366)
+Source: `src/effects/adapters/snow.js` (3579 bytes, sha256 9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c)
 
 21 cases, 7 source-anchor mutation probes.
 
@@ -36,4 +36,4 @@ Source: `src/effects/adapters/snow.js` (3443 bytes, sha256 202e0dbf9b1b8e0e7278c
 - `density-scale`: changed 17/21 cases (1x1-alpha-one, 3x1-time-zero, 1x3-pause-true, 4x3-pause-boundary-exact, 4x3-pause-boundary-just-above, 4x3-pause-between-tenth-and-half, 5x7-density-hundred, 5x7-density-above-range, 7x5-alpha-near-zero, 7x5-alpha-above-one, 9x2-cosine-just-above-epsilon, 2x9-cosine-near-half-turn, 2x9-cosine-near-full-turn, 17x11-default-like, 17x11-large-time, 11x17-transposed, 13x1-negative-time)
 - `limiter-cap`: changed 15/21 cases (1x1-alpha-one, 3x1-time-zero, 4x3-pause-boundary-exact, 4x3-pause-boundary-just-above, 4x3-pause-between-tenth-and-half, 5x7-density-above-range, 7x5-alpha-near-zero, 7x5-alpha-above-one, 9x2-cosine-just-above-epsilon, 2x9-cosine-near-half-turn, 2x9-cosine-near-full-turn, 17x11-default-like, 17x11-large-time, 11x17-transposed, 13x1-negative-time)
 - `time-seed-offset-x`: changed 14/21 cases (1x1-alpha-one, 4x3-pause-boundary-exact, 4x3-pause-between-tenth-and-half, 5x7-density-hundred, 5x7-density-above-range, 7x5-alpha-near-zero, 7x5-alpha-above-one, 9x2-cosine-just-above-epsilon, 2x9-cosine-near-half-turn, 2x9-cosine-near-full-turn, 17x11-default-like, 17x11-large-time, 11x17-transposed, 13x1-negative-time)
-- `zbase-epsilon`: changed 3/21 cases (7x5-alpha-near-zero, 7x5-alpha-above-one, 9x2-cosine-just-above-epsilon)
+- `zbase-epsilon`: changed 6/21 cases (1x1-alpha-one, 7x5-alpha-near-zero, 7x5-alpha-above-one, 9x2-cosine-just-above-epsilon, 17x11-default-like, 11x17-transposed)
