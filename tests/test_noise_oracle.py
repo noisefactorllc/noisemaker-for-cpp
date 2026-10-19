@@ -12,7 +12,7 @@ def run(*args,env=None): return current_run(args,text=True,capture_output=True,e
 class NoiseOracleTests(unittest.TestCase):
  @unittest.skipUnless(HAS_AUTH, 'NOISEMAKER_CPU_ROOT is unavailable')
  def test_generator_self_test(self):
-  r=run('node',str(GEN),'--self-test','--cpu-root',str(CPU)); self.assertEqual(r.returncode,0,r.stderr); self.assertIn('24-file closure',r.stdout); self.assertIn('8 comparer flags',r.stdout)
+  r=run('node',str(GEN),'--self-test','--cpu-root',str(CPU)); self.assertEqual(r.returncode,0,r.stderr); self.assertIn('27-file closure',r.stdout); self.assertIn('8 comparer flags',r.stdout)
  def test_materializer_self_test(self):
   r=run('python3',str(MAT),'--self-test'); self.assertEqual(r.returncode,0,r.stderr); self.assertIn('JSON forgeries rejected with matching-sidecar probes',r.stdout); self.assertGreaterEqual(int(r.stdout.split('/',1)[0].rsplit(' ',1)[-1]),50)
  @unittest.skipUnless(HAS_AUTH, 'NOISEMAKER_CPU_ROOT is unavailable')
@@ -47,7 +47,7 @@ class NoiseOracleTests(unittest.TestCase):
     r=run('node',str(GEN),'--self-test','--cpu-root',str(forged))
     self.assertNotEqual(r.returncode,0); self.assertIn('nonliteral dynamic import',r.stderr); target.write_text(original)
  def test_json_contains_no_absolute_strings(self):
-  d=json.loads(ORACLE.read_text()); text=json.dumps(d); self.assertNotRegex(text,r'/(?:Users|private|tmp|home)/'); self.assertEqual(len(d['authority']['import_closure']),24); self.assertEqual(d['control_group']['public_direct_identity'],True); self.assertEqual(d['control_group']['canonical_own_key'],True); self.assertEqual(d['control_group']['adapter_own_key'],False); self.assertEqual(d['control_group']['input_lifetime']['stable_after_independent_render'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_data_objects'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_backing_buffers'],True); self.assertIn('owner_speed_control',d['claim_boundaries']); self.assertEqual(len(d['prepared_mechanisms']),4)
+  d=json.loads(ORACLE.read_text()); text=json.dumps(d); self.assertNotRegex(text,r'/(?:Users|private|tmp|home)/'); self.assertEqual(len(d['authority']['import_closure']),27); self.assertEqual(d['control_group']['public_direct_identity'],True); self.assertEqual(d['control_group']['canonical_own_key'],True); self.assertEqual(d['control_group']['adapter_own_key'],False); self.assertEqual(d['control_group']['input_lifetime']['stable_after_independent_render'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_data_objects'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_backing_buffers'],True); self.assertIn('owner_speed_control',d['claim_boundaries']); self.assertEqual(len(d['prepared_mechanisms']),4)
  def test_selector_matrix_covers_all_runtime_noise_branches(self):
   d=json.loads(ORACLE.read_text()); cases=d['render_cases']; self.assertEqual(len(cases),19)
   controls=[case['controls'] for case in cases]
