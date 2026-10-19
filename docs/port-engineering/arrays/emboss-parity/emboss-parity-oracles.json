@@ -13,7 +13,7 @@
   "provenance": {
     "authority_commit": "7f473400ac744025d46221bf527b43c1b5c1ef4e",
     "authority_checkout_clean": true,
-    "node_version": "v26.9.0",
+    "node_version": "v26.0.0",
     "files": {
       "canonical_kernels": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",

@@ -115,7 +115,7 @@ def load() -> tuple[dict[str, Any], str]:
     if (provenance.get("authority_commit")
             != "7f473400ac744025d46221bf527b43c1b5c1ef4e"
             or provenance.get("authority_checkout_clean") is not True
-            or provenance.get("node_version") != "v26.9.0"
+            or provenance.get("node_version") != "v26.0.0"
             or provenance.get("canonical_factory") != {
                 "name": "canonicalFactory48", "bytes": 8479,
                 "sha256": "f5909e3eddd23343b5c0a5fba5d58086c1869f0275284695cb228afb13615bf4"}

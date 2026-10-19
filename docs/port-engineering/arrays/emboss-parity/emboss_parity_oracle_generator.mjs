@@ -16,7 +16,7 @@ const programKey = 'filter/emboss:emboss'
 const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const corpusRevision = HISTORICAL_CORPUS_REVISION
 const authorityCommit = '7f473400ac744025d46221bf527b43c1b5c1ef4e'
-const authorityNode = 'v26.9.0'
+const authorityNode = 'v26.0.0'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/filter/emboss/emboss.glsl')
 const f = Math.fround
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
