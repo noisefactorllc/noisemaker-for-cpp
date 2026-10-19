@@ -42,7 +42,7 @@ differs by a single byte. CI runs that check on pushes affecting source or valid
 
 This port is **incomplete**. The open work is listed below.
 
-The pinned authority is `noisemaker-for-cpu` at `36e875283678b9b666fa332639953abfabf711ef`, which pins the upstream Noisemaker shaders at `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d` (v1.0.294). CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes, so a newer authority fails it until the port is synced to that authority.
+The pinned authority is `noisemaker-for-cpu` at `3cc7a0362d0ae37cba15e71e17d2113c86caf2d6`, which pins the upstream Noisemaker shaders at `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d` (v1.0.294). CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes, so a newer authority fails it until the port is synced to that authority.
 
 | | Count | Derived from |
 |---|---:|---|

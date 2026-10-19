@@ -12,11 +12,11 @@ import { pathToFileURL } from 'node:url'
 export const AUTHORITY_LEDGER_ENV = 'NOISEMAKER_CPU_AUTHORITY_LEDGER'
 
 export const EXPECTED = Object.freeze({
-  ledgerEntries: 891,
+  ledgerEntries: 893,
   packageSha256: 'cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21',
   packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
   sourceLockSha256: '594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c',
-  behavioralLockSha256: '0629e77da51a018e4eda43bfddd6a8f1bed67e44d980375f7083e6fe1f5bf89c',
+  behavioralLockSha256: '30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b',
   behavioralFileCount: 98,
   upstreamRevision: '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d',
   upstreamSourceDigest: '7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf',
