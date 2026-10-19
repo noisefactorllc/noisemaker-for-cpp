@@ -37,6 +37,24 @@ std::size_t clamped_index(int coordinate, std::size_t extent) noexcept {
   return index >= extent ? extent - 1U : index;
 }
 
+// nearestTexel in the authority's src/runtime/sampler.js: the float32 product
+// of the coordinate and the extent, floored and clamped; NaN selects the last
+// texel.
+std::size_t gpu_nearest_index(float coordinate, std::size_t extent) noexcept {
+  const float scaled = static_cast<float>(static_cast<double>(coordinate) * static_cast<double>(extent));
+  if (std::isnan(scaled)) {
+    return extent - 1U;
+  }
+  const double texel = std::floor(static_cast<double>(scaled));
+  if (!(texel >= 0.0)) {
+    return 0;
+  }
+  if (texel >= static_cast<double>(extent)) {
+    return extent - 1U;
+  }
+  return static_cast<std::size_t>(texel);
+}
+
 Rgba storage_texel(const Surface& surface, std::size_t x, std::size_t storage_y) noexcept {
   const auto data = surface.data();
   const std::size_t index = (storage_y * surface.width() + x) * 4U;
@@ -71,6 +89,20 @@ Rgba sample_nearest_bottom_left(const Surface& surface, float u, float v) noexce
   }
   return sample_nearest_bottom_left(surface, static_cast<double>(u),
                                     static_cast<double>(v));
+}
+
+Rgba sample_nearest_texel_bottom_left(const Surface& surface, float u, float v) noexcept {
+  const std::size_t x = gpu_nearest_index(u, surface.width());
+  const std::size_t shader_y = gpu_nearest_index(v, surface.height());
+  return storage_texel(surface, x, surface.height() - 1U - shader_y);
+}
+
+Rgba sample_texture_bottom_left(const Surface& surface, float u, float v) noexcept {
+  if (surface.filter() == TextureFilter::linear) {
+    return sample_bilinear_bottom_left(surface, static_cast<double>(u),
+                                       static_cast<double>(v));
+  }
+  return sample_nearest_texel_bottom_left(surface, u, v);
 }
 
 Rgba sample_bilinear_bottom_left(const Surface& surface, double u, double v) noexcept {

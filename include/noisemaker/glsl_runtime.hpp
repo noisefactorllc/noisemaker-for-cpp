@@ -15,6 +15,7 @@
 
 #include "noisemaker/fdlibm.hpp"
 #include "noisemaker/glsl_types.hpp"
+#include "noisemaker/glsl_metal.hpp"
 #include "noisemaker/surface.hpp"
 
 namespace noisemaker::glsl {

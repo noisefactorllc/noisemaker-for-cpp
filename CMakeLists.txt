@@ -19,6 +19,8 @@ add_library(noisemaker-cpu
   src/fdlibm.cpp
   src/fdlibm_off.cpp
   src/sampler.cpp
+  src/metal_division.cpp
+  src/metal_reciprocal_data.cpp
   src/texture_format.cpp
   src/png.cpp
   src/glsl_runtime.cpp
@@ -201,6 +203,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_palette_override_oracle.cpp
   tests/test_fractal_precision.cpp
   tests/test_median_kernel.cpp
+  tests/test_metal_division.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
 target_compile_options(noisemaker-cpu-tests PRIVATE
