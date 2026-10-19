@@ -753,7 +753,7 @@ function build() {
   }
   return {
     schema: 'noisemaker-for-cpp.builtins.builtin-admission-cluster-closure-oracles.v1',
-    corpus_revision: revision, cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6', authority: EXPECTED,
     provenance: { ...RUNTIME_PROVENANCE, node: process.version, public_identity: true },
     authorized_defines: {},
     defines_axis_note: 'All six programs compile at exact defines {} -- confirmed live via tools.glslcpp.generate_typed_slice._defaults() for all six keys, and independently by grep: the only preprocessor directive present in any of the six sources is the universal `#ifdef GL_ES` guard. No "different define map" axis exists for this cluster.',
