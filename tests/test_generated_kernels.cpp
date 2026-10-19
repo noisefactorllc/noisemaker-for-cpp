@@ -11103,14 +11103,14 @@ TEST(typed_task33_celshadingcolor_fwidth_vec3_matches_vendored_oracle_bit_exact)
   // strength.
   const Task33Case fixture{
       "filter/celShading:celShadingColor", 6U, 5U, 10,
-      "23410eafb8a4eedd15a2446e26bf0e57297af22006e9e9bc8ae90c8787de675e",
+      "40b4e31d630cd45d9d341eca3ac3ed89b559778e4a9e4912ea4e4f9654621ee9",
       "0bd57f2632857441c11e75801703800e161b793c8255741b87fad0dcf6547d32",
       120U,
-      {{{0U, 0U, {0x3d825f51U, 0x3f22f4feU, 0x3eeb5b4bU, 0x3e8ee23cU}},
-        {5U, 0U, {0x3f2301c7U, 0x3f02ece3U, 0x3e5a470fU, 0x3ed65359U}},
+      {{{0U, 0U, {0x3d825f4fU, 0x3f22f4feU, 0x3eeb5b4bU, 0x3e8ee23cU}},
+        {5U, 0U, {0x3f2301c8U, 0x3f02ece3U, 0x3e5a4711U, 0x3ed65359U}},
         {0U, 4U, {0x3f0ed7d8U, 0x3ea83021U, 0x3f201424U, 0x3f20be83U}},
         {5U, 4U, {0x3eb48c46U, 0x3e06b056U, 0x3ec3a718U, 0x3dbe82faU}},
-        {3U, 2U, {0x3eb78febU, 0x3f67ef4fU, 0x3e883328U, 0x3f1aca6bU}}}}};
+        {3U, 2U, {0x3eb78fecU, 0x3f67ef4eU, 0x3e883329U, 0x3f1aca6bU}}}}};
   const auto input = task33_patterned_surface(fixture.width, fixture.height,
                                               fixture.phase);
   noisemaker::glsl::Bindings direct;

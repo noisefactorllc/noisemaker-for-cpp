@@ -111,11 +111,11 @@ function sameBytes(a, b) { return Buffer.compare(bytes(a.data), bytes(b.data)) =
 // ---------------------------------------------------------------------------
 const RUNTIME_PROVENANCE = {
   glsl_kernel_sha256: 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
-  glsl_runtime_sha256: 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1',
+  glsl_runtime_sha256: 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd',
   pass_runner_sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   surface_sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  canonical_kernels_sha256: 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
   adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
 }
 for (const [file, hash] of [
@@ -472,7 +472,7 @@ function renderCase(program, c, nativeVectorBindings = false) {
 const PROGRAM_DEFS = [
   {
     id: 'bulge', key: 'filter/bulge:bulge', sourceFile: 'bulge/bulge.glsl',
-    factoryName: 'canonicalFactory25', factorySha256: '0915a49efe3abce961e815de418a0e21aa7a200088b7e77902f1d92e59b5a83f',
+    factoryName: 'canonicalFactory25', factorySha256: 'ad820a9b1bafa9d9d6ee161a391d5441bd91d9b5994f80436fada0760c6df60e',
     sourceRawBytes: 2352, sourceSha256: '87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', aspectLens: 'bool', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -485,7 +485,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'celShadingColor', key: 'filter/celShading:celShadingColor', sourceFile: 'celShading/celShadingColor.glsl',
-    factoryName: 'canonicalFactory27', factorySha256: '0ff2c4c917b1dd0136c48788aa792e29f783a8e9be167bc50cd6390978b579c4',
+    factoryName: 'canonicalFactory27', factorySha256: '8deff4d60013a32e2d4deac8c2bfde9f9415ba4484b9f69ae0a25ed2d484a4c8',
     sourceRawBytes: 2780, sourceSha256: '90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4',
     defines: {}, family: 'fwidth', hasAntialias: true, expectedOrdinals: 1,
     uniformTypes: { levels: 'int', gamma: 'float', antialias: 'bool', lightDirection: 'vec3', strength: 'float' },
@@ -498,7 +498,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'halftone', key: 'filter/halftone:halftone', sourceFile: 'halftone/halftone.glsl',
-    factoryName: 'canonicalFactory65', factorySha256: 'bd871eab3baf361602c23965acf45f463ef9cb9b230bbb4ec5dd70496cd87626',
+    factoryName: 'canonicalFactory65', factorySha256: '7c57e26e7d9cbf9858ee1c57dfeeea298781d885e72ce4612ba12de1be274069',
     sourceRawBytes: 8440, sourceSha256: '063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7',
     defines: { MODE: 0, PATTERN: 0 }, family: 'fwidth', hasAntialias: false, expectedOrdinals: 4,
     uniformTypes: { frequency: 'float', cyanAngle: 'float', magentaAngle: 'float', yellowAngle: 'float', blackAngle: 'float', monoAngle: 'float', sharpness: 'float', inkColor: 'vec3', paperColor: 'vec3', MODE: 'int', PATTERN: 'int' },
@@ -510,7 +510,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'lens', key: 'filter/lens:lens', sourceFile: 'lens/lens.glsl',
-    factoryName: 'canonicalFactory71', factorySha256: '34b7d733404af7dbeca09a83530e773f8c0cff1abf50ce8ffc65df51d6ab45ff',
+    factoryName: 'canonicalFactory71', factorySha256: '705cc5f478e67cf82e0c1d62d806fdd01f350eb56a382b1b948f66da0a052e52',
     sourceRawBytes: 2909, sourceSha256: '6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { lensDisplacement: 'float', aspectLens: 'bool', antialias: 'bool' },
@@ -523,7 +523,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'lensWarp', key: 'filter/lensWarp:lensWarp', sourceFile: 'lensWarp/lensWarp.glsl',
-    factoryName: 'canonicalFactory73', factorySha256: 'abd3e31cb7da4d67d87c9b00b86fb74a5c9b433c7e6d9ab95e63191469795d77',
+    factoryName: 'canonicalFactory73', factorySha256: 'd1da5952b0adda8365c05b3baa70eb77744fa2c6bf469a824891c3cf533044a3',
     sourceRawBytes: 4033, sourceSha256: '543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { displacement: 'float', speed: 'float', antialias: 'bool' },
@@ -536,7 +536,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'octaveWarp', key: 'filter/octaveWarp:octaveWarp', sourceFile: 'octaveWarp/octaveWarp.glsl',
-    factoryName: 'canonicalFactory88', factorySha256: '180c70dd5605e464aea56920b4c8ec7eec3245db5e40194c8146a64beebf43aa',
+    factoryName: 'canonicalFactory88', factorySha256: '7f3ecff906753d556989a8f6fcc7cc9055790603fc6c83087f8db9cff4284f97',
     sourceRawBytes: 4889, sourceSha256: '193ed3406281cde12a460560438c9ce839f07e9f7a96f11aac50c23d3a31039f',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { frequency: 'float', octaves: 'float', displacement: 'float', speed: 'float', wrap: 'float', seed: 'float', antialias: 'bool' },
@@ -549,7 +549,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'pinch', key: 'filter/pinch:pinch', sourceFile: 'pinch/pinch.glsl',
-    factoryName: 'canonicalFactory100', factorySha256: '7b53ce4a42fce3b2b90e4b2e84f69d33d385833e30f38a2b8bec900c28b36d32',
+    factoryName: 'canonicalFactory100', factorySha256: '0855996afb913b3b1640161d6cb76a79521aaa4a8ab0037b01486e0ac634b7a0',
     sourceRawBytes: 2296, sourceSha256: '031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', aspectLens: 'bool', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -562,7 +562,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'polar', key: 'filter/polar:polar', sourceFile: 'polar/polar.glsl',
-    factoryName: 'canonicalFactory111', factorySha256: '6cf35ee99e5ab1746648a23353317055420233b45f860e6ab7d2068beace0748',
+    factoryName: 'canonicalFactory111', factorySha256: '410f9789cb15574a10d62e3fb84c63651c45e7e4408dd39717c24d87ece2cf78',
     sourceRawBytes: 2027, sourceSha256: '391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { polarMode: 'int', speed: 'float', rotation: 'float', scale: 'float', aspectLens: 'bool', antialias: 'bool' },
@@ -575,7 +575,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'pondRipples', key: 'filter/pondRipples:pondRipples', sourceFile: 'pondRipples/pondRipples.glsl',
-    factoryName: 'canonicalFactory112', factorySha256: '02203f5598dd7338d1901521a2741ce9987bf014e5544c6598316494f34a1fb6',
+    factoryName: 'canonicalFactory112', factorySha256: '47668715f2eefab5cadbd8cda7b087c4d17a2de7d17ed72e1e349d844e290f61',
     sourceRawBytes: 5187, sourceSha256: '2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d',
     defines: { STYLE: 2, WRAP: 0 }, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { amount: 'float', ridges: 'int', speed: 'int', antialias: 'bool', STYLE: 'int', WRAP: 'int' },
@@ -588,7 +588,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'spiral', key: 'filter/spiral:spiral', sourceFile: 'spiral/spiral.glsl',
-    factoryName: 'canonicalFactory143', factorySha256: 'a7f7bb7a38e6e81d0d5e3346252b8f722da22bbc9e72407d77ede091136e252b',
+    factoryName: 'canonicalFactory143', factorySha256: '4286be014346159fbd42eaede57be293b4a3af6316ed04d4f1bbeaa120b5317e',
     sourceRawBytes: 2869, sourceSha256: '3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', speed: 'int', aspectLens: 'bool', wrap: 'int', rotation: 'float', antialias: 'bool' },
@@ -601,7 +601,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'stThreshold', key: 'filter/stamp:stThreshold', sourceFile: 'stamp/stThreshold.glsl',
-    factoryName: 'canonicalFactory147', factorySha256: '66a9f063457ec317b557c9a5c6fde25f1d30d1b8c9e5433de269826e1d4c4c8e',
+    factoryName: 'canonicalFactory147', factorySha256: '6b09d743f1e2ef5c524cf295a2f653e1e1fda00cb75e7b7fd40faca67e5c2ae9',
     sourceRawBytes: 3467, sourceSha256: 'd93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94',
     defines: {}, family: 'fwidth', hasAntialias: false, expectedOrdinals: 1,
     uniformTypes: { balance: 'float', roughness: 'float', inkColor: 'vec3', paperColor: 'vec3' },
@@ -614,7 +614,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'step', key: 'filter/step:step', sourceFile: 'step/step.glsl',
-    factoryName: 'canonicalFactory148', factorySha256: '29448cafeecb2459fa5a3f9d87d35504130d27a35e8aa3e4d5d4fde8a50a92d5',
+    factoryName: 'canonicalFactory148', factorySha256: 'd4082a2d93c2267e09906832e0536b6715779a9a6098146e44f92c7a85f1d084',
     sourceRawBytes: 709, sourceSha256: '4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf',
     defines: {}, family: 'fwidth', hasAntialias: true, expectedOrdinals: 1,
     uniformTypes: { threshold: 'float', antialias: 'bool' },
@@ -627,7 +627,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'stipple', key: 'filter/stipple:stipple', sourceFile: 'stipple/stipple.glsl',
-    factoryName: 'canonicalFactory149', factorySha256: 'ac82012ece03dfd1aafbae2fe6ccfeb9b71775033c2a47b6b0b18a78baa99c91',
+    factoryName: 'canonicalFactory149', factorySha256: '22368bbd125d9556b77c83d46dbd606b67682208d620e8538306ec9badfe5250',
     sourceRawBytes: 8490, sourceSha256: '69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609',
     defines: { MODE: 0 }, family: 'fwidth', hasAntialias: false, expectedOrdinals: 1,
     uniformTypes: { cellSize: 'float', grainSize: 'float', density: 'float', paperColor: 'vec3', seed: 'int', MODE: 'int' },
@@ -639,7 +639,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'tunnel', key: 'filter/tunnel:tunnel', sourceFile: 'tunnel/tunnel.glsl',
-    factoryName: 'canonicalFactory163', factorySha256: 'ddf2adbde6aac7eb3d8bf123dbaa32bf39a04b5005e561306a5b68075777ed7a',
+    factoryName: 'canonicalFactory163', factorySha256: '5f60bd8a8a391d6878fb618dea961fb0ecb5d5254c5fcd090019154575300c3b',
     sourceRawBytes: 3062, sourceSha256: 'c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { shape: 'int', speed: 'float', rotation: 'float', scale: 'float', center: 'float', aspectLens: 'bool', antialias: 'bool' },
@@ -652,7 +652,7 @@ const PROGRAM_DEFS = [
   },
   {
     id: 'warp', key: 'filter/warp:warp', sourceFile: 'warp/warp.glsl',
-    factoryName: 'canonicalFactory169', factorySha256: 'c87b88745cdd30f4dbad852171c9ad6282112b82ad73f69471e064b9e5d4c20f',
+    factoryName: 'canonicalFactory169', factorySha256: '469faed930de1421264adbb8fd5614b706e8b3cd5f0a0aedb9f1135b360e0095',
     sourceRawBytes: 3095, sourceSha256: 'f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee',
     defines: {}, family: 'dFdxDFdy', hasAntialias: true, expectedOrdinals: 2,
     uniformTypes: { strength: 'float', scale: 'float', seed: 'int', speed: 'int', wrap: 'int', antialias: 'bool' },
@@ -785,7 +785,7 @@ function build() {
   }
   return {
     schema: 'noisemaker-for-cpp.derivatives.cluster15.derivative-oracles.v1',
-    corpus_revision: revision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
     provenance: { ...RUNTIME_PROVENANCE, node: process.version, public_identity: true, adapter_absent: true },
     define_as_binding_note: 'halftone (MODE, PATTERN), pondRipples (STYLE, WRAP), and stipple (MODE) pin compile-time GLSL #defines that the JS reference reads as ordinary $bindings[...] lookups (no preprocessor in JS) -- every case for these three programs supplies the define at its generate_typed_slice._defaults()-authorized value via `uniforms`, verified live against the real _defaults() output (see report) and against the factory text actually containing the $bindings["<NAME>"] read (loadProgram()). Omitting these would silently select the wrong runtime branch, not fail loudly.',
     programs: programsOut,

@@ -20140,7 +20140,7 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         self.assertTrue(oracle_path.is_file(), "Task 33 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "0e3cc17f6d2f3b2e33eeed48dfb430d93765dcaf8a6ba3444d63a4112db85742",
+            "94cee98b2fe32d558ea13411147b21cc57da7247c4b16323948f5bf20286736a",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
         self.assertEqual(15, len(oracle["programs"]))
