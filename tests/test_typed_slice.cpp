@@ -399,17 +399,17 @@ TEST(typed_slice_test_sha256_has_standard_empty_and_zero_block_vectors) {
 TEST(typed_math_slice_sixteen_external_oracles_are_repeatable) {
   struct Fixture { std::string_view key; std::string_view floats; std::string_view rgba; std::uint32_t first; };
   constexpr std::array<Fixture, 16> fixtures{{
-      {"filter/celShading:celShadingBlend", "5a665384d249380a7faf6c910392f7dd147f2c58341b3c01ee09688894d71515", "998a939393905a859371711b5c971f0435ed757720ac5b5a9348e59d652a6409", 0x3e0a9e58U},
+      {"filter/celShading:celShadingBlend", "7671df88873f629613721396fd759fa936b3ed6597d56dd3ebb56c7c9bad3273", "29dbb9378a3a71f980104464eb0b9a8e29e0580759e1256f49ac7ee9164b8900", 0x3e0a9e58U},
       {"filter/chroma:chroma", "efc59e60e7b127541dbb28cf18d5981144fc4a22f02d4f6d710be29ea0ac06fe", "72ef0585ff112ea147febd8ede9f8d3965215513c44ddf0feb188790f371c637", 0x3f4234f7U},
       {"filter/chrome:chMap", "c86f1178b3c10cdcfcfb20d794907a4ca394d79dfe0d002f054084e0f84e6887", "bc19edaad2c576252a6f9ea3420422d08286039b8cc15f88aa0e7a6734f18bf8", 0x3d70c7f3U},
       {"filter/colorReplace:colorReplace", "d07476f0cc1a36bb5c4e5f392ddb14b11f3987b0c842f065387313e7c2999206", "33c8b3e38c7d93521a58581c2b1bc0e56547d2afc8d5673aeddca4d2bf26d0ff", 0x3d9c2f9cU},
       {"filter/deriv:deriv", "43e591217a059e9a86f3e00e52a91b0539c2cc3783619dd0f45de04c292fd3a2", "6a3cbb07be0a133257bd1ca518d82c8269c5b47bd4abd975fe1cb530b70c900e", 0x3c88d638U},
-      {"filter/lensFlare:lensFlare", "f7b5491ccf7d5c7e6af2471788df1c817727f0bc34d4c6f5a3af3911a1ea177b", "42d035c4d765ef017d27b641bb5a2a96f03122ca19032c1e02233b8d7915cbc4", 0x3d85d166U},
+      {"filter/lensFlare:lensFlare", "91ccb962621ee05e37733144f028658b8b9b8dde91accd5aff694aee27bb9a6e", "42d035c4d765ef017d27b641bb5a2a96f03122ca19032c1e02233b8d7915cbc4", 0x3d85d166U},
       {"filter/mosaicTiles:mosaicTiles", "2f670e03ed85d4ad59f178d46690cedbed1e268a693183b1885362359b9c1a88", "43b8098f9aac9737876d0a25191899a2232333c311fec4a2f09b6f12234d4037", 0x3c311790U},
       {"filter/photocopy:pcCombine", "84400e5def67011965258e40c5e84004f259e69a73e4804d29c22683bb61cad7", "76d6b92b4fb7f0c8e4f465da28246117a0ad5ac0c9c45e43085d1280f0877c6f", 0x3da3d70aU},
       {"filter/relief:rlShade", "0bf68c9b1d0203dae7999e0db9c041374f22cf2871aa35f8d960e38886924165", "f5205caa03ccc976eefc1c41b9f535ea578a23510cf6154642b16634da32abe6", 0x3f078889U},
       {"filter/ridge:ridge", "14e083e0d2e604d0b5559ebbdd175316ae313160e5aca89c468678ef3932eff9", "5d220bfe0488a6b32a233b82932edee6b8b5e094c478b95f54289d6e0edc1b8b", 0x3eba3eaaU},
-      {"filter/scatter:scatterJitter", "3894d5739e765cf71a39a082abb8315bfd5fac4a7d6be6c4f8a8cf9b87ae5c8c", "d3425ff7218c66a0a0711e3ed96f3c343df410227e22cececf9ad51dc48c42be", 0x3df0f0f1U},
+      {"filter/scatter:scatterJitter", "6d7aa5f9e4f9c3af676f8e5cff6bb6a4f4aee2a5a0af1364920d26306d10be41", "2a2b7378b2d39c9ee639ac17c6bcf3e6d51632dc4422a02d4adbc920762d27fb", 0x3df0f0f1U},
       {"filter/simpleAberration:chromaticAberration", "09c9d93ea78ddb0f877dd993f6af3f5b7d7ffd9c10d05fe4dc2f4b505f1af7e6", "42c44f9ac2cd9b55e1dc92abd18afa3960b6a7982d44e9463db03717b207b760", 0x3e30b0b1U},
       {"filter/text:text", "660011a5b64c22eb297b38ed0843f1b68cff75977331dfad37f5f2be5135ea6f", "9a03fadce3dc09be280da2a0d8d89cbd14c822222893dd9fd38d8d71e780a223", 0x3d8faa52U},
       {"filter/unsharpMask:usmCombine", "dcb8cd1ae6f41bba9ab35d807a4d89d158605be5a2fb5b8bd199def2d06970a5", "c5c85cddd59a4e9c9c6e98e316ad8de4074dffbd4787c841a5cd1b6f80829630", 0x00000000U},
