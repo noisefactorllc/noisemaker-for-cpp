@@ -54,12 +54,15 @@ bool ascii_identifier_start(std::uint32_t cp) noexcept {
   return (cp >= 'a' && cp <= 'z') || (cp >= 'A' && cp <= 'Z') || cp == '_';
 }
 bool ascii_identifier_part(std::uint32_t cp) noexcept { return ascii_identifier_start(cp) || ascii_digit(cp); }
+// `subchain` is reserved as in the authority's tokenizer (upstream's
+// RESERVED_KEYWORDS), so it can only open a subchain block after a '.'.
 bool is_keyword(std::string_view word) noexcept {
-  return word == "search" || word == "let" || word == "render" || word == "true" || word == "false";
+  return word == "search" || word == "let" || word == "render" || word == "true" || word == "false" ||
+         word == "subchain";
 }
 bool is_punctuation(char ch) noexcept {
-  return ch == '(' || ch == ')' || ch == '[' || ch == ']' || ch == ',' || ch == '.' ||
-         ch == ':' || ch == '=' || ch == ';';
+  return ch == '(' || ch == ')' || ch == '[' || ch == ']' || ch == '{' || ch == '}' || ch == ',' ||
+         ch == '.' || ch == ':' || ch == '=' || ch == ';';
 }
 bool is_operator(char ch) noexcept { return ch == '+' || ch == '-' || ch == '*' || ch == '/'; }
 bool js_whitespace(std::uint32_t cp) noexcept {
@@ -196,6 +199,20 @@ class Scanner {
         throw DslError("Colors must use #RGB, #RRGGBB, or #RRGGBBAA", start);
       }
       push(TokenType::color, from, start);
+      return;
+    }
+    // A triple-quoted string (upstream `String ::= '"""' .* '"""'`) may span
+    // lines. Its content stays raw, without escape processing, as in the
+    // authority's tokenizer.
+    if (first == '"' && peek(1).codepoint == '"' && peek(2).codepoint == '"') {
+      const std::size_t end = source_.find("\"\"\"", byte_pos_ + 3);
+      if (end == std::string_view::npos) throw DslError("Unterminated string", start);
+      advance(); advance(); advance();
+      std::string value;
+      while (byte_pos_ < end) value += encode(advance().codepoint);
+      advance(); advance(); advance();
+      push(TokenType::string, from, start, value);
+      tokens_.back().lexeme = value;
       return;
     }
     if (first == '"') {

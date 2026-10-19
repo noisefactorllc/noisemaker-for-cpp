@@ -63,11 +63,21 @@ class Parser {
   }
   const Token& previous() const { return tokens_[current_ - 1]; }
   bool at_end() const { return peek().type == TokenType::eof; }
-  bool check(std::string_view lexeme) const { return peek().lexeme == lexeme; }
+  // A string token's lexeme is its content, so a string never matches
+  // punctuation, an operator or a keyword: `text(")")` holds the string ")".
+  bool check(std::string_view lexeme) const {
+    return peek().type != TokenType::string && peek().lexeme == lexeme;
+  }
   bool match(std::string_view lexeme) {
     if (!check(lexeme)) return false;
     ++current_;
     return true;
+  }
+  bool is_punctuation(std::string_view lexeme) const {
+    return peek().type == TokenType::punctuation && peek().lexeme == lexeme;
+  }
+  bool at_subchain() const {
+    return peek().type == TokenType::keyword && peek().lexeme == "subchain";
   }
   const Token& consume(std::string_view lexeme,
                       std::string message = {}) {
@@ -108,11 +118,111 @@ class Parser {
     return result;
   }
 
+  static bool is_write_call(const Call& value) {
+    return value.name == "write" || value.name == "write3d";
+  }
+
   Chain chain() {
     Chain result;
-    result.calls.push_back(call());
-    result.loc = result.calls.front().loc;
-    while (match(".")) result.calls.push_back(call());
+    Call first = call();
+    result.loc = first.loc;
+    result.calls.emplace_back(std::move(first));
+    while (match(".")) {
+      if (at_subchain()) result.calls.emplace_back(subchain());
+      else if (peek().lexeme == "write3d" && peek().type == TokenType::identifier) result.calls.emplace_back(write3d());
+      else result.calls.emplace_back(call());
+    }
+    return result;
+  }
+
+  // The authority's port of upstream parseWriteCall for write3d: two
+  // positional references, a volume and a geometry (`write3d(vol0, geo0)`),
+  // each an identifier or a surface.
+  Call write3d() {
+    const Token& name = identifier();
+    const SourceLocation name_loc = location(name);
+    consume("(");
+    const auto reference = [this]() -> Value {
+      const Token& token = peek();
+      if (token.type == TokenType::surface) return surface_value();
+      if (token.type != TokenType::identifier) throw DslError("Expected surface reference", location(token));
+      ++current_;
+      return Value::identifier(token.lexeme, {token.lexeme}, location(token));
+    };
+    Value volume = reference();
+    consume(",");
+    Value geometry = reference();
+    consume(")");
+    Call result;
+    result.name = "write3d";
+    result.argument_mode = Call::ArgumentMode::positional;
+    result.loc = name_loc;
+    for (Value* value : {&volume, &geometry}) {
+      CallArgument argument;
+      argument.loc = value->loc;
+      argument.value = std::move(*value);
+      result.arguments.push_back(std::move(argument));
+    }
+    return result;
+  }
+
+  // A chain in a value position (upstream parseChain in its 'expression'
+  // context). It may hold subchain blocks, and it cannot hold write() or
+  // write3d().
+  Value expression_chain(Call first) {
+    Chain result;
+    result.loc = first.loc;
+    result.calls.emplace_back(std::move(first));
+    while (is_punctuation(".")) {
+      ++current_;
+      if (at_subchain()) {
+        result.calls.emplace_back(subchain());
+        continue;
+      }
+      Call next = call();
+      if (is_write_call(next)) throw DslError("Expected effect or IO function name", next.loc);
+      result.calls.emplace_back(std::move(next));
+    }
+    const SourceLocation loc = result.loc;
+    return Value::chain_value(std::move(result), loc);
+  }
+
+  // The authority's port of upstream parseSubchainCall. A single leading
+  // string is shorthand for `name`; unknown keys are discarded and the last
+  // duplicate wins.
+  Subchain subchain() {
+    const Token start = tokens_[current_++];
+    consume("(");
+    Subchain result;
+    result.loc = location(start);
+    if (peek().type == TokenType::string) {
+      result.name = std::get<std::string>(tokens_[current_++].value);
+    } else {
+      while (peek().type == TokenType::identifier && peek(1).lexeme == ":") {
+        const std::string key = identifier().lexeme;
+        consume(":");
+        // A value that is not a string ends the arguments, so the closing ')'
+        // check below reports it.
+        if (peek().type != TokenType::string) break;
+        std::string value = std::get<std::string>(tokens_[current_++].value);
+        if (key == "name") result.name = std::move(value);
+        else if (key == "id") result.id = std::move(value);
+        static_cast<void>(match(","));
+      }
+    }
+    if (result.name.has_value() && result.name->empty()) result.name.reset();
+    if (result.id.has_value() && result.id->empty()) result.id.reset();
+    consume(")");
+    consume("{");
+    // The body holds at least one element, so an empty block fails on its
+    // missing '.'.
+    do {
+      consume(".");
+      Call next = call();
+      if (is_write_call(next)) throw DslError("Expected effect or IO function name", next.loc);
+      result.body.push_back(std::move(next));
+    } while (!check("}"));
+    consume("}");
     return result;
   }
 
@@ -143,6 +253,23 @@ class Parser {
     }
     consume(")");
     result.argument_mode = mode.value_or(Call::ArgumentMode::none);
+    return result.name == "from" ? from_call(std::move(result)) : result;
+  }
+
+  // The authority's port of upstream transformFromInvocation:
+  // `from(namespace, effect(...))` is the effect call, resolved in that one
+  // namespace. Any other from(...) stays a call named `from`.
+  static Call from_call(Call value) {
+    if (value.argument_mode != Call::ArgumentMode::positional || value.arguments.size() != 2) return value;
+    const Value& name_space = value.arguments[0].value;
+    const Value& target = value.arguments[1].value;
+    if (name_space.kind != Value::Kind::identifier || target.kind != Value::Kind::chain) return value;
+    const Chain& chain = target.chain();
+    if (chain.calls.size() != 1 || !std::holds_alternative<Call>(chain.calls.front())) return value;
+    const Call& inner = std::get<Call>(chain.calls.front());
+    if (inner.name == "read" || inner.name == "read3d" || is_write_call(inner)) return value;
+    Call result = inner;
+    result.name_space = name_space.identifier_value().name;
     return result;
   }
 
@@ -153,7 +280,7 @@ class Parser {
       if (op == "*" || op == "/") return 2;
       return -1;
     };
-    while (precedence(peek().lexeme) >= min_precedence) {
+    while (peek().type == TokenType::operator_token && precedence(peek().lexeme) >= min_precedence) {
       const Token operator_token = tokens_[current_++];
       Value right = value_expression(precedence(operator_token.lexeme) + 1);
       left = Value::binary(operator_token.lexeme.front(), std::move(left), std::move(right),
@@ -209,8 +336,26 @@ class Parser {
         const SourceLocation loc = location(token);
         return Value::call_value(call(), loc);
       }
+      const Token name_token = token;
       ++current_;
-      if (token.lexeme == "read" && match("(")) {
+      const std::string& name = name_token.lexeme;
+      // `Math.PI` is the one numeric constant of upstream's grammar.
+      if (name == "Math" && is_punctuation(".") && peek(1).type == TokenType::identifier &&
+          peek(1).lexeme == "PI") {
+        current_ += 2;
+        return Value::number(3.141592653589793, location(name_token));
+      }
+      // A one-argument `read3d(vol0)` names a volume or geometry for a
+      // parameter. With two arguments it starts a chain.
+      if (name == "read3d" && is_punctuation("(")) {
+        --current_;
+        Call read3d = call();
+        if (read3d.arguments.size() == 1 && read3d.arguments.front().value.kind == Value::Kind::identifier) {
+          return read3d.arguments.front().value;
+        }
+        return expression_chain(std::move(read3d));
+      }
+      if (name == "read" && match("(")) {
         if (peek().type == TokenType::identifier && peek(1).lexeme == ":") {
           const Token& argument_name = identifier();
           if (argument_name.lexeme != "surface" && argument_name.lexeme != "tex") {
@@ -221,24 +366,42 @@ class Parser {
         }
         Value result = surface_value();
         consume(")");
+        // `read(oN).effect()` in a value position is a chain argument that
+        // starts from the surface. A bare `read(oN)` stays a surface reference.
+        if (is_punctuation(".")) {
+          Call read;
+          read.name = "read";
+          read.argument_mode = Call::ArgumentMode::positional;
+          read.loc = location(name_token);
+          CallArgument argument;
+          argument.loc = result.loc;
+          argument.value = std::move(result);
+          read.arguments.push_back(std::move(argument));
+          return expression_chain(std::move(read));
+        }
         return result;
       }
-      if ((token.lexeme == "vec2" || token.lexeme == "vec3" || token.lexeme == "vec4") &&
-          match("(")) {
+      if ((name == "vec2" || name == "vec3" || name == "vec4") && match("(")) {
         std::vector<Value> values;
         if (!check(")")) {
           do values.push_back(value_expression());
           while (match(","));
         }
         consume(")");
-        return Value::vector(static_cast<std::size_t>(token.lexeme.back() - '0'),
-                             std::move(values), location(token));
+        return Value::vector(static_cast<std::size_t>(name.back() - '0'),
+                             std::move(values), location(name_token));
       }
-      std::vector<std::string> path{token.lexeme};
+      // Any other call in a value position starts a chain argument
+      // (upstream `Expr ::= Chain`), for example `tex: solid(color: #f00)`.
+      if (is_punctuation("(")) {
+        --current_;
+        return expression_chain(call());
+      }
+      std::vector<std::string> path{name};
       while (match(".")) path.push_back(identifier("Expected enum member").lexeme);
       std::string qualified = path.front();
       for (std::size_t i = 1; i < path.size(); ++i) qualified += "." + path[i];
-      return Value::identifier(std::move(qualified), std::move(path), location(token));
+      return Value::identifier(std::move(qualified), std::move(path), location(name_token));
     }
     throw DslError("Expected DSL value", location(token));
   }
@@ -324,6 +487,10 @@ Value Value::call_value(Call call, SourceLocation location) {
   return {Kind::call, CallValue{std::make_unique<Call>(std::move(call))}, std::move(location)};
 }
 
+Value Value::chain_value(Chain chain, SourceLocation location) {
+  return {Kind::chain, ChainValue{std::make_unique<Chain>(std::move(chain))}, std::move(location)};
+}
+
 namespace {
 Value::Storage clone_storage(const Value::Storage& storage) {
   return std::visit(
@@ -336,6 +503,8 @@ Value::Storage clone_storage(const Value::Storage& storage) {
                              std::make_unique<Value>(*value.right)};
         } else if constexpr (std::is_same_v<T, CallValue>) {
           return CallValue{std::make_unique<Call>(*value.call)};
+        } else if constexpr (std::is_same_v<T, ChainValue>) {
+          return ChainValue{std::make_unique<Chain>(*value.chain)};
         } else {
           return value;
         }

@@ -800,9 +800,11 @@ PlanValue normalize_value(const ParameterDefinition& parameter, PlanValue value,
   if (value.kind == PlanValue::Kind::oscillator && (parameter.type == "float" || parameter.type == "int")) {
     return value;
   }
-  const auto is_number = value.kind == PlanValue::Kind::number;
   if (parameter.type == "float") {
-    if (!is_number || !std::isfinite(value.number)) type_error(name, "must be a finite number");
+    // A float parameter may declare inline choices (the `rotation` parameter
+    // of the palette filters); a bare choice name resolves as for `int`.
+    if (!parameter.choices.empty()) value = enum_value(parameter, std::move(value), name);
+    if (value.kind != PlanValue::Kind::number || !std::isfinite(value.number)) type_error(name, "must be a finite number");
   } else if (parameter.type == "int") {
     if (!choices_for(parameter).empty()) value = enum_value(parameter, std::move(value), name);
     if (value.kind != PlanValue::Kind::number || !std::isfinite(value.number) ||

@@ -10,6 +10,9 @@
 #include <sstream>
 #include <charconv>
 #include <limits>
+#include <stdexcept>
+#include <string_view>
+#include <utility>
 
 namespace {
 noisemaker::effects::EffectDefinition effect(std::string name, std::string kind = "generator") {
@@ -118,6 +121,89 @@ TEST(dsl_compiler_omits_unsupported_inputs_without_shifting_positional_arguments
     REQUIRE(step.params[1].value.number == 7.0);
     REQUIRE(step.explicit_params.size() == 1);
     REQUIRE(step.explicit_params[0] == "second");
+  }
+}
+
+namespace {
+// The real catalog's plan for `source`; the expected values below are the
+// pinned authority's (tests/oracles/dsl_compiler_expected.txt).
+noisemaker::graph::ExecutionPlan catalog_plan(const std::string& source) {
+  static const noisemaker::effects::EffectRegistry registry(noisemaker::effects::effect_catalog());
+  return noisemaker::dsl::compile(source, registry);
+}
+const noisemaker::graph::EffectStep& effect_step(const noisemaker::graph::ExecutionChain& chain, std::size_t index) {
+  return std::get<noisemaker::graph::EffectStep>(chain.steps.at(index));
+}
+const noisemaker::graph::PlanValue& param_value(const noisemaker::graph::EffectStep& step, std::string_view name) {
+  for (const auto& binding : step.params) if (binding.name == name) return binding.value;
+  throw std::out_of_range("no parameter " + std::string(name));
+}
+}  // namespace
+
+TEST(dsl_compiler_flattens_a_subchain_into_its_chain) {
+  const auto plan = catalog_plan("search synth, filter\nnoise(seed: 1).subchain(name: \"look\", id: \"a\") { .invert() .posterize(levels: 4) }.write(o0)\nrender(o0)\n");
+  REQUIRE(plan.chains.size() == 1);
+  REQUIRE(plan.chains[0].steps.size() == 4);
+  REQUIRE(effect_step(plan.chains[0], 0).effect.id == "synth/noise");
+  REQUIRE(effect_step(plan.chains[0], 1).effect.id == "filter/invert");
+  REQUIRE(effect_step(plan.chains[0], 2).effect.id == "filter/posterize");
+  REQUIRE(param_value(effect_step(plan.chains[0], 2), "levels").number == 4.0);
+  REQUIRE(std::holds_alternative<noisemaker::graph::WriteStep>(plan.chains[0].steps[3]));
+  REQUIRE_THROWS_AS(catalog_plan("search synth, filter\nnoise(seed: 1).subchain() { .noise() }.write(o0)\nrender(o0)\n"),
+                    noisemaker::dsl::DslError);
+}
+
+TEST(dsl_compiler_compiles_a_chain_argument_to_a_hidden_surface) {
+  const auto plan = catalog_plan("search synth, mixer\nnoise(seed: 1).blendMode(tex: solid(color: #ff0000), mode: screen).write(o0)\nrender(o0)\n");
+  const auto& blend = effect_step(plan.chains[0], 1);
+  REQUIRE(blend.effect.id == "mixer/blendMode");
+  const auto& tex = param_value(blend, "tex");
+  REQUIRE(tex.kind == noisemaker::graph::PlanValue::Kind::surface);
+  REQUIRE(tex.surface.kind == noisemaker::graph::SurfaceReference::Kind::named);
+  REQUIRE(tex.surface.name == "inline:0");
+  REQUIRE(param_value(blend, "mode").number == 13.0);
+  REQUIRE(blend.explicit_params == std::vector<std::string>({"tex", "mode"}));
+  REQUIRE(blend.inline_chains.size() == 1);
+  REQUIRE(blend.inline_chains[0].surface == "inline:0");
+  REQUIRE(blend.inline_chains[0].chain.steps.size() == 1);
+  REQUIRE(effect_step(blend.inline_chains[0].chain, 0).effect.id == "synth/solid");
+  REQUIRE_THROWS_AS(catalog_plan("search filter, mixer, synth\nnoise(seed: 1).blendMode(tex: invert(), mode: screen).write(o0)\nrender(o0)\n"),
+                    noisemaker::dsl::DslError);
+}
+
+TEST(dsl_compiler_accepts_math_pi_triple_quoted_strings_aliases_and_from) {
+  const auto pi = catalog_plan("search synth\nnoise(seed: 1, scaleX: Math.PI * 4).write(o0)\nrender(o0)\n");
+  REQUIRE(param_value(effect_step(pi.chains[0], 0), "scaleX").number == 12.566370614359172);
+  const auto text = catalog_plan("search synth, filter\nsolid(color: #000).text(text: \"\"\"hi\"\"\").write(o0)\nrender(o0)\n");
+  REQUIRE(param_value(effect_step(text.chains[0], 1), "text").string == "hi");
+  const auto alias = catalog_plan("search synth\nlet pattern = noise\npattern(seed: 3).write(o0)\nrender(o0)\n");
+  REQUIRE(effect_step(alias.chains[0], 0).effect.id == "synth/noise");
+  REQUIRE(param_value(effect_step(alias.chains[0], 0), "seed").number == 3.0);
+  REQUIRE_THROWS_AS(catalog_plan("search synth\nlet pattern = wobble\npattern().write(o0)\nrender(o0)\n"),
+                    noisemaker::dsl::DslError);
+  const auto from = catalog_plan("search synth, filter\nfrom(classicNoisedeck, noise(seed: 3)).write(o0)\nrender(o0)\n");
+  REQUIRE(effect_step(from.chains[0], 0).effect.id == "classicNoisedeck/noise");
+}
+
+TEST(dsl_compiler_compiles_write3d_and_read3d_volume_steps) {
+  const auto plan = catalog_plan("search synth3d, render\nnoise3d(seed: 1, volumeSize: 8).write3d(vol0, geo0)\nread3d(vol0, geo0).render3d().write(o0)\nrender(o0)\n");
+  REQUIRE(plan.chains.size() == 2);
+  REQUIRE(plan.chains[0].steps.size() == 2);
+  const auto& written = std::get<noisemaker::graph::Write3DStep>(plan.chains[0].steps[1]);
+  REQUIRE(written.volume == "vol0");
+  REQUIRE(written.geometry == "geo0");
+  const auto& read = std::get<noisemaker::graph::Read3DStep>(plan.chains[1].steps[0]);
+  REQUIRE(read.volume == "vol0");
+  REQUIRE(read.geometry == "geo0");
+  REQUIRE(effect_step(plan.chains[1], 1).effect.id == "render/render3d");
+}
+
+TEST(dsl_compiler_resolves_float_parameter_choice_names) {
+  for (const auto& [value, expected] : {std::pair<const char*, double>{"fwd", 1.0}, {"back", -1.0}, {"none", 0.0},
+                                        {"choices.back", -1.0}, {"0.5", 0.5}}) {
+    const auto plan = catalog_plan(std::string("search filter, synth\nnoise(seed: 1, ridges: true).palette(rotation: ") + value +
+                                   ").write(o0)\nrender(o0)\n");
+    REQUIRE(param_value(effect_step(plan.chains[0], 1), "rotation").number == expected);
   }
 }
 
@@ -426,7 +512,13 @@ std::string oracle_value(const noisemaker::graph::PlanValue& value) {
   }
   if (value.surface.kind == noisemaker::graph::SurfaceReference::Kind::input) return "{\"kind\":\"surface\",\"value\":{\"kind\":\"input\"}}";
   if (value.surface.kind == noisemaker::graph::SurfaceReference::Kind::named) {
-    return "{\"kind\":\"surface\",\"value\":{\"kind\":\"named\",\"name\":" + oracle_escape(value.surface.name) + ",\"index\":" + std::to_string(value.surface.index) + "}}";
+    // The authority projection writes Number(name.slice(1)): an oN surface
+    // has its index, a hidden `inline:N` surface has none (NaN, JSON null).
+    const std::string& name = value.surface.name;
+    const bool numbered = name.size() > 1 && name.front() == 'o' &&
+        name.find_first_not_of("0123456789", 1) == std::string::npos;
+    return "{\"kind\":\"surface\",\"value\":{\"kind\":\"named\",\"name\":" + oracle_escape(name) + ",\"index\":" +
+           (numbered ? std::to_string(value.surface.index) : std::string("null")) + "}}";
   }
   return "{\"kind\":\"surface\",\"value\":{\"kind\":\"none\"}}";
 }
@@ -664,6 +756,14 @@ std::string oracle_surface(const noisemaker::graph::SurfaceReference& surface) {
   return surface.kind == noisemaker::graph::SurfaceReference::Kind::named ? oracle_escape(surface.name) : "null";
 }
 
+std::string oracle_step(const noisemaker::graph::CompiledStep& step);
+
+std::string oracle_chain(const noisemaker::graph::ExecutionChain& chain) {
+  std::string result = "{\"loc\":" + oracle_loc(chain.loc) + ",\"steps\":[";
+  for (std::size_t index = 0; index < chain.steps.size(); ++index) { if (index) result += ','; result += oracle_step(chain.steps[index]); }
+  return result + "]}";
+}
+
 std::string oracle_step(const noisemaker::graph::CompiledStep& step) {
   return std::visit([](const auto& current) -> std::string {
     using T = std::decay_t<decltype(current)>;
@@ -671,6 +771,10 @@ std::string oracle_step(const noisemaker::graph::CompiledStep& step) {
       return "{\"kind\":\"read\",\"surface\":" + oracle_surface(current.surface) + ",\"loc\":" + oracle_loc(current.loc) + "}";
     } else if constexpr (std::is_same_v<T, noisemaker::graph::WriteStep>) {
       return "{\"kind\":\"write\",\"surface\":" + oracle_surface(current.surface) + ",\"loc\":" + oracle_loc(current.loc) + "}";
+    } else if constexpr (std::is_same_v<T, noisemaker::graph::Write3DStep> || std::is_same_v<T, noisemaker::graph::Read3DStep>) {
+      return std::string("{\"kind\":\"") + (std::is_same_v<T, noisemaker::graph::Write3DStep> ? "write3d" : "read3d") +
+             "\",\"volume\":" + oracle_escape(current.volume) + ",\"geometry\":" + oracle_escape(current.geometry) +
+             ",\"loc\":" + oracle_loc(current.loc) + "}";
     } else {
       std::string result = "{\"kind\":\"effect\",\"effectId\":" + oracle_escape(current.effect.id) + ",\"domain\":" + oracle_escape(current.effect.domain) +",\"effectKind\":" + oracle_escape(current.effect.kind) + ",\"snapshotIndex\":" + std::to_string(current.snapshot_index) + ",\"params\":[";
       for (std::size_t index = 0; index < current.params.size(); ++index) { if (index) result += ','; result += "{\"name\":" + oracle_escape(current.params[index].name) + ",\"value\":" + oracle_value(current.params[index].value) + "}"; }
@@ -678,7 +782,16 @@ std::string oracle_step(const noisemaker::graph::CompiledStep& step) {
       for (std::size_t index = 0; index < current.explicit_params.size(); ++index) { if (index) result += ','; result += oracle_escape(current.explicit_params[index]); }
       result += "],\"passes\":[";
       for (std::size_t index = 0; index < current.passes.size(); ++index) { if (index) result += ','; result += oracle_admission(current.passes[index]); }
-      return result + "],\"loc\":" + oracle_loc(current.loc) + "}";
+      result += "]";
+      if (!current.inline_chains.empty()) {
+        result += ",\"inlineChains\":[";
+        for (std::size_t index = 0; index < current.inline_chains.size(); ++index) {
+          if (index) result += ',';
+          result += "{\"surface\":" + oracle_escape(current.inline_chains[index].surface) + ",\"chain\":" + oracle_chain(current.inline_chains[index].chain) + "}";
+        }
+        result += "]";
+      }
+      return result + ",\"loc\":" + oracle_loc(current.loc) + "}";
     }
   }, step);
 }
@@ -760,7 +873,7 @@ int main(int argc, char** argv) {
     output += "],\"effects\":[";
     for (std::size_t index = 0; index < plan.effects.size(); ++index) { if (index) output += ','; output += oracle_snapshot(plan.effects[index]); }
     output += "],\"chains\":[";
-    for (std::size_t chain_index = 0; chain_index < plan.chains.size(); ++chain_index) { if (chain_index) output += ','; const auto& chain = plan.chains[chain_index]; output += "{\"loc\":" + oracle_loc(chain.loc) + ",\"steps\":["; for (std::size_t step_index = 0; step_index < chain.steps.size(); ++step_index) { if (step_index) output += ','; output += oracle_step(chain.steps[step_index]); } output += "]}"; }
+    for (std::size_t chain_index = 0; chain_index < plan.chains.size(); ++chain_index) { if (chain_index) output += ','; output += oracle_chain(plan.chains[chain_index]); }
     output += "],\"renderSurface\":" + oracle_surface(plan.render_surface) + ",\"requireExecutable\":" + (require_executable ? "true" : "false") + ",\"executable\":" + (plan.executable ? "true" : "false") + ",\"availability\":[";
     for (std::size_t index = 0; index < plan.availability.size(); ++index) { if (index) output += ','; output += oracle_admission(plan.availability[index]); }
     const auto& p = plan.provenance;

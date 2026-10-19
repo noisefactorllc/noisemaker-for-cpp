@@ -123,10 +123,13 @@ function canonicalValue(value) {
     if (value.kind === 'DslProgram') return canonicalProgram(value)
     if (value.kind === 'Binding') return { kind: 'Binding', name: value.name, value: canonicalValue(value.value), loc: canonicalLocation(value.loc) }
     if (value.kind === 'Chain') return { kind: 'Chain', calls: value.calls.map(canonicalValue), loc: canonicalLocation(value.loc) }
+    if (value.kind === 'Subchain') return { kind: 'Subchain', name: value.name, id: value.id, body: value.body.map(canonicalValue), loc: canonicalLocation(value.loc) }
     if (value.kind === 'Call') return {
       kind: 'Call', name: value.name,
       args: value.args.map((arg) => ({ name: arg.name, value: canonicalValue(arg.value), loc: canonicalLocation(arg.loc) })),
-      argMode: value.argMode, loc: canonicalLocation(value.loc)
+      argMode: value.argMode, loc: canonicalLocation(value.loc),
+      // `from(namespace, effect(...))` resolves the call in one namespace.
+      ...(value.namespace !== undefined ? { namespace: value.namespace } : {})
     }
     if (value.kind === 'surface') return { kind: 'surface', name: value.name, loc: canonicalLocation(value.loc) }
     if (value.kind === 'vector') return { kind: 'vector', width: value.width, values: value.values.map(canonicalValue), loc: canonicalLocation(value.loc) }
@@ -297,7 +300,8 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     if (typeof value === 'string') return { kind: 'string', value }
     if (Array.isArray(value)) return { kind: 'array', values: value.map(tagged) }
     if (value?.kind === 'input') return { kind: 'surface', value: { kind: 'input' } }
-    if (value?.kind === 'surface') return { kind: 'surface', value: { kind: 'named', name: value.name, index: Number(value.name.slice(1)) } }
+    // An oN surface carries its index; a chain argument's hidden `inline:N` surface has none.
+    if (value?.kind === 'surface') return { kind: 'surface', value: { kind: 'named', name: value.name, index: /^o\d+$/.test(value.name) ? Number(value.name.slice(1)) : null } }
     if (value?.type === 'Oscillator') return { kind: 'oscillator', oscType: value.oscType, fields: [value.min, value.max, value.speed, value.offset, value.seed].map(tagged) }
     return tagged(null)
   }
@@ -422,11 +426,14 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   function hashSnapshot(value) { const writer = new CanonicalWriter(); writeDefinition(writer, value.definition); writer.size(value.admissions.length); value.admissions.forEach((item) => writeAdmission(writer, item)); return crypto.createHash('sha256').update(writer.output()).digest('hex') }
   function surfaceValue(value, location = null) { if (!value) return { kind: 'none', name: '', index: 0, loc: location }; if (typeof value === 'string') return { kind: 'named', name: value, index: Number(value.slice(1)), loc: location }; if (value.kind === 'input') return { kind: 'input', name: '', index: 0, loc: location }; return { kind: 'named', name: value.name, index: Number(String(value.name).slice(1)), loc: location } }
   function writeSurface(writer, value) { writer.size({ none: 0, input: 1, named: 2 }[value.kind]); writer.token(value.name); writer.size(value.index); const location = value.loc ?? { sourceName: '', line: 0, column: 0, index: 0 }; writer.token(location.sourceName); writer.size(location.line); writer.size(location.column); writer.size(location.index) }
+  function writeChain(writer, chain) { writer.token(chain.loc.sourceName); writer.size(chain.loc.line); writer.size(chain.loc.column); writer.size(chain.loc.index); writer.size(chain.steps.length); chain.steps.forEach((item) => writeStep(writer, item)) }
   function writeStep(writer, value) {
     if (value.kind === 'read' || value.kind === 'write') { writer.token(value.kind); writeSurface(writer, surfaceValue(value.surface, value.surfaceLocation ?? value.loc)); writer.token(value.loc.sourceName); writer.size(value.loc.line); writer.size(value.loc.column); writer.size(value.loc.index); return }
-    writer.token('effect'); writer.token(value.effectId); writer.token(value.domain); writer.token(value.effectKind); writer.size(value.snapshotIndex); writer.size(value.params.length); value.params.forEach((item) => { writer.token(item.name); writePlanValue(writer, item.value) }); writer.size(value.explicitParams.length); value.explicitParams.forEach((item) => writer.token(item)); writer.size(value.passes.length); value.passes.forEach((item) => writeAdmission(writer, item)); const location = value.loc; writer.token(location.sourceName); writer.size(location.line); writer.size(location.column); writer.size(location.index)
+    if (value.kind === 'write3d' || value.kind === 'read3d') { writer.token(value.kind); writer.token(value.volume); writer.token(value.geometry); writer.token(value.loc.sourceName); writer.size(value.loc.line); writer.size(value.loc.column); writer.size(value.loc.index); return }
+    // A step without chain arguments keeps the original `effect` grammar.
+    writer.token(value.inlineChains ? 'effect+inline' : 'effect'); writer.token(value.effectId); writer.token(value.domain); writer.token(value.effectKind); writer.size(value.snapshotIndex); writer.size(value.params.length); value.params.forEach((item) => { writer.token(item.name); writePlanValue(writer, item.value) }); writer.size(value.explicitParams.length); value.explicitParams.forEach((item) => writer.token(item)); writer.size(value.passes.length); value.passes.forEach((item) => writeAdmission(writer, item)); if (value.inlineChains) { writer.size(value.inlineChains.length); value.inlineChains.forEach((item) => { writer.token(item.surface); writeChain(writer, item.chain) }) } const location = value.loc; writer.token(location.sourceName); writer.size(location.line); writer.size(location.column); writer.size(location.index)
   }
-  function hashPlan(value, renderLocation) { const writer = new CanonicalWriter(); writer.size(value.search.length); value.search.forEach((item) => writer.token(item)); writer.size(value.effects.length); value.effects.forEach((item) => { writeDefinition(writer, item.definition); writer.size(item.admissions.length); item.admissions.forEach((admissionValue) => writeAdmission(writer, admissionValue)) }); writer.size(value.chains.length); value.chains.forEach((chain) => { writer.token(chain.loc.sourceName); writer.size(chain.loc.line); writer.size(chain.loc.column); writer.size(chain.loc.index); writer.size(chain.steps.length); chain.steps.forEach((item) => writeStep(writer, item)) }); writeSurface(writer, surfaceValue(value.renderSurface, renderLocation)); writer.boolean(value.requireExecutable); writer.boolean(value.executable); writer.size(value.availability.length); value.availability.forEach((item) => writeAdmission(writer, item)); return crypto.createHash('sha256').update(writer.output()).digest('hex') }
+  function hashPlan(value, renderLocation) { const writer = new CanonicalWriter(); writer.size(value.search.length); value.search.forEach((item) => writer.token(item)); writer.size(value.effects.length); value.effects.forEach((item) => { writeDefinition(writer, item.definition); writer.size(item.admissions.length); item.admissions.forEach((admissionValue) => writeAdmission(writer, admissionValue)) }); writer.size(value.chains.length); value.chains.forEach((chain) => writeChain(writer, chain)); writeSurface(writer, surfaceValue(value.renderSurface, renderLocation)); writer.boolean(value.requireExecutable); writer.boolean(value.executable); writer.size(value.availability.length); value.availability.forEach((item) => writeAdmission(writer, item)); return crypto.createHash('sha256').update(writer.output()).digest('hex') }
 
   // Mirrors of the C++ admission projection: the authenticated output extent,
   // the custom-adapter compile defines, and the ordered binding-ABI digest.
@@ -562,10 +569,18 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       const availability = []
       const snapshots = []
       const snapshotIndexes = new Map()
-      const chains = compiled.chains.map((chain, chainIndex) => ({ loc: loc(chain.loc), steps: chain.steps.map((step, stepIndex) => {
-        const surfaceLocation = compiled.ast?.chains?.[chainIndex]?.calls?.[stepIndex]?.args?.[0]?.value?.loc ?? null
+      // Each source call yields one step; a subchain block contributes its body
+      // calls in place. A chain argument's steps carry no source call here, so
+      // a read in one locates its surface at the read call.
+      const flatCalls = (astChain) => astChain?.calls?.flatMap((element) => element.kind === 'Subchain' ? element.body : [element]) ?? null
+      const projectSteps = (steps, astCalls) => steps.map((step, stepIndex) => {
+        const surfaceLocation = astCalls?.[stepIndex]?.args?.[0]?.value?.loc ?? null
         if (step.kind === 'read') return { kind: 'read', surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
         if (step.kind === 'write') return { kind: 'write', surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
+        if (step.kind === 'write3d' || step.kind === 'read3d') return { kind: step.kind, volume: step.volume, geometry: step.geometry, loc: loc(step.loc) }
+        // Chain arguments run before the step, so their effects take snapshot
+        // and availability positions first.
+        const inlineChains = (step.inlineChains ?? []).map((item) => ({ surface: item.surface, chain: { loc: loc(item.chain.loc), steps: projectSteps(item.chain.steps, null) } }))
         const passes = step.definition.passes.map((_, index) => admission(step.definition, index))
         availability.push(...passes)
         const params = Object.keys(step.params).map((name) => ({ name, value: tagged(step.params[name]) }))
@@ -578,12 +593,17 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
           snapshotValue.snapshotSha256 = hashSnapshot(snapshotValue)
           snapshots.push(snapshotValue)
         }
-        return { kind: 'effect', effectId: step.definition.id, domain: step.definition.domain, effectKind: step.definition.kind, snapshotIndex, params, explicitParams: [...step.explicitParams], passes, loc: loc(step.loc) }
-      }) }))
+        const result = { kind: 'effect', effectId: step.definition.id, domain: step.definition.domain, effectKind: step.definition.kind, snapshotIndex, params, explicitParams: [...step.explicitParams], passes }
+        if (inlineChains.length > 0) result.inlineChains = inlineChains
+        result.loc = loc(step.loc)
+        return result
+      })
+      const chains = compiled.chains.map((chain, chainIndex) => ({ loc: loc(chain.loc), steps: projectSteps(chain.steps, flatCalls(compiled.ast?.chains?.[chainIndex])) }))
+      const allSteps = (chainList) => chainList.flatMap((chain) => chain.steps.flatMap((step) => [...allSteps((step.inlineChains ?? []).map((item) => item.chain)), step]))
       const executable = availability.every((pass) => pass.status === 'compatible' || pass.status === 'scatter')
       if (fixture.options?.requireExecutable && !executable) {
         const unavailable = availability.find((pass) => pass.status !== 'compatible' && pass.status !== 'scatter')
-        const step = compiled.chains.flatMap((chain) => chain.steps).find((item) => item.kind === 'effect' && item.definition.passes.some((pass) => `${item.definition.id}:${pass.program}` === unavailable.programKey))
+        const step = allSteps(compiled.chains).find((item) => item.kind === 'effect' && item.definition.passes.some((pass) => `${item.definition.id}:${pass.program}` === unavailable.programKey))
         throw Object.assign(new Error(`${step.loc.sourceName}:${step.loc.line}:${step.loc.column}: Effect pass "${unavailable.programKey}" unavailable: ${unavailable.reasons.map((reason) => `${reason.code} (${reason.detail})`).join(': ')}`), { sourceName: step.loc.sourceName, line: step.loc.line, column: step.loc.column })
       }
       const provenance = fixture.registryMode === 'catalog_records'
@@ -592,7 +612,8 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       const plan = { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], effects: snapshots, chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance }
       const renderLocation = compiled.ast?.render?.loc ?? [...chains].reverse().flatMap((chain) => [...chain.steps].reverse()).find((step) => step.kind === 'write')?.surfaceLocation ?? null
       provenance.planPayloadSha256 = hashPlan(plan, renderLocation)
-      chains.forEach((chain) => chain.steps.forEach((step) => { delete step.surfaceLocation }))
+      const dropSurfaceLocations = (chain) => chain.steps.forEach((step) => { delete step.surfaceLocation; (step.inlineChains ?? []).forEach((item) => dropSurfaceLocations(item.chain)) })
+      chains.forEach(dropSurfaceLocations)
       return { name: fixture.name, plan }
     } catch (error) {
       const sourceName = error.sourceName ?? fixture.sourceName ?? fixture.name, line = error.line ?? 1, column = error.column ?? 1

@@ -195,19 +195,33 @@ struct PlanEffectSnapshot {
 
 struct ReadStep { SurfaceReference surface; dsl::SourceLocation loc{}; };
 struct WriteStep { SurfaceReference surface; dsl::SourceLocation loc{}; };
+// The built-in volume I/O (upstream `_write3d` and `_read3d`): write3d stores
+// the current volume and geometry under two names and passes the chain
+// through; read3d starts a chain from them.
+struct Write3DStep { std::string volume; std::string geometry; dsl::SourceLocation loc{}; };
+struct Read3DStep { std::string volume; std::string geometry; dsl::SourceLocation loc{}; };
+struct InlineChain;
 struct EffectStep {
   EffectIdentity effect;
   std::size_t snapshot_index = 0;
   std::vector<ParameterBinding> params;
   std::vector<std::string> explicit_params;
   std::vector<PassAdmission> passes;
+  // Chain arguments (`tex: solid(color: #f00)`): each runs before the step's
+  // iteration group and writes the hidden surface that the argument names.
+  std::vector<InlineChain> inline_chains;
   dsl::SourceLocation loc{};
 };
-using CompiledStep = std::variant<ReadStep, EffectStep, WriteStep>;
+using CompiledStep = std::variant<ReadStep, EffectStep, WriteStep, Write3DStep, Read3DStep>;
 
 struct ExecutionChain {
   std::vector<CompiledStep> steps;
   dsl::SourceLocation loc{};
+};
+
+struct InlineChain {
+  std::string surface;
+  ExecutionChain chain;
 };
 
 struct ExecutionPlan {

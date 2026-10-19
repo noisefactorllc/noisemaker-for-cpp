@@ -16,6 +16,7 @@
 #include "noisemaker/pass_runner.hpp"
 #include "noisemaker/texture_format.hpp"
 
+#include <functional>
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -80,6 +81,17 @@ namespace {
   freelocale(c_locale);
 #endif
   return end == owned.c_str() + owned.size();
+}
+
+// Visits a chain and, depth first, the chains of its steps' chain arguments.
+template <typename F>
+void for_each_chain(const ExecutionChain& chain, F&& visit) {
+  visit(chain);
+  for (const auto& variant : chain.steps) {
+    if (const auto* effect = std::get_if<EffectStep>(&variant)) {
+      for (const auto& argument : effect->inline_chains) for_each_chain(argument.chain, visit);
+    }
+  }
 }
 
 [[nodiscard]] const PlanValue* parameter(const EffectStep& step,
@@ -1188,7 +1200,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
   // pass (such as loopEnd's unavailable copy) or input route obscures it.
   // Snapshot integrity and cardinality are established above; authenticate
   // the exact mesh route before applying this specific refusal.
-  for (const auto& chain : plan.chains) {
+  for (const auto& top_chain : plan.chains) for_each_chain(top_chain, [&](const ExecutionChain& chain) {
     for (const auto& group : iteration::compute_iteration_groups(plan, chain)) {
       if (!group.iterated) continue;
       for (const auto index : group.step_indices) {
@@ -1203,7 +1215,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         }
       }
     }
-  }
+  });
   for (const auto& snapshot : plan.effects) {
     for (std::size_t pass_index = 0; pass_index < snapshot.admissions.size();
          ++pass_index) {
@@ -1305,7 +1317,10 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
     available_routes.insert("global_mesh0_positions");
     available_routes.insert("global_mesh0_normals");
   }
-  for (const auto& chain : plan.chains) {
+  // renderer.js runChainSync: a step's chain arguments run before its group
+  // and publish their images under the hidden surfaces the step binds.
+  std::function<bool(const ExecutionChain&)> preflight_chain;
+  preflight_chain = [&](const ExecutionChain& chain) -> bool {
     bool have_current = false;
     bool have_volume = false;
     bool have_geometry = false;
@@ -1336,10 +1351,28 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           throw GraphError(GraphErrorCode::missing_resource, "write has no current image");
         }
         available_routes.insert(write->surface.name);
+      } else if (const auto* write3d = std::get_if<Write3DStep>(&variant)) {
+        // write3d stores the bundle's volume and geometry (`none` stores
+        // nothing) and passes the chain through.
+        if (write3d->volume != "none" && have_volume) available_routes.insert(write3d->volume);
+        if (write3d->geometry != "none" && have_geometry) available_routes.insert(write3d->geometry);
+      } else if (const auto* read3d = std::get_if<Read3DStep>(&variant)) {
+        if (available_routes.find(read3d->volume) == available_routes.end()) {
+          throw GraphError(GraphErrorCode::missing_resource, "Surface " + read3d->volume + " has not been written", {}, 0, {}, read3d->volume);
+        }
+        have_current = false;
+        have_volume = true;
+        have_geometry = available_routes.find(read3d->geometry) != available_routes.end();
       } else {
         const auto& raw_effect = std::get<EffectStep>(variant);
         if (raw_effect.snapshot_index >= plan.effects.size()) {
           throw GraphError(GraphErrorCode::invalid_snapshot, "effect snapshot index is out of range");
+        }
+        for (const auto& argument : raw_effect.inline_chains) {
+          if (!preflight_chain(argument.chain)) {
+            throw GraphError(GraphErrorCode::missing_resource, "write has no current image");
+          }
+          available_routes.insert(argument.surface);
         }
         const auto& snapshot = plan.effects[raw_effect.snapshot_index];
         // Preflight the parameters this render binds: automation resolved.
@@ -1626,9 +1659,11 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         }
       }
     }
-  }
+    return have_current;
+  };
+  for (const auto& chain : plan.chains) static_cast<void>(preflight_chain(chain));
 
-  for (const auto& chain : plan.chains) {
+  for (const auto& top_chain : plan.chains) for_each_chain(top_chain, [&](const ExecutionChain& chain) {
     for (const auto& variant : chain.steps) {
       const auto* effect = std::get_if<EffectStep>(&variant);
       if (effect == nullptr) continue;
@@ -1727,7 +1762,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         }
       }
     }
-  }
+  });
 }
 
 
@@ -4421,7 +4456,12 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
   }
 
   std::size_t pass_count = 0;
-  for (const auto& chain : plan.chains) {
+  std::size_t chain_argument_holds = 0;
+  // renderer.js runChainSync: runs one chain and returns its final image. A
+  // step's chain arguments run first, before the step's iteration group, and
+  // each publishes its image under the hidden surface the step binds.
+  std::function<GraphResource*(const ExecutionChain&)> run_chain;
+  run_chain = [&](const ExecutionChain& chain) -> GraphResource* {
     // The authority starts each chain with an empty bundle. Named image
     // surfaces remain in the arena, but unnamed bundle state is chain-local.
     GraphResource* current = nullptr;
@@ -4431,6 +4471,34 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
     // The CPU authority partitions the chain into iteration groups. Each
     // iterated group shares its scratch resources across the requested ticks.
     for (const auto& group : iteration::compute_iteration_groups(plan, chain)) {
+      bool has_chain_arguments = false;
+      for (const auto index : group.step_indices) {
+        if (const auto* effect = std::get_if<EffectStep>(&chain.steps[index])) {
+          has_chain_arguments = has_chain_arguments || !effect->inline_chains.empty();
+        }
+      }
+      if (has_chain_arguments) {
+        // A chain argument publishes over the same routes as this chain, so
+        // this chain's bundle is held under private aliases while they run.
+        const auto hold = [&](GraphResource*& resource) {
+          if (resource == nullptr) return;
+          const std::string name = "\x01chain-argument-hold:" + std::to_string(chain_argument_holds++);
+          arena.alias(name, *resource);
+          resource = arena.find(name);
+        };
+        hold(current);
+        hold(current_volume);
+        hold(current_geometry);
+        for (const auto index : group.step_indices) {
+          const auto* effect = std::get_if<EffectStep>(&chain.steps[index]);
+          if (effect == nullptr) continue;
+          for (const auto& argument : effect->inline_chains) {
+            GraphResource* const image = run_chain(argument.chain);
+            if (image == nullptr) throw GraphError(GraphErrorCode::missing_resource, "write has no current image");
+            arena.alias(argument.surface, *image);
+          }
+        }
+      }
       if (group.iterated) {
         const auto* owner = std::get_if<EffectStep>(&chain.steps[group.step_indices.front()]);
         const auto& owner_definition = plan.effects[owner->snapshot_index].definition;
@@ -4489,6 +4557,21 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
           throw GraphError(GraphErrorCode::missing_resource, "write has no current image");
         }
         arena.alias(write->surface.name, *current);
+      } else if (const auto* write3d = std::get_if<Write3DStep>(&variant)) {
+        // write3d stores the current bundle's volume and geometry under its
+        // two names (`none` stores nothing) and passes the chain through.
+        if (write3d->volume != "none" && current_volume != nullptr) arena.alias(write3d->volume, *current_volume);
+        if (write3d->geometry != "none" && current_geometry != nullptr) arena.alias(write3d->geometry, *current_geometry);
+      } else if (const auto* read3d = std::get_if<Read3DStep>(&variant)) {
+        // read3d starts a chain bundle from a stored volume and geometry.
+        GraphResource* const volume = arena.find(read3d->volume);
+        if (volume == nullptr) {
+          throw GraphError(GraphErrorCode::missing_resource, "Surface " + read3d->volume + " has not been written", {}, 0, {}, read3d->volume);
+        }
+        current = nullptr;
+        current_volume = volume;
+        current_geometry = arena.find(read3d->geometry);
+        current_volume_size = static_cast<double>(volume->surface().width());
       } else {
         // renderer.js:1214 -- inheritVolumeSize runs before effectParams, so
         // a modified "volumeSize" binding is visible everywhere downstream
@@ -4988,7 +5071,9 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
         current_volume_size = volume_size;
       }
     }
-  }
+    return current;
+  };
+  for (const auto& chain : plan.chains) static_cast<void>(run_chain(chain));
   if (arena.find(plan.render_surface.name) == nullptr) {
     throw GraphError(GraphErrorCode::missing_resource, "render surface was not published", {}, 0, {}, plan.render_surface.name);
   }

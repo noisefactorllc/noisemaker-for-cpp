@@ -113,8 +113,12 @@ std::vector<IterationGroup> compute_iteration_groups(
 
   for (std::size_t index = 0; index < chain.steps.size(); ++index) {
     const auto& variant = chain.steps[index];
+    // The built-in surface I/O steps: read/write for images, read3d/write3d
+    // for a volume and its geometry (iteration.js isSurfaceIo).
     const bool is_boundary = std::holds_alternative<ReadStep>(variant) ||
-                             std::holds_alternative<WriteStep>(variant);
+                             std::holds_alternative<WriteStep>(variant) ||
+                             std::holds_alternative<Write3DStep>(variant) ||
+                             std::holds_alternative<Read3DStep>(variant);
 
     // iteration.js:69-77 -- inside an open loop region, every step (read,
     // write, or effect) is consumed by the loop until a matching `end`.

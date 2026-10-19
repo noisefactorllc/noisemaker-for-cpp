@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <limits>
 #include <iostream>
 #include <map>
@@ -222,16 +223,32 @@ void surface(CanonicalWriter& writer, const SurfaceReference& input) {
   writer.size(static_cast<std::size_t>(input.kind)); writer.token(input.name); writer.size(input.index); location(writer, input.loc);
 }
 
+void step(CanonicalWriter& writer, const CompiledStep& input);
+
+void chain_steps(CanonicalWriter& writer, const ExecutionChain& input) {
+  location(writer, input.loc);
+  vector_values(writer, input.steps, [](auto& out, const auto& item) { step(out, item); });
+}
+
 void step(CanonicalWriter& writer, const CompiledStep& input) {
   std::visit([&](const auto& current) {
     using T = std::decay_t<decltype(current)>;
     if constexpr (std::is_same_v<T, ReadStep>) { writer.token("read"); surface(writer, current.surface); location(writer, current.loc); }
     else if constexpr (std::is_same_v<T, WriteStep>) { writer.token("write"); surface(writer, current.surface); location(writer, current.loc); }
-    else {
-      writer.token("effect"); writer.token(current.effect.id); writer.token(current.effect.domain); writer.token(current.effect.kind); writer.size(current.snapshot_index);
+    else if constexpr (std::is_same_v<T, Write3DStep> || std::is_same_v<T, Read3DStep>) {
+      writer.token(std::is_same_v<T, Write3DStep> ? "write3d" : "read3d");
+      writer.token(current.volume); writer.token(current.geometry); location(writer, current.loc);
+    } else {
+      // A step without chain arguments keeps the original `effect` grammar.
+      writer.token(current.inline_chains.empty() ? "effect" : "effect+inline");
+      writer.token(current.effect.id); writer.token(current.effect.domain); writer.token(current.effect.kind); writer.size(current.snapshot_index);
       vector_values(writer, current.params, [](auto& out, const auto& item) { out.token(item.name); plan_value(out, item.value); });
       vector_values(writer, current.explicit_params, [](auto& out, const auto& item) { out.token(item); });
-      vector_values(writer, current.passes, [](auto& out, const auto& item) { admission(out, item); }); location(writer, current.loc);
+      vector_values(writer, current.passes, [](auto& out, const auto& item) { admission(out, item); });
+      if (!current.inline_chains.empty()) {
+        vector_values(writer, current.inline_chains, [](auto& out, const auto& item) { out.token(item.surface); chain_steps(out, item.chain); });
+      }
+      location(writer, current.loc);
     }
   }, input);
 }
@@ -297,21 +314,34 @@ using graph::PlanValue;
 using graph::SurfaceReference;
 
 struct ResolvedArgument { std::optional<std::string> name; PlanValue value; SourceLocation loc{}; };
-struct ResolvedCall {
-  std::string name;
-  std::vector<ResolvedArgument> args;
-  dsl::Call::ArgumentMode mode = dsl::Call::ArgumentMode::none;
-  SourceLocation loc{};
+
+// The authority's `let` bindings: a partial keeps its call unresolved (its
+// arguments resolve where it is called), an alias names an effect function,
+// and a value binding holds an evaluated value.
+struct Partial { Call call; };
+struct Alias { std::string name; };
+using InternalBinding = std::variant<PlanValue, Partial, Alias>;
+
+// The authority's CompileScope: the bindings of a program plus the compiler of
+// chain arguments. A chain in an argument compiles to its own chain that writes
+// a hidden surface named `inline:N`; the consuming step carries it.
+struct Scope {
+  std::map<std::string, InternalBinding> bindings;
+  const effects::EffectRegistry* registry = nullptr;
+  std::vector<std::string> search;
+  std::vector<graph::InlineChain>* pending = nullptr;
+  std::size_t inline_count = 0;
+  ExecutionPlan* plan = nullptr;
+  SourceLocation first_unavailable{};
+  bool have_unavailable = false;
 };
-struct Partial { ResolvedCall call; };
-using InternalBinding = std::variant<PlanValue, Partial>;
 
 [[noreturn]] void value_error(std::string message, const SourceLocation& loc) {
   throw DslError(std::move(message), loc);
 }
 
-PlanValue evaluate(const Value& value, const std::map<std::string, InternalBinding>& bindings,
-                   int osc_depth = 0);
+PlanValue evaluate(const Value& value, Scope& scope, int osc_depth = 0);
+ExecutionChain compile_chain(const Chain& chain, Scope& scope, bool inline_chain);
 
 // Mirrors upstream std_enums.js oscKind (sine..noise2d; noise/noise1d alias kind
 // 5, noise2d is the two-stage periodic noise).
@@ -334,8 +364,7 @@ PlanValue ignore_input(const Call& call) {
 // select by name, every field takes the upstream default, min/max clamp into
 // [0, 1], fields may nest osc(), and the type resolves from an integer 0-6 or an
 // oscKind name (bare or oscKind-qualified).
-PlanValue compile_oscillator(const Call& call, const std::map<std::string, InternalBinding>& bindings,
-                             int depth) {
+PlanValue compile_oscillator(const Call& call, Scope& scope, int depth) {
   if (depth > kMaxAutomationDepth) {
     value_error("Automation nesting exceeds the maximum depth of " + std::to_string(kMaxAutomationDepth), call.loc);
   }
@@ -357,7 +386,7 @@ PlanValue compile_oscillator(const Call& call, const std::map<std::string, Inter
 
   int osc_type = 0;
   if (fields[0] != nullptr) {
-    const PlanValue raw = evaluate(*fields[0], bindings, depth + 1);
+    const PlanValue raw = evaluate(*fields[0], scope, depth + 1);
     if (raw.kind == PlanValue::Kind::number) {
       if (!(std::isfinite(raw.number) && raw.number == std::trunc(raw.number) && raw.number >= 0 &&
             raw.number <= 6)) {
@@ -381,7 +410,7 @@ PlanValue compile_oscillator(const Call& call, const std::map<std::string, Inter
 
   const auto number_field = [&](std::size_t index, std::string_view name, double fallback, bool clamp) {
     if (fields[index] == nullptr) return PlanValue::number_value(fallback);
-    const PlanValue value = evaluate(*fields[index], bindings, depth + 1);
+    const PlanValue value = evaluate(*fields[index], scope, depth + 1);
     if (value.kind == PlanValue::Kind::null_value) return PlanValue::number_value(fallback);
     if (value.kind == PlanValue::Kind::oscillator) return value;
     if (value.kind == PlanValue::Kind::boolean) return PlanValue::number_value(value.boolean ? 1.0 : 0.0);
@@ -399,8 +428,14 @@ PlanValue compile_oscillator(const Call& call, const std::map<std::string, Inter
                                      std::move(offset), std::move(seed));
 }
 
-PlanValue evaluate(const Value& value, const std::map<std::string, InternalBinding>& bindings,
-                   int osc_depth) {
+PlanValue compile_inline_chain(const Chain& chain, Scope& scope) {
+  ExecutionChain compiled = compile_chain(chain, scope, true);
+  const std::string surface = "inline:" + std::to_string(scope.inline_count++);
+  scope.pending->push_back(graph::InlineChain{surface, std::move(compiled)});
+  return PlanValue::surface_value(SurfaceReference::named(surface, 0, chain.loc));
+}
+
+PlanValue evaluate(const Value& value, Scope& scope, int osc_depth) {
   switch (value.kind) {
     case Value::Kind::number: return PlanValue::number_value(value.number());
     case Value::Kind::string: return PlanValue::string_value(value.string_value());
@@ -417,37 +452,39 @@ PlanValue evaluate(const Value& value, const std::map<std::string, InternalBindi
     case Value::Kind::array: {
       std::vector<PlanValue> values;
       values.reserve(value.array_value().values.size());
-      for (const auto& item : value.array_value().values) values.push_back(evaluate(item, bindings, osc_depth));
+      for (const auto& item : value.array_value().values) values.push_back(evaluate(item, scope, osc_depth));
       return PlanValue::array_value(std::move(values));
     }
     case Value::Kind::call: {
       if (unsupported_input_name(value.call().name)) return ignore_input(value.call());
-      if (value.call().name == "osc") return compile_oscillator(value.call(), bindings, osc_depth);
+      if (value.call().name == "osc") return compile_oscillator(value.call(), scope, osc_depth);
       value_error("Unsupported DSL value Call \"" + value.call().name + "\"", value.loc);
     }
     case Value::Kind::identifier: {
       const auto& identifier = value.identifier_value();
-      const auto found = bindings.find(identifier.name);
-      if (found == bindings.end()) return PlanValue::string_value(identifier.name);
+      const auto found = scope.bindings.find(identifier.name);
+      if (found == scope.bindings.end()) return PlanValue::string_value(identifier.name);
       if (std::holds_alternative<Partial>(found->second)) value_error("Effect partial \"" + identifier.name + "\" cannot be used as a value", value.loc);
+      // An effect alias used as a value stays the effect's bare name.
+      if (const auto* alias = std::get_if<Alias>(&found->second)) return PlanValue::string_value(alias->name);
       return std::get<PlanValue>(found->second);
     }
     case Value::Kind::vector: {
       std::vector<PlanValue> values;
-      for (const auto& item : value.vector().values) values.push_back(evaluate(item, bindings));
+      for (const auto& item : value.vector().values) values.push_back(evaluate(item, scope));
       bool numeric = values.size() == value.vector().width;
       for (const auto& item : values) numeric = numeric && item.kind == PlanValue::Kind::number;
       if (!numeric) value_error("vec" + std::to_string(value.vector().width) + " requires " + std::to_string(value.vector().width) + " numeric values", value.loc);
       return PlanValue::array_value(std::move(values));
     }
     case Value::Kind::unary: {
-      const PlanValue operand = evaluate(*value.unary().argument, bindings);
+      const PlanValue operand = evaluate(*value.unary().argument, scope);
       if (operand.kind != PlanValue::Kind::number) value_error("Unary arithmetic requires a number", value.loc);
       return PlanValue::number_value(value.unary().operator_token == '-' ? -operand.number : operand.number);
     }
     case Value::Kind::binary: {
-      const PlanValue left = evaluate(*value.binary().left, bindings);
-      const PlanValue right = evaluate(*value.binary().right, bindings);
+      const PlanValue left = evaluate(*value.binary().left, scope);
+      const PlanValue right = evaluate(*value.binary().right, scope);
       if (left.kind != PlanValue::Kind::number || right.kind != PlanValue::Kind::number) value_error("Arithmetic requires numeric values", value.loc);
       switch (value.binary().operator_token) {
         case '+': return PlanValue::number_value(left.number + right.number);
@@ -456,57 +493,95 @@ PlanValue evaluate(const Value& value, const std::map<std::string, InternalBindi
         default: return PlanValue::number_value(left.number / right.number);
       }
     }
+    case Value::Kind::chain: {
+      if (scope.pending != nullptr) return compile_inline_chain(value.chain(), scope);
+      value_error("Unsupported DSL value Chain", value.loc);
+    }
   }
   value_error("Unsupported DSL value", value.loc);
 }
 
-ResolvedCall resolve_call(const Call& call, const std::map<std::string, InternalBinding>& bindings) {
-  ResolvedCall result;
-  result.name = call.name;
-  result.mode = call.argument_mode;
-  result.loc = call.loc;
-  for (const auto& argument : call.arguments) result.args.push_back({argument.name, evaluate(argument.value, bindings), argument.loc});
+std::vector<ResolvedArgument> resolve_arguments(const Call& call, Scope& scope) {
+  std::vector<ResolvedArgument> result;
+  for (const auto& argument : call.arguments) result.push_back({argument.name, evaluate(argument.value, scope), argument.loc});
   return result;
 }
 
-ResolvedCall merge_partial(const Partial& stored, const ResolvedCall& call) {
-  if (stored.call.mode == Call::ArgumentMode::none) {
-    ResolvedCall result = call;
-    result.name = stored.call.name;
+// The authority's mergeArgs on unresolved calls: stored positional arguments
+// come first; named arguments overwrite in place and new keys append.
+Call merge_arguments(const Call& stored, const Call& call) {
+  if (stored.argument_mode == Call::ArgumentMode::none) {
+    Call result = call;
+    result.name = stored.name;
     return result;
   }
-  if (call.mode == Call::ArgumentMode::none) {
-    ResolvedCall result = stored.call;
+  if (call.argument_mode == Call::ArgumentMode::none) {
+    Call result = stored;
     result.loc = call.loc;
     return result;
   }
-  if (stored.call.mode != call.mode) throw DslError("Partial and call arguments must use the same named or positional form", call.loc);
-  if (stored.call.mode == Call::ArgumentMode::positional) {
-    ResolvedCall result = call;
-    result.name = stored.call.name;
-    result.args = stored.call.args;
-    result.args.insert(result.args.end(), call.args.begin(), call.args.end());
+  if (stored.argument_mode != call.argument_mode) throw DslError("Partial and call arguments must use the same named or positional form", call.loc);
+  Call result = call;
+  result.name = stored.name;
+  if (stored.argument_mode == Call::ArgumentMode::positional) {
+    result.arguments = stored.arguments;
+    result.arguments.insert(result.arguments.end(), call.arguments.begin(), call.arguments.end());
     return result;
   }
-  ResolvedCall result = call;
-  result.name = stored.call.name;
-  result.mode = Call::ArgumentMode::named;
-  // Match the authority Map.set merge: overwrite in place and retain the
-  // first insertion position, while new keys append once.
-  result.args.clear();
-  for (const auto& stored_argument : stored.call.args) {
-    auto existing = std::find_if(result.args.begin(), result.args.end(), [&](const auto& argument) {
-      return argument.name == stored_argument.name;
-    });
-    if (existing == result.args.end()) result.args.push_back(stored_argument);
-    else *existing = stored_argument;
-  }
-  for (const auto& incoming : call.args) {
-    auto existing = std::find_if(result.args.begin(), result.args.end(), [&](const auto& argument) { return argument.name == incoming.name; });
-    if (existing == result.args.end()) result.args.push_back(incoming);
-    else *existing = incoming;
-  }
+  result.argument_mode = Call::ArgumentMode::named;
+  result.arguments.clear();
+  const auto merge = [&](const CallArgument& argument) {
+    auto existing = std::find_if(result.arguments.begin(), result.arguments.end(),
+                                 [&](const auto& item) { return item.name == argument.name; });
+    if (existing == result.arguments.end()) result.arguments.push_back(argument);
+    else *existing = argument;
+  };
+  for (const auto& argument : stored.arguments) merge(argument);
+  for (const auto& argument : call.arguments) merge(argument);
   return result;
+}
+
+// A `from(ns, ...)` namespace on the call site wins over one stored in the
+// partial, as in upstream's resolveCall.
+Call merge_partial(const Call& stored, const Call& call) {
+  Call merged = merge_arguments(stored, call);
+  merged.name_space = call.name_space.has_value() ? call.name_space : stored.name_space;
+  return merged;
+}
+
+// `read3d(vol, geo)` and `write3d(vol, geo)` take two positional references:
+// identifiers such as vol0 and geo0, or surface references.
+std::optional<std::array<std::string, 2>> volume_references(const Call::ArgumentMode mode,
+                                                            const std::vector<const CallArgument*>& args) {
+  if (mode != Call::ArgumentMode::positional || args.size() != 2) return std::nullopt;
+  std::array<std::string, 2> names;
+  for (std::size_t index = 0; index < 2; ++index) {
+    const Value& value = args[index]->value;
+    if (value.kind == Value::Kind::surface) names[index] = value.surface_value().name;
+    else if (value.kind == Value::Kind::identifier && value.identifier_value().name.find('.') == std::string::npos) names[index] = value.identifier_value().name;
+    else return std::nullopt;
+  }
+  return names;
+}
+
+std::optional<std::array<std::string, 2>> volume_references(const Call& call) {
+  std::vector<const CallArgument*> args;
+  for (const auto& argument : call.arguments) args.push_back(&argument);
+  return volume_references(call.argument_mode, args);
+}
+
+std::optional<std::array<std::string, 2>> read3d_references(const Call& call) {
+  if (call.argument_mode == Call::ArgumentMode::named) {
+    const CallArgument* volume = nullptr;
+    const CallArgument* geometry = nullptr;
+    for (const auto& argument : call.arguments) {
+      if (argument.name == "tex3d") volume = &argument;
+      else if (argument.name == "geo") geometry = &argument;
+    }
+    if (volume == nullptr || geometry == nullptr) return std::nullopt;
+    return volume_references(Call::ArgumentMode::positional, {volume, geometry});
+  }
+  return volume_references(call);
 }
 
 bool has_input_texture(const effects::EffectDefinition& definition) {
@@ -525,6 +600,185 @@ std::string availability_text(const graph::PassAdmission& admission) {
   return text;
 }
 
+std::string joined(const std::vector<std::string>& values) {
+  std::string result;
+  for (std::size_t i = 0; i < values.size(); ++i) { if (i) result += ", "; result += values[i]; }
+  return result;
+}
+
+// Compiles one chain, as the authority's compileChain. A statement chain that
+// begins with a generator must end with write(oN) or write3d(); a chain
+// argument needs no write(): its last image is the argument's surface.
+ExecutionChain compile_chain(const Chain& source_chain, Scope& scope, bool inline_chain) {
+  ExecutionChain chain;
+  chain.loc = source_chain.loc;
+  bool has_image = false;
+  bool has_volume = false;
+  bool starts_with_generator = false;
+  std::optional<SourceLocation> open_loop;
+  // A subchain block contributes its body calls in place.
+  std::vector<const Call*> calls;
+  for (const auto& element : source_chain.calls) {
+    if (const auto* block = std::get_if<Subchain>(&element)) for (const auto& item : block->body) calls.push_back(&item);
+    else calls.push_back(&std::get<Call>(element));
+  }
+  for (std::size_t index = 0; index < calls.size(); ++index) {
+    Call call = *calls[index];
+    const auto found_binding = scope.bindings.find(call.name);
+    if (found_binding != scope.bindings.end()) {
+      if (const auto* alias = std::get_if<Alias>(&found_binding->second)) {
+        call.name = alias->name;
+      } else {
+        const auto* partial = std::get_if<Partial>(&found_binding->second);
+        if (partial == nullptr) throw DslError("Binding \"" + call.name + "\" is not callable", call.loc);
+        call = merge_partial(partial->call, call);
+      }
+    }
+    // Chain arguments compile while the arguments resolve; they belong to this call.
+    std::vector<graph::InlineChain> inline_chains;
+    auto* const outer_pending = scope.pending;
+    scope.pending = &inline_chains;
+    std::vector<ResolvedArgument> args;
+    try {
+      args = resolve_arguments(call, scope);
+    } catch (...) {
+      scope.pending = outer_pending;
+      throw;
+    }
+    scope.pending = outer_pending;
+
+    if (call.name == "read") {
+      if (index != 0 || args.size() != 1 || args.front().value.kind != PlanValue::Kind::surface) throw DslError("read(surface) must begin a chain", call.loc);
+      SurfaceReference surface = surface_from_value(args.front().value);
+      // A read in a chain argument carries its call location.
+      if (inline_chain) surface.loc = call.loc;
+      chain.steps.push_back(graph::ReadStep{std::move(surface), call.loc});
+      has_image = true;
+      continue;
+    }
+    if (call.name == "write") {
+      if (open_loop.has_value()) throw DslError("loopBegin must be closed by loopEnd before write", call.loc);
+      if (!has_image || args.size() != 1 || args.front().value.kind != PlanValue::Kind::surface) throw DslError("write(surface) requires a current image", call.loc);
+      chain.steps.push_back(graph::WriteStep{surface_from_value(args.front().value), call.loc});
+      continue;
+    }
+    // Built-in volume I/O (upstream `_write3d` and `_read3d`).
+    if (call.name == "write3d") {
+      // Upstream's lexer reserves write3d, so it cannot start a chain.
+      if (index == 0) throw DslError("Expected effect or IO function name", call.loc);
+      if (open_loop.has_value()) throw DslError("loopBegin must be closed by loopEnd before write", call.loc);
+      const auto references = volume_references(call);
+      if (!references.has_value()) throw DslError("Expected surface reference", call.loc);
+      chain.steps.push_back(graph::Write3DStep{(*references)[0], (*references)[1], call.loc});
+      continue;
+    }
+    if (index == 0 && call.name == "read3d") {
+      if (const auto references = read3d_references(call); references.has_value()) {
+        chain.steps.push_back(graph::Read3DStep{(*references)[0], (*references)[1], call.loc});
+        has_volume = true;
+        continue;
+      }
+    }
+
+    const std::vector<std::string> namespaces = call.name_space.has_value() ? std::vector<std::string>{*call.name_space} : scope.search;
+    const auto* definition = scope.registry->resolve(call.name, namespaces);
+    if (definition == nullptr) throw DslError("Unknown effect \"" + call.name + "\" in search namespaces " + joined(namespaces), call.loc);
+
+    if (definition->domain == "volume-generator") {
+      if (index != 0 && !(definition->iterated && has_volume)) throw DslError("Generator " + definition->id + " must begin a chain", call.loc);
+      if (index == 0) starts_with_generator = true;
+      has_volume = true;
+    } else if (definition->domain == "volume-filter") {
+      if (!has_volume) throw DslError("volume filter " + definition->id + " requires a volume input", call.loc);
+    } else if (definition->domain == "volume-renderer") {
+      if (!has_volume) throw DslError("volume renderer " + definition->id + " requires a volume input", call.loc);
+      has_image = true;
+    } else if (definition->domain == "loop-begin") {
+      if (!has_image) throw DslError(definition->id + " requires a current image", call.loc);
+      if (open_loop.has_value()) throw DslError("nested loopBegin regions are not supported", call.loc);
+      open_loop = call.loc;
+    } else if (definition->domain == "loop-end") {
+      if (!open_loop.has_value()) throw DslError("loopEnd has no matching loopBegin", call.loc);
+      if (!has_image) throw DslError(definition->id + " requires a current image", call.loc);
+      open_loop.reset();
+    } else if (definition->kind == "generator") {
+      if (index != 0) throw DslError("Generator " + definition->id + " must begin a chain", call.loc);
+      starts_with_generator = true;
+      has_image = true;
+    } else if (!has_image) {
+      if (has_input_texture(*definition)) throw DslError(definition->kind + " " + definition->id + " requires an input; begin with a generator or read(oN)", call.loc);
+      has_image = true;
+    }
+
+    std::vector<effects::ParameterArgument> parameter_args;
+    for (std::size_t argument_index = 0; argument_index < args.size(); ++argument_index) {
+      const auto& argument = args[argument_index];
+      const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
+      const bool known = std::any_of(definition->parameters.begin(), definition->parameters.end(), [&](const auto& parameter) { return parameter.name == supplied; });
+      if (argument.value.kind == PlanValue::Kind::null_value && known) continue;
+      parameter_args.push_back({supplied, argument.value});
+    }
+    effects::NormalizedArguments normalized;
+    try { normalized = scope.registry->normalize(*definition, parameter_args); }
+    catch (const std::exception& error) { throw DslError(error.what(), call.loc); }
+    graph::EffectStep step;
+    step.effect = {definition->id, definition->domain, definition->kind};
+    ExecutionPlan& plan = *scope.plan;
+    auto snapshot_it = std::find_if(plan.effects.begin(), plan.effects.end(), [&](const auto& snapshot) {
+      return snapshot.definition.id == definition->id;
+    });
+    if (snapshot_it == plan.effects.end()) {
+      graph::PlanEffectSnapshot snapshot;
+      snapshot.definition = *definition;
+      snapshot.admissions.reserve(definition->passes.size());
+      for (std::size_t snapshot_pass = 0; snapshot_pass < definition->passes.size(); ++snapshot_pass)
+        snapshot.admissions.push_back(scope.registry->admission(*definition, snapshot_pass));
+      snapshot.snapshot_sha256 = graph::detail::snapshot_sha256(snapshot);
+      plan.effects.push_back(std::move(snapshot));
+      snapshot_it = std::prev(plan.effects.end());
+    }
+    step.snapshot_index = static_cast<std::size_t>(std::distance(plan.effects.begin(), snapshot_it));
+    for (auto& binding : normalized.values) step.params.push_back(std::move(binding));
+    for (std::size_t argument_index = 0; argument_index < args.size(); ++argument_index) {
+      const auto& argument = args[argument_index];
+      const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
+      if (argument.value.kind != PlanValue::Kind::null_value) step.explicit_params.push_back(supplied);
+    }
+    step.loc = call.loc;
+    for (std::size_t pass_index = 0; pass_index < definition->passes.size(); ++pass_index) {
+      auto admission = scope.registry->admission(*definition, pass_index);
+      if (admission.status != graph::AvailabilityStatus::compatible && admission.status != graph::AvailabilityStatus::scatter && !scope.have_unavailable) {
+        scope.have_unavailable = true;
+        scope.first_unavailable = call.loc;
+      }
+      plan.availability.push_back(admission);
+      step.passes.push_back(std::move(admission));
+    }
+    step.inline_chains = std::move(inline_chains);
+    chain.steps.push_back(std::move(step));
+  }
+  if (open_loop.has_value()) throw DslError("loopBegin must be closed by loopEnd before the chain ends", *open_loop);
+  const bool terminal_write = !chain.steps.empty() &&
+      (std::holds_alternative<graph::WriteStep>(chain.steps.back()) || std::holds_alternative<graph::Write3DStep>(chain.steps.back()));
+  if (!inline_chain && starts_with_generator && !terminal_write) throw DslError("Generator chain must end with write(oN)", chain.loc);
+  return chain;
+}
+
+// Upstream `let x = noise` makes `x` an alias of the effect function, and
+// `let y = x` copies a partial or an alias.
+std::optional<InternalBinding> alias_binding(const Value& value, const Scope& scope) {
+  if (value.kind != Value::Kind::identifier) return std::nullopt;
+  const std::string& name = value.identifier_value().name;
+  if (name.find('.') != std::string::npos) return std::nullopt;
+  const auto found = scope.bindings.find(name);
+  if (found != scope.bindings.end()) {
+    if (std::holds_alternative<Partial>(found->second) || std::holds_alternative<Alias>(found->second)) return found->second;
+    return std::nullopt;
+  }
+  if (scope.registry->resolve(name, scope.search) != nullptr) return InternalBinding{Alias{name}};
+  return std::nullopt;
+}
+
 }  // namespace
 
 ExecutionPlan compile(std::string_view source, const effects::EffectRegistry& registry,
@@ -539,23 +793,29 @@ ExecutionPlan compile(std::string_view source, const effects::EffectRegistry& re
 ExecutionPlan compile(const Program& program, const effects::EffectRegistry& registry,
                       CompileOptions options) {
   if (program.search.empty()) throw DslError("Missing required search directive", program.loc);
-  std::map<std::string, InternalBinding> bindings;
+  ExecutionPlan plan;
+  Scope scope;
+  scope.registry = &registry;
+  scope.search = program.search;
+  scope.plan = &plan;
   for (const auto& binding : program.bindings) {
-    if (bindings.find(binding.name) != bindings.end()) throw DslError("Duplicate binding \"" + binding.name + "\"", binding.loc);
+    if (scope.bindings.find(binding.name) != scope.bindings.end()) throw DslError("Duplicate binding \"" + binding.name + "\"", binding.loc);
     if (std::holds_alternative<Call>(binding.value) && std::get<Call>(binding.value).name == "osc") {
       // `let name = osc(...)` binds an automation value, not an effect partial.
-      bindings.emplace(binding.name, compile_oscillator(std::get<Call>(binding.value), bindings, 0));
+      scope.bindings.emplace(binding.name, compile_oscillator(std::get<Call>(binding.value), scope, 0));
     } else if (std::holds_alternative<Call>(binding.value) && unsupported_input_name(std::get<Call>(binding.value).name)) {
-      bindings.emplace(binding.name, ignore_input(std::get<Call>(binding.value)));
+      scope.bindings.emplace(binding.name, ignore_input(std::get<Call>(binding.value)));
     } else if (std::holds_alternative<Call>(binding.value)) {
-      const auto& call = std::get<Call>(binding.value);
-      bindings.emplace(binding.name, Partial{resolve_call(call, bindings)});
+      // A partial keeps its call unresolved. Its arguments resolve where it is
+      // called, as upstream's validator substitutes a symbol at each use.
+      scope.bindings.emplace(binding.name, Partial{std::get<Call>(binding.value)});
+    } else if (auto alias = alias_binding(std::get<Value>(binding.value), scope); alias.has_value()) {
+      scope.bindings.emplace(binding.name, std::move(*alias));
     } else {
-      bindings.emplace(binding.name, evaluate(std::get<Value>(binding.value), bindings));
+      scope.bindings.emplace(binding.name, evaluate(std::get<Value>(binding.value), scope));
     }
   }
 
-  ExecutionPlan plan;
   plan.search = program.search;
   plan.require_executable = options.require_executable;
   const auto& provenance = registry.provenance();
@@ -581,130 +841,20 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
                             provenance.counts.missing_passes, provenance.counts.scatter_passes, provenance.counts.executable_definitions,
                             provenance.counts.incomplete_definitions};
   plan.provenance.source_name = program.loc.source_name;
+
+  for (const auto& source_chain : program.chains) plan.chains.push_back(compile_chain(source_chain, scope, false));
   SurfaceReference last_written;
-  SourceLocation first_unavailable{};
-  bool have_unavailable = false;
-
-  for (const auto& source_chain : program.chains) {
-    ExecutionChain chain;
-    chain.loc = source_chain.loc;
-    bool has_image = false;
-    bool has_volume = false;
-    bool starts_with_generator = false;
-    std::optional<SourceLocation> open_loop;
-    for (std::size_t index = 0; index < source_chain.calls.size(); ++index) {
-      const auto& source_call = source_chain.calls[index];
-      const auto found_binding = bindings.find(source_call.name);
-      if (found_binding != bindings.end()) {
-        if (!std::holds_alternative<Partial>(found_binding->second)) throw DslError("Binding \"" + source_call.name + "\" is not callable", source_call.loc);
-        const auto stored_mode = std::get<Partial>(found_binding->second).call.mode;
-        if (stored_mode != Call::ArgumentMode::none && source_call.argument_mode != Call::ArgumentMode::none && stored_mode != source_call.argument_mode)
-          throw DslError("Partial and call arguments must use the same named or positional form", source_call.loc);
-      }
-      ResolvedCall call = resolve_call(source_call, bindings);
-      if (found_binding != bindings.end()) call = merge_partial(std::get<Partial>(found_binding->second), call);
-
-      if (call.name == "read") {
-        if (index != 0 || call.args.size() != 1 || call.args.front().value.kind != PlanValue::Kind::surface) throw DslError("read(surface) must begin a chain", call.loc);
-        chain.steps.push_back(graph::ReadStep{surface_from_value(call.args.front().value), call.loc});
-        has_image = true;
-        continue;
-      }
-      if (call.name == "write") {
-        if (open_loop.has_value()) throw DslError("loopBegin must be closed by loopEnd before write", call.loc);
-        if (!has_image || call.args.size() != 1 || call.args.front().value.kind != PlanValue::Kind::surface) throw DslError("write(surface) requires a current image", call.loc);
-        const SurfaceReference surface = surface_from_value(call.args.front().value);
-        chain.steps.push_back(graph::WriteStep{surface, call.loc});
-        last_written = surface;
-        continue;
-      }
-
-      const auto* definition = registry.resolve(call.name, program.search);
-      if (definition == nullptr) throw DslError("Unknown effect \"" + call.name + "\" in search namespaces " + [&] { std::string value; for (std::size_t i = 0; i < program.search.size(); ++i) { if (i) value += ", "; value += program.search[i]; } return value; }(), call.loc);
-
-      if (definition->domain == "volume-generator") {
-        if (index != 0 && !(definition->iterated && has_volume)) throw DslError("Generator " + definition->id + " must begin a chain", call.loc);
-        if (index == 0) starts_with_generator = true;
-        has_volume = true;
-      } else if (definition->domain == "volume-filter") {
-        if (!has_volume) throw DslError("volume filter " + definition->id + " requires a volume input", call.loc);
-      } else if (definition->domain == "volume-renderer") {
-        if (!has_volume) throw DslError("volume renderer " + definition->id + " requires a volume input", call.loc);
-        has_image = true;
-      } else if (definition->domain == "loop-begin") {
-        if (!has_image) throw DslError(definition->id + " requires a current image", call.loc);
-        if (open_loop.has_value()) throw DslError("nested loopBegin regions are not supported", call.loc);
-        open_loop = call.loc;
-      } else if (definition->domain == "loop-end") {
-        if (!open_loop.has_value()) throw DslError("loopEnd has no matching loopBegin", call.loc);
-        if (!has_image) throw DslError(definition->id + " requires a current image", call.loc);
-        open_loop.reset();
-      } else if (definition->kind == "generator") {
-        if (index != 0) throw DslError("Generator " + definition->id + " must begin a chain", call.loc);
-        starts_with_generator = true;
-        has_image = true;
-      } else if (!has_image) {
-        if (has_input_texture(*definition)) throw DslError(definition->kind + " " + definition->id + " requires an input; begin with a generator or read(oN)", call.loc);
-        has_image = true;
-      }
-
-      std::vector<effects::ParameterArgument> args;
-      for (std::size_t argument_index = 0; argument_index < call.args.size(); ++argument_index) {
-        const auto& argument = call.args[argument_index];
-        const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
-        const bool known = std::any_of(definition->parameters.begin(), definition->parameters.end(), [&](const auto& parameter) { return parameter.name == supplied; });
-        if (argument.value.kind == PlanValue::Kind::null_value && known) continue;
-        args.push_back({supplied, argument.value});
-      }
-      effects::NormalizedArguments normalized;
-      try { normalized = registry.normalize(*definition, args); }
-      catch (const std::exception& error) { throw DslError(error.what(), call.loc); }
-      graph::EffectStep step;
-      step.effect = {definition->id, definition->domain, definition->kind};
-      auto snapshot_it = std::find_if(plan.effects.begin(), plan.effects.end(), [&](const auto& snapshot) {
-        return snapshot.definition.id == definition->id;
-      });
-      if (snapshot_it == plan.effects.end()) {
-        graph::PlanEffectSnapshot snapshot;
-        snapshot.definition = *definition;
-        snapshot.admissions.reserve(definition->passes.size());
-        for (std::size_t snapshot_pass = 0; snapshot_pass < definition->passes.size(); ++snapshot_pass)
-          snapshot.admissions.push_back(registry.admission(*definition, snapshot_pass));
-        snapshot.snapshot_sha256 = graph::detail::snapshot_sha256(snapshot);
-        plan.effects.push_back(std::move(snapshot));
-        snapshot_it = std::prev(plan.effects.end());
-      }
-      step.snapshot_index = static_cast<std::size_t>(std::distance(plan.effects.begin(), snapshot_it));
-      for (auto& binding : normalized.values) step.params.push_back(std::move(binding));
-      for (std::size_t argument_index = 0; argument_index < call.args.size(); ++argument_index) {
-        const auto& argument = call.args[argument_index];
-        const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
-        if (argument.value.kind != PlanValue::Kind::null_value) step.explicit_params.push_back(supplied);
-      }
-      step.loc = call.loc;
-      for (std::size_t pass_index = 0; pass_index < definition->passes.size(); ++pass_index) {
-        auto admission = registry.admission(*definition, pass_index);
-        if (admission.status != graph::AvailabilityStatus::compatible && admission.status != graph::AvailabilityStatus::scatter && !have_unavailable) {
-          have_unavailable = true;
-          first_unavailable = call.loc;
-        }
-        plan.availability.push_back(admission);
-        step.passes.push_back(std::move(admission));
-      }
-      chain.steps.push_back(std::move(step));
-    }
-    if (open_loop.has_value()) throw DslError("loopBegin must be closed by loopEnd before the chain ends", *open_loop);
-    if (starts_with_generator && (chain.steps.empty() || !std::holds_alternative<graph::WriteStep>(chain.steps.back()))) throw DslError("Generator chain must end with write(oN)", chain.loc);
-    plan.chains.push_back(std::move(chain));
+  for (const auto& chain : plan.chains) {
+    for (const auto& step : chain.steps) if (const auto* write = std::get_if<graph::WriteStep>(&step)) last_written = write->surface;
   }
   plan.render_surface = program.render.has_value()
                            ? SurfaceReference::named(program.render->name, program.render->index, program.render->loc)
                            : last_written;
   if (plan.render_surface.kind == SurfaceReference::Kind::none) throw DslError("No render surface specified and no write() found - add render(oN) or write(oN)", program.loc);
-  plan.executable = !have_unavailable;
+  plan.executable = !scope.have_unavailable;
   if (options.require_executable && !plan.executable) {
     for (const auto& admission : plan.availability) {
-      if (admission.status != graph::AvailabilityStatus::compatible && admission.status != graph::AvailabilityStatus::scatter) throw DslError(availability_text(admission), first_unavailable);
+      if (admission.status != graph::AvailabilityStatus::compatible && admission.status != graph::AvailabilityStatus::scatter) throw DslError(availability_text(admission), scope.first_unavailable);
     }
   }
   plan.provenance.plan_payload_sha256 = graph::detail::plan_payload_sha256(plan);
@@ -721,15 +871,18 @@ bool validate_execution_plan(const ExecutionPlan& plan) noexcept {
       if (snapshot.definition.passes.size() != snapshot.admissions.size()) return false;
       if (snapshot.snapshot_sha256 != detail::snapshot_sha256(snapshot)) return false;
     }
-    for (const auto& chain : plan.chains) {
+    const std::function<bool(const ExecutionChain&)> valid_chain = [&](const ExecutionChain& chain) {
       for (const auto& compiled : chain.steps) {
         if (const auto* effect = std::get_if<EffectStep>(&compiled)) {
           if (effect->snapshot_index >= plan.effects.size()) return false;
           const auto& snapshot = plan.effects[effect->snapshot_index];
           if (effect->effect.id != snapshot.definition.id || effect->effect.domain != snapshot.definition.domain || effect->effect.kind != snapshot.definition.kind) return false;
+          for (const auto& argument : effect->inline_chains) if (!valid_chain(argument.chain)) return false;
         }
       }
-    }
+      return true;
+    };
+    for (const auto& chain : plan.chains) if (!valid_chain(chain)) return false;
     return !plan.provenance.plan_payload_sha256.empty() && plan.provenance.plan_payload_sha256 == detail::plan_payload_sha256(plan);
   } catch (...) {
     return false;

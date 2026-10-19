@@ -13,6 +13,7 @@ namespace noisemaker::dsl {
 
 struct Value;
 struct Call;
+struct Chain;
 using ValuePtr = std::unique_ptr<Value>;
 
 struct ColorValue {
@@ -55,6 +56,12 @@ struct CallValue {
   std::unique_ptr<Call> call;
 };
 
+// A chain in a value position (a chain argument such as
+// `tex: solid(color: #f00)`, the authority's `Expr ::= Chain`).
+struct ChainValue {
+  std::unique_ptr<Chain> chain;
+};
+
 struct Value {
   enum class Kind {
     number,
@@ -68,11 +75,12 @@ struct Value {
     unary,
     binary,
     call,
+    chain,
   };
 
   using Storage = std::variant<double, std::string, bool, ColorValue, SurfaceValue,
                                ArrayValue, IdentifierValue, VectorValue, UnaryValue,
-                               BinaryValue, CallValue>;
+                               BinaryValue, CallValue, ChainValue>;
 
   Kind kind = Kind::number;
   Storage data = 0.0;
@@ -99,6 +107,7 @@ struct Value {
   static Value unary(char operator_token, Value argument, SourceLocation location);
   static Value binary(char operator_token, Value left, Value right, SourceLocation location);
   static Value call_value(Call call, SourceLocation location);
+  static Value chain_value(Chain chain, SourceLocation location);
 
   [[nodiscard]] double number() const { return std::get<double>(data); }
   [[nodiscard]] const std::string& string_value() const { return std::get<std::string>(data); }
@@ -111,6 +120,7 @@ struct Value {
   [[nodiscard]] const UnaryValue& unary() const { return std::get<UnaryValue>(data); }
   [[nodiscard]] const BinaryValue& binary() const { return std::get<BinaryValue>(data); }
   [[nodiscard]] const Call& call() const { return *std::get<CallValue>(data).call; }
+  [[nodiscard]] const Chain& chain() const { return *std::get<ChainValue>(data).chain; }
 };
 
 struct CallArgument {
@@ -126,10 +136,23 @@ struct Call {
   std::vector<CallArgument> arguments;
   ArgumentMode argument_mode = ArgumentMode::none;
   SourceLocation loc{};
+  // `from(namespace, effect(...))` resolves the effect in this one namespace.
+  std::optional<std::string> name_space;
 };
 
+// `subchain(name: "...", id: "...") { .a() .b() }`: its body calls run in
+// place, as the authority compiles the flattened chain.
+struct Subchain {
+  std::optional<std::string> name;
+  std::optional<std::string> id;
+  std::vector<Call> body;
+  SourceLocation loc{};
+};
+
+using ChainElement = std::variant<Call, Subchain>;
+
 struct Chain {
-  std::vector<Call> calls;
+  std::vector<ChainElement> calls;
   SourceLocation loc{};
 };
 

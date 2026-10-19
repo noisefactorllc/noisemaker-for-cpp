@@ -182,6 +182,10 @@ PlanRelation project_relation(const graph::ExecutionPlan& plan,
       } else if (const auto* write = std::get_if<graph::WriteStep>(&step)) {
         relation.step_kinds.emplace_back("write");
         relation.routes.push_back(write->surface.name);
+      } else if (std::holds_alternative<graph::Write3DStep>(step)) {
+        relation.step_kinds.emplace_back("write3d");
+      } else if (std::holds_alternative<graph::Read3DStep>(step)) {
+        relation.step_kinds.emplace_back("read3d");
       }
     }
   }

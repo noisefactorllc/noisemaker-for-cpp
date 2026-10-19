@@ -31,7 +31,7 @@ TEST(dsl_parser_preserves_program_order_and_typed_values) {
   REQUIRE(program.bindings.size() == 1);
   REQUIRE(program.chains.size() == 1);
   REQUIRE(program.chains[0].calls.size() == 3);
-  REQUIRE(program.chains[0].calls[0].name == "tuned");
+  REQUIRE(std::get<noisemaker::dsl::Call>(program.chains[0].calls[0]).name == "tuned");
   REQUIRE(program.render.has_value());
   REQUIRE(program.render->name == "o0");
 }
@@ -41,7 +41,7 @@ TEST(dsl_parser_builds_precedence_unary_parentheses_and_vector_width) {
       "search synth\n"
       "solid(vec3(-1 + 2 * (3 - -4), 5, 6)).write(o0)\n"
       "render(o0)");
-  const auto& value = program.chains[0].calls[0].arguments[0].value;
+  const auto& value = std::get<noisemaker::dsl::Call>(program.chains[0].calls[0]).arguments[0].value;
   REQUIRE(value.kind == Value::Kind::vector);
   REQUIRE(value.vector().width == 3);
   REQUIRE(value.vector().values.size() == 3);
@@ -55,9 +55,9 @@ TEST(dsl_parser_preserves_vector_widths_and_expands_alpha_colors) {
       "solid(vec4(1, 2, 3, 4)).write(o1)\n"
       "solid(color: #12345678).write(o2)\n"
       "  render(o2)");
-  REQUIRE(program.chains[0].calls[0].arguments[0].value.vector().width == 2);
-  REQUIRE(program.chains[1].calls[0].arguments[0].value.vector().width == 4);
-  const auto& color = program.chains[2].calls[0].arguments[0].value.color_value().components;
+  REQUIRE(std::get<noisemaker::dsl::Call>(program.chains[0].calls[0]).arguments[0].value.vector().width == 2);
+  REQUIRE(std::get<noisemaker::dsl::Call>(program.chains[1].calls[0]).arguments[0].value.vector().width == 4);
+  const auto& color = std::get<noisemaker::dsl::Call>(program.chains[2].calls[0]).arguments[0].value.color_value().components;
   REQUIRE(color.size() == 4);
   REQUIRE(color[3] == 120.0 / 255.0);
   REQUIRE(program.render->loc.column == 3);
@@ -77,10 +77,10 @@ TEST(dsl_parser_rejects_mixed_arguments_at_second_argument_location) {
 TEST(dsl_parser_accepts_named_read_forms_and_rejects_other_names) {
   const auto program = parse(
       "search synth\nsolid(read(surface: o0)).write(o1)\nrender(o1)");
-  REQUIRE(program.chains[0].calls[0].arguments[0].value.kind == Value::Kind::surface);
+  REQUIRE(std::get<noisemaker::dsl::Call>(program.chains[0].calls[0]).arguments[0].value.kind == Value::Kind::surface);
   const auto tex_program = parse(
       "search synth\nsolid(read(tex: o0)).write(o1)\nrender(o1)");
-  REQUIRE(tex_program.chains[0].calls[0].arguments[0].value.kind == Value::Kind::surface);
+  REQUIRE(std::get<noisemaker::dsl::Call>(tex_program.chains[0].calls[0]).arguments[0].value.kind == Value::Kind::surface);
   try {
     static_cast<void>(parse("search synth\nsolid(read(foo: o0))", "read.dsl"));
   } catch (const DslError& error) {
@@ -128,7 +128,7 @@ TEST(dsl_parser_rejects_arbitrarily_large_surface_suffix_with_dsl_error) {
 
 TEST(dsl_parser_copies_nested_expression_values_independently) {
   const auto program = parse("search synth\nsolid(1 + 2 * 3).write(o0)");
-  Value original = program.chains[0].calls[0].arguments[0].value;
+  Value original = std::get<noisemaker::dsl::Call>(program.chains[0].calls[0]).arguments[0].value;
   Value copied = original;
   auto& copied_binary = std::get<noisemaker::dsl::BinaryValue>(copied.data);
   copied_binary.left->data = 9.0;
@@ -188,6 +188,7 @@ std::string values_json(const std::vector<Value>& values) {
 }
 
 std::string call_json(const noisemaker::dsl::Call& call);
+std::string chain_json(const noisemaker::dsl::Chain& chain);
 
 std::string value_json(const Value& value) {
   std::ostringstream out;
@@ -237,6 +238,7 @@ std::string value_json(const Value& value) {
           << ",\"loc\":" << loc_json(value.loc) << '}';
       break;
     case Value::Kind::call: out << call_json(value.call()); break;
+    case Value::Kind::chain: out << chain_json(value.chain()); break;
   }
   return out.str();
 }
@@ -258,7 +260,33 @@ std::string call_json(const noisemaker::dsl::Call& call) {
   } else {
     out << ",\"argMode\":\"" << mode << '\"';
   }
-  out << ",\"loc\":" << loc_json(call.loc) << '}';
+  out << ",\"loc\":" << loc_json(call.loc);
+  if (call.name_space.has_value()) out << ",\"namespace\":" << json_escape(*call.name_space);
+  out << '}';
+  return out.str();
+}
+
+std::string optional_json(const std::optional<std::string>& value) {
+  return value.has_value() ? json_escape(*value) : "null";
+}
+
+std::string chain_json(const noisemaker::dsl::Chain& chain) {
+  std::ostringstream out;
+  out << "{\"kind\":\"Chain\",\"calls\":[";
+  for (std::size_t j = 0; j < chain.calls.size(); ++j) {
+    if (j != 0) out << ',';
+    if (const auto* block = std::get_if<noisemaker::dsl::Subchain>(&chain.calls[j])) {
+      out << "{\"kind\":\"Subchain\",\"name\":" << optional_json(block->name) << ",\"id\":" << optional_json(block->id) << ",\"body\":[";
+      for (std::size_t k = 0; k < block->body.size(); ++k) {
+        if (k != 0) out << ',';
+        out << call_json(block->body[k]);
+      }
+      out << "],\"loc\":" << loc_json(block->loc) << '}';
+    } else {
+      out << call_json(std::get<noisemaker::dsl::Call>(chain.calls[j]));
+    }
+  }
+  out << "],\"loc\":" << loc_json(chain.loc) << '}';
   return out.str();
 }
 
@@ -281,13 +309,7 @@ std::string program_json(const noisemaker::dsl::Program& program) {
   out << "],\"chains\":[";
   for (std::size_t i = 0; i < program.chains.size(); ++i) {
     if (i != 0) out << ',';
-    const auto& chain = program.chains[i];
-    out << "{\"kind\":\"Chain\",\"calls\":[";
-    for (std::size_t j = 0; j < chain.calls.size(); ++j) {
-      if (j != 0) out << ',';
-      out << call_json(chain.calls[j]);
-    }
-    out << "],\"loc\":" << loc_json(chain.loc) << '}';
+    out << chain_json(program.chains[i]);
   }
   out << "],\"render\":";
   if (program.render.has_value()) {
