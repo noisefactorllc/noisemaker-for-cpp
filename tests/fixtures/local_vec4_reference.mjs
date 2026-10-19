@@ -65,7 +65,7 @@ for (const [width, height] of [[13, 11], [3, 2], [5, 3]]) {
 }
 
 process.stdout.write(JSON.stringify({
-  cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
+  cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
   factories: Object.fromEntries([temporal, smooth].map(key => [key, hash(canonicalKernelFactories[key].toString())])),
   cases,
 }, null, 2) + '\n')
