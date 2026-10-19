@@ -31435,6 +31435,9 @@ TEST(typed_effects_runtime_defines_match_all_current_cpu_cases) {
 
 // CPU9f3 canonicalFactory9 returns undefined for LOOP_OFFSET=999; Number
 // arithmetic consumes it as canonical NaN (0x7fc00000 in every Float32 lane).
+// At authority 7f47340 the nearest-texel sampler resolves those NaN
+// coordinates to finite texels, so the expected output is the authority's
+// exact Float32 and RGBA8 digests for this case.
 TEST(typed_dynamic_kaleido_unmatched_offset_cpu9f3_nan_exact) {
   const auto it = std::find_if(dynamic_kernel9_oracle::kCases.begin(),
                                dynamic_kernel9_oracle::kCases.end(),
@@ -31461,7 +31464,8 @@ TEST(typed_dynamic_kaleido_unmatched_offset_cpu9f3_nan_exact) {
   REQUIRE(task23_float_bytes(repeat_input) == before);
   REQUIRE(task23_float_bytes(first) == task23_float_bytes(repeat));
   REQUIRE(first.data().size() == 140U);
-  for (float value : first.data()) {
-    REQUIRE(noisemaker::float_bits_to_uint(value) == 0x7fc00000U);
-  }
+  REQUIRE(task23_hex(task23_sha256(task23_float_bytes(first))) ==
+          "68c1373388ab66003eeed385db9a9b4061900c035c5b4c9458edee7dfccb8882");
+  REQUIRE(task23_hex(task23_sha256(first.to_rgba8())) ==
+          "9b26e94a34c4a308ea13d261cbfbb61c3b7efd19c29b7d24e5282c60c9651a89");
 }
