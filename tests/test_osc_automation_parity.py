@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import pathlib
+import re
 import shutil
 import subprocess
 import tempfile
@@ -53,7 +54,7 @@ def _record(source: str, time: float) -> dict:
             "plan": None}
 
 
-class OscAutomationParityTest(unittest.TestCase):
+class _BothLanes:
     def setUp(self) -> None:
         self.driver = resolve_driver("NOISEMAKER_DSL_CPU_CASE", "noisemaker-dsl-cpu-case")
         self.cpu_root = resolve_cpu_root()
@@ -78,6 +79,8 @@ class OscAutomationParityTest(unittest.TestCase):
             capture_output=True, text=True)
         return js, cpp
 
+
+class OscAutomationParityTest(_BothLanes, unittest.TestCase):
     def test_osc_programs_are_byte_exact_at_every_time(self) -> None:
         with tempfile.TemporaryDirectory(prefix="noisemaker-osc-parity-") as temporary:
             scratch = pathlib.Path(temporary)
@@ -131,6 +134,104 @@ class UnsupportedRealtimeInputTest(unittest.TestCase):
                         self.assertEqual(0, baseline.returncode, baseline.stdout + baseline.stderr)
                         self.assertEqual("", baseline.stderr)
                         self.assertEqual(ignored, (scratch / "cpp.rgba8").read_bytes())
+
+
+# The five float `rotation` parameters declared on a GLSL `int` uniform
+# (src/graph/executor.cpp kRawComparedIntUniforms). The authority binds the raw
+# number (renderer.js buildBindings) and each kernel compares it with -1 and 1.
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json"
+CORPUS_SOURCES = ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources"
+EXECUTOR = ROOT / "src/graph/executor.cpp"
+ROTATION_PROGRAMS = {
+    "filter/historicPalette:historicPalette":
+        "search filter, synth\nnoise(seed: 1, ridges: true, colorMode: mono).historicPalette(rotation: {value}).write(o0)\nrender(o0)\n",
+    "filter/palette:palette":
+        "search filter, synth\nnoise(seed: 1, ridges: true).palette(rotation: {value}).write(o0)\nrender(o0)\n",
+    "filter/tetraColorArray:tetraColorArray":
+        "search filter, synth\nnoise(seed: 1).tetraColorArray(smoothness: 0, rotation: {value}).write(o0)\nrender(o0)\n",
+    "filter/tetraCosine:tetraCosine":
+        "search filter, synth\nnoise(seed: 1).tetraCosine(rotation: {value}).write(o0)\nrender(o0)\n",
+    "filter3d/palette3d:palette3d":
+        "search synth3d, filter3d, render\nnoise3d(seed: 3, volumeSize: 8).palette3d(rotation: {value}).render3d().write(o0)\nrender(o0)\n",
+}
+# Choice names, integers (choice and non-choice), fractional and out-of-int32
+# values of both signs, an expression that evaluates to 1, and oscillators
+# (unscaled for a float parameter with choices, so fractional except where a
+# square wave reaches exactly 0 or 1).
+ROTATION_VALUES = ("none", "fwd", "back", "0", "1", "-1", "2", "-3", "0.5", "-0.5", "1.5", "-1.25",
+                   "3000000000", "-3000000000", "0.5 * 2", "osc(sine)", "osc(square)")
+ROTATION_TIME = 0.37
+
+
+def _strip_glsl_comments(source: str) -> str:
+    source = re.sub(r"/\*.*?\*/", " ", source, flags=re.S)
+    return re.sub(r"//[^\n]*", " ", source)
+
+
+class FloatOnIntUniformContractTest(unittest.TestCase):
+    """The executor's raw-compared table names exactly what its comment claims."""
+
+    def test_table_matches_the_executor(self) -> None:
+        text = EXECUTOR.read_text(encoding="utf-8")
+        block = re.search(r"kRawComparedIntUniforms\{\{(.*?)\}\};", text, flags=re.S)
+        self.assertIsNotNone(block)
+        entries = re.findall(r'\{"([^"]+)", "([^"]+)"\}', block.group(1))
+        self.assertEqual(sorted(entries), sorted((key, "rotation") for key in ROTATION_PROGRAMS))
+
+    def test_each_kernel_reads_rotation_only_in_comparisons_with_minus_one_and_one(self) -> None:
+        rows = {row["program_key"]: row for row in json.loads(COMPATIBILITY.read_text(encoding="utf-8"))["canonical_programs"]}
+        for key in ROTATION_PROGRAMS:
+            with self.subTest(program=key):
+                bindings = [item for item in rows[key]["uniforms"] if item["name"] == "rotation"]
+                self.assertEqual([{"name": "rotation", "type": "int", "cpp_type": "std::int32_t",
+                                   "source": "effect_parameter", "source_name": "rotation"}], bindings)
+                source = _strip_glsl_comments((CORPUS_SOURCES / rows[key]["source"].removeprefix("sources/")).read_text(encoding="utf-8"))
+                uses = re.findall(r"[^\n;{}]*\brotation\b[^\n;{}]*", source)
+                self.assertEqual(1, sum(1 for use in uses if re.fullmatch(r"\s*uniform int rotation\s*", use)), uses)
+                for use in uses:
+                    if re.fullmatch(r"\s*uniform int rotation\s*", use):
+                        continue
+                    stripped = re.sub(r"\brotation\s*==\s*-?1\b", "", use)
+                    self.assertNotRegex(stripped, r"\brotation\b", use)
+
+
+class FloatOnIntUniformParityTest(_BothLanes, unittest.TestCase):
+    """Every rotation value renders byte-exact on both lanes, as the authority binds it."""
+
+    def test_only_these_float_parameters_bind_an_int_uniform(self) -> None:
+        rows = json.loads(COMPATIBILITY.read_text(encoding="utf-8"))["canonical_programs"]
+        int_parameters = sorted({(row["effect_id"], item["source_name"], row["program_key"])
+                                 for row in rows for item in row["uniforms"]
+                                 if item["source"] == "effect_parameter" and item["cpp_type"] == "std::int32_t"})
+        script = (
+            "const [snapshot, input] = process.argv.slice(1)\n"
+            "const { effectRecords } = await import(snapshot)\n"
+            "const byId = new Map(effectRecords.map((record) => [record.id, record]))\n"
+            "const rows = JSON.parse(input).filter(([id, name]) => byId.get(id)?.params?.[name]?.type === 'float')\n"
+            "process.stdout.write(JSON.stringify(rows.map(([id, name, key]) => [key, name, Object.keys(byId.get(id).params[name].choices ?? {})])))\n")
+        snapshot = (self.cpu_root / "src/effects/generated/upstream-snapshot.js").as_uri()
+        result = subprocess.run([self.node, "--input-type=module", "-e", script, snapshot, json.dumps(int_parameters)],
+                                check=True, capture_output=True, text=True)
+        self.assertEqual(sorted([key, "rotation", ["none", "fwd", "back"]] for key in ROTATION_PROGRAMS),
+                         sorted(json.loads(result.stdout)))
+
+    def test_rotation_values_are_byte_exact(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-float-int-uniform-") as temporary:
+            scratch = pathlib.Path(temporary)
+            for key, template in ROTATION_PROGRAMS.items():
+                renders = {}
+                for value in ROTATION_VALUES:
+                    with self.subTest(program=key, rotation=value):
+                        js, cpp = self._render(scratch, template.format(value=value), ROTATION_TIME)
+                        self.assertEqual(0, js.returncode, js.stderr)
+                        self.assertEqual(0, cpp.returncode, cpp.stdout + cpp.stderr)
+                        for suffix in ("f32", "rgba8"):
+                            self.assertEqual((scratch / f"js.{suffix}").read_bytes(),
+                                             (scratch / f"cpp.{suffix}").read_bytes(), suffix)
+                        renders[value] = (scratch / "js.rgba8").read_bytes()
+                with self.subTest(program=key, check="rotation changes the output"):
+                    self.assertEqual(3, len({renders["none"], renders["fwd"], renders["back"]}))
 
 
 if __name__ == "__main__":

@@ -1938,6 +1938,31 @@ void validate_uniform_abi_shape(const EffectStep& step,
   return PlanValue::null();
 }
 
+// The authority binds a parameter's resolved number into its uniform as is
+// (renderer.js buildBindings: `uniforms[param.uniform] = value`), so a float
+// parameter on a GLSL `int` uniform reaches the kernel raw, fractional or not.
+// These five `rotation` parameters are the only float parameters on an int
+// uniform. Each kernel reads `rotation` only as `rotation == -1` and
+// `rotation == 1` (canonical-kernels.js for tetraColorArray, tetraCosine and
+// palette3d; adapters/palette.js `=== -1` and `=== 1` for palette and
+// historicPalette). A value that is not an int32 integer equals neither, so it
+// takes the no-rotation branch, as 0 does, and binds as 0.
+// tests/test_float_int_uniform_parity.py checks these facts against the
+// vendored GLSL and the effect catalog, and renders the cases on both lanes.
+constexpr std::array<std::pair<std::string_view, std::string_view>, 5> kRawComparedIntUniforms{{
+    {"filter/historicPalette:historicPalette", "rotation"},
+    {"filter/palette:palette", "rotation"},
+    {"filter/tetraColorArray:tetraColorArray", "rotation"},
+    {"filter/tetraCosine:tetraCosine", "rotation"},
+    {"filter3d/palette3d:palette3d", "rotation"},
+}};
+
+[[nodiscard]] bool raw_compared_int_uniform(std::string_view program_key, std::string_view binding_name) noexcept {
+  return std::any_of(kRawComparedIntUniforms.begin(), kRawComparedIntUniforms.end(), [&](const auto& entry) {
+    return entry.first == program_key && entry.second == binding_name;
+  });
+}
+
 [[nodiscard]] glsl::UniformValue materialize_plan_value(
     const PlanValue& supplied, std::string_view cpp_type,
     const EffectStep& step, const PassAdmission& admission,
@@ -1967,6 +1992,10 @@ void validate_uniform_abi_shape(const EffectStep& step,
     if (!is_integral_plan_number(value) ||
         value.number < static_cast<double>(std::numeric_limits<std::int32_t>::min()) ||
         value.number > static_cast<double>(std::numeric_limits<std::int32_t>::max())) {
+      if (is_finite_plan_number(value) &&
+          raw_compared_int_uniform(admission.identity.program_key, binding_name)) {
+        return static_cast<std::int32_t>(0);
+      }
       return fail("expected int32");
     }
     return static_cast<std::int32_t>(value.number);
