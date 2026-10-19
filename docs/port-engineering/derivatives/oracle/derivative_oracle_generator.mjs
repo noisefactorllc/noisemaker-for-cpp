@@ -785,7 +785,7 @@ function build() {
   }
   return {
     schema: 'noisemaker-for-cpp.derivatives.cluster15.derivative-oracles.v1',
-    corpus_revision: revision, cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6', authority: EXPECTED,
     provenance: { ...RUNTIME_PROVENANCE, node: process.version, public_identity: true, adapter_absent: true },
     define_as_binding_note: 'halftone (MODE, PATTERN), pondRipples (STYLE, WRAP), and stipple (MODE) pin compile-time GLSL #defines that the JS reference reads as ordinary $bindings[...] lookups (no preprocessor in JS) -- every case for these three programs supplies the define at its generate_typed_slice._defaults()-authorized value via `uniforms`, verified live against the real _defaults() output (see report) and against the factory text actually containing the $bindings["<NAME>"] read (loadProgram()). Omitting these would silently select the wrong runtime branch, not fail loudly.',
     programs: programsOut,
