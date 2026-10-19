@@ -2,7 +2,7 @@
   "schema": "noisemaker-for-cpp.task20-fixed-affine-centers13.canonical-oracles.v1",
   "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "provenance": {
-    "node": "v26.9.0",
+    "node": "v26.0.0",
     "cpu_revision": "7f473400ac744025d46221bf527b43c1b5c1ef4e",
     "cpu_behavioral_sha256": "6716656e0d81e23960dffc626d56f7f558abdd0bd4c53fd4eb555f7fa63dd608",
     "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
