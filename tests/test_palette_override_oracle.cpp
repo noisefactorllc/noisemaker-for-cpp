@@ -111,7 +111,7 @@ TEST(palette_override_oracle_cellNoise_palette_colorMode_entry_32) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == result.width() * result.height() * 4U);
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
-          "984de34f9bddf4f553bd03dcf6611b78d3424395b7719ad1d2a069702e709572");
+          "c3ca5655b04ebc1faaae173ba685f7fb80436588dc6210c0f6f357be4e43fb77");
 }
 
 TEST(palette_override_oracle_cellNoise_palette_colorMode_entry_55) {
@@ -286,7 +286,7 @@ TEST(palette_override_oracle_colorLab_non_default_other_params) {
 
 TEST(palette_override_oracle_fractal_entry_0) {
   // fractal/entry-0: mechanically captured from the JS authority by
-  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
+  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -303,7 +303,7 @@ TEST(palette_override_oracle_fractal_entry_0) {
 
 TEST(palette_override_oracle_fractal_entry_1) {
   // fractal/entry-1: mechanically captured from the JS authority by
-  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
+  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -320,7 +320,7 @@ TEST(palette_override_oracle_fractal_entry_1) {
 
 TEST(palette_override_oracle_fractal_entry_12) {
   // fractal/entry-12: mechanically captured from the JS authority by
-  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
+  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -337,7 +337,7 @@ TEST(palette_override_oracle_fractal_entry_12) {
 
 TEST(palette_override_oracle_fractal_entry_28) {
   // fractal/entry-28: mechanically captured from the JS authority by
-  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
+  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -354,7 +354,7 @@ TEST(palette_override_oracle_fractal_entry_28) {
 
 TEST(palette_override_oracle_fractal_entry_55) {
   // fractal/entry-55: mechanically captured from the JS authority by
-  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
+  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -371,7 +371,7 @@ TEST(palette_override_oracle_fractal_entry_55) {
 
 TEST(palette_override_oracle_fractal_non_default_other_params) {
   // fractal/non-default-other-params: mechanically captured from the JS authority by
-  // CPU 5e93c23c6cd8c2b3f777bedc40142798be185ba8.
+  // palette_override_oracle_generator.mjs -- see palette-override-oracles.json.
   Renderer renderer;
   RenderOptions options;
   options.width = 17U;
@@ -400,7 +400,7 @@ TEST(palette_override_oracle_noise_entry_0) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == result.width() * result.height() * 4U);
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
-          "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965");
+          "7ffb70b7caaa35a9ac86748d70ffde4ab49a90b21d1fce82267ce4d1d6cf1c77");
 }
 
 TEST(palette_override_oracle_noise_entry_1) {
@@ -417,7 +417,7 @@ TEST(palette_override_oracle_noise_entry_1) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == result.width() * result.height() * 4U);
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
-          "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965");
+          "7ffb70b7caaa35a9ac86748d70ffde4ab49a90b21d1fce82267ce4d1d6cf1c77");
 }
 
 TEST(palette_override_oracle_noise_entry_2) {
@@ -434,7 +434,7 @@ TEST(palette_override_oracle_noise_entry_2) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == result.width() * result.height() * 4U);
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
-          "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965");
+          "7ffb70b7caaa35a9ac86748d70ffde4ab49a90b21d1fce82267ce4d1d6cf1c77");
 }
 
 TEST(palette_override_oracle_noise_entry_28) {
@@ -451,7 +451,7 @@ TEST(palette_override_oracle_noise_entry_28) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == result.width() * result.height() * 4U);
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
-          "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965");
+          "7ffb70b7caaa35a9ac86748d70ffde4ab49a90b21d1fce82267ce4d1d6cf1c77");
 }
 
 TEST(palette_override_oracle_noise_entry_55) {
@@ -468,7 +468,7 @@ TEST(palette_override_oracle_noise_entry_55) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == result.width() * result.height() * 4U);
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
-          "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965");
+          "7ffb70b7caaa35a9ac86748d70ffde4ab49a90b21d1fce82267ce4d1d6cf1c77");
 }
 
 TEST(palette_override_oracle_noise_non_default_other_params) {
@@ -485,7 +485,7 @@ TEST(palette_override_oracle_noise_non_default_other_params) {
   const auto bytes = result.to_rgba8();
   REQUIRE(bytes.size() == result.width() * result.height() * 4U);
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
-          "3115c5bed189bf93611e9978a11b9796cdac4cb8c5464945bb98a4f6f1dc2393");
+          "06be92b3df79591811f32d4fffe55c013336f567cee5a61d8f438026129b7fe2");
 }
 
 TEST(palette_override_oracle_shapeMixer_entry_0) {
