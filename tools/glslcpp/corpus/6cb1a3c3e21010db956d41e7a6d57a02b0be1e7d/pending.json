@@ -3,7 +3,7 @@
     "effect_records": "src/effects/generated/upstream-snapshot.js",
     "effect_records_sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467",
     "program_coverage": "src/effects/generated/glsl-coverage.js",
-    "program_coverage_sha256": "b19dc841e91c9ace0cfc6e5973da52183ec7020fc12d708ed8511f1a5b09776b",
+    "program_coverage_sha256": "52f5af68e7ae3a5178644a99bd3248eb6d59dfab7c0107784c3f5ccb08f223bd",
     "programs": [
       {
         "file": "bitEffects.glsl",

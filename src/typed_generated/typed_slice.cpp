@@ -2,6 +2,7 @@
 // Revision: 6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/effects/bit_effects.hpp"
+#include "noisemaker/effects/crt.hpp"
 #include "noisemaker/effects/median.hpp"
 #include "noisemaker/effects/remap.hpp"
 #include "noisemaker/effects/snow.hpp"
@@ -40,7 +41,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -112,7 +113,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 bitField([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st) noexcept {
-  st = glsl::Vec2((st / state.scale));
+  st = glsl::Vec2(glsl::metal_divide(st, state.scale));
   st = glsl::Vec2(rotate2D(state, context, st, state.rotation));
   [[maybe_unused]] double freq = map(state, context, state.scale, static_cast<float>(1.0), static_cast<float>(100.0), state.scale, static_cast<float>(8.0));
   [[maybe_unused]] glsl::Vec3 color = glsl::FloatExpr<3>(static_cast<float>(0.0));
@@ -124,10 +125,10 @@ struct State final : KernelState {
 
 [[nodiscard]] glsl::Vec3 bitMask([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st) noexcept {
   [[maybe_unused]] glsl::Vec3 color = glsl::FloatExpr<3>(static_cast<float>(0.0));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * state.tiles));
-  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) - (static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+  st = glsl::Vec2((st + glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) - glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   [[maybe_unused]] double freq = glsl::floor(map(state, context, state.complexity, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(5.0), static_cast<float>(12.0)));
   [[maybe_unused]] double mask = ((bitMaskValue(state, context, st, freq, static_cast<float>(-100.0)) > static_cast<float>(0.5)) ? static_cast<float>(1.0) : static_cast<float>(0.0));
   {
@@ -361,10 +362,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec2& st = globalCoord;
-  st = glsl::Vec2((globalCoord / glsl::swizzle<1>(state.fullResolution)));
+  st = glsl::Vec2(glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution)));
   st = glsl::Vec2((st + (static_cast<double>(float(state.seed)) + static_cast<double>(static_cast<float>(1000.0)))));
   glsl::set_swizzle<0, 1, 2>(color, bitMask(state, context, st));
-  st = glsl::Vec2((globalCoord / state.fullResolution));
+  st = glsl::Vec2(glsl::metal_divide(globalCoord, state.fullResolution));
   output = glsl::Vec4(color);
 }
 }  // namespace typed_0
@@ -395,7 +396,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -799,12 +800,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / glsl::swizzle<1>(state.fullResolution));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
   [[maybe_unused]] glsl::Vec3 leftColor = noise(state, context, st, float(state.seed));
   [[maybe_unused]] glsl::Vec3 rightColor = noise(state, context, st, (static_cast<double>(float(state.seed)) + static_cast<double>(static_cast<float>(10.0))));
-  [[maybe_unused]] glsl::Vec3 left = glsl::component_min(((leftColor * rightColor) / (static_cast<float>(1.0) - (rightColor * leftColor))), glsl::FloatExpr<3>(static_cast<float>(1.0)));
-  [[maybe_unused]] glsl::Vec3 right = glsl::component_min(((rightColor * leftColor) / (static_cast<float>(1.0) - (leftColor * rightColor))), glsl::FloatExpr<3>(static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec3 left = glsl::component_min(glsl::metal_divide((leftColor * rightColor), (static_cast<float>(1.0) - (rightColor * leftColor))), glsl::FloatExpr<3>(static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec3 right = glsl::component_min(glsl::metal_divide((rightColor * leftColor), (static_cast<float>(1.0) - (leftColor * rightColor))), glsl::FloatExpr<3>(static_cast<float>(1.0)));
   glsl::set_swizzle<0, 1, 2>(color, brightnessContrast(state, context, glsl::mix(left, right, static_cast<float>(0.5))));
   glsl::set_swizzle<3>(color, static_cast<float>(1.0));
   output = glsl::Vec4(color);
@@ -849,7 +850,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -878,9 +879,9 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 wrapEdges([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept;
 
 [[nodiscard]] double cells([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq, [[maybe_unused]] double cellSize, [[maybe_unused]] std::int32_t sides) noexcept {
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * freq));
-  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st + glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st + glsl::swizzle<0, 1>(prng(state, context, glsl::FloatExpr<3>(float(state.seed))))));
   [[maybe_unused]] glsl::Vec2 i = glsl::floor(st);
   [[maybe_unused]] glsl::Vec2 f = glsl::fract(st);
@@ -1053,9 +1054,9 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 rotate2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double rot) noexcept {
   rot = map(state, context, rot, static_cast<float>(0.0), static_cast<float>(360.0), static_cast<float>(0.0), static_cast<float>(2.0));
   [[maybe_unused]] double angle = (static_cast<double>(rot) * static_cast<double>(static_cast<float>(3.14159265359)));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((glsl::Mat2(glsl::Vec2(glsl::cos(angle), (-glsl::sin(angle))), glsl::Vec2(glsl::sin(angle), glsl::cos(angle))) * st));
-  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st + glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return st;
 }
 
@@ -1097,7 +1098,7 @@ struct State final : KernelState {
   if (glsl::swizzle<0>(st) < static_cast<float>(0.0)) {
     glsl::set_swizzle<0>(st, (static_cast<double>(freq) - static_cast<double>(static_cast<float>(1.0))));
   }
-  if (glsl::swizzle<0>(st) > (static_cast<double>((static_cast<double>(freq) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) {
+  if (glsl::swizzle<0>(st) > glsl::metal_divide(static_cast<double>((static_cast<double>(freq) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) {
     glsl::set_swizzle<0>(st, static_cast<float>(0.0));
   }
   if (glsl::swizzle<1>(st) < static_cast<float>(0.0)) {
@@ -1115,14 +1116,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] double freq = map(state, context, state.scale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(20.0), static_cast<float>(1.0));
   [[maybe_unused]] double cellSize = map(state, context, state.cellScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(3.0), static_cast<float>(0.75));
   [[maybe_unused]] double texLuminosity = static_cast<float>(0.0);
   [[maybe_unused]] double texFactor = (static_cast<double>(state.texIntensity) * static_cast<double>(static_cast<float>(0.01)));
-  [[maybe_unused]] glsl::Vec2 texCoord = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 texCoord = glsl::metal_divide(globalCoord, state.fullResolution);
   if (state.texInfluence > std::int32_t(0)) {
-    [[maybe_unused]] glsl::Vec3 texRGB = glsl::swizzle<0, 1, 2>(sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex)))));
+    [[maybe_unused]] glsl::Vec3 texRGB = glsl::swizzle<0, 1, 2>(sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex)))));
     texLuminosity = luminance(state, context, texRGB);
     if (state.texInfluence == std::int32_t(1)) {
       cellSize = (cellSize - (static_cast<double>(texLuminosity) * static_cast<double>(texFactor)));
@@ -1180,7 +1181,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       }
     }
   }
-  st = glsl::Vec2((globalCoord / state.fullResolution));
+  st = glsl::Vec2(glsl::metal_divide(globalCoord, state.fullResolution));
   output = glsl::Vec4(color);
 }
 }  // namespace typed_2
@@ -1229,7 +1230,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -1336,7 +1337,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] glsl::Vec3 convolve([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 localUV, [[maybe_unused]] const Kernel9& kernel, [[maybe_unused]] bool divide) noexcept {
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] Offsets9 offset{};
   offset[0] = glsl::Vec2(glsl::FloatExpr<2>((-glsl::swizzle<0>(texelSize)), (-glsl::swizzle<1>(texelSize))));
   offset[1] = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0), (-glsl::swizzle<1>(texelSize))));
@@ -1530,7 +1531,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
   if (size <= static_cast<float>(1.0)) {
     return glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, localUV));
   }
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] double dx = (static_cast<double>(size) * static_cast<double>(glsl::swizzle<0>(texelSize)));
   [[maybe_unused]] double dy = (static_cast<double>(size) * static_cast<double>(glsl::swizzle<1>(texelSize)));
   [[maybe_unused]] glsl::Vec2 coord = glsl::FloatExpr<2>((static_cast<double>(dx) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<0>(localUV)) / static_cast<double>(dx))))), (static_cast<double>(dy) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<1>(localUV)) / static_cast<double>(dy))))));
@@ -1686,7 +1687,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
   if (glsl::swizzle<0>(st) < static_cast<float>(0.0)) {
     glsl::set_swizzle<0>(st, (static_cast<double>(freq) - static_cast<double>(static_cast<float>(1.0))));
   }
-  if (glsl::swizzle<0>(st) > (static_cast<double>((static_cast<double>(freq) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) {
+  if (glsl::swizzle<0>(st) > glsl::metal_divide(static_cast<double>((static_cast<double>(freq) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) {
     glsl::set_swizzle<0>(st, static_cast<float>(0.0));
   }
   if (glsl::swizzle<1>(st) < static_cast<float>(0.0)) {
@@ -1705,24 +1706,24 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   Frame frame{};
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   loadKernels(state, context, frame);
   [[maybe_unused]] double blend = static_cast<float>(1.0);
   [[maybe_unused]] double freq = map(state, context, frame, state.scale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(20.0), static_cast<float>(1.0));
   [[maybe_unused]] double cellSize = map(state, context, frame, state.cellScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(3.0), static_cast<float>(0.75));
-  [[maybe_unused]] double d = cells(state, context, frame, (st * glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))), freq, cellSize);
+  [[maybe_unused]] double d = cells(state, context, frame, (st * glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))), freq, cellSize);
   [[maybe_unused]] double ref = map(state, context, frame, state.refractAmt, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.125));
   [[maybe_unused]] double refLen = (static_cast<double>(d) + static_cast<double>((static_cast<double>(state.direction) / static_cast<double>(static_cast<float>(360.0)))));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) + (static_cast<double>(glsl::cos((static_cast<double>(refLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(ref))));
   glsl::set_swizzle<1>(st, (glsl::swizzle<1>(st) + (static_cast<double>(glsl::sin((static_cast<double>(refLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(ref))));
   if (state.wrap == std::int32_t(0)) {
-    st = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((st + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    st = glsl::Vec2(glsl::abs(glsl::Vec2((st - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((st + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       st = glsl::Vec2(glsl::fract(st));
     }
   }
-  [[maybe_unused]] glsl::Vec2 localUV = (((st * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((st * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   color = glsl::Vec4(sample_texture(*state.inputTex, localUV));
   if (state.KERNEL != std::int32_t(0)) {
     if (state.effectWidth != static_cast<float>(0.0)) {
@@ -1767,7 +1768,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -1930,19 +1931,19 @@ struct State final : KernelState {
   [[maybe_unused]] double m = map(state, context, state.mixAmt, static_cast<float>(-100.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double ra = map(state, context, state.refractAAmt, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.125));
   [[maybe_unused]] double rb = map(state, context, state.refractBAmt, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.125));
-  [[maybe_unused]] glsl::Vec4 leftColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 rightColor = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec4 leftColor = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 rightColor = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] glsl::Vec2 leftUV = glsl::Vec2(st);
   [[maybe_unused]] double rightLen = glsl::length(glsl::swizzle<0, 1, 2>(rightColor));
   glsl::set_swizzle<0>(leftUV, (glsl::swizzle<0>(leftUV) + (static_cast<double>(glsl::cos((static_cast<double>(rightLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(ra))));
   glsl::set_swizzle<1>(leftUV, (glsl::swizzle<1>(leftUV) + (static_cast<double>(glsl::sin((static_cast<double>(rightLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(ra))));
-  [[maybe_unused]] glsl::Vec2 leftLocalUV = (((leftUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 leftLocalUV = glsl::metal_divide(((leftUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 leftRefracted = sample_texture(*state.inputTex, glsl::fract(leftLocalUV));
   [[maybe_unused]] glsl::Vec2 rightUV = glsl::Vec2(st);
   [[maybe_unused]] double leftLen = glsl::length(glsl::swizzle<0, 1, 2>(leftColor));
   glsl::set_swizzle<0>(rightUV, (glsl::swizzle<0>(rightUV) + (static_cast<double>(glsl::cos((static_cast<double>(leftLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(rb))));
   glsl::set_swizzle<1>(rightUV, (glsl::swizzle<1>(rightUV) + (static_cast<double>(glsl::sin((static_cast<double>(leftLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(rb))));
-  [[maybe_unused]] glsl::Vec2 rightLocalUV = (((rightUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.tex)));
+  [[maybe_unused]] glsl::Vec2 rightLocalUV = glsl::metal_divide(((rightUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.tex)));
   [[maybe_unused]] glsl::Vec4 rightRefracted = sample_texture(*state.tex, glsl::fract(rightLocalUV));
   [[maybe_unused]] glsl::Vec4 leftReflected = glsl::component_min(((rightRefracted * rightColor) / (static_cast<float>(1.0) - (leftRefracted * leftColor))), glsl::FloatExpr<4>(static_cast<float>(1.0)));
   [[maybe_unused]] glsl::Vec4 rightReflected = glsl::component_min(((leftRefracted * leftColor) / (static_cast<float>(1.0) - (rightRefracted * rightColor))), glsl::FloatExpr<4>(static_cast<float>(1.0)));
@@ -2030,25 +2031,25 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   if (state.blendMode == std::int32_t(100)) {
     color = glsl::Vec4(cloak(state, context, st));
   } else {
     [[maybe_unused]] double ra = map(state, context, state.refractAAmt, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.125));
     [[maybe_unused]] double rb = map(state, context, state.refractBAmt, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.125));
-    [[maybe_unused]] glsl::Vec4 leftColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-    [[maybe_unused]] glsl::Vec4 rightColor = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+    [[maybe_unused]] glsl::Vec4 leftColor = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+    [[maybe_unused]] glsl::Vec4 rightColor = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
     [[maybe_unused]] glsl::Vec2 leftUV = glsl::Vec2(st);
     [[maybe_unused]] double rightLen = (static_cast<double>(glsl::length(glsl::swizzle<0, 1, 2>(rightColor))) + static_cast<double>((static_cast<double>(state.refractADir) / static_cast<double>(static_cast<float>(360.0)))));
     glsl::set_swizzle<0>(leftUV, (glsl::swizzle<0>(leftUV) + (static_cast<double>(glsl::cos((static_cast<double>(rightLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(ra))));
     glsl::set_swizzle<1>(leftUV, (glsl::swizzle<1>(leftUV) + (static_cast<double>(glsl::sin((static_cast<double>(rightLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(ra))));
-    [[maybe_unused]] glsl::Vec2 leftLocalUV = (((leftUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+    [[maybe_unused]] glsl::Vec2 leftLocalUV = glsl::metal_divide(((leftUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
     [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, glsl::fract(leftLocalUV));
     [[maybe_unused]] glsl::Vec2 rightUV = glsl::Vec2(st);
     [[maybe_unused]] double leftLen = (static_cast<double>(glsl::length(glsl::swizzle<0, 1, 2>(leftColor))) + static_cast<double>((static_cast<double>(state.refractBDir) / static_cast<double>(static_cast<float>(360.0)))));
     glsl::set_swizzle<0>(rightUV, (glsl::swizzle<0>(rightUV) + (static_cast<double>(glsl::cos((static_cast<double>(leftLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(rb))));
     glsl::set_swizzle<1>(rightUV, (glsl::swizzle<1>(rightUV) + (static_cast<double>(glsl::sin((static_cast<double>(leftLen) * static_cast<double>(static_cast<float>(6.28318530718))))) * static_cast<double>(rb))));
-    [[maybe_unused]] glsl::Vec2 rightLocalUV = (((rightUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.tex)));
+    [[maybe_unused]] glsl::Vec2 rightLocalUV = glsl::metal_divide(((rightUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.tex)));
     [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, glsl::fract(rightLocalUV));
     glsl::set_swizzle<0, 1, 2>(color, blend(state, context, color1, color2, state.blendMode, state.mixAmt));
     glsl::set_swizzle<3>(color, glsl::component_max(glsl::swizzle<3>(color1), glsl::swizzle<3>(color2)));
@@ -2094,7 +2095,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -2318,10 +2319,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0));
   [[maybe_unused]] double blendy = periodicFunction(state, context, (static_cast<double>(state.time) - static_cast<double>(offsets(state, context, uv))));
-  color = glsl::Vec4(sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex)))));
+  color = glsl::Vec4(sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex)))));
   if (state.levels != static_cast<float>(0.0)) {
     glsl::set_swizzle<0, 1, 2>(color, posterize(state, context, glsl::swizzle<0, 1, 2>(color), state.levels));
   }
@@ -2336,7 +2337,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         glsl::set_swizzle<0, 1, 2>(color, (glsl::swizzle<0, 1, 2>(color) * glsl::FloatExpr<3>(glsl::step(periodicFunction(state, context, (static_cast<double>(random(state, context, globalCoord)) + static_cast<double>(state.time))), bright))));
       } else {
         if (state.dither == std::int32_t(4)) {
-          [[maybe_unused]] glsl::Vec2 coord = glsl::Vec2((glsl::swizzle<0, 1>(glsl::mod((globalCoord / state.renderScale), static_cast<float>(4.0))) - static_cast<float>(0.5)));
+          [[maybe_unused]] glsl::Vec2 coord = glsl::Vec2((glsl::swizzle<0, 1>(glsl::mod(glsl::metal_divide(globalCoord, state.renderScale), static_cast<float>(4.0))) - static_cast<float>(0.5)));
           if (bright < static_cast<float>(0.12)) {
             glsl::set_swizzle<0, 1, 2>(color, glsl::FloatExpr<3>(static_cast<float>(0.0)));
           } else {
@@ -2430,7 +2431,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -2628,9 +2629,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   glsl::set_swizzle<0, 1, 2>(color, blend(state, context, glsl::swizzle<0, 1, 2>(color1), glsl::swizzle<0, 1, 2>(color2)));
   glsl::set_swizzle<3>(color, glsl::mix(glsl::swizzle<3>(color1), glsl::swizzle<3>(color2), (static_cast<double>(state.mixAmt) * static_cast<double>(static_cast<float>(0.01)))));
   output = glsl::Vec4(color);
@@ -2683,7 +2684,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -2759,11 +2760,11 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 [[nodiscard]] glsl::Vec3 bloom([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st) noexcept {
   [[maybe_unused]] glsl::Vec3 sum = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] glsl::Vec3 color = glsl::FloatExpr<3>(static_cast<float>(0.0));
-  [[maybe_unused]] glsl::Vec3 orig = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (((st * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+  [[maybe_unused]] glsl::Vec3 orig = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide(((st * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
   [[maybe_unused]] double strength = map(state, context, frame, state.effectAmt, static_cast<float>(0.0), static_cast<float>(20.0), static_cast<float>(0.0), static_cast<float>(0.25));
   for ([[maybe_unused]] std::int32_t i = (-std::int32_t(4)); (i < std::int32_t(4)); ++i) {
     for ([[maybe_unused]] std::int32_t j = (-std::int32_t(3)); (j < std::int32_t(3)); ++j) {
-      sum = glsl::Vec3((sum + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((st + (glsl::Vec2(j, i) * static_cast<float>(0.004))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))) * strength))));
+      sum = glsl::Vec3((sum + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((st + (glsl::Vec2(j, i) * static_cast<float>(0.004))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))) * strength))));
     }
   }
   if (glsl::swizzle<0>(orig) < static_cast<float>(0.3)) {
@@ -2801,11 +2802,11 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
   [[maybe_unused]] double dSize = (static_cast<double>(static_cast<float>(2.)) * static_cast<double>(size));
   [[maybe_unused]] double amount = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(size));
   [[maybe_unused]] double d = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(amount));
-  [[maybe_unused]] double ar = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double ar = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double sx = (static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<0>(st)) / static_cast<double>(d)))) * static_cast<double>(d));
   d = (static_cast<double>(ar) / static_cast<double>(amount));
   [[maybe_unused]] double sy = (static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<1>(st)) / static_cast<double>(d)))) * static_cast<double>(d));
-  [[maybe_unused]] glsl::Vec4 base = sample_texture(*state.inputTex, (((glsl::FloatExpr<2>(sx, sy) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 base = sample_texture(*state.inputTex, glsl::metal_divide(((glsl::FloatExpr<2>(sx, sy) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] double lum = (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(.2126)) * static_cast<double>(glsl::swizzle<0>(base)))) + static_cast<double>((static_cast<double>(static_cast<float>(.7152)) * static_cast<double>(glsl::swizzle<1>(base)))))) + static_cast<double>((static_cast<double>(static_cast<float>(.0722)) * static_cast<double>(glsl::swizzle<2>(base)))));
   [[maybe_unused]] double o = glsl::floor((static_cast<double>(static_cast<float>(6.)) * static_cast<double>(lum)));
   [[maybe_unused]] glsl::Vec3 c1 = {};
@@ -2911,7 +2912,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] glsl::Vec3 convolve([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] const Kernel9& kernel, [[maybe_unused]] bool divide) noexcept {
-  [[maybe_unused]] glsl::Vec2 steps = (static_cast<float>(1.0) / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 steps = glsl::metal_divide(static_cast<float>(1.0), state.fullResolution);
   [[maybe_unused]] Offsets9 offset{};
   offset[0] = glsl::Vec2(glsl::FloatExpr<2>((-glsl::swizzle<0>(steps)), (-glsl::swizzle<1>(steps))));
   offset[1] = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0), (-glsl::swizzle<1>(steps))));
@@ -2925,7 +2926,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
   [[maybe_unused]] double kernelWeight = static_cast<float>(0.0);
   [[maybe_unused]] glsl::Vec3 conv = glsl::FloatExpr<3>(static_cast<float>(0.0));
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(9)); ++i) {
-    [[maybe_unused]] glsl::Vec3 color = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + (offset[static_cast<std::size_t>(i)] * state.effectAmt)) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+    [[maybe_unused]] glsl::Vec3 color = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + (offset[static_cast<std::size_t>(i)] * state.effectAmt)) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
     conv = glsl::Vec3((conv + (color * kernel[static_cast<std::size_t>(i)])));
     kernelWeight = (kernelWeight + kernel[static_cast<std::size_t>(i)]);
   }
@@ -3132,15 +3133,15 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 
 [[nodiscard]] glsl::Vec3 pixellate([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] double size) noexcept {
   if (size < static_cast<float>(1.0)) {
-    return glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (((uv * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+    return glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
   }
   size = (size * static_cast<float>(4.0));
-  [[maybe_unused]] double dx = (static_cast<double>(size) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<0>(state.fullResolution)))));
-  [[maybe_unused]] double dy = (static_cast<double>(size) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+  [[maybe_unused]] double dx = (static_cast<double>(size) * static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<0>(state.fullResolution)))));
+  [[maybe_unused]] double dy = (static_cast<double>(size) * static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   uv = glsl::Vec2((uv - static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec2 coord = glsl::FloatExpr<2>((static_cast<double>(dx) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<0>(uv)) / static_cast<double>(dx))))), (static_cast<double>(dy) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<1>(uv)) / static_cast<double>(dy))))));
   coord = glsl::Vec2((coord + static_cast<float>(0.5)));
-  return glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (((coord * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+  return glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide(((coord * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
 }
 
 [[nodiscard]] glsl::Vec3 posterize([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec3 color, [[maybe_unused]] double lev) noexcept {
@@ -3194,11 +3195,11 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] glsl::Vec2 rotate2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double rot) noexcept {
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   glsl::set_swizzle<0>(st, glsl::component_min(glsl::component_max(glsl::swizzle<0>(st), static_cast<float>(-9.999999680285692e+37)), static_cast<float>(1e38)));
   rot = map(state, context, frame, rot, static_cast<float>(0.0), static_cast<float>(360.0), static_cast<float>(0.0), static_cast<float>(2.0));
   [[maybe_unused]] double angle = (static_cast<double>(rot) * static_cast<double>(static_cast<float>(3.14159265359)));
-  [[maybe_unused]] double ox = glsl::component_min(glsl::component_max((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(-9.999999680285692e+37)), static_cast<float>(1e38));
+  [[maybe_unused]] double ox = glsl::component_min(glsl::component_max(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(-9.999999680285692e+37)), static_cast<float>(1e38));
   st = glsl::Vec2((st - glsl::FloatExpr<2>(ox, static_cast<float>(0.5))));
   [[maybe_unused]] double ca = glsl::cos(angle);
   [[maybe_unused]] double sa = glsl::sin(angle);
@@ -3326,7 +3327,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
       [[maybe_unused]] glsl::Vec2 tapBudget = (glsl::FloatExpr<2>(static_cast<float>(256.0)) * state.invFullResolution);
       tapB = glsl::Vec2(glsl::component_min(glsl::component_max(tapB, (-tapBudget)), tapBudget));
     }
-    [[maybe_unused]] glsl::Vec4 tex = sample_texture(*state.inputTex, ((((st + tapB) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+    [[maybe_unused]] glsl::Vec4 tex = sample_texture(*state.inputTex, glsl::metal_divide((((st + tapB) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
     products[static_cast<std::size_t>(glsl::detail::glsl_int_cast(t))] = glsl::Vec3(glsl::component_min(glsl::component_max((glsl::swizzle<0, 1, 2>(tex) * weight), glsl::FloatExpr<3>(static_cast<float>(-9.999999680285692e+37))), glsl::FloatExpr<3>(static_cast<float>(1e38))));
     total = (total + glsl::component_min(glsl::component_max(weight, static_cast<float>(-9.999999680285692e+37)), static_cast<float>(1e38)));
   }
@@ -3348,7 +3349,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2 uv = (globalCoord * state.invFullResolution);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0));
-  [[maybe_unused]] double sR = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(state.scaleAmt));
+  [[maybe_unused]] double sR = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(state.scaleAmt));
   [[maybe_unused]] double sC = glsl::component_min(glsl::component_max((static_cast<double>(state.scaleAmt) * static_cast<double>(sR)), static_cast<float>(-9.999999680285692e+37)), static_cast<float>(1e38));
   [[maybe_unused]] double scale = (static_cast<double>(static_cast<float>(100.0)) * static_cast<double>((static_cast<double>(sR) * static_cast<double>((static_cast<double>(static_cast<float>(2.0)) - static_cast<double>(sC))))));
   if (scale == static_cast<float>(0.0)) {
@@ -3360,8 +3361,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   uv = glsl::Vec2(glsl::component_min(glsl::component_max(uv, glsl::FloatExpr<2>(static_cast<float>(-9.999999680285692e+37))), glsl::FloatExpr<2>(static_cast<float>(1e38))));
   uv = glsl::Vec2((uv + static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec2 imageSize = state.fullResolution;
-  glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) - glsl::ceil((static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) - static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<0>(imageSize)))) * static_cast<double>(scale)))))))));
-  glsl::set_swizzle<1>(uv, (glsl::swizzle<1>(uv) + glsl::ceil((static_cast<double>((static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) + static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<1>(imageSize)))) * static_cast<double>(scale))))))) - static_cast<double>(scale)))));
+  glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) - glsl::ceil((static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) - static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<0>(imageSize)))) * static_cast<double>(scale)))))))));
+  glsl::set_swizzle<1>(uv, (glsl::swizzle<1>(uv) + glsl::ceil((static_cast<double>((static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) + static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<1>(imageSize)))) * static_cast<double>(scale))))))) - static_cast<double>(scale)))));
   [[maybe_unused]] double shiftXv = glsl::component_min(glsl::component_max((static_cast<double>(map(state, context, frame, state.offsetX, static_cast<float>(-100.0), static_cast<float>(100.0), (-scale), scale)) * static_cast<double>(static_cast<float>(1.5))), static_cast<float>(-9.999999680285692e+37)), static_cast<float>(1e38));
   [[maybe_unused]] double shiftYv = glsl::component_min(glsl::component_max((static_cast<double>(map(state, context, frame, state.offsetY, static_cast<float>(-100.0), static_cast<float>(100.0), (-scale), scale)) * static_cast<double>(static_cast<float>(1.5))), static_cast<float>(-9.999999680285692e+37)), static_cast<float>(1e38));
   uv = glsl::Vec2((uv - glsl::FloatExpr<2>(shiftXv, shiftYv)));
@@ -3441,7 +3442,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   loadKernels(state, context, frame);
   [[maybe_unused]] double blendy = periodicFunction(state, context, frame, (static_cast<double>(state.time) - static_cast<double>(offsets(state, context, frame, uv))));
   [[maybe_unused]] glsl::Vec2& origUV = uv;
-  [[maybe_unused]] glsl::Vec4 origcolor = sample_texture(*state.inputTex, (((uv * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 origcolor = sample_texture(*state.inputTex, glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
   color = glsl::Vec4(origcolor);
   if (state.EFFECT != std::int32_t(0)) {
     if (state.effectAmt != static_cast<float>(0.0)) {
@@ -3521,7 +3522,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -3927,7 +3928,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -4007,7 +4008,7 @@ struct State final : KernelState {
   }
   [[maybe_unused]] glsl::Vec2 diff = glsl::Vec2((static_cast<float>(0.5) - st));
   if (state.aspectLens) {
-    diff = glsl::Vec2((glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), glsl::swizzle<1>(st))));
+    diff = glsl::Vec2((glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), glsl::swizzle<1>(st))));
   }
   [[maybe_unused]] double centerDist = glsl::length(diff);
   [[maybe_unused]] double distort = static_cast<float>(0.0);
@@ -4022,12 +4023,12 @@ struct State final : KernelState {
   [[maybe_unused]] glsl::Vec2 lensedCoords = glsl::fract(((st - (diff * zoom)) - (((diff * centerDist) * centerDist) * distort)));
   [[maybe_unused]] double aberrationOffset = (static_cast<double>((static_cast<double>((static_cast<double>(map(state, context, state.aberration, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.05))) * static_cast<double>(centerDist))) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] double redOffset = glsl::mix(glsl::clamp((static_cast<double>(glsl::swizzle<0>(lensedCoords)) + static_cast<double>(aberrationOffset)), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<0>(lensedCoords), glsl::swizzle<0>(lensedCoords));
-  [[maybe_unused]] glsl::Vec2 localUV_red = glsl::fract((((glsl::FloatExpr<2>(redOffset, glsl::swizzle<1>(lensedCoords)) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 localUV_red = glsl::fract(glsl::metal_divide(((glsl::FloatExpr<2>(redOffset, glsl::swizzle<1>(lensedCoords)) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] glsl::Vec4 red = sample_texture(*state.inputTex, localUV_red);
-  [[maybe_unused]] glsl::Vec2 localUV_green = glsl::fract((((lensedCoords * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 localUV_green = glsl::fract(glsl::metal_divide(((lensedCoords * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] glsl::Vec4 green = sample_texture(*state.inputTex, localUV_green);
   [[maybe_unused]] double blueOffset = glsl::mix(glsl::swizzle<0>(lensedCoords), glsl::clamp((static_cast<double>(glsl::swizzle<0>(lensedCoords)) - static_cast<double>(aberrationOffset)), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<0>(lensedCoords));
-  [[maybe_unused]] glsl::Vec2 localUV_blue = glsl::fract((((glsl::FloatExpr<2>(blueOffset, glsl::swizzle<1>(lensedCoords)) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 localUV_blue = glsl::fract(glsl::metal_divide(((glsl::FloatExpr<2>(blueOffset, glsl::swizzle<1>(lensedCoords)) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] glsl::Vec4 blue = sample_texture(*state.inputTex, localUV_blue);
   return glsl::FloatExpr<4>(glsl::swizzle<0>(red), glsl::swizzle<1>(green), glsl::swizzle<2>(blue), glsl::swizzle<3>(green));
 }
@@ -4091,7 +4092,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0));
   [[maybe_unused]] double blendy = periodicFunction(state, context, (static_cast<double>(state.time) - static_cast<double>(offsets(state, context, uv))));
   color = glsl::Vec4(glitch(state, context, uv));
@@ -4155,7 +4156,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -4326,7 +4327,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] double circles([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return (static_cast<double>(dist) * static_cast<double>(freq));
 }
 
@@ -4378,7 +4379,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] glsl::Vec3 convolve([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] const Kernel9& kernel, [[maybe_unused]] bool divide) noexcept {
-  [[maybe_unused]] glsl::Vec2 steps = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 steps = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] Offsets9 offset{};
   offset[0] = glsl::Vec2(glsl::FloatExpr<2>((-glsl::swizzle<0>(steps)), (-glsl::swizzle<1>(steps))));
   offset[1] = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0), (-glsl::swizzle<1>(steps))));
@@ -4436,15 +4437,15 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] double diamonds([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) - (static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) - glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   st = glsl::Vec2((st * freq));
   return (static_cast<double>(glsl::sin((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))) + static_cast<double>(glsl::sin((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))));
 }
 
 [[nodiscard]] double getMetric([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st) noexcept {
-  [[maybe_unused]] glsl::Vec2 diff = (glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - st);
+  [[maybe_unused]] glsl::Vec2 diff = (glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - st);
   if (state.METRIC == std::int32_t(0)) {
-    return glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+    return glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   } else {
     if (state.METRIC == std::int32_t(1)) {
       return (static_cast<double>(glsl::abs(glsl::swizzle<0>(diff))) + static_cast<double>(glsl::abs(glsl::swizzle<1>(diff))));
@@ -4508,7 +4509,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 
 [[nodiscard]] glsl::Vec2 kaleidoscope([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double sides, [[maybe_unused]] double blendy) noexcept {
   [[maybe_unused]] double r = (static_cast<double>(getMetric(state, context, frame, st)) + static_cast<double>(blendy));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   [[maybe_unused]] double a = glsl::atan(glsl::swizzle<1>(st), glsl::swizzle<0>(st));
   [[maybe_unused]] double dir = {};
   if (state.DIRECTION == std::int32_t(1)) {
@@ -4595,7 +4596,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
       return shape(state, context, frame, st, std::int32_t(3), (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
     } else {
       if (state.LOOP_OFFSET == std::int32_t(30)) {
-        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
+        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
         if (state.LOOP_OFFSET == std::int32_t(40)) {
           return shape(state, context, frame, st, std::int32_t(4), (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
@@ -4740,8 +4741,8 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] glsl::Vec3 pixellate([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] double size) noexcept {
-  [[maybe_unused]] double dx = (static_cast<double>(size) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<0>(state.resolution)))));
-  [[maybe_unused]] double dy = (static_cast<double>(size) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<1>(state.resolution)))));
+  [[maybe_unused]] double dx = (static_cast<double>(size) * static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<0>(state.resolution)))));
+  [[maybe_unused]] double dy = (static_cast<double>(size) * static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<1>(state.resolution)))));
   [[maybe_unused]] glsl::Vec2 coord = glsl::FloatExpr<2>((static_cast<double>(dx) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<0>(uv)) / static_cast<double>(dx))))), (static_cast<double>(dy) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<1>(uv)) / static_cast<double>(dy))))));
   return glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, coord));
 }
@@ -4860,7 +4861,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] double rings([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return glsl::cos((static_cast<double>((static_cast<double>(dist) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(freq)));
 }
 
@@ -4900,7 +4901,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
   if (sides < std::int32_t(2)) {
     return glsl::distance(st, glsl::FloatExpr<2>(static_cast<float>(0.5)));
   }
-  st = glsl::Vec2(((glsl::FloatExpr<2>(glsl::swizzle<0>(st), (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(st)))) * static_cast<float>(2.0)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
+  st = glsl::Vec2(((glsl::FloatExpr<2>(glsl::swizzle<0>(st), (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(st)))) * static_cast<float>(2.0)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
   [[maybe_unused]] double a = (static_cast<double>(glsl::atan(glsl::swizzle<0>(st), glsl::swizzle<1>(st))) + static_cast<double>(static_cast<float>(3.14159265359)));
   [[maybe_unused]] double r = (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(float(sides)));
   return (static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>((static_cast<double>(glsl::floor((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(a) / static_cast<double>(r)))))) * static_cast<double>(r))) - static_cast<double>(a)))) * static_cast<double>(glsl::length(st)))) * static_cast<double>(blend));
@@ -4930,7 +4931,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] double sineNoise([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   [[maybe_unused]] glsl::Vec3 rand = randomFromLatticeWithOffset(state, context, frame, st, freq, glsl::IVec2(std::int32_t(20), std::int32_t(0)));
   [[maybe_unused]] double waveFreq = (static_cast<double>(glsl::swizzle<0>(rand)) * static_cast<double>(static_cast<float>(50.0)));
   [[maybe_unused]] double waveAmp = glsl::swizzle<1>(rand);
@@ -4971,7 +4972,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
 }
 
 [[nodiscard]] double value([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq, [[maybe_unused]] std::int32_t interp) noexcept {
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   if (interp == std::int32_t(3)) {
     return catmullRom3x3Value(state, context, frame, st, freq);
   } else {
@@ -5017,7 +5018,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   Frame frame{};
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0));
   loadKernels(state, context, frame);
   [[maybe_unused]] double lf = map(state, context, frame, state.loopScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(1.0));
@@ -5080,7 +5081,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -5100,22 +5101,22 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec3 saturate([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 color) noexcept;
 
 [[nodiscard]] double _distance([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 diff, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) * (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+  glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) * glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   [[maybe_unused]] double dist = static_cast<float>(1.0);
   if (state.shape == std::int32_t(0)) {
     dist = glsl::length(diff);
   } else {
     if (state.shape == std::int32_t(1)) {
-      dist = (static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5))))));
+      dist = (static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5))))));
     } else {
       if (state.shape == std::int32_t(2)) {
         dist = glsl::component_max(glsl::component_max((static_cast<double>(glsl::abs(glsl::swizzle<0>(diff))) - static_cast<double>((static_cast<double>(glsl::swizzle<1>(diff)) * static_cast<double>(static_cast<float>(-0.5))))), (static_cast<double>(static_cast<float>(-1.0)) * static_cast<double>(glsl::swizzle<1>(diff)))), glsl::component_max((static_cast<double>(glsl::abs(glsl::swizzle<0>(diff))) - static_cast<double>((static_cast<double>(glsl::swizzle<1>(diff)) * static_cast<double>(static_cast<float>(0.5))))), (static_cast<double>(static_cast<float>(1.0)) * static_cast<double>(glsl::swizzle<1>(diff)))));
       } else {
         if (state.shape == std::int32_t(3)) {
-          dist = glsl::component_max((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5))))))) / static_cast<double>(glsl::sqrt(static_cast<float>(2.0)))), glsl::component_max(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))))), glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5))))));
+          dist = glsl::component_max((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5))))))) / static_cast<double>(glsl::sqrt(static_cast<float>(2.0)))), glsl::component_max(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))))), glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5))))));
         } else {
           if (state.shape == std::int32_t(4)) {
-            dist = glsl::component_max(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))))), glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5)))));
+            dist = glsl::component_max(glsl::abs((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))))), glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(static_cast<float>(0.5)))));
           } else {
             if (state.shape == std::int32_t(6)) {
               dist = glsl::component_max((static_cast<double>(glsl::abs(glsl::swizzle<0>(diff))) - static_cast<double>((static_cast<double>(glsl::swizzle<1>(diff)) * static_cast<double>(static_cast<float>(-0.5))))), (static_cast<double>(static_cast<float>(-1.0)) * static_cast<double>(glsl::swizzle<1>(diff))));
@@ -5267,11 +5268,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec2 diff = (static_cast<float>(0.5) - uv);
   if (state.aspectLens) {
-    diff = glsl::Vec2((glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(uv)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), glsl::swizzle<1>(uv))));
+    diff = glsl::Vec2((glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(glsl::swizzle<0>(uv)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), glsl::swizzle<1>(uv))));
   }
   [[maybe_unused]] double centerDist = _distance(state, context, diff, uv);
   [[maybe_unused]] double distort = static_cast<float>(0.0);
@@ -5355,7 +5356,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -5786,8 +5787,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / glsl::swizzle<1>(state.fullResolution));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
   [[maybe_unused]] double xFreq = static_cast<float>(1.0);
   [[maybe_unused]] double yFreq = static_cast<float>(1.0);
   if (state.NOISE_TYPE == std::int32_t(10)) {
@@ -5885,7 +5886,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -6307,7 +6308,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = ((globalCoord - (static_cast<float>(0.5) * glsl::swizzle<0, 1>(state.fullResolution))) / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide((globalCoord - (static_cast<float>(0.5) * glsl::swizzle<0, 1>(state.fullResolution))), glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] glsl::Vec3 rayOrigin = glsl::FloatExpr<3>((static_cast<double>(state.offsetX) * static_cast<double>(static_cast<float>(0.1))), (static_cast<double>(state.offsetY) * static_cast<double>(static_cast<float>(0.1))), (static_cast<double>(static_cast<float>(-8.0)) + static_cast<double>((static_cast<double>((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318530718)))) * static_cast<double>(state.speed)))));
   [[maybe_unused]] glsl::Vec3 rayDirection = glsl::normalize(glsl::Vec3(st, static_cast<float>(1.0)));
   [[maybe_unused]] double d = rayMarch(state, context, rayOrigin, rayDirection);
@@ -6333,7 +6334,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double fogDist = glsl::clamp((static_cast<double>(d) / static_cast<double>(static_cast<float>(50.0))), static_cast<float>(0.0), static_cast<float>(1.0));
   glsl::set_swizzle<0, 1, 2>(color, glsl::mix(glsl::swizzle<0, 1, 2>(color), glsl::FloatExpr<3>(static_cast<float>(0.0)), fogDist));
-  st = glsl::Vec2((globalCoord / state.fullResolution));
+  st = glsl::Vec2(glsl::metal_divide(globalCoord, state.fullResolution));
   output = glsl::Vec4(color);
 }
 }  // namespace typed_13
@@ -6381,7 +6382,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -6530,7 +6531,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double circles([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return (static_cast<double>(dist) * static_cast<double>(freq));
 }
 
@@ -6591,8 +6592,8 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double diamonds([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  st = glsl::Vec2(((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / glsl::swizzle<1>(state.fullResolution)));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2(glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), glsl::swizzle<1>(state.fullResolution)));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * freq));
   return (static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))) + static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))));
 }
@@ -6608,9 +6609,9 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double getMetric([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st) noexcept {
-  [[maybe_unused]] glsl::Vec2 diff = (glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - st);
+  [[maybe_unused]] glsl::Vec2 diff = (glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)) - st);
   if (state.METRIC == std::int32_t(0)) {
-    return glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+    return glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   } else {
     if (state.METRIC == std::int32_t(1)) {
       return (static_cast<double>(glsl::abs(glsl::swizzle<0>(diff))) + static_cast<double>(glsl::abs(glsl::swizzle<1>(diff))));
@@ -6677,7 +6678,7 @@ struct State final : KernelState {
     return st;
   }
   [[maybe_unused]] double r = (static_cast<double>(getMetric(state, context, st)) + static_cast<double>(blendy));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2(rotate2D(state, context, st, static_cast<float>(0.5)));
   [[maybe_unused]] double a = glsl::atan(glsl::swizzle<1>(st), glsl::swizzle<0>(st));
   [[maybe_unused]] double ma = glsl::mod((static_cast<double>(a) - static_cast<double>(glsl::radians((static_cast<double>(static_cast<float>(360.0)) / static_cast<double>(sides))))), (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(sides)));
@@ -6825,7 +6826,7 @@ struct State final : KernelState {
       return shape(state, context, st, std::int32_t(3), (static_cast<double>(glsl::swizzle<0>(freq)) * static_cast<double>(static_cast<float>(0.5))));
     } else {
       if (state.LOOP_OFFSET == std::int32_t(30)) {
-        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(glsl::swizzle<0>(freq)))) * static_cast<double>(static_cast<float>(0.5)));
+        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(glsl::swizzle<0>(freq)))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
         if (state.LOOP_OFFSET == std::int32_t(40)) {
           return shape(state, context, st, std::int32_t(4), (static_cast<double>(glsl::swizzle<0>(freq)) * static_cast<double>(static_cast<float>(0.5))));
@@ -6861,7 +6862,7 @@ struct State final : KernelState {
                               return (static_cast<double>((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(glsl::swizzle<0>(freq)))) * static_cast<double>(static_cast<float>(0.5)));
                             } else {
                               if (state.LOOP_OFFSET == std::int32_t(300)) {
-                                st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
+                                st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
                                 return value(state, context, st, freq, (static_cast<double>(float(state.seed)) + static_cast<double>(static_cast<float>(50.0))), static_cast<float>(0.0));
                               } else {
                                 if (state.LOOP_OFFSET == std::int32_t(400)) {
@@ -6979,7 +6980,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double rings([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return glsl::cos((static_cast<double>((static_cast<double>(dist) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(freq)));
 }
 
@@ -6990,7 +6991,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double shape([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] std::int32_t sides, [[maybe_unused]] double blend) noexcept {
-  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
+  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
   [[maybe_unused]] double a = (static_cast<double>(glsl::atan(glsl::swizzle<0>(st), glsl::swizzle<1>(st))) + static_cast<double>(static_cast<float>(3.14159265359)));
   [[maybe_unused]] double r = (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(float(sides)));
   return (static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>((static_cast<double>(glsl::floor((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(a) / static_cast<double>(r)))))) * static_cast<double>(r))) - static_cast<double>(a)))) * static_cast<double>(glsl::length(st)))) * static_cast<double>(blend));
@@ -7094,9 +7095,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
   st = glsl::Vec2(kaleidoscope(state, context, st, state.kaleido, static_cast<float>(0.5)));
-  [[maybe_unused]] glsl::Vec2 centered = (st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 centered = (st - glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec2 freq = glsl::FloatExpr<2>(static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec2 lf = glsl::FloatExpr<2>(static_cast<float>(1.0));
   if (state.NOISE_TYPE == std::int32_t(11)) {
@@ -7146,7 +7147,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double blend = (static_cast<double>((static_cast<double>(periodicFunction(state, context, t)) * static_cast<double>(glsl::abs(state.speed)))) * static_cast<double>(static_cast<float>(0.01)));
   glsl::set_swizzle<0, 1, 2>(color, multires(state, context, centered, freq, state.octaves, float(state.seed), blend));
-  st = glsl::Vec2((globalCoord / state.fullResolution));
+  st = glsl::Vec2(glsl::metal_divide(globalCoord, state.fullResolution));
   output = glsl::Vec4(color);
 }
 }  // namespace typed_14
@@ -7185,7 +7186,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -7306,8 +7307,8 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 convolve([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] const Kernel9& kernel, [[maybe_unused]] bool divide) noexcept {
-  [[maybe_unused]] glsl::Vec2 localUV = (((uv * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
-  [[maybe_unused]] glsl::Vec2 steps = (static_cast<float>(1.0) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 steps = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] Offsets9 offset{};
   offset[0] = glsl::Vec2(glsl::FloatExpr<2>((-glsl::swizzle<0>(steps)), (-glsl::swizzle<1>(steps))));
   offset[1] = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0), (-glsl::swizzle<1>(steps))));
@@ -7380,14 +7381,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0));
-  [[maybe_unused]] glsl::Vec2 localUV = (((uv * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, localUV);
   [[maybe_unused]] double brightness = (static_cast<double>(desaturate(state, context, glsl::swizzle<0, 1, 2>(inputColor))) + static_cast<double>((static_cast<double>(state.direction) / static_cast<double>(static_cast<float>(360.0)))));
   [[maybe_unused]] double displacement = (static_cast<double>(state.amount) * static_cast<double>(static_cast<float>(0.01)));
   if ((glsl::swizzle<0>(state.fullResolution) > glsl::swizzle<0>(state.resolution)) || (glsl::swizzle<1>(state.fullResolution) > glsl::swizzle<1>(state.resolution))) {
-    [[maybe_unused]] double maxDisplacement = (static_cast<double>(static_cast<float>(256.0)) / static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution))));
+    [[maybe_unused]] double maxDisplacement = glsl::metal_divide(static_cast<double>(static_cast<float>(256.0)), static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution))));
     displacement = glsl::component_min(displacement, maxDisplacement);
   }
   if (state.mode == std::int32_t(0)) {
@@ -7400,7 +7401,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
@@ -7410,7 +7411,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       }
     }
   }
-  [[maybe_unused]] glsl::Vec2 warpedLocalUV = (((uv * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 warpedLocalUV = glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   color = glsl::Vec4(sample_texture(*state.inputTex, warpedLocalUV));
   glsl::set_swizzle<0, 1, 2>(color, blend(state, context, inputColor, color));
   output = glsl::Vec4(color);
@@ -7452,7 +7453,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -7589,7 +7590,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double circles([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return (static_cast<double>(dist) * static_cast<double>(freq));
 }
 
@@ -7608,8 +7609,8 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double diamonds([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  st = glsl::Vec2(((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / glsl::swizzle<1>(state.fullResolution)));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2(glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), glsl::swizzle<1>(state.fullResolution)));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * freq));
   return (static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))) + static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))));
 }
@@ -7698,7 +7699,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double offset([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   [[maybe_unused]] double d = static_cast<float>(0.0);
   if (state.LOOP_OFFSET == std::int32_t(10)) {
     d = circles(state, context, st, freq);
@@ -7707,7 +7708,7 @@ struct State final : KernelState {
       d = shape(state, context, st, std::int32_t(3), (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
     } else {
       if (state.LOOP_OFFSET == std::int32_t(30)) {
-        d = (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
+        d = (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
         if ((state.LOOP_OFFSET >= std::int32_t(40)) && (state.LOOP_OFFSET <= std::int32_t(80))) {
           [[maybe_unused]] std::int32_t sides = (state.LOOP_OFFSET / std::int32_t(10));
@@ -7930,12 +7931,12 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double rings([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return glsl::cos((static_cast<double>((static_cast<double>(dist) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(freq)));
 }
 
 [[nodiscard]] double shape([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] std::int32_t sides, [[maybe_unused]] double blend) noexcept {
-  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
+  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
   [[maybe_unused]] double a = (static_cast<double>(glsl::atan(glsl::swizzle<0>(st), glsl::swizzle<1>(st))) + static_cast<double>(static_cast<float>(3.14159265359)));
   [[maybe_unused]] double r = (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(float(sides)));
   return (static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>((static_cast<double>(glsl::floor((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(a) / static_cast<double>(r)))))) * static_cast<double>(r))) - static_cast<double>(a)))) * static_cast<double>(glsl::length(st)))) * static_cast<double>(blend));
@@ -7944,7 +7945,7 @@ struct State final : KernelState {
 [[nodiscard]] double simplexValue([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq, [[maybe_unused]] double s, [[maybe_unused]] double blend) noexcept {
   [[maybe_unused]] glsl::Vec4 C = glsl::FloatExpr<4>(static_cast<float>(0.211324865405187), static_cast<float>(0.366025403784439), static_cast<float>(-0.5773502588272095), static_cast<float>(0.024390243902439));
   [[maybe_unused]] glsl::Vec2 uv = (st * freq);
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) + s));
   [[maybe_unused]] glsl::Vec2 i = glsl::floor((uv + glsl::dot(uv, glsl::swizzle<1, 1>(C))));
   [[maybe_unused]] glsl::Vec2 x0 = ((uv - i) + glsl::dot(i, glsl::swizzle<0, 0>(C)));
@@ -7970,9 +7971,9 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double sineNoise([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * freq));
-  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
   [[maybe_unused]] glsl::FloatExpr<3> r1 = prng(state, context, glsl::FloatExpr<3>(float(state.seed)));
   [[maybe_unused]] glsl::FloatExpr<3> r2 = prng(state, context, glsl::FloatExpr<3>((static_cast<double>(float(state.seed)) + static_cast<double>(static_cast<float>(10.0)))));
   [[maybe_unused]] double scaleA = (static_cast<double>(glsl::swizzle<0>(r1)) * static_cast<double>(static_cast<float>(6.28318530718)));
@@ -7985,7 +7986,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double value([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq, [[maybe_unused]] std::int32_t interp) noexcept {
-  [[maybe_unused]] glsl::Vec2 st2 = (st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 st2 = (st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5)));
   [[maybe_unused]] double scaledTime = static_cast<float>(1.0);
   [[maybe_unused]] double d = static_cast<float>(0.0);
   if (interp == std::int32_t(5)) {
@@ -8026,9 +8027,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] double freq = static_cast<float>(1.0);
   if (state.LOOP_OFFSET == std::int32_t(350)) {
     freq = map(state, context, state.loopScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(12.0), static_cast<float>(0.5));
@@ -8153,7 +8154,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -8562,7 +8563,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = ((globalCoord - (static_cast<float>(0.5) * glsl::swizzle<0, 1>(state.fullResolution))) / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide((globalCoord - (static_cast<float>(0.5) * glsl::swizzle<0, 1>(state.fullResolution))), glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] glsl::Vec3 rayOrigin = glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), (-state.cameraDist));
   [[maybe_unused]] glsl::Vec3 rayDirection = glsl::normalize(glsl::Vec3(st, static_cast<float>(1.0)));
   [[maybe_unused]] TransformData transformData = computeTransformData(state, context);
@@ -8608,7 +8609,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   } else {
     color = glsl::Vec4(glsl::mix(color, glsl::Vec4(state.bgColor, (static_cast<double>(state.bgAlpha) * static_cast<double>(static_cast<float>(0.01)))), glsl::floor(fogDist)));
   }
-  st = glsl::Vec2((globalCoord / state.fullResolution));
+  st = glsl::Vec2(glsl::metal_divide(globalCoord, state.fullResolution));
   output = glsl::Vec4(color);
 }
 }  // namespace typed_17
@@ -8647,7 +8648,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -8811,7 +8812,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double circles([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return (static_cast<double>(dist) * static_cast<double>(freq));
 }
 
@@ -8823,8 +8824,8 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double diamonds([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  st = glsl::Vec2(((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / glsl::swizzle<1>(state.fullResolution)));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2(glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), glsl::swizzle<1>(state.fullResolution)));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * freq));
   return (static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))) + static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))));
 }
@@ -8904,7 +8905,7 @@ struct State final : KernelState {
       return shape(state, context, st, std::int32_t(3), (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
     } else {
       if (loopOffset == std::int32_t(30)) {
-        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
+        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
         if ((loopOffset >= std::int32_t(40)) && (loopOffset <= std::int32_t(120))) {
           [[maybe_unused]] std::int32_t sides = (loopOffset / std::int32_t(10));
@@ -9085,20 +9086,20 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double rings([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return glsl::cos((static_cast<double>((static_cast<double>(dist) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(freq)));
 }
 
 [[nodiscard]] glsl::Vec2 rotate2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double rot) noexcept {
   [[maybe_unused]] double angle = (rot *= static_cast<float>(3.14159265359));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))), static_cast<float>(0.5))));
   st = glsl::Vec2((glsl::Mat2(glsl::Vec2(glsl::cos(angle), (-glsl::sin(angle))), glsl::Vec2(glsl::sin(angle), glsl::cos(angle))) * st));
-  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))), static_cast<float>(0.5))));
   return st;
 }
 
 [[nodiscard]] double shape([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] std::int32_t sides, [[maybe_unused]] double blend) noexcept {
-  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
+  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
   [[maybe_unused]] double a = (static_cast<double>(glsl::atan(glsl::swizzle<0>(st), glsl::swizzle<1>(st))) + static_cast<double>(static_cast<float>(3.14159265359)));
   [[maybe_unused]] double r = (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(float(sides)));
   return (static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>((static_cast<double>(glsl::floor((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(a) / static_cast<double>(r)))))) * static_cast<double>(r))) - static_cast<double>(a)))) * static_cast<double>(glsl::length(st)))) * static_cast<double>(blend));
@@ -9191,7 +9192,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] double lf1 = map(state, context, state.loopAScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(1.0));
   if (state.wrap) {
     lf1 = glsl::floor(lf1);
@@ -9235,7 +9236,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   glsl::set_swizzle<0, 1, 2>(color, pal(state, context, d));
-  st = glsl::Vec2((globalCoord / state.fullResolution));
+  st = glsl::Vec2(glsl::metal_divide(globalCoord, state.fullResolution));
   output = glsl::Vec4(color);
 }
 }  // namespace typed_18
@@ -9274,7 +9275,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9343,7 +9344,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double shape([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] std::int32_t sides, [[maybe_unused]] double blend) noexcept {
-  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
+  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
   [[maybe_unused]] double a = (static_cast<double>(glsl::atan(glsl::swizzle<0>(st), glsl::swizzle<1>(st))) + static_cast<double>(static_cast<float>(3.14159265359)));
   [[maybe_unused]] double r = (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(float(sides)));
   return (static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>((static_cast<double>(glsl::floor((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(a) / static_cast<double>(r)))))) * static_cast<double>(r))) - static_cast<double>(a)))) * static_cast<double>(glsl::length(st)))) * static_cast<double>(blend));
@@ -9375,16 +9376,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec2 noiseCoord = (uv * glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 noiseCoord = (uv * glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0)));
   if (state.useSpecks) {
     [[maybe_unused]] double speckMask = speckle(state, context, (noiseCoord + state.speckSeed), (glsl::FloatExpr<2>(static_cast<float>(32.0)) * map(state, context, state.speckScale, static_cast<float>(1.0), static_cast<float>(5.0), static_cast<float>(2.0), static_cast<float>(0.5))));
     if (state.speckMode == std::int32_t(0)) {
       glsl::set_swizzle<0, 1, 2>(color, glsl::mix(glsl::swizzle<0, 1, 2>(color), state.speckColor, speckMask));
     } else {
       if (state.speckMode == std::int32_t(1)) {
-        color = glsl::Vec4(sample_texture(*state.inputTex, ((((uv + (static_cast<double>(speckMask) * static_cast<double>(static_cast<float>(0.1)))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+        color = glsl::Vec4(sample_texture(*state.inputTex, glsl::metal_divide((((uv + (static_cast<double>(speckMask) * static_cast<double>(static_cast<float>(0.1)))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
       } else {
         if (state.speckMode == std::int32_t(2)) {
           glsl::set_swizzle<0, 1, 2>(color, glsl::mix(glsl::swizzle<0, 1, 2>(color), (static_cast<float>(1.0) - glsl::swizzle<0, 1, 2>(color)), speckMask));
@@ -9402,7 +9403,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       glsl::set_swizzle<0, 1, 2>(color, glsl::mix(glsl::swizzle<0, 1, 2>(color), state.splatColor, splatMask));
     } else {
       if (state.mode == std::int32_t(1)) {
-        [[maybe_unused]] glsl::Vec4 texColor = sample_texture(*state.inputTex, ((((uv + (static_cast<double>(splatMask) * static_cast<double>(static_cast<float>(0.1)))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+        [[maybe_unused]] glsl::Vec4 texColor = sample_texture(*state.inputTex, glsl::metal_divide((((uv + (static_cast<double>(splatMask) * static_cast<double>(static_cast<float>(0.1)))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
         color = glsl::Vec4(glsl::mix(color, texColor, splatMask));
       } else {
         if (state.mode == std::int32_t(2)) {
@@ -9442,7 +9443,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9544,9 +9545,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const double TAU = static_cast<float>(6.28318530718);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, uv);
-  glsl::set_swizzle<0, 1, 2>(color, ((glsl::swizzle<3>(color) > static_cast<float>(0.0)) ? glsl::Vec3((glsl::swizzle<0, 1, 2>(color) / glsl::swizzle<3>(color))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0)))));
+  glsl::set_swizzle<0, 1, 2>(color, ((glsl::swizzle<3>(color) > static_cast<float>(0.0)) ? glsl::Vec3(glsl::metal_divide(glsl::swizzle<0, 1, 2>(color), glsl::swizzle<3>(color))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0)))));
   if (state.mode == std::int32_t(1)) {
     glsl::set_swizzle<0, 1, 2>(color, hsv2rgb(state, context, glsl::swizzle<0, 1, 2>(color)));
   } else {
@@ -9597,7 +9598,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9626,7 +9627,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (luma >= threshHigh) {
       bloomFactor = static_cast<float>(1.0);
     } else {
-      [[maybe_unused]] double t = (static_cast<double>((static_cast<double>(luma) - static_cast<double>(threshLow))) / static_cast<double>((static_cast<double>(threshHigh) - static_cast<double>(threshLow))));
+      [[maybe_unused]] double t = glsl::metal_divide(static_cast<double>((static_cast<double>(luma) - static_cast<double>(threshLow))), static_cast<double>((static_cast<double>(threshHigh) - static_cast<double>(threshLow))));
       bloomFactor = (static_cast<double>((static_cast<double>(t) * static_cast<double>(t))) * static_cast<double>((static_cast<double>(static_cast<float>(3.0)) - static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(t))))));
     }
   }
@@ -9655,7 +9656,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9700,7 +9701,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9719,8 +9720,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const double GOLDEN_ANGLE = static_cast<float>(2.39996323);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.inputTex));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / texSize);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), texSize);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
   [[maybe_unused]] glsl::Vec2 radiusUV = ((static_cast<double>(state.radius) * static_cast<double>(state.renderScale)) * texelSize);
   [[maybe_unused]] std::int32_t tapCount = glsl::clamp(state.taps, std::int32_t(1), MAX_TAPS);
   [[maybe_unused]] glsl::Vec3 bloomAccum = glsl::FloatExpr<3>(static_cast<float>(0.0));
@@ -9729,7 +9730,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (i >= tapCount) {
       break;
     }
-    [[maybe_unused]] double t = (static_cast<double>(float(i)) / static_cast<double>(float(tapCount)));
+    [[maybe_unused]] double t = glsl::metal_divide(static_cast<double>(float(i)), static_cast<double>(float(tapCount)));
     [[maybe_unused]] double r = glsl::sqrt(t);
     [[maybe_unused]] double theta = (static_cast<double>(float(i)) * static_cast<double>(GOLDEN_ANGLE));
     [[maybe_unused]] glsl::Vec2 offset = (glsl::FloatExpr<2>(glsl::cos(theta), glsl::sin(theta)) * r);
@@ -9767,7 +9768,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9784,8 +9785,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
   [[maybe_unused]] std::int32_t radius = state.runtime_loop_radius;
   if (radius <= std::int32_t(0)) {
     output = glsl::Vec4(sample_texture(*state.inputTex, uv));
@@ -9797,7 +9798,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double weightSum = static_cast<float>(0.0);
   for ([[maybe_unused]] std::int32_t i = (-radius); (i <= radius); ++i) {
     [[maybe_unused]] double x = float(i);
-    [[maybe_unused]] double weight = glsl::exp((static_cast<double>((-(static_cast<double>(x) * static_cast<double>(x)))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
+    [[maybe_unused]] double weight = glsl::exp(glsl::metal_divide(static_cast<double>((-(static_cast<double>(x) * static_cast<double>(x)))), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
     [[maybe_unused]] glsl::Vec2 offset = glsl::FloatExpr<2>((static_cast<double>(float(i)) * static_cast<double>(glsl::swizzle<0>(texelSize))), static_cast<float>(0.0));
     sum = glsl::Vec4((sum + glsl::Vec4((sample_texture(*state.inputTex, (uv + offset)) * weight))));
     weightSum = (weightSum + weight);
@@ -9833,7 +9834,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9850,8 +9851,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
   [[maybe_unused]] std::int32_t radius = state.runtime_loop_radius;
   if (radius <= std::int32_t(0)) {
     output = glsl::Vec4(sample_texture(*state.inputTex, uv));
@@ -9863,7 +9864,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double weightSum = static_cast<float>(0.0);
   for ([[maybe_unused]] std::int32_t i = (-radius); (i <= radius); ++i) {
     [[maybe_unused]] double x = float(i);
-    [[maybe_unused]] double weight = glsl::exp((static_cast<double>((-(static_cast<double>(x) * static_cast<double>(x)))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
+    [[maybe_unused]] double weight = glsl::exp(glsl::metal_divide(static_cast<double>((-(static_cast<double>(x) * static_cast<double>(x)))), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
     [[maybe_unused]] glsl::Vec2 offset = glsl::FloatExpr<2>(static_cast<float>(0.0), (static_cast<double>(float(i)) * static_cast<double>(glsl::swizzle<1>(texelSize))));
     sum = glsl::Vec4((sum + glsl::Vec4((sample_texture(*state.inputTex, (uv + offset)) * weight))));
     weightSum = (weightSum + weight);
@@ -9902,7 +9903,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -9929,9 +9930,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>(state.rotation) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
   [[maybe_unused]] double intensity = (static_cast<double>(state.strength) * static_cast<double>(static_cast<float>(-0.009999999776482582)));
   uv = glsl::Vec2((uv - static_cast<float>(0.5)));
@@ -9946,7 +9947,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   uv = glsl::Vec2((uv + static_cast<float>(0.5)));
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
@@ -9955,7 +9956,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>((-state.rotation)) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
-  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::fract((((uv * state.fullResolution) - state.tileOffset) / state.resolution));
+  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::fract(glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), state.resolution));
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, sampleUV);
     [[maybe_unused]] glsl::Vec2 dy = glsl::dFdy(context, sampleUV);
@@ -9992,7 +9993,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10009,7 +10010,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 celColor = sample_texture(*state.colorTex, uv);
   [[maybe_unused]] double edgeStrength = glsl::swizzle<0>(sample_texture(*state.edgeTex, uv));
@@ -10041,7 +10042,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10091,7 +10092,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const double MIN_GAMMA = static_cast<float>(1e-3);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double lev = float(state.levels);
   [[maybe_unused]] glsl::Vec3 lightDir = glsl::normalize(state.lightDirection);
@@ -10100,8 +10101,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double shadeFactor = glsl::mix(static_cast<float>(1.0), (static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(diffuse)))), state.strength);
   [[maybe_unused]] glsl::Vec3 shadedColor = (glsl::swizzle<0, 1, 2>(origColor) * shadeFactor);
   [[maybe_unused]] double gamma_value = glsl::component_max(state.gamma, MIN_GAMMA);
-  [[maybe_unused]] double inv_gamma = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(gamma_value));
-  [[maybe_unused]] double inv_factor = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(lev));
+  [[maybe_unused]] double inv_gamma = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(gamma_value));
+  [[maybe_unused]] double inv_factor = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(lev));
   [[maybe_unused]] double half_step = (static_cast<double>(inv_factor) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec3 working_rgb = srgb_to_linear_rgb(state, context, shadedColor);
   working_rgb = glsl::Vec3(pow_vec3(state, context, glsl::clamp(working_rgb, glsl::FloatExpr<3>(static_cast<float>(0.0)), glsl::FloatExpr<3>(static_cast<float>(1.0))), gamma_value));
@@ -10141,7 +10142,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10221,7 +10222,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10237,7 +10238,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = ((glsl::swizzle<0, 1>(context.frag_coord) - static_cast<float>(0.5)) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) - static_cast<float>(0.5)), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 c = sample_texture(*state.inputTex, st);
   [[maybe_unused]] double v = {};
   if (state.channel == std::int32_t(0)) {
@@ -10278,7 +10279,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10312,7 +10313,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec3 hsv = rgb2hsv(state, context, glsl::swizzle<0, 1, 2>(color));
   [[maybe_unused]] double hue = glsl::swizzle<0>(hsv);
@@ -10346,7 +10347,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10368,18 +10369,18 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
-  [[maybe_unused]] double globalAspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
+  [[maybe_unused]] double globalAspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
   [[maybe_unused]] glsl::Vec2 diff = (glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(globalAspect)), static_cast<float>(0.5)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(globalUV)) * static_cast<double>(globalAspect)), glsl::swizzle<1>(globalUV)));
   [[maybe_unused]] double centerDist = glsl::length(diff);
   [[maybe_unused]] double aberrationOffset = (static_cast<double>((static_cast<double>((static_cast<double>(map(state, context, state.aberrationAmt, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.05))) * static_cast<double>(centerDist))) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] double redOffset = glsl::mix(glsl::clamp((static_cast<double>(glsl::swizzle<0>(uv)) + static_cast<double>(aberrationOffset)), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<0>(uv), glsl::swizzle<0>(uv));
-  [[maybe_unused]] glsl::Vec4 red = sample_texture(*state.inputTex, (((glsl::FloatExpr<2>(redOffset, glsl::swizzle<1>(uv)) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 green = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 red = sample_texture(*state.inputTex, glsl::metal_divide(((glsl::FloatExpr<2>(redOffset, glsl::swizzle<1>(uv)) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 green = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] double blueOffset = glsl::mix(glsl::swizzle<0>(uv), glsl::clamp((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(aberrationOffset)), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<0>(uv));
-  [[maybe_unused]] glsl::Vec4 blue = sample_texture(*state.inputTex, (((glsl::FloatExpr<2>(blueOffset, glsl::swizzle<1>(uv)) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 blue = sample_texture(*state.inputTex, glsl::metal_divide(((glsl::FloatExpr<2>(blueOffset, glsl::swizzle<1>(uv)) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] glsl::Vec3 aberrated = glsl::FloatExpr<3>(glsl::swizzle<0>(red), glsl::swizzle<1>(green), glsl::swizzle<2>(blue));
   [[maybe_unused]] glsl::Vec3 edges = (aberrated - glsl::swizzle<0, 1, 2>(green));
   [[maybe_unused]] glsl::Vec3 original = (glsl::swizzle<0, 1, 2>(green) * map(state, context, state.passthru, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(2.0)));
@@ -10404,7 +10405,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10419,7 +10420,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(1.0), static_cast<float>(16.0), (static_cast<double>(state.smoothness) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -10430,8 +10431,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -10456,7 +10457,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10471,7 +10472,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(1.0), static_cast<float>(16.0), (static_cast<double>(state.smoothness) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -10482,8 +10483,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -10510,7 +10511,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10531,13 +10532,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] double hL = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, (uv - glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0))))));
   [[maybe_unused]] double hR = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, (uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0))))));
   [[maybe_unused]] double hB = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, (uv - glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel))))));
   [[maybe_unused]] double hT = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, (uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel))))));
-  [[maybe_unused]] glsl::Vec2 grad = glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(hR) - static_cast<double>(hL))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<0>(texel))))), (static_cast<double>((static_cast<double>(hT) - static_cast<double>(hB))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<1>(texel))))));
+  [[maybe_unused]] glsl::Vec2 grad = glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(hR) - static_cast<double>(hL))), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<0>(texel))))), glsl::metal_divide(static_cast<double>((static_cast<double>(hT) - static_cast<double>(hB))), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<1>(texel))))));
   [[maybe_unused]] glsl::Vec2 uv2 = (uv + ((grad * texel) * (static_cast<double>(state.distortion) / static_cast<double>(static_cast<float>(100.0)))));
   [[maybe_unused]] double h2 = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, uv2)));
   [[maybe_unused]] double cycles = glsl::mix(static_cast<float>(1.0), static_cast<float>(7.0), (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0))));
@@ -10571,7 +10572,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10652,21 +10653,21 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 resolution = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / tileDims);
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), tileDims);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), resolution);
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, uv);
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 seedOffset = glsl::FloatExpr<2>((static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(17.31))), (static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(23.71))));
   [[maybe_unused]] double animPhase = (static_cast<double>((static_cast<double>(state.time) * static_cast<double>(TAU))) * static_cast<double>(float(state.speed)));
   [[maybe_unused]] double animSpeed = float(state.speed);
-  [[maybe_unused]] glsl::Vec2 cloudUV = (((globalUV * glsl::FloatExpr<2>(aspect, static_cast<float>(1.0))) / state.scale) + seedOffset);
+  [[maybe_unused]] glsl::Vec2 cloudUV = (glsl::metal_divide((globalUV * glsl::FloatExpr<2>(aspect, static_cast<float>(1.0))), state.scale) + seedOffset);
   [[maybe_unused]] double cloud = cloudNoise(state, context, cloudUV, static_cast<float>(1.0), std::int32_t(7), animPhase, animSpeed);
   [[maybe_unused]] double cloudMask = glsl::smoothstep(static_cast<float>(0.45), static_cast<float>(0.65), cloud);
   [[maybe_unused]] double cloudDepth = glsl::smoothstep(static_cast<float>(0.45), static_cast<float>(0.85), cloud);
   [[maybe_unused]] double cloudBrightness = glsl::mix(static_cast<float>(0.75), static_cast<float>(1.0), cloudDepth);
   [[maybe_unused]] double shadowDist = (static_cast<double>(glsl::component_min(glsl::swizzle<0>(resolution), glsl::swizzle<1>(resolution))) * static_cast<double>(static_cast<float>(0.008)));
-  [[maybe_unused]] glsl::Vec2 shadowOffset = (glsl::FloatExpr<2>((-shadowDist), shadowDist) / resolution);
-  [[maybe_unused]] glsl::Vec2 shadowUV = ((((globalUV + shadowOffset) * glsl::FloatExpr<2>(aspect, static_cast<float>(1.0))) / state.scale) + seedOffset);
+  [[maybe_unused]] glsl::Vec2 shadowOffset = glsl::metal_divide(glsl::FloatExpr<2>((-shadowDist), shadowDist), resolution);
+  [[maybe_unused]] glsl::Vec2 shadowUV = (glsl::metal_divide(((globalUV + shadowOffset) * glsl::FloatExpr<2>(aspect, static_cast<float>(1.0))), state.scale) + seedOffset);
   [[maybe_unused]] double shadowCloud = cloudNoise(state, context, shadowUV, static_cast<float>(1.0), std::int32_t(7), animPhase, animSpeed);
   [[maybe_unused]] double shadowMask = glsl::smoothstep(static_cast<float>(0.45), static_cast<float>(0.65), shadowCloud);
   [[maybe_unused]] double shadow = (static_cast<double>(glsl::component_max((static_cast<double>(shadowMask) - static_cast<double>(cloudMask)), static_cast<float>(0.0))) * static_cast<double>(static_cast<float>(0.5)));
@@ -10700,7 +10701,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10716,7 +10717,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(glsl::component_max(texture_size(*state.inputTex), glsl::IVec2(std::int32_t(1)))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(glsl::component_max(texture_size(*state.inputTex), glsl::IVec2(std::int32_t(1)))));
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, st);
   [[maybe_unused]] double dist = (static_cast<double>(glsl::length((glsl::swizzle<0, 1, 2>(src) - state.targetColor))) / static_cast<double>(static_cast<float>(1.7320508)));
   [[maybe_unused]] double halfBand = (static_cast<double>(state.smoothing) * static_cast<double>(static_cast<float>(0.5)));
@@ -10747,7 +10748,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10793,7 +10794,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10825,7 +10826,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       [[maybe_unused]] glsl::IVec2 samplePos = (coord + glsl::IVec2(kx, ky));
       samplePos = glsl::clamp(samplePos, glsl::IVec2(std::int32_t(0)), (texSize - std::int32_t(1)));
       [[maybe_unused]] double dist2 = float(((kx * kx) + (ky * ky)));
-      [[maybe_unused]] double weight = glsl::exp((static_cast<double>((-dist2)) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
+      [[maybe_unused]] double weight = glsl::exp(glsl::metal_divide(static_cast<double>((-dist2)), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
       [[maybe_unused]] glsl::Vec4 texSample = fetch_texel(*state.inputTex, samplePos);
       sum = glsl::Vec3((sum + (glsl::swizzle<0, 1, 2>(texSample) * weight)));
       weightSum = (weightSum + weight);
@@ -10863,7 +10864,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -10895,7 +10896,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       [[maybe_unused]] glsl::IVec2 samplePos = (coord + glsl::IVec2(kx, ky));
       samplePos = glsl::clamp(samplePos, glsl::IVec2(std::int32_t(0)), (texSize - std::int32_t(1)));
       [[maybe_unused]] double dist2 = float(((kx * kx) + (ky * ky)));
-      [[maybe_unused]] double weight = glsl::exp((static_cast<double>((-dist2)) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
+      [[maybe_unused]] double weight = glsl::exp(glsl::metal_divide(static_cast<double>((-dist2)), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma2)))));
       [[maybe_unused]] glsl::Vec4 texSample = fetch_texel(*state.inputTex, samplePos);
       blurSum = glsl::Vec3((blurSum + (glsl::swizzle<0, 1, 2>(texSample) * weight)));
       weightSum = (weightSum + weight);
@@ -10944,7 +10945,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -11077,14 +11078,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texture_size(*state.inputTex));
   [[maybe_unused]] glsl::Vec2 resolution = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, resolution);
   [[maybe_unused]] double rs = glsl::component_max(state.renderScale, static_cast<float>(1.0));
-  [[maybe_unused]] double resX = (static_cast<double>(glsl::swizzle<0>(resolution)) / static_cast<double>(rs));
+  [[maybe_unused]] double resX = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(resolution)), static_cast<double>(rs));
   [[maybe_unused]] double spd = glsl::floor(state.speed);
   [[maybe_unused]] double t = (static_cast<double>((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318530718)))) * static_cast<double>(spd));
-  [[maybe_unused]] double rawRow = (static_cast<double>(glsl::swizzle<1>(globalCoord)) / static_cast<double>(rs));
+  [[maybe_unused]] double rawRow = glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(globalCoord)), static_cast<double>(rs));
   [[maybe_unused]] double bh = glsl::component_max(static_cast<float>(1.0), glsl::floor((static_cast<double>(state.bandHeight) * static_cast<double>(static_cast<float>(0.32)))));
-  [[maybe_unused]] double row = glsl::floor((static_cast<double>(rawRow) / static_cast<double>(bh)));
+  [[maybe_unused]] double row = glsl::floor(glsl::metal_divide(static_cast<double>(rawRow), static_cast<double>(bh)));
   [[maybe_unused]] double rt = rowTime(state, context, row, t);
   [[maybe_unused]] glsl::Vec3 rowHash = lineHash(state, context, row, rt);
   [[maybe_unused]] double prob = (static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(100.0)));
@@ -11147,7 +11148,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -11229,7 +11230,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double seedF = float(state.seed);
   [[maybe_unused]] double kC = crackMask(state, context, globalCoord, state.spacing, state.depth, seedF);
@@ -11275,7 +11276,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -11774,7 +11775,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -12041,16 +12042,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
   [[maybe_unused]] double width_f = glsl::swizzle<0>(fullRes);
   [[maybe_unused]] double height_f = glsl::swizzle<1>(fullRes);
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::FloatExpr<2>((static_cast<double>(float(glsl::swizzle<0>(global_id))) + static_cast<double>(glsl::swizzle<0>(state.tileOffset))), (static_cast<double>(float(glsl::swizzle<1>(global_id))) + static_cast<double>(glsl::swizzle<1>(state.tileOffset)))) + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) / glsl::FloatExpr<2>(glsl::component_max(width_f, static_cast<float>(1.0)), glsl::component_max(height_f, static_cast<float>(1.0))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::FloatExpr<2>((static_cast<double>(float(glsl::swizzle<0>(global_id))) + static_cast<double>(glsl::swizzle<0>(state.tileOffset))), (static_cast<double>(float(glsl::swizzle<1>(global_id))) + static_cast<double>(glsl::swizzle<1>(state.tileOffset)))) + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))), glsl::FloatExpr<2>(glsl::component_max(width_f, static_cast<float>(1.0)), glsl::component_max(height_f, static_cast<float>(1.0))));
   [[maybe_unused]] double mask = singularity_mask(state, context, uv, width_f, height_f);
   if (mask <= static_cast<float>(0.0)) {
     output = glsl::Vec4(original);
     return;
   }
-  [[maybe_unused]] double renderScale = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.resolution), static_cast<float>(1.0)))) : static_cast<float>(1.0));
+  [[maybe_unused]] double renderScale = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.resolution), static_cast<float>(1.0)))) : static_cast<float>(1.0));
   [[maybe_unused]] bool isTiling = (renderScale > static_cast<float>(1.01));
   [[maybe_unused]] double maxOffsetPixels = (isTiling ? static_cast<float>(256.0) : glsl::component_max(glsl::swizzle<0>(state.resolution), glsl::swizzle<1>(state.resolution)));
-  [[maybe_unused]] double maxAllowedDisplacement = (isTiling ? (static_cast<double>(maxOffsetPixels) / static_cast<double>(glsl::component_max(width_f, height_f))) : (static_cast<double>(maxOffsetPixels) / static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.resolution), static_cast<float>(1.0)))));
+  [[maybe_unused]] double maxAllowedDisplacement = (isTiling ? glsl::metal_divide(static_cast<double>(maxOffsetPixels), static_cast<double>(glsl::component_max(width_f, height_f))) : glsl::metal_divide(static_cast<double>(maxOffsetPixels), static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.resolution), static_cast<float>(1.0)))));
   [[maybe_unused]] double clampedDisplacement = glsl::component_min(state.displacement, maxAllowedDisplacement);
   [[maybe_unused]] glsl::Vec2 freq = freq_for_shape(state, context, static_cast<float>(2.0), width_f, height_f);
   [[maybe_unused]] glsl::Vec2 base_pos = glsl::FloatExpr<2>(float(glsl::swizzle<0>(global_id)), float(glsl::swizzle<1>(global_id)));
@@ -12083,7 +12084,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -12106,7 +12107,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec2 localUV = (glsl::swizzle<0, 1>(context.frag_coord) * texelSize);
   [[maybe_unused]] double radiusPixels = (static_cast<double>(state.amount) * static_cast<double>(state.renderScale));
   radiusPixels = glsl::component_min(radiusPixels, static_cast<float>(256.0));
@@ -12139,7 +12140,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -12170,7 +12171,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < N); ++i) {
     [[maybe_unused]] double t = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(float(i)) / static_cast<double>(float((N - std::int32_t(1)))))) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>(state.blurDistance))) + static_cast<double>(jitter));
     [[maybe_unused]] glsl::Vec2 offset = (dir * t);
-    sum = glsl::Vec4((sum + sample_texture(*state.inputTex, ((glsl::swizzle<0, 1>(context.frag_coord) + offset) / state.resolution))));
+    sum = glsl::Vec4((sum + sample_texture(*state.inputTex, glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + offset), state.resolution))));
   }
   output = glsl::Vec4((sum / float(N)));
 }
@@ -12356,7 +12357,7 @@ static const std::array<glsl::Vec3, 16> EGA{{
   return table[static_cast<std::size_t>(y * 8 + x)];
 }
 [[nodiscard]] inline glsl::Vec4 dither_sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] inline glsl::Vec4 dither_fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -12427,7 +12428,7 @@ struct State final : KernelState {
   const glsl::IVec2 local(dither_i32(static_cast<double>(cell[0]) - static_cast<double>(blockOrigin[0])), dither_i32(static_cast<double>(cell[1]) - static_cast<double>(blockOrigin[1])));
   const glsl::UVec3 jitter = dither_pcg(glsl::UVec3(dither_u32_after_i32(static_cast<double>(blockOriginFloat[0]) + 1.0), dither_u32_after_i32(static_cast<double>(blockOriginFloat[1]) + 1.0), 0x517cc1b7U));  // C08/C09
   const std::int32_t apronX = FS_APRON_MIN + static_cast<std::int32_t>(jitter[0] % static_cast<std::uint32_t>(FS_APRON_MAX - FS_APRON_MIN + 1)); const std::int32_t apronY = FS_APRON_MIN + static_cast<std::int32_t>(jitter[1] % static_cast<std::uint32_t>(FS_APRON_MAX - FS_APRON_MIN + 1));
-  const double stepScale = state.palette == 0 ? 1.0 / static_cast<double>(state.levels) : 0.25;  // C29 Number carrier
+  const double stepScale = state.palette == 0 ? glsl::metal_divide(1.0, static_cast<double>(state.levels)) : 0.25;  // C29 Number carrier
   const glsl::Vec3 bias(noisemaker::f32(state.threshold * stepScale));
   std::array<glsl::Vec3, 18> errRow{glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F), glsl::Vec3(0.0F)};  // A-ERR_ROW/F21
   for (std::int32_t i = 0; i < FS_ERR_W; ++i) { const glsl::Vec3 seed = fsSeedNoise(blockOriginFloat, i); errRow[static_cast<std::size_t>(i)] = glsl::Vec3(noisemaker::f32(static_cast<double>(seed[0]) * stepScale), noisemaker::f32(static_cast<double>(seed[1]) * stepScale), noisemaker::f32(static_cast<double>(seed[2]) * stepScale)); }  // L-ERR-SEED
@@ -12442,7 +12443,7 @@ struct State final : KernelState {
 void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
   const auto& state = static_cast<const State&>(kernel_base);
   const glsl::IVec2 texSize = dither_texture_size(*state.inputTex);  // F40
-  const glsl::Vec2 uv(noisemaker::f32(static_cast<double>(context.frag_coord[0]) / texSize[0]), noisemaker::f32(static_cast<double>(context.frag_coord[1]) / texSize[1]));  // F41
+  const glsl::Vec2 uv(noisemaker::f32(glsl::metal_divide(static_cast<double>(context.frag_coord[0]), texSize[0])), noisemaker::f32(glsl::metal_divide(static_cast<double>(context.frag_coord[1]), texSize[1])));  // F41
   const auto color4 = dither_sample_texture(*state.inputTex, uv);  // F42
   const glsl::Vec3 color(color4[0], color4[1], color4[2]);
   const glsl::Vec2 fragCoord(noisemaker::f32(context.frag_coord[0]), noisemaker::f32(context.frag_coord[1]));
@@ -12494,7 +12495,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -12580,7 +12581,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const glsl::Vec3 LUMA = glsl::FloatExpr<3>(static_cast<float>(0.2126), static_cast<float>(0.7152), static_cast<float>(0.0722));
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 resolution = glsl::Vec2(texSize);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / resolution);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), resolution);
   [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) * texelSize));
   [[maybe_unused]] std::int32_t kernelType = glsl::detail::glsl_int_cast(state.kernel);
   [[maybe_unused]] std::int32_t radius = glsl::component_min(glsl::detail::glsl_int_cast((static_cast<double>((static_cast<double>(state.size) + static_cast<double>(static_cast<float>(1.0)))) * static_cast<double>(state.renderScale))), std::int32_t(256));
@@ -12617,9 +12618,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
     [[maybe_unused]] glsl::Vec3 centerSample = glsl::swizzle<0, 1, 2>(origColor);
     if (useLuma) {
-      glsl::set_swizzle<0>(centerSample, glsl::dot(centerSample, LUMA));
-      glsl::set_swizzle<1>(centerSample, glsl::dot(centerSample, LUMA));
-      glsl::set_swizzle<2>(centerSample, glsl::dot(centerSample, LUMA));
+      {
+        const double cpu_vector_write_0 = static_cast<double>(glsl::dot(centerSample, LUMA));
+        const double cpu_vector_write_1 = static_cast<double>(glsl::dot(centerSample, LUMA));
+        const double cpu_vector_write_2 = static_cast<double>(glsl::dot(centerSample, LUMA));
+        glsl::set_swizzle<0>(centerSample, cpu_vector_write_0);
+        glsl::set_swizzle<1>(centerSample, cpu_vector_write_1);
+        glsl::set_swizzle<2>(centerSample, cpu_vector_write_2);
+      }
     }
     conv = glsl::Vec3((conv + (centerSample * centerWeight)));
   }
@@ -12669,7 +12675,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -12708,7 +12714,7 @@ struct State final : KernelState {
   offsets[std::int32_t(8)] = glsl::Vec2(glsl::FloatExpr<2>(glsl::swizzle<0>(texelSize), glsl::swizzle<1>(texelSize)));
   [[maybe_unused]] glsl::Vec3 conv = glsl::FloatExpr<3>(static_cast<float>(0.0));
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(9)); ++i) {
-    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (glsl::Vec2((((uv + ((offsets[i] * state.amount) * state.renderScale)) * state.fullResolution) - state.tileOffset)) / glsl::Vec2(texture_size(*state.inputTex)))));
+    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide(glsl::Vec2((((uv + ((offsets[i] * state.amount) * state.renderScale)) * state.fullResolution) - state.tileOffset)), glsl::Vec2(texture_size(*state.inputTex)))));
     conv = glsl::Vec3((conv + (texSample * kernel[i])));
   }
   return conv;
@@ -12743,7 +12749,7 @@ struct State final : KernelState {
     [[maybe_unused]] glsl::Vec2 basePx = baseOffsetsPx[i];
     [[maybe_unused]] glsl::Vec2 rotatedPx = (glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(ct) * static_cast<double>(glsl::swizzle<0>(basePx)))) + static_cast<double>((static_cast<double>(st) * static_cast<double>(glsl::swizzle<1>(basePx))))), (static_cast<double>((static_cast<double>((-st)) * static_cast<double>(glsl::swizzle<0>(basePx)))) + static_cast<double>((static_cast<double>(ct) * static_cast<double>(glsl::swizzle<1>(basePx)))))) * state.height);
     [[maybe_unused]] glsl::Vec2 offsetUV = (((rotatedPx * texelSize) * state.amount) * state.renderScale);
-    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (glsl::Vec2((((uv + offsetUV) * state.fullResolution) - state.tileOffset)) / glsl::Vec2(texture_size(*state.inputTex)))));
+    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide(glsl::Vec2((((uv + offsetUV) * state.fullResolution) - state.tileOffset)), glsl::Vec2(texture_size(*state.inputTex)))));
     conv = glsl::Vec3((conv + (texSample * kernel[i])));
   }
   return conv;
@@ -12753,7 +12759,7 @@ struct State final : KernelState {
   const glsl::Vec3 LUMA = glsl::FloatExpr<3>(static_cast<float>(0.2126), static_cast<float>(0.7152), static_cast<float>(0.0722));
   [[maybe_unused]] double theta = glsl::radians(state.angle);
   [[maybe_unused]] glsl::Vec2 direction = glsl::FloatExpr<2>(glsl::cos(theta), glsl::sin(theta));
-  [[maybe_unused]] glsl::Vec2 offsetUV = ((direction * (static_cast<double>(state.height) * static_cast<double>(state.renderScale))) / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 offsetUV = glsl::metal_divide((direction * (static_cast<double>(state.height) * static_cast<double>(state.renderScale))), state.fullResolution);
   [[maybe_unused]] double positiveLuma = glsl::dot(sampleGlobal(state, context, (uv + offsetUV)), LUMA);
   [[maybe_unused]] double negativeLuma = glsl::dot(sampleGlobal(state, context, (uv - offsetUV)), LUMA);
   [[maybe_unused]] double signedEdge = (static_cast<double>(positiveLuma) - static_cast<double>(negativeLuma));
@@ -12766,7 +12772,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 sampleGlobal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 globalUV) noexcept {
-  [[maybe_unused]] glsl::Vec2 localUV = (((globalUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((globalUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   return glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, localUV));
 }
 
@@ -12776,11 +12782,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2 resolution = glsl::Vec2(texture_size(*state.inputTex));
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / resolution);
-  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / resolution));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), resolution);
+  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), resolution));
   [[maybe_unused]] bool fullFrame = (glsl::all(glsl::equal(state.tileOffset, glsl::FloatExpr<2>(static_cast<float>(0.0)))) && glsl::all(glsl::equal(state.fullResolution, resolution)));
-  [[maybe_unused]] glsl::Vec2 colorTexelSize = (fullFrame ? glsl::Vec2(texelSize) : glsl::Vec2((static_cast<float>(1.0) / state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 colorTexelSize = (fullFrame ? glsl::Vec2(texelSize) : glsl::Vec2(glsl::metal_divide(static_cast<float>(1.0), state.fullResolution)));
   [[maybe_unused]] glsl::Vec3 result = {};
   if (state.STYLE == std::int32_t(0)) {
     if ((state.angle == static_cast<float>(135.0)) && (state.height == static_cast<float>(1.0))) {
@@ -12818,7 +12824,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -12932,7 +12938,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 toSampleUV([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 globalPixelPos) noexcept {
-  return glsl::clamp(((globalPixelPos - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+  return glsl::clamp(glsl::metal_divide((globalPixelPos - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
 }
 
 void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
@@ -12949,7 +12955,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 halfCell = glsl::FloatExpr<2>((static_cast<double>(state.size) * static_cast<double>(static_cast<float>(0.5))));
   [[maybe_unused]] glsl::Vec2 toCenter = (imgCenter - P);
   [[maybe_unused]] double distToCenter = glsl::length(toCenter);
-  [[maybe_unused]] glsl::Vec2 stepDir = ((distToCenter > static_cast<float>(0.0)) ? glsl::Vec2((toCenter / distToCenter)) : glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0))));
+  [[maybe_unused]] glsl::Vec2 stepDir = ((distToCenter > static_cast<float>(0.0)) ? glsl::Vec2(glsl::metal_divide(toCenter, distToCenter)) : glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0))));
   [[maybe_unused]] double bestPriority = static_cast<float>(-1000000000.0);
   [[maybe_unused]] glsl::Vec2 bestCenterPx = glsl::FloatExpr<2>(static_cast<float>(0.0));
   [[maybe_unused]] double bestS = static_cast<float>(1.0);
@@ -12959,10 +12965,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(6)); ++i) {
     [[maybe_unused]] double t = glsl::component_min((static_cast<double>(float(i)) * static_cast<double>(state.size)), distToCenter);
     [[maybe_unused]] glsl::Vec2 samplePos = (P + (stepDir * t));
-    [[maybe_unused]] glsl::Vec2 cellIdxF = glsl::floor(((samplePos - imgCenter) / state.size));
+    [[maybe_unused]] glsl::Vec2 cellIdxF = glsl::floor(glsl::metal_divide((samplePos - imgCenter), state.size));
     [[maybe_unused]] glsl::Vec2 cellC = (imgCenter + ((cellIdxF + static_cast<float>(0.5)) * state.size));
     [[maybe_unused]] double h = cellHeight(state, context, cellC, cellIdxF);
-    [[maybe_unused]] double s = (static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>((static_cast<double>(h) * static_cast<double>((static_cast<double>(state.depth) / static_cast<double>(static_cast<float>(100.0)))))) * static_cast<double>(static_cast<float>(0.4)))));
+    [[maybe_unused]] double s = static_cast<double>(noisemaker::f32((static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>((static_cast<double>(h) * static_cast<double>((static_cast<double>(state.depth) / static_cast<double>(static_cast<float>(100.0)))))) * static_cast<double>(static_cast<float>(0.4)))))));
     if (state.EXTRUDE_TYPE == std::int32_t(1)) {
       [[maybe_unused]] glsl::Vec2 apex = (imgCenter + ((cellC - imgCenter) * s));
       [[maybe_unused]] std::int32_t tri = pyramidTriHit(state, context, P, cellC, apex, halfCell);
@@ -12976,7 +12982,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     } else {
       [[maybe_unused]] glsl::Vec2 faceCenter = (imgCenter + ((cellC - imgCenter) * s));
       [[maybe_unused]] glsl::Vec2 faceHalf = (halfCell * s);
-      [[maybe_unused]] bool topHit = glsl::all(glsl::lessThanEqual(glsl::abs((P - faceCenter)), faceHalf));
+      [[maybe_unused]] bool topHit = glsl::all(glsl::lessThanEqual(glsl::abs(((P - imgCenter) - ((cellC - imgCenter) * s))), faceHalf));
       [[maybe_unused]] bool sideHit = ((!topHit) && glsl::all(glsl::lessThanEqual(glsl::abs((P - cellC)), halfCell)));
       if (topHit || sideHit) {
         [[maybe_unused]] double priority = (static_cast<double>(s) + static_cast<double>((topHit ? static_cast<float>(1000.0) : static_cast<float>(0.0))));
@@ -12995,7 +13001,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] glsl::Vec4 outColor = {};
   if (!found) {
-    [[maybe_unused]] glsl::Vec2 cellC = glsl::Vec2((imgCenter + glsl::Vec2((glsl::Vec2((glsl::floor(((P - imgCenter) / state.size)) + static_cast<float>(0.5))) * state.size))));
+    [[maybe_unused]] glsl::Vec2 cellC = glsl::Vec2((imgCenter + glsl::Vec2((glsl::Vec2((glsl::floor(glsl::metal_divide((P - imgCenter), state.size)) + static_cast<float>(0.5))) * state.size))));
     outColor = glsl::Vec4(cellAvgColor3x3(state, context, cellC));
   } else {
     if (state.EXTRUDE_TYPE == std::int32_t(1)) {
@@ -13077,7 +13083,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -13093,7 +13099,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_51
@@ -13130,7 +13136,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -13307,14 +13313,14 @@ struct State final : KernelState {
     zoom = map(state, context, state.distortion, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(-1.0));
   }
   st = glsl::Vec2(((st - (diff * zoom)) - (((diff * centerDist) * centerDist) * distort)));
-  [[maybe_unused]] double scale = (static_cast<double>(static_cast<float>(100.0)) / static_cast<double>(state.scaleAmt));
+  [[maybe_unused]] double scale = glsl::metal_divide(static_cast<double>(static_cast<float>(100.0)), static_cast<double>(state.scaleAmt));
   if (scale == static_cast<float>(0.0)) {
     scale = static_cast<float>(1.0);
   }
   st = glsl::Vec2((st * scale));
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) - (static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) - static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<0>(state.resolution)))) * static_cast<double>(scale))))))));
-  glsl::set_swizzle<1>(st, (glsl::swizzle<1>(st) + (static_cast<double>((static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) + static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<1>(state.resolution)))) * static_cast<double>(scale))))))) - static_cast<double>(scale))));
-  st = glsl::Vec2((st + (static_cast<float>(1.0) / state.resolution)));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) - (static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) - static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<0>(state.resolution)))) * static_cast<double>(scale))))))));
+  glsl::set_swizzle<1>(st, (glsl::swizzle<1>(st) + (static_cast<double>((static_cast<double>((static_cast<double>(scale) * static_cast<double>(static_cast<float>(0.5)))) + static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>((static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<1>(state.resolution)))) * static_cast<double>(scale))))))) - static_cast<double>(scale))));
+  st = glsl::Vec2((st + glsl::metal_divide(static_cast<float>(1.0), state.resolution)));
   st = glsl::Vec2(glsl::fract(st));
   [[maybe_unused]] double aberrationOffset = (static_cast<double>((static_cast<double>((static_cast<double>(map(state, context, state.aberration, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.1))) * static_cast<double>(centerDist))) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] double redOffset = glsl::mix(glsl::clamp((static_cast<double>(glsl::swizzle<0>(st)) + static_cast<double>(aberrationOffset)), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<0>(st), glsl::swizzle<0>(st));
@@ -13394,13 +13400,13 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 rotate2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double rot) noexcept {
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * (static_cast<double>(glsl::swizzle<0>(state.resolution)) / static_cast<double>(glsl::swizzle<1>(state.resolution)))));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.resolution)), static_cast<double>(glsl::swizzle<1>(state.resolution)))));
   rot = map(state, context, rot, static_cast<float>(0.0), static_cast<float>(360.0), static_cast<float>(0.0), static_cast<float>(2.0));
   [[maybe_unused]] double angle = (static_cast<double>(rot) * static_cast<double>(static_cast<float>(3.14159265359)));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.resolution)) / static_cast<double>(glsl::swizzle<1>(state.resolution))))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.resolution)), static_cast<double>(glsl::swizzle<1>(state.resolution))))), static_cast<float>(0.5))));
   st = glsl::Vec2((glsl::Mat2(glsl::Vec2(glsl::cos(angle), (-glsl::sin(angle))), glsl::Vec2(glsl::sin(angle), glsl::cos(angle))) * st));
-  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.resolution)) / static_cast<double>(glsl::swizzle<1>(state.resolution))))), static_cast<float>(0.5))));
-  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) / (static_cast<double>(glsl::swizzle<0>(state.resolution)) / static_cast<double>(glsl::swizzle<1>(state.resolution)))));
+  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.resolution)), static_cast<double>(glsl::swizzle<1>(state.resolution))))), static_cast<float>(0.5))));
+  glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) / glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.resolution)), static_cast<double>(glsl::swizzle<1>(state.resolution)))));
   return st;
 }
 
@@ -13408,7 +13414,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   if (state.resetState) {
     output = glsl::Vec4(sample_texture(*state.inputTex, uv));
     return;
@@ -13456,7 +13462,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -13498,7 +13504,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -13515,7 +13521,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec2& warpedUV = globalUV;
   if (state.flipMode == std::int32_t(1)) {
     glsl::set_swizzle<0>(warpedUV, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<0>(warpedUV))));
@@ -13589,7 +13595,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       }
     }
   }
-  [[maybe_unused]] glsl::Vec2 localUV = glsl::fract((((warpedUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texSize)));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::fract(glsl::metal_divide(((warpedUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texSize)));
   output = glsl::Vec4(sample_texture(*state.inputTex, localUV));
 }
 }  // namespace typed_54
@@ -13615,7 +13621,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -13770,7 +13776,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -13811,17 +13817,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 texel = (state.width / state.resolution);
-  [[maybe_unused]] glsl::Vec4 base = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] double tl = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>((-glsl::swizzle<0>(texel)), (-glsl::swizzle<1>(texel)))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
-  [[maybe_unused]] double tc = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>(static_cast<float>(0.0), (-glsl::swizzle<1>(texel)))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
-  [[maybe_unused]] double tr = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), (-glsl::swizzle<1>(texel)))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
-  [[maybe_unused]] double ml = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>((-glsl::swizzle<0>(texel)), static_cast<float>(0.0))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
-  [[maybe_unused]] double mr = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
-  [[maybe_unused]] double bl = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>((-glsl::swizzle<0>(texel)), glsl::swizzle<1>(texel))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
-  [[maybe_unused]] double bc = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
-  [[maybe_unused]] double br = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), glsl::swizzle<1>(texel))) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(state.width, state.resolution);
+  [[maybe_unused]] glsl::Vec4 base = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] double tl = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>((-glsl::swizzle<0>(texel)), (-glsl::swizzle<1>(texel)))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] double tc = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>(static_cast<float>(0.0), (-glsl::swizzle<1>(texel)))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] double tr = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), (-glsl::swizzle<1>(texel)))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] double ml = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>((-glsl::swizzle<0>(texel)), static_cast<float>(0.0))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] double mr = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] double bl = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>((-glsl::swizzle<0>(texel)), glsl::swizzle<1>(texel))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] double bc = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] double br = luminance(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), glsl::swizzle<1>(texel))) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))))));
   [[maybe_unused]] double gx = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((-tl)) - static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(ml))))) - static_cast<double>(bl))) + static_cast<double>(tr))) + static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(mr))))) + static_cast<double>(br));
   [[maybe_unused]] double gy = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((-tl)) - static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(tc))))) - static_cast<double>(tr))) + static_cast<double>(bl))) + static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(bc))))) + static_cast<double>(br));
   [[maybe_unused]] std::int32_t metric = glsl::detail::glsl_int_cast(state.sobelMetric);
@@ -13854,7 +13860,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -14127,13 +14133,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     cs = glsl::component_min(cs, std::int32_t(512));
   }
   [[maybe_unused]] double csf = float(cs);
-  [[maybe_unused]] glsl::Vec2 cellIndex = glsl::floor((pixelCoord / csf));
-  [[maybe_unused]] glsl::Vec2 localPos = glsl::fract((pixelCoord / csf));
+  [[maybe_unused]] glsl::Vec2 cellIndex = glsl::floor(glsl::metal_divide(pixelCoord, csf));
+  [[maybe_unused]] glsl::Vec2 localPos = glsl::fract(glsl::metal_divide(pixelCoord, csf));
   [[maybe_unused]] std::int32_t gx = glsl::detail::glsl_int_cast(glsl::floor((static_cast<double>(glsl::swizzle<0>(localPos)) * static_cast<double>(static_cast<float>(5.0)))));
   [[maybe_unused]] std::int32_t gy = (std::int32_t(6) - glsl::clamp(glsl::detail::glsl_int_cast(glsl::floor((static_cast<double>(glsl::swizzle<1>(localPos)) * static_cast<double>(static_cast<float>(7.0))))), std::int32_t(0), std::int32_t(6)));
   gx = glsl::clamp(gx, std::int32_t(0), std::int32_t(4));
   [[maybe_unused]] glsl::Vec2 cellCenter = ((cellIndex + static_cast<float>(0.5)) * csf);
-  [[maybe_unused]] glsl::Vec2 sampleUV = ((cellCenter - state.tileOffset) / resolution);
+  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::metal_divide((cellCenter - state.tileOffset), resolution);
   if (isTileRendering) {
     sampleUV = glsl::Vec2(glsl::clamp(sampleUV, static_cast<float>(0.0), static_cast<float>(1.0)));
   }
@@ -14181,7 +14187,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -14317,7 +14323,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -14470,7 +14476,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -14955,7 +14961,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -15090,7 +15096,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 coord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] glsl::Vec4 color = fetch_texel(*state.inputTex, coord);
-  [[maybe_unused]] glsl::Vec3 straight = ((glsl::swizzle<3>(color) > static_cast<float>(0.0)) ? glsl::Vec3((glsl::swizzle<0, 1, 2>(color) / glsl::swizzle<3>(color))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0))));
+  [[maybe_unused]] glsl::Vec3 straight = ((glsl::swizzle<3>(color) > static_cast<float>(0.0)) ? glsl::Vec3(glsl::metal_divide(glsl::swizzle<0, 1, 2>(color), glsl::swizzle<3>(color))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0))));
   [[maybe_unused]] glsl::Vec3 rgb = srgbToLinear(state, context, straight);
   rgb = glsl::Vec3(applyWhiteBalance(state, context, rgb, state.temperature, state.tint));
   rgb = glsl::Vec3((rgb * glsl::pow(static_cast<float>(2.0), state.exposure)));
@@ -15125,7 +15131,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -15205,8 +15211,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.inputTex));
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / texSize);
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), texSize);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::IVec2 coord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] glsl::Vec4 color = fetch_texel(*state.inputTex, coord);
   if (glsl::abs(state.vignetteAmount) < static_cast<float>(0.001)) {
@@ -15216,9 +15222,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 rgb = srgbToLinear(state, context, glsl::swizzle<0, 1, 2>(color));
   [[maybe_unused]] glsl::Vec2 aspectRatio = glsl::FloatExpr<2>(static_cast<float>(1.0));
   if (glsl::swizzle<0>(fullRes) > glsl::swizzle<1>(fullRes)) {
-    aspectRatio = glsl::Vec2(glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes))), static_cast<float>(1.0)));
+    aspectRatio = glsl::Vec2(glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes))), static_cast<float>(1.0)));
   } else {
-    aspectRatio = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(1.0), (static_cast<double>(glsl::swizzle<1>(fullRes)) / static_cast<double>(glsl::swizzle<0>(fullRes)))));
+    aspectRatio = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(1.0), glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(fullRes)), static_cast<double>(glsl::swizzle<0>(fullRes)))));
   }
   [[maybe_unused]] double vignetteMask = computeVignette(state, context, globalUV, aspectRatio, state.vignetteMidpoint, state.vignetteRoundness, state.vignetteFeather);
   rgb = glsl::Vec3(applyVignette(state, context, rgb, vignetteMask, state.vignetteAmount, state.vigHiProtect));
@@ -15248,7 +15254,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -15370,7 +15376,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -15549,7 +15555,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double effective_time = ((state.pause > static_cast<float>(0.5)) ? static_cast<float>(0.0) : state.time);
   [[maybe_unused]] double rs = glsl::component_max(state.renderScale, static_cast<float>(1.0));
-  [[maybe_unused]] double noise_value = sample_grain_noise(state, context, global_pixel, glsl::FloatExpr<2>((static_cast<double>(float(u_width)) / static_cast<double>(rs)), (static_cast<double>(float(u_height)) / static_cast<double>(rs))), effective_time, static_cast<float>(100.0));
+  [[maybe_unused]] double noise_value = sample_grain_noise(state, context, global_pixel, glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(float(u_width)), static_cast<double>(rs)), glsl::metal_divide(static_cast<double>(float(u_height)), static_cast<double>(rs))), effective_time, static_cast<float>(100.0));
   [[maybe_unused]] glsl::Vec3 noise_rgb = glsl::FloatExpr<3>(noise_value);
   [[maybe_unused]] glsl::Vec3 mixed_rgb = glsl::mix(glsl::swizzle<0, 1, 2>(texel), noise_rgb, blend_alpha);
   output = glsl::Vec4(glsl::FloatExpr<4>(clamp01(state, context, glsl::swizzle<0>(mixed_rgb)), clamp01(state, context, glsl::swizzle<1>(mixed_rgb)), clamp01(state, context, glsl::swizzle<2>(mixed_rgb)), glsl::swizzle<3>(texel)));
@@ -15576,7 +15582,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -15716,8 +15722,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 tileSize = glsl::Vec2(texture_size(*state.inputTex));
   [[maybe_unused]] glsl::Vec2 globalCoord = ((context.uv * tileSize) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.fullResolution);
   [[maybe_unused]] glsl::Vec4 base_color = sample_texture(*state.inputTex, context.uv);
   [[maybe_unused]] double str = glsl::component_max(state.strength, static_cast<float>(0.0));
   [[maybe_unused]] double s = state.seed;
@@ -15775,7 +15781,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -15809,7 +15815,7 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec3 cellSampleFromRuv([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 ruv, [[maybe_unused]] double angleDeg, [[maybe_unused]] glsl::Vec2 texel) noexcept {
   [[maybe_unused]] glsl::Vec2 cellId = glsl::Vec2((glsl::floor(ruv) + static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec2 cellCenterGc = rotate2D(state, context, (cellId * state.frequency), (-angleDeg));
-  [[maybe_unused]] glsl::Vec2 cellUV = glsl::clamp(((cellCenterGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec2 cellUV = glsl::clamp(glsl::metal_divide((cellCenterGc - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
   return boxBlur3(state, context, cellUV, texel);
 }
 
@@ -15864,14 +15870,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] double alpha = glsl::swizzle<3>(sample_texture(*state.inputTex, uv));
   if (state.MODE == std::int32_t(0)) {
-    [[maybe_unused]] glsl::Vec2 ruvC = glsl::Vec2((rotate2D(state, context, globalCoord, state.cyanAngle) / state.frequency));
-    [[maybe_unused]] glsl::Vec2 ruvM = glsl::Vec2((rotate2D(state, context, globalCoord, state.magentaAngle) / state.frequency));
-    [[maybe_unused]] glsl::Vec2 ruvY = glsl::Vec2((rotate2D(state, context, globalCoord, state.yellowAngle) / state.frequency));
-    [[maybe_unused]] glsl::Vec2 ruvK = glsl::Vec2((rotate2D(state, context, globalCoord, state.blackAngle) / state.frequency));
+    [[maybe_unused]] glsl::Vec2 ruvC = glsl::Vec2(glsl::metal_divide(rotate2D(state, context, globalCoord, state.cyanAngle), state.frequency));
+    [[maybe_unused]] glsl::Vec2 ruvM = glsl::Vec2(glsl::metal_divide(rotate2D(state, context, globalCoord, state.magentaAngle), state.frequency));
+    [[maybe_unused]] glsl::Vec2 ruvY = glsl::Vec2(glsl::metal_divide(rotate2D(state, context, globalCoord, state.yellowAngle), state.frequency));
+    [[maybe_unused]] glsl::Vec2 ruvK = glsl::Vec2(glsl::metal_divide(rotate2D(state, context, globalCoord, state.blackAngle), state.frequency));
     [[maybe_unused]] double valC = glsl::swizzle<0>(rgbToCmyk(state, context, cellSampleFromRuv(state, context, ruvC, state.cyanAngle, texel)));
     [[maybe_unused]] double valM = glsl::swizzle<1>(rgbToCmyk(state, context, cellSampleFromRuv(state, context, ruvM, state.magentaAngle, texel)));
     [[maybe_unused]] double valY = glsl::swizzle<2>(rgbToCmyk(state, context, cellSampleFromRuv(state, context, ruvY, state.yellowAngle, texel)));
@@ -15890,10 +15896,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (state.PATTERN == std::int32_t(2)) {
       [[maybe_unused]] glsl::Vec2 center = (state.fullResolution * static_cast<float>(0.5));
       value = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(lum(state, context, boxBlur3(state, context, uv, texel))));
-      [[maybe_unused]] double rd = (static_cast<double>(glsl::length((globalCoord - center))) / static_cast<double>(state.frequency));
+      [[maybe_unused]] double rd = glsl::metal_divide(static_cast<double>(glsl::length((globalCoord - center))), static_cast<double>(state.frequency));
       d = glsl::abs((static_cast<double>(glsl::fract(rd)) - static_cast<double>(static_cast<float>(0.5))));
     } else {
-      [[maybe_unused]] glsl::Vec2 ruv = glsl::Vec2((rotate2D(state, context, globalCoord, state.monoAngle) / state.frequency));
+      [[maybe_unused]] glsl::Vec2 ruv = glsl::Vec2(glsl::metal_divide(rotate2D(state, context, globalCoord, state.monoAngle), state.frequency));
       value = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(lum(state, context, cellSampleFromRuv(state, context, ruv, state.monoAngle, texel))));
       [[maybe_unused]] glsl::Vec2 off = glsl::Vec2((glsl::fract(ruv) - static_cast<float>(0.5)));
       dotOffset = glsl::Vec2(off);
@@ -15947,7 +15953,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16003,7 +16009,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 lumGradient([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] double tl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(1.0)))))));
   [[maybe_unused]] double l = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(0.0)))))));
   [[maybe_unused]] double bl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(-1.0)))))));
@@ -16042,7 +16048,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec2 gc = glsl::Vec2((glsl::floor(glsl::swizzle<0, 1>(context.frag_coord)) + state.tileOffset));
   [[maybe_unused]] double theta = dirAngle(state, context, state.direction);
@@ -16079,7 +16085,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       } else {
         if (state.MODE == std::int32_t(3)) {
           [[maybe_unused]] double toneGate = glsl::smoothstep(static_cast<float>(0.3), static_cast<float>(0.7), t);
-          [[maybe_unused]] double texture2 = glsl::mix(s, fbm(state, context, ((gc / (static_cast<double>(stretchAmt) * static_cast<double>(static_cast<float>(0.6)))) + static_cast<float>(41.0))), static_cast<float>(0.5));
+          [[maybe_unused]] double texture2 = glsl::mix(s, fbm(state, context, (glsl::metal_divide(gc, (static_cast<double>(stretchAmt) * static_cast<double>(static_cast<float>(0.6)))) + static_cast<float>(41.0))), static_cast<float>(0.5));
           [[maybe_unused]] double level = glsl::mix(texture2, toneGate, glsl::abs((static_cast<double>((static_cast<double>(toneGate) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0)))));
           level = glsl::clamp((static_cast<double>(level) + static_cast<double>((static_cast<double>(pb) * static_cast<double>(static_cast<float>(0.15))))), static_cast<float>(0.0), static_cast<float>(1.0));
           outColor = glsl::Vec3(tonemap2(state, context, level, glsl::Vec3(state.inkColor), glsl::Vec3(state.paperColor)));
@@ -16131,7 +16137,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16146,7 +16152,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(state.radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
   [[maybe_unused]] double fTaps = glsl::component_min(state.radius, static_cast<float>(32.0));
@@ -16157,8 +16163,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = (((dirPx * float(i)) * stride) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide(((dirPx * float(i)) * stride), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -16183,7 +16189,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16198,7 +16204,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(state.radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
   [[maybe_unused]] double fTaps = glsl::component_min(state.radius, static_cast<float>(32.0));
@@ -16209,8 +16215,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = (((dirPx * float(i)) * stride) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide(((dirPx * float(i)) * stride), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -16236,7 +16242,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16257,7 +16263,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 blur = sample_texture(*state.blurTex, uv);
   [[maybe_unused]] glsl::Vec3 diff = (glsl::swizzle<0, 1, 2>(src) - glsl::swizzle<0, 1, 2>(blur));
@@ -16320,7 +16326,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16423,7 +16429,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16439,7 +16445,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, uv);
   if (state.mode == std::int32_t(1)) {
     glsl::set_swizzle<0, 1, 2>(color, glsl::component_min(glsl::swizzle<0, 1, 2>(color), (glsl::swizzle<3>(color) - glsl::swizzle<0, 1, 2>(color))));
@@ -16470,7 +16476,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16490,9 +16496,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 dims = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / dims);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), dims);
   [[maybe_unused]] double zoom = ((state.lensDisplacement < static_cast<float>(0.0)) ? (static_cast<double>(state.lensDisplacement) * static_cast<double>(static_cast<float>(-0.25))) : static_cast<float>(0.0));
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(dims)) / static_cast<double>(glsl::swizzle<1>(dims)));
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(dims)), static_cast<double>(glsl::swizzle<1>(dims)));
   [[maybe_unused]] glsl::Vec2 dist = (uv - HALF_FRAME);
   [[maybe_unused]] glsl::Vec2& aDist = dist;
   if (state.aspectLens) {
@@ -16500,7 +16506,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double maxDist = glsl::length(glsl::FloatExpr<2>((state.aspectLens ? (static_cast<double>(aspect) * static_cast<double>(static_cast<float>(0.5))) : static_cast<float>(0.5)), static_cast<float>(0.5)));
   [[maybe_unused]] double distFromCenter = glsl::length(aDist);
-  [[maybe_unused]] double normalizedDist = glsl::clamp((static_cast<double>(distFromCenter) / static_cast<double>(maxDist)), static_cast<float>(0.0), static_cast<float>(1.0));
+  [[maybe_unused]] double normalizedDist = glsl::clamp(glsl::metal_divide(static_cast<double>(distFromCenter), static_cast<double>(maxDist)), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double centerWeight = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(normalizedDist));
   [[maybe_unused]] double centerWeightSq = (static_cast<double>(centerWeight) * static_cast<double>(centerWeight));
   [[maybe_unused]] glsl::Vec2 displacement = ((aDist * zoom) + ((aDist * centerWeightSq) * state.lensDisplacement));
@@ -16512,11 +16518,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     [[maybe_unused]] double maxDispPixels = static_cast<float>(256.0);
     [[maybe_unused]] double dispPixels = glsl::length((displacement * dims));
     if (dispPixels > maxDispPixels) {
-      displacement = glsl::Vec2((displacement * (static_cast<double>(maxDispPixels) / static_cast<double>(dispPixels))));
+      displacement = glsl::Vec2((displacement * glsl::metal_divide(static_cast<double>(maxDispPixels), static_cast<double>(dispPixels))));
     }
   }
   [[maybe_unused]] glsl::Vec2 warpedGlobalUV = (isTileRendering ? glsl::Vec2((uv - displacement)) : glsl::Vec2(glsl::fract((uv - displacement))));
-  [[maybe_unused]] glsl::Vec2 offset = (((warpedGlobalUV * dims) - state.tileOffset) / tileDims);
+  [[maybe_unused]] glsl::Vec2 offset = glsl::metal_divide(((warpedGlobalUV * dims) - state.tileOffset), tileDims);
   [[maybe_unused]] glsl::Vec2 sampledUV = offset;
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, sampledUV);
@@ -16556,7 +16562,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16638,10 +16644,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 localUV = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, localUV);
   [[maybe_unused]] glsl::Vec2 flarePos = glsl::FloatExpr<2>(state.centerX, state.centerY);
   [[maybe_unused]] glsl::Vec2 mirrorPos = (glsl::FloatExpr<2>(static_cast<float>(1.0)) - flarePos);
@@ -16726,7 +16732,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16797,33 +16803,33 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
-  [[maybe_unused]] double maxDisplacementUV = (static_cast<double>(static_cast<float>(256.0)) / static_cast<double>(glsl::swizzle<0>(fullRes)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
+  [[maybe_unused]] double maxDisplacementUV = glsl::metal_divide(static_cast<double>(static_cast<float>(256.0)), static_cast<double>(glsl::swizzle<0>(fullRes)));
   [[maybe_unused]] double clampedDisplacement = glsl::clamp(state.displacement, (-maxDisplacementUV), maxDisplacementUV);
   [[maybe_unused]] glsl::Vec2 delta = glsl::abs((uv - glsl::FloatExpr<2>(static_cast<float>(0.5))));
   [[maybe_unused]] glsl::Vec2 scaled = glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(delta)) * static_cast<double>(aspectRatio)), glsl::swizzle<1>(delta));
   [[maybe_unused]] double maxRadius = glsl::length(glsl::FloatExpr<2>((static_cast<double>(aspectRatio) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5)));
-  [[maybe_unused]] double mask = glsl::pow(glsl::clamp((static_cast<double>(glsl::length(scaled)) / static_cast<double>(maxRadius)), static_cast<float>(0.0), static_cast<float>(1.0)), static_cast<float>(5.0));
+  [[maybe_unused]] double mask = glsl::pow(glsl::clamp(glsl::metal_divide(static_cast<double>(glsl::length(scaled)), static_cast<double>(maxRadius)), static_cast<float>(0.0), static_cast<float>(1.0)), static_cast<float>(5.0));
   [[maybe_unused]] glsl::Vec2 noiseCoord = (uv * glsl::FloatExpr<2>(aspectRatio, static_cast<float>(1.0)));
   [[maybe_unused]] double noiseX = perlinNoise(state, context, (noiseCoord + static_cast<float>(42.0)), glsl::FloatExpr<2>(static_cast<float>(2.0)));
   [[maybe_unused]] double noiseY = perlinNoise(state, context, (noiseCoord + static_cast<float>(97.0)), glsl::FloatExpr<2>(static_cast<float>(2.0)));
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) + (static_cast<double>((static_cast<double>((static_cast<double>(noiseX) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>(clampedDisplacement))) * static_cast<double>(mask))));
   glsl::set_swizzle<1>(uv, (glsl::swizzle<1>(uv) + (static_cast<double>((static_cast<double>((static_cast<double>(noiseY) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>(clampedDisplacement))) * static_cast<double>(mask))));
-  uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
-  [[maybe_unused]] glsl::Vec2 localUV = (((uv * fullRes) - state.tileOffset) / state.resolution);
+  uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((uv * fullRes) - state.tileOffset), state.resolution);
   localUV = glsl::Vec2(glsl::clamp(localUV, static_cast<float>(0.0), static_cast<float>(1.0)));
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, uv);
     [[maybe_unused]] glsl::Vec2 dy = glsl::dFdy(context, uv);
     [[maybe_unused]] glsl::Vec4 col = glsl::FloatExpr<4>(static_cast<float>(0.0));
-    [[maybe_unused]] glsl::Vec2 sUV = (((((uv + (dx * static_cast<float>(-0.375))) + (dy * static_cast<float>(-0.125))) * fullRes) - state.tileOffset) / state.resolution);
+    [[maybe_unused]] glsl::Vec2 sUV = glsl::metal_divide(((((uv + (dx * static_cast<float>(-0.375))) + (dy * static_cast<float>(-0.125))) * fullRes) - state.tileOffset), state.resolution);
     col = glsl::Vec4((col + sample_texture(*state.inputTex, glsl::clamp(sUV, static_cast<float>(0.0), static_cast<float>(1.0)))));
-    sUV = glsl::Vec2((((((uv + (dx * static_cast<float>(0.125))) + (dy * static_cast<float>(-0.375))) * fullRes) - state.tileOffset) / state.resolution));
+    sUV = glsl::Vec2(glsl::metal_divide(((((uv + (dx * static_cast<float>(0.125))) + (dy * static_cast<float>(-0.375))) * fullRes) - state.tileOffset), state.resolution));
     col = glsl::Vec4((col + sample_texture(*state.inputTex, glsl::clamp(sUV, static_cast<float>(0.0), static_cast<float>(1.0)))));
-    sUV = glsl::Vec2((((((uv + (dx * static_cast<float>(0.375))) + (dy * static_cast<float>(0.125))) * fullRes) - state.tileOffset) / state.resolution));
+    sUV = glsl::Vec2(glsl::metal_divide(((((uv + (dx * static_cast<float>(0.375))) + (dy * static_cast<float>(0.125))) * fullRes) - state.tileOffset), state.resolution));
     col = glsl::Vec4((col + sample_texture(*state.inputTex, glsl::clamp(sUV, static_cast<float>(0.0), static_cast<float>(1.0)))));
-    sUV = glsl::Vec2((((((uv + (dx * static_cast<float>(-0.125))) + (dy * static_cast<float>(0.375))) * fullRes) - state.tileOffset) / state.resolution));
+    sUV = glsl::Vec2(glsl::metal_divide(((((uv + (dx * static_cast<float>(-0.125))) + (dy * static_cast<float>(0.375))) * fullRes) - state.tileOffset), state.resolution));
     col = glsl::Vec4((col + sample_texture(*state.inputTex, glsl::clamp(sUV, static_cast<float>(0.0), static_cast<float>(1.0)))));
     output = glsl::Vec4((col * static_cast<float>(0.25)));
   } else {
@@ -16855,7 +16861,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -16938,7 +16944,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 coords = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] glsl::IVec2 tileDims = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(glsl::Vec2(tileDims)));
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec4 base = fetch_texel(*state.inputTex, coords);
   [[maybe_unused]] double blend_alpha = glsl::clamp(state.alpha, static_cast<float>(0.0), static_cast<float>(1.0));
   if (blend_alpha <= static_cast<float>(0.0)) {
@@ -17010,7 +17016,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17034,16 +17040,16 @@ struct State final : KernelState {
   [[maybe_unused]] glsl::Vec2 redOffset = (reflectionOffset * (static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>(state.aberration) * static_cast<double>(static_cast<float>(0.0075))))));
   [[maybe_unused]] glsl::Vec2 greenOffset = reflectionOffset;
   [[maybe_unused]] glsl::Vec2 blueOffset = (reflectionOffset * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>(state.aberration) * static_cast<double>(static_cast<float>(0.0075))))));
-  [[maybe_unused]] double redChannel = glsl::swizzle<0>(sample_texture(*state.inputTex, ((((uv + redOffset) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
-  [[maybe_unused]] double greenChannel = glsl::swizzle<1>(sample_texture(*state.inputTex, ((((uv + greenOffset) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
-  [[maybe_unused]] double blueChannel = glsl::swizzle<2>(sample_texture(*state.inputTex, ((((uv + blueOffset) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
-  [[maybe_unused]] double alphaChannel = glsl::swizzle<3>(sample_texture(*state.inputTex, ((((uv + reflectionOffset) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+  [[maybe_unused]] double redChannel = glsl::swizzle<0>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + redOffset) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
+  [[maybe_unused]] double greenChannel = glsl::swizzle<1>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + greenOffset) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
+  [[maybe_unused]] double blueChannel = glsl::swizzle<2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + blueOffset) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
+  [[maybe_unused]] double alphaChannel = glsl::swizzle<3>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + reflectionOffset) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
   return glsl::FloatExpr<4>(redChannel, greenChannel, blueChannel, alphaChannel);
 }
 
 [[nodiscard]] glsl::Vec4 applyRefraction([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec3 normal) noexcept {
   [[maybe_unused]] glsl::Vec2 refractionOffset = (glsl::swizzle<0, 1>(normal) * (static_cast<double>(state.refraction) * static_cast<double>(static_cast<float>(0.0125))));
-  return sample_texture(*state.inputTex, ((((uv + refractionOffset) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex))));
+  return sample_texture(*state.inputTex, glsl::metal_divide((((uv + refractionOffset) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex))));
 }
 
 [[nodiscard]] glsl::Vec3 calculateNormal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
@@ -17109,10 +17115,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 resolution = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(resolution));
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / resolution);
-  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), resolution);
+  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] glsl::Vec3 normal = calculateNormal(state, context, uv, texelSize);
   [[maybe_unused]] glsl::Vec3 lightDir = glsl::normalize(state.lightDirection);
   [[maybe_unused]] glsl::Vec3 viewDir = glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
@@ -17164,7 +17170,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17218,12 +17224,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 resolution = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / tileDims);
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), tileDims);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), resolution);
   [[maybe_unused]] double n = glsl::component_max((static_cast<double>(static_cast<float>(102.0)) - static_cast<double>(state.scale)), static_cast<float>(2.0));
   [[maybe_unused]] double s = state.seed;
   [[maybe_unused]] double spd = (static_cast<double>(state.speed) * static_cast<double>(static_cast<float>(0.3)));
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 auv = glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(globalUV)) * static_cast<double>(aspect)), glsl::swizzle<1>(globalUV));
   [[maybe_unused]] glsl::Vec2 scaled = (auv * n);
   [[maybe_unused]] glsl::IVec2 cell = glsl::IVec2(glsl::floor(scaled));
@@ -17246,7 +17252,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         [[maybe_unused]] double radius = (static_cast<double>(glsl::swizzle<1>(animRand)) * static_cast<double>(spd));
         offset = glsl::Vec2(glsl::clamp((offset + (glsl::FloatExpr<2>(glsl::cos(angle), glsl::sin(angle)) * radius)), static_cast<float>(0.0), static_cast<float>(1.0)));
       }
-      [[maybe_unused]] glsl::Vec2 point = ((neighborF + offset) / n);
+      [[maybe_unused]] glsl::Vec2 point = glsl::metal_divide((neighborF + offset), n);
       [[maybe_unused]] double d = glsl::distance(auv, point);
       if (d < minDist) {
         thirdDist = secondDist;
@@ -17268,8 +17274,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       }
     }
   }
-  [[maybe_unused]] glsl::Vec2 globalUV_sample = glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(nearestPoint)) / static_cast<double>(aspect)), glsl::swizzle<1>(nearestPoint));
-  [[maybe_unused]] glsl::Vec2 localUV_sample = (((globalUV_sample * resolution) - state.tileOffset) / tileDims);
+  [[maybe_unused]] glsl::Vec2 globalUV_sample = glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(nearestPoint)), static_cast<double>(aspect)), glsl::swizzle<1>(nearestPoint));
+  [[maybe_unused]] glsl::Vec2 localUV_sample = glsl::metal_divide(((globalUV_sample * resolution) - state.tileOffset), tileDims);
   [[maybe_unused]] glsl::Vec4 cellColor = sample_texture(*state.inputTex, localUV_sample);
   [[maybe_unused]] glsl::Vec3 result = {};
   if (state.mode == std::int32_t(0)) {
@@ -17317,12 +17323,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
             [[maybe_unused]] glsl::Vec2 candidatePoint = lowPolySite(state, context, candidateCell, n, s, spd);
             [[maybe_unused]] glsl::Vec2 siteVector = (candidatePoint - borderNearestPoint);
             [[maybe_unused]] double siteDistance = glsl::component_max(glsl::length(siteVector), static_cast<float>(1e-8));
-            [[maybe_unused]] double bisectorDistance = glsl::dot((((borderNearestPoint + candidatePoint) * static_cast<float>(0.5)) - auv), (siteVector / siteDistance));
+            [[maybe_unused]] double bisectorDistance = glsl::dot((((borderNearestPoint + candidatePoint) * static_cast<float>(0.5)) - auv), glsl::metal_divide(siteVector, siteDistance));
             distToEdge = glsl::component_min(distToEdge, bisectorDistance);
           }
         }
       }
-      [[maybe_unused]] double cellRadius = (static_cast<double>(static_cast<float>(0.5)) / static_cast<double>(n));
+      [[maybe_unused]] double cellRadius = glsl::metal_divide(static_cast<double>(static_cast<float>(0.5)), static_cast<double>(n));
       [[maybe_unused]] double borderHalfWidth = (static_cast<double>((static_cast<double>(float(state.LP_BORDER)) / static_cast<double>(static_cast<float>(100.0)))) * static_cast<double>(cellRadius));
       [[maybe_unused]] double borderFeather = glsl::component_max(glsl::fwidth(context, distToEdge), static_cast<float>(1e-6));
       borderMask = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep((static_cast<double>(borderHalfWidth) - static_cast<double>(borderFeather)), (static_cast<double>(borderHalfWidth) + static_cast<double>(borderFeather)), distToEdge)));
@@ -17361,7 +17367,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17496,7 +17502,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17511,8 +17517,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec4 acc = sample_texture(*state.inputTex, uv);
   if (state.SHAPE == std::int32_t(1)) {
     [[maybe_unused]] double r = glsl::component_min(state.radius, static_cast<float>(12.0));
@@ -17569,7 +17575,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17584,10 +17590,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 acc = sample_texture(*state.inputTex, uv);
   if (state.SHAPE == std::int32_t(0)) {
-    [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+    [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
     [[maybe_unused]] double r = glsl::component_min(state.radius, static_cast<float>(32.0));
     for ([[maybe_unused]] std::int32_t i = std::int32_t(1); (i <= std::int32_t(32)); ++i) {
       if (float(i) > r) {
@@ -17630,7 +17636,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17693,19 +17699,19 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 srcHome = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double seedF = float(state.seed);
   [[maybe_unused]] glsl::Vec3 result = {};
   if (state.MODE == std::int32_t(0)) {
     [[maybe_unused]] double warp = mosaicWarp(state, context, globalCoord, state.tileSize, seedF);
     [[maybe_unused]] glsl::Vec2 warpedCoord = (globalCoord + glsl::FloatExpr<2>(warp));
-    [[maybe_unused]] glsl::Vec2 cellSpace = (warpedCoord / state.tileSize);
+    [[maybe_unused]] glsl::Vec2 cellSpace = glsl::metal_divide(warpedCoord, state.tileSize);
     [[maybe_unused]] glsl::Vec2 cellId = glsl::floor(cellSpace);
     [[maybe_unused]] glsl::Vec2 warpedCenter = ((cellId + glsl::FloatExpr<2>(static_cast<float>(0.5))) * state.tileSize);
     [[maybe_unused]] double centerWarp = mosaicWarp(state, context, warpedCenter, state.tileSize, seedF);
     [[maybe_unused]] glsl::Vec2 sampleGc = (warpedCenter - glsl::FloatExpr<2>(centerWarp));
-    [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(((sampleGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(glsl::metal_divide((sampleGc - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
     [[maybe_unused]] glsl::Vec3 tileColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, sampleUV));
     [[maybe_unused]] double kC = mosaicGroutMask(state, context, globalCoord, state.tileSize, state.groutWidth, seedF);
     [[maybe_unused]] double kR = mosaicGroutMask(state, context, (globalCoord + glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0))), state.tileSize, state.groutWidth, seedF);
@@ -17724,7 +17730,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     result = glsl::Vec3(glsl::clamp((darkened * shadeMul), static_cast<float>(0.0), static_cast<float>(1.0)));
   } else {
     if (state.MODE == std::int32_t(1)) {
-      [[maybe_unused]] glsl::Vec2 cellSpace = (globalCoord / state.tileSize);
+      [[maybe_unused]] glsl::Vec2 cellSpace = glsl::metal_divide(globalCoord, state.tileSize);
       [[maybe_unused]] glsl::Vec2 cellId = glsl::floor(cellSpace);
       [[maybe_unused]] glsl::Vec2 cellFrac = glsl::fract(cellSpace);
       [[maybe_unused]] double edgeDistPx = (static_cast<double>(glsl::component_min(glsl::component_min(glsl::swizzle<0>(cellFrac), (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<0>(cellFrac)))), glsl::component_min(glsl::swizzle<1>(cellFrac), (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(cellFrac)))))) * static_cast<double>(state.tileSize));
@@ -17734,7 +17740,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       [[maybe_unused]] glsl::Vec2 offsetPx = glsl::Vec2((glsl::Vec2((glsl::Vec2((glsl::Vec2((hash22(state, context, (cellId + (static_cast<double>(seedF) * static_cast<double>(static_cast<float>(101.7))))) - static_cast<float>(0.5))) * static_cast<float>(2.0))) * (static_cast<double>(state.maxOffset) / static_cast<double>(static_cast<float>(100.0))))) * state.tileSize));
       [[maybe_unused]] glsl::Vec2 cellCenterGc = ((cellId + glsl::FloatExpr<2>(static_cast<float>(0.5))) * state.tileSize);
       [[maybe_unused]] glsl::Vec2 shiftedGc = (cellCenterGc + offsetPx);
-      [[maybe_unused]] glsl::Vec2 shiftedUV = glsl::clamp(((shiftedGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+      [[maybe_unused]] glsl::Vec2 shiftedUV = glsl::clamp(glsl::metal_divide((shiftedGc - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
       [[maybe_unused]] glsl::Vec3 tileColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, shiftedUV));
       [[maybe_unused]] glsl::Vec3 gapColor = {};
       if (state.gapFill == std::int32_t(0)) {
@@ -17768,7 +17774,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17784,7 +17790,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_83
@@ -17808,7 +17814,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -17823,7 +17829,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   if (state.resetState) {
     output = glsl::Vec4(sample_texture(*state.inputTex, uv));
     return;
@@ -17861,7 +17867,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18019,7 +18025,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18044,7 +18050,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     output = glsl::Vec4(color);
     return;
   }
-  [[maybe_unused]] glsl::Vec3 normalized = ((glsl::swizzle<0, 1, 2>(color) - minVal) / (static_cast<double>(maxVal) - static_cast<double>(minVal)));
+  [[maybe_unused]] glsl::Vec3 normalized = glsl::metal_divide((glsl::swizzle<0, 1, 2>(color) - minVal), (static_cast<double>(maxVal) - static_cast<double>(minVal)));
   output = glsl::Vec4(glsl::Vec4(normalized, glsl::swizzle<3>(color)));
 }
 }  // namespace typed_86
@@ -18066,7 +18072,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18121,7 +18127,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18172,7 +18178,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18238,7 +18244,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18300,7 +18306,7 @@ struct State final : KernelState {
   }
   [[maybe_unused]] double norm = (static_cast<double>(value) / static_cast<double>(limit));
   if (mode == std::int32_t(0)) {
-    norm = glsl::abs((static_cast<double>(glsl::mod((static_cast<double>(norm) + static_cast<double>(static_cast<float>(1.0))), static_cast<float>(2.0))) - static_cast<double>(static_cast<float>(1.0))));
+    norm = glsl::abs((static_cast<double>(norm) - static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::floor((static_cast<double>((static_cast<double>(norm) + static_cast<double>(static_cast<float>(1.0)))) * static_cast<double>(static_cast<float>(0.5)))))))));
   } else {
     if (mode == std::int32_t(1)) {
       norm = glsl::mod(norm, static_cast<float>(1.0));
@@ -18323,14 +18329,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double width = glsl::swizzle<0>(dims);
   [[maybe_unused]] double height = glsl::swizzle<1>(dims);
   [[maybe_unused]] double baseFreq = (static_cast<double>(static_cast<float>(11.0)) - static_cast<double>(state.frequency));
-  [[maybe_unused]] double aspect = (static_cast<double>(width) / static_cast<double>(height));
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(width), static_cast<double>(height));
   [[maybe_unused]] glsl::Vec2 freq = glsl::FloatExpr<2>(baseFreq);
   if (aspect > static_cast<float>(1.0)) {
     glsl::set_swizzle<1>(freq, (glsl::swizzle<1>(freq) * aspect));
   } else {
     glsl::set_swizzle<0>(freq, (glsl::swizzle<0>(freq) / aspect));
   }
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec2 sampleCoord = (uv * dims);
   [[maybe_unused]] std::int32_t numOctaves = glsl::component_max(glsl::detail::glsl_int_cast(state.octaves), std::int32_t(1));
   [[maybe_unused]] double displaceBase = state.displacement;
@@ -18345,7 +18351,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
     [[maybe_unused]] double phase = (static_cast<double>(float(octave)) * static_cast<double>(static_cast<float>(2.399)));
     [[maybe_unused]] double radius = (static_cast<double>(static_cast<float>(0.5)) / static_cast<double>(glsl::sqrt(multiplier)));
-    [[maybe_unused]] glsl::Vec2 noiseCoord = ((sampleCoord / dims) * freqScaled);
+    [[maybe_unused]] glsl::Vec2 noiseCoord = (glsl::metal_divide(sampleCoord, dims) * freqScaled);
     [[maybe_unused]] double refX = simplexNoise(state, context, (noiseCoord + glsl::FloatExpr<2>(static_cast<float>(17.0), static_cast<float>(29.0))), (static_cast<double>(state.time) * static_cast<double>(state.speed)), phase, radius);
     [[maybe_unused]] double refY = simplexNoise(state, context, (noiseCoord + glsl::FloatExpr<2>(static_cast<float>(23.0), static_cast<float>(31.0))), (static_cast<double>(state.time) * static_cast<double>(state.speed)), phase, radius);
     refX = (static_cast<double>((static_cast<double>(refX) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0)));
@@ -18355,7 +18361,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     sampleCoord = glsl::Vec2((sampleCoord + offset));
     sampleCoord = glsl::Vec2(glsl::FloatExpr<2>(wrapFloat(state, context, glsl::swizzle<0>(sampleCoord), width, glsl::detail::glsl_int_cast(state.wrap)), wrapFloat(state, context, glsl::swizzle<1>(sampleCoord), height, glsl::detail::glsl_int_cast(state.wrap))));
   }
-  [[maybe_unused]] glsl::Vec2 finalUV = (glsl::FloatExpr<2>(wrapFloat(state, context, glsl::swizzle<0>(sampleCoord), width, glsl::detail::glsl_int_cast(state.wrap)), wrapFloat(state, context, glsl::swizzle<1>(sampleCoord), height, glsl::detail::glsl_int_cast(state.wrap))) / dims);
+  [[maybe_unused]] glsl::Vec2 finalUV = glsl::metal_divide(glsl::FloatExpr<2>(wrapFloat(state, context, glsl::swizzle<0>(sampleCoord), width, glsl::detail::glsl_int_cast(state.wrap)), wrapFloat(state, context, glsl::swizzle<1>(sampleCoord), height, glsl::detail::glsl_int_cast(state.wrap))), dims);
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, finalUV);
     [[maybe_unused]] glsl::Vec2 dy = glsl::dFdy(context, finalUV);
@@ -18388,7 +18394,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18604,7 +18610,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18646,7 +18652,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 lumGradientFlat([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] double tl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.flatTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(1.0)))))));
   [[maybe_unused]] double l = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.flatTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(0.0)))))));
   [[maybe_unused]] double bl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.flatTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(-1.0)))))));
@@ -18682,7 +18688,7 @@ struct State final : KernelState {
             [[maybe_unused]] glsl::Vec3 blurred = tent3x3(state, context, uv);
             return glsl::mix(c, blurred, (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0))));
           } else {
-            [[maybe_unused]] double band = fbm(state, context, ((globalCoord + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(37.0)))) / (static_cast<double>(static_cast<float>(4.0)) + static_cast<double>(state.size))));
+            [[maybe_unused]] double band = fbm(state, context, glsl::metal_divide((globalCoord + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(37.0)))), (static_cast<double>(static_cast<float>(4.0)) + static_cast<double>(state.size))));
             [[maybe_unused]] double shift = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(band) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<double>((static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0)))))) * static_cast<double>(static_cast<float>(0.25)));
             return glsl::clamp((c + glsl::FloatExpr<3>(shift)), static_cast<float>(0.0), static_cast<float>(1.0));
           }
@@ -18698,7 +18704,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 tent3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec3 sum = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] double wsum = static_cast<float>(0.0);
   for ([[maybe_unused]] std::int32_t dy = (-std::int32_t(1)); (dy <= std::int32_t(1)); ++dy) {
@@ -18722,7 +18728,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec3 c = glsl::swizzle<0, 1, 2>(sample_texture(*state.flatTex, uv));
   [[maybe_unused]] glsl::Vec2 globalCoord = glsl::Vec2((glsl::floor(glsl::swizzle<0, 1>(context.frag_coord)) + state.tileOffset));
@@ -18757,7 +18763,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18912,7 +18918,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -18933,7 +18939,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     return;
   }
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(dimensions));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(dimensions));
   [[maybe_unused]] glsl::Vec4 base = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 edges = sample_texture(*state.edgesTexture, uv);
   [[maybe_unused]] double strength = glsl::clamp(glsl::swizzle<0>(edges), static_cast<float>(0.0), static_cast<float>(1.0));
@@ -18963,7 +18969,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19055,7 +19061,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19109,7 +19115,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 dimensions = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) - glsl::FloatExpr<2>(static_cast<float>(0.5))) / glsl::Vec2(glsl::component_max(glsl::swizzle<0>(dimensions), std::int32_t(1)), glsl::component_max(glsl::swizzle<1>(dimensions), std::int32_t(1))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) - glsl::FloatExpr<2>(static_cast<float>(0.5))), glsl::Vec2(glsl::component_max(glsl::swizzle<0>(dimensions), std::int32_t(1)), glsl::component_max(glsl::swizzle<1>(dimensions), std::int32_t(1))));
   [[maybe_unused]] glsl::Vec4 texel = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double value = valueMapComponent(state, context, texel);
   output = glsl::Vec4(glsl::FloatExpr<4>(value, value, value, glsl::swizzle<3>(texel)));
@@ -19168,7 +19174,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19329,7 +19335,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19367,7 +19373,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const std::int32_t MARCH_STEPS = 32;
   const double SHIFT_SCALE = static_cast<float>(0.15);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec3 v = ((glsl::length(state.direction) > static_cast<float>(0.0)) ? glsl::Vec3(glsl::normalize(state.direction)) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0))));
   [[maybe_unused]] glsl::Vec2 shift = (glsl::swizzle<0, 1>(v) * SHIFT_SCALE);
   [[maybe_unused]] bool isTileRendering = (glsl::length(state.tileOffset) > static_cast<float>(0.0));
@@ -19375,7 +19381,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     [[maybe_unused]] double maxDispPixels = static_cast<float>(256.0);
     [[maybe_unused]] double dispPixels = glsl::length((shift * state.fullResolution));
     if (dispPixels > maxDispPixels) {
-      shift = glsl::Vec2((shift * (static_cast<double>(maxDispPixels) / static_cast<double>(dispPixels))));
+      shift = glsl::Vec2((shift * glsl::metal_divide(static_cast<double>(maxDispPixels), static_cast<double>(dispPixels))));
     }
   }
   [[maybe_unused]] double t = static_cast<float>(1.0);
@@ -19390,7 +19396,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       rayUV = glsl::Vec2((uv + (shift * (static_cast<double>(t) - static_cast<double>(state.pivot)))));
       f = (static_cast<double>(t) - static_cast<double>(getHeight(state, context, rayUV)));
       if (f <= static_cast<float>(0.0)) {
-        [[maybe_unused]] double w = (static_cast<double>(f) / static_cast<double>((static_cast<double>(f) - static_cast<double>(prevF))));
+        [[maybe_unused]] double w = glsl::metal_divide(static_cast<double>(f), static_cast<double>((static_cast<double>(f) - static_cast<double>(prevF))));
         rayUV = glsl::Vec2(glsl::mix(rayUV, prevUV, w));
         break;
       }
@@ -19421,7 +19427,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19453,7 +19459,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 toSampleUV([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 globalPixelPos) noexcept {
-  return glsl::clamp(((globalPixelPos - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+  return glsl::clamp(glsl::metal_divide((globalPixelPos - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
 }
 
 void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
@@ -19461,11 +19467,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 srcOwn = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec2 imgCenter = (state.fullResolution * static_cast<float>(0.5));
   [[maybe_unused]] glsl::Vec2 relPx = (globalCoord - imgCenter);
-  [[maybe_unused]] glsl::Vec2 cellIdxF = glsl::floor((relPx / state.squareSize));
+  [[maybe_unused]] glsl::Vec2 cellIdxF = glsl::floor(glsl::metal_divide(relPx, state.squareSize));
   [[maybe_unused]] glsl::Vec2 localPx = (relPx - (cellIdxF * state.squareSize));
   [[maybe_unused]] glsl::Vec2 cellCenter = (imgCenter + ((cellIdxF + static_cast<float>(0.5)) * state.squareSize));
   [[maybe_unused]] glsl::Vec3 cellColor = glsl::swizzle<0, 1, 2>(cellAvgColor3x3(state, context, cellCenter));
@@ -19528,7 +19534,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19543,7 +19549,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(1.0), static_cast<float>(24.0), (static_cast<double>((static_cast<double>(state.detail) - static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(static_cast<float>(99.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -19554,8 +19560,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -19580,7 +19586,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19595,7 +19601,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(1.0), static_cast<float>(24.0), (static_cast<double>((static_cast<double>(state.detail) - static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(static_cast<float>(99.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -19606,8 +19612,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -19635,7 +19641,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19661,7 +19667,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 blur = sample_texture(*state.blurTex, uv);
   [[maybe_unused]] double lumSrc = lum(state, context, glsl::swizzle<0, 1, 2>(src));
@@ -19701,7 +19707,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19728,9 +19734,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>(state.rotation) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
   [[maybe_unused]] double intensity = (static_cast<double>(state.strength) * static_cast<double>(static_cast<float>(0.01)));
   uv = glsl::Vec2((uv - static_cast<float>(0.5)));
@@ -19745,7 +19751,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   uv = glsl::Vec2((uv + static_cast<float>(0.5)));
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
@@ -19754,7 +19760,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>((-state.rotation)) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
-  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp((((uv * state.fullResolution) - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, sampleUV);
     [[maybe_unused]] glsl::Vec2 dy = glsl::dFdy(context, sampleUV);
@@ -19785,7 +19791,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19819,7 +19825,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   [[maybe_unused]] double estimatedRank = (static_cast<double>(float(brighterCount)) / static_cast<double>(float(NUM_SAMPLES)));
-  output = glsl::Vec4(glsl::FloatExpr<4>(estimatedRank, myLum, (static_cast<double>(float(x)) / static_cast<double>(float((width - std::int32_t(1))))), static_cast<float>(1.0)));
+  output = glsl::Vec4(glsl::FloatExpr<4>(estimatedRank, myLum, glsl::metal_divide(static_cast<double>(float(x)), static_cast<double>(float((width - std::int32_t(1))))), static_cast<float>(1.0)));
 }
 }  // namespace typed_104
 
@@ -19844,7 +19850,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19861,7 +19867,7 @@ struct State final : KernelState {
   [[maybe_unused]] glsl::Vec2 uv = (coord / size);
   [[maybe_unused]] std::int32_t mode = glsl::detail::glsl_int_cast(state.wrap);
   if (mode == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (mode == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::fract(uv));
@@ -19888,7 +19894,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::set_swizzle<0>(srcCoord, (static_cast<double>((static_cast<double>(c) * static_cast<double>(glsl::swizzle<0>(pixelCoord)))) - static_cast<double>((static_cast<double>(s) * static_cast<double>(glsl::swizzle<1>(pixelCoord))))));
   glsl::set_swizzle<1>(srcCoord, (static_cast<double>((static_cast<double>(s) * static_cast<double>(glsl::swizzle<0>(pixelCoord)))) + static_cast<double>((static_cast<double>(c) * static_cast<double>(glsl::swizzle<1>(pixelCoord))))));
   srcCoord = glsl::Vec2((srcCoord + center));
-  [[maybe_unused]] glsl::Vec4 originalColor = sample_texture(*state.originalTex, (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution));
+  [[maybe_unused]] glsl::Vec4 originalColor = sample_texture(*state.originalTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution));
   [[maybe_unused]] glsl::Vec2 wrappedUV = applyWrap(state, context, srcCoord, texSize);
   [[maybe_unused]] glsl::Vec4 sortedColor = sample_texture(*state.inputTex, wrappedUV);
   [[maybe_unused]] glsl::Vec4& working_source = originalColor;
@@ -19924,7 +19930,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19954,7 +19960,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       brightestX = sampleX;
     }
   }
-  output = glsl::Vec4(glsl::FloatExpr<4>((static_cast<double>(float(brightestX)) / static_cast<double>(float((width - std::int32_t(1))))), maxLum, static_cast<float>(0.0), static_cast<float>(1.0)));
+  output = glsl::Vec4(glsl::FloatExpr<4>(glsl::metal_divide(static_cast<double>(float(brightestX)), static_cast<double>(float((width - std::int32_t(1))))), maxLum, static_cast<float>(0.0), static_cast<float>(1.0)));
 }
 }  // namespace typed_106
 
@@ -19975,7 +19981,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -19998,7 +20004,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double brightestXNorm = glsl::swizzle<0>(fetch_texel(*state.brightestTex, glsl::IVec2(std::int32_t(0), y)));
   [[maybe_unused]] std::int32_t brightestX = glsl::detail::float_to_int32(glsl::round((static_cast<double>(brightestXNorm) * static_cast<double>(float((width - std::int32_t(1)))))));
   [[maybe_unused]] std::int32_t sortedIndex = glsl::integer_mod(((x - brightestX) + width), width);
-  [[maybe_unused]] double targetRank = (static_cast<double>(float(sortedIndex)) / static_cast<double>(float((width - std::int32_t(1)))));
+  [[maybe_unused]] double targetRank = glsl::metal_divide(static_cast<double>(float(sortedIndex)), static_cast<double>(float((width - std::int32_t(1)))));
   [[maybe_unused]] std::int32_t NUM_SAMPLES = std::int32_t(64);
   [[maybe_unused]] double bestDiff = static_cast<float>(2.0);
   [[maybe_unused]] std::int32_t bestX = x;
@@ -20032,7 +20038,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20095,7 +20101,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20112,7 +20118,7 @@ struct State final : KernelState {
   [[maybe_unused]] glsl::Vec2 uv = (coord / size);
   [[maybe_unused]] std::int32_t mode = glsl::detail::glsl_int_cast(state.wrap);
   if (mode == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (mode == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::fract(uv));
@@ -20166,7 +20172,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20184,19 +20190,19 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 resolution = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / tileDims);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), tileDims);
   if (state.size < static_cast<float>(1.0)) {
     output = glsl::Vec4(sample_texture(*state.inputTex, uv));
     return;
   }
   [[maybe_unused]] double pixelSize = state.size;
-  [[maybe_unused]] double dx = (static_cast<double>(pixelSize) / static_cast<double>(glsl::swizzle<0>(resolution)));
-  [[maybe_unused]] double dy = (static_cast<double>(pixelSize) / static_cast<double>(glsl::swizzle<1>(resolution)));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / resolution);
+  [[maybe_unused]] double dx = glsl::metal_divide(static_cast<double>(pixelSize), static_cast<double>(glsl::swizzle<0>(resolution)));
+  [[maybe_unused]] double dy = glsl::metal_divide(static_cast<double>(pixelSize), static_cast<double>(glsl::swizzle<1>(resolution)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), resolution);
   [[maybe_unused]] glsl::Vec2 centered = (globalUV - static_cast<float>(0.5));
-  [[maybe_unused]] glsl::Vec2 globalCoord = glsl::FloatExpr<2>((static_cast<double>(dx) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<0>(centered)) / static_cast<double>(dx))))), (static_cast<double>(dy) * static_cast<double>(glsl::floor((static_cast<double>(glsl::swizzle<1>(centered)) / static_cast<double>(dy))))));
+  [[maybe_unused]] glsl::Vec2 globalCoord = glsl::FloatExpr<2>((static_cast<double>(dx) * static_cast<double>(glsl::floor(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(centered)), static_cast<double>(dx))))), (static_cast<double>(dy) * static_cast<double>(glsl::floor(glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(centered)), static_cast<double>(dy))))));
   globalCoord = glsl::Vec2((globalCoord + static_cast<float>(0.5)));
-  [[maybe_unused]] glsl::Vec2 coord = (((globalCoord * resolution) - state.tileOffset) / tileDims);
+  [[maybe_unused]] glsl::Vec2 coord = glsl::metal_divide(((globalCoord * resolution) - state.tileOffset), tileDims);
   output = glsl::Vec4(sample_texture(*state.inputTex, coord));
 }
 }  // namespace typed_110
@@ -20218,7 +20224,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20233,7 +20239,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(12.0), static_cast<float>(2.0), (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -20244,8 +20250,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -20270,7 +20276,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20285,7 +20291,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(12.0), static_cast<float>(2.0), (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -20296,8 +20302,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -20325,7 +20331,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20346,8 +20352,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double hC = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, uv)));
   [[maybe_unused]] double hL = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, (uv - glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0))))));
@@ -20370,7 +20376,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double gloss = glsl::mix(static_cast<float>(24.0), static_cast<float>(6.0), (static_cast<double>(state.smoothness) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double flatSpec = glsl::pow(glsl::swizzle<2>(H), gloss);
   [[maybe_unused]] double rawSpec = glsl::pow(glsl::clamp(glsl::dot(n, H), static_cast<float>(0.0), static_cast<float>(1.0)), gloss);
-  [[maybe_unused]] double spec = glsl::clamp((static_cast<double>((static_cast<double>(rawSpec) - static_cast<double>(flatSpec))) / static_cast<double>(glsl::component_max((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(flatSpec)), static_cast<float>(0.0001)))), static_cast<float>(0.0), static_cast<float>(1.0));
+  [[maybe_unused]] double spec = glsl::clamp(glsl::metal_divide(static_cast<double>((static_cast<double>(rawSpec) - static_cast<double>(flatSpec))), static_cast<double>(glsl::component_max((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(flatSpec)), static_cast<float>(0.0001)))), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double curv = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(4.0)) * static_cast<double>(hC))) - static_cast<double>(hL))) - static_cast<double>(hR))) - static_cast<double>(hB))) - static_cast<double>(hT));
   [[maybe_unused]] double ridge = glsl::clamp((static_cast<double>((static_cast<double>(curv) * static_cast<double>(strength))) * static_cast<double>(static_cast<float>(2.0))), static_cast<float>(0.0), static_cast<float>(1.0));
   spec = glsl::clamp((static_cast<double>((static_cast<double>(spec) * static_cast<double>(static_cast<float>(1.35)))) + static_cast<double>((static_cast<double>(ridge) * static_cast<double>(static_cast<float>(0.75))))), static_cast<float>(0.0), static_cast<float>(1.0));
@@ -20404,7 +20410,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20459,8 +20465,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
   [[maybe_unused]] glsl::Vec2 coord = {};
   if (state.polarMode == std::int32_t(0)) {
     coord = glsl::Vec2(polarCoords(state, context, uv, aspect));
@@ -20507,7 +20513,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20522,9 +20528,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   uv = glsl::Vec2((uv - static_cast<float>(0.5)));
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) * aspectRatio));
   [[maybe_unused]] double r = glsl::length(uv);
@@ -20550,7 +20556,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       rDelta = (static_cast<double>(w) * static_cast<double>(static_cast<float>(0.5)));
     }
   }
-  [[maybe_unused]] glsl::Vec2 dir = ((r > static_cast<float>(0.0)) ? glsl::Vec2((uv / r)) : glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0))));
+  [[maybe_unused]] glsl::Vec2 dir = ((r > static_cast<float>(0.0)) ? glsl::Vec2(glsl::metal_divide(uv, r)) : glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0))));
   [[maybe_unused]] double rot = (static_cast<double>((static_cast<double>((static_cast<double>(rotDelta) * static_cast<double>(static_cast<float>(2.0)))) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(static_cast<float>(0.25)));
   [[maybe_unused]] double s = glsl::sin(rot);
   [[maybe_unused]] double co = glsl::cos(rot);
@@ -20559,7 +20565,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) / aspectRatio));
   uv = glsl::Vec2((uv + static_cast<float>(0.5)));
   if (state.WRAP == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.WRAP == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
@@ -20567,7 +20573,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       uv = glsl::Vec2(glsl::clamp(uv, static_cast<float>(0.0), static_cast<float>(1.0)));
     }
   }
-  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp((((uv * state.fullResolution) - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, sampleUV);
     [[maybe_unused]] glsl::Vec2 dy = glsl::dFdy(context, sampleUV);
@@ -20603,7 +20609,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20658,7 +20664,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const double MIN_LEVELS = static_cast<float>(1.0);
   const double MIN_GAMMA = static_cast<float>(1e-3);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 texel = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double levels_raw = glsl::component_max(state.levels, static_cast<float>(0.0));
   [[maybe_unused]] double levels_quantized = glsl::component_max(noisemaker::f32(glsl::round(levels_raw)), MIN_LEVELS);
@@ -20667,10 +20673,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     return;
   }
   [[maybe_unused]] double level_factor = levels_quantized;
-  [[maybe_unused]] double inv_factor = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(level_factor));
+  [[maybe_unused]] double inv_factor = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(level_factor));
   [[maybe_unused]] double half_step = (static_cast<double>(inv_factor) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] double gamma_value = glsl::component_max(state.gamma, MIN_GAMMA);
-  [[maybe_unused]] double inv_gamma = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(gamma_value));
+  [[maybe_unused]] double inv_gamma = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(gamma_value));
   [[maybe_unused]] glsl::Vec3 working_rgb = srgb_to_linear_rgb(state, context, glsl::swizzle<0, 1, 2>(texel));
   working_rgb = glsl::Vec3(pow_vec3(state, context, glsl::clamp(working_rgb, glsl::FloatExpr<3>(static_cast<float>(0.0)), glsl::FloatExpr<3>(static_cast<float>(1.0))), gamma_value));
   [[maybe_unused]] glsl::Vec3 scaled = ((working_rgb * level_factor) + glsl::FloatExpr<3>(half_step));
@@ -20714,7 +20720,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20808,16 +20814,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
-  [[maybe_unused]] double globalAspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
+  [[maybe_unused]] double globalAspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec2 diff = (glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(globalAspect)), static_cast<float>(0.5)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(globalUV)) * static_cast<double>(globalAspect)), glsl::swizzle<1>(globalUV)));
   [[maybe_unused]] double centerDist = glsl::length(diff);
   [[maybe_unused]] glsl::Vec2 lensedCoords = uv;
   [[maybe_unused]] double aberrationOffset = (static_cast<double>((static_cast<double>((static_cast<double>(map(state, context, state.aberrationAmt, static_cast<float>(0.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(0.05))) * static_cast<double>(centerDist))) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(static_cast<float>(0.5)));
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] double redOffset = glsl::mix(glsl::clamp((static_cast<double>(glsl::swizzle<0>(lensedCoords)) + static_cast<double>(aberrationOffset)), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<0>(lensedCoords), glsl::swizzle<0>(lensedCoords));
   [[maybe_unused]] glsl::Vec2 redUV = glsl::FloatExpr<2>(redOffset, glsl::swizzle<1>(lensedCoords));
   [[maybe_unused]] glsl::Vec2 redLocalUV = (((redUV * state.fullResolution) - state.tileOffset) * texelSize);
@@ -20861,7 +20867,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -20959,7 +20965,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21019,7 +21025,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21129,7 +21135,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21144,7 +21150,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(0.5), static_cast<float>(15.0), (static_cast<double>(state.smoothness) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -21155,8 +21161,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -21182,7 +21188,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21197,7 +21203,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(0.5), static_cast<float>(15.0), (static_cast<double>(state.smoothness) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -21208,8 +21214,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -21242,7 +21248,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21284,8 +21290,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double hC = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, uv)));
   [[maybe_unused]] double hR = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, (uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0))))));
@@ -21348,7 +21354,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21364,13 +21370,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec2& st = globalUV;
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
   st = glsl::Vec2(((st * glsl::FloatExpr<2>(state.x, state.y)) + glsl::FloatExpr<2>((static_cast<double>(state.offsetX) * static_cast<double>(state.aspect)), state.offsetY)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) / state.aspect));
   if (state.wrap == std::int32_t(0)) {
-    st = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((st + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    st = glsl::Vec2(glsl::abs(glsl::Vec2((st - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((st + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       st = glsl::Vec2(glsl::fract(st));
@@ -21378,9 +21384,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       st = glsl::Vec2(glsl::clamp(st, static_cast<float>(0.0), static_cast<float>(1.0)));
     }
   }
-  [[maybe_unused]] glsl::Vec2 localUV = (((st * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((st * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   if (state.wrap == std::int32_t(0)) {
-    localUV = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((localUV + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    localUV = glsl::Vec2(glsl::abs(glsl::Vec2((localUV - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((localUV + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       localUV = glsl::Vec2(glsl::fract(localUV));
@@ -21413,7 +21419,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21430,7 +21436,7 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 applyWrap([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
   [[maybe_unused]] std::int32_t mode = glsl::detail::glsl_int_cast(state.wrap);
   if (mode == std::int32_t(0)) {
-    return glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0))));
+    return glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5))))))));
   } else {
     if (mode == std::int32_t(1)) {
       return glsl::fract(uv);
@@ -21449,8 +21455,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 dims = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 localUV = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(dims));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(dims));
   [[maybe_unused]] glsl::Vec4 original = sample_texture(*state.inputTex, localUV);
   [[maybe_unused]] glsl::Vec4 current = original;
   if (state.ridges) {
@@ -21464,7 +21470,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < iters); ++i) {
     [[maybe_unused]] glsl::Vec2 warpedGlobalUV = (globalUV * scale);
     [[maybe_unused]] glsl::Vec2 wrappedGlobalUV = applyWrap(state, context, warpedGlobalUV);
-    [[maybe_unused]] glsl::Vec2 sampledLocalUV = glsl::fract((((wrappedGlobalUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(dims)));
+    [[maybe_unused]] glsl::Vec2 sampledLocalUV = glsl::fract(glsl::metal_divide(((wrappedGlobalUV * state.fullResolution) - state.tileOffset), glsl::Vec2(dims)));
     [[maybe_unused]] glsl::Vec4 scaled = sample_texture(*state.inputTex, sampledLocalUV);
     if (state.ridges) {
       scaled = glsl::Vec4(ridge_transform(state, context, scaled));
@@ -21497,7 +21503,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21522,7 +21528,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 dims = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(dims));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(dims));
   [[maybe_unused]] glsl::Vec4 texel = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 ridged = ridge_transform(state, context, texel, state.level);
   [[maybe_unused]] glsl::Vec4 out_color = glsl::Vec4(glsl::swizzle<0, 1, 2>(ridged), static_cast<float>(1.0));
@@ -21549,7 +21555,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21574,12 +21580,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   const double TAU = static_cast<float>(6.283185307179586);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] double angle = state.rotation;
   if (state.speed != std::int32_t(0)) {
     angle = (angle + (static_cast<double>((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(360.0)))) * static_cast<double>(float(state.speed))));
   }
-  [[maybe_unused]] double aspect = (static_cast<double>(float(glsl::swizzle<0>(texSize))) / static_cast<double>(float(glsl::swizzle<1>(texSize))));
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(float(glsl::swizzle<0>(texSize))), static_cast<double>(float(glsl::swizzle<1>(texSize))));
   [[maybe_unused]] glsl::Vec2 center = glsl::FloatExpr<2>(static_cast<float>(0.5));
   uv = glsl::Vec2((uv - center));
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) * aspect));
@@ -21587,7 +21593,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) / aspect));
   uv = glsl::Vec2((uv + center));
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::fract(uv));
@@ -21623,7 +21629,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21639,16 +21645,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec2 c = glsl::FloatExpr<2>(state.centerX, state.centerY);
   st = glsl::Vec2((st - c));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
-  st = glsl::Vec2((st / glsl::FloatExpr<2>(state.scaleX, state.scaleY)));
+  st = glsl::Vec2(glsl::metal_divide(st, glsl::FloatExpr<2>(state.scaleX, state.scaleY)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) / state.aspect));
   st = glsl::Vec2((st + c));
-  [[maybe_unused]] glsl::Vec2 localUV = (((st * state.fullResolution) - state.tileOffset) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((st * state.fullResolution) - state.tileOffset), state.resolution);
   if (state.wrap == std::int32_t(0)) {
-    localUV = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((localUV + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    localUV = glsl::Vec2(glsl::abs(glsl::Vec2((localUV - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((localUV + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       localUV = glsl::Vec2(glsl::fract(localUV));
@@ -21684,7 +21690,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -21904,7 +21910,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     return;
   }
-  [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2((state.fullResolution / state.renderScale)) : glsl::Vec2(glsl::Vec2(input_size)));
+  [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(glsl::metal_divide(state.fullResolution, state.renderScale)) : glsl::Vec2(glsl::Vec2(input_size)));
   [[maybe_unused]] double width_f = glsl::swizzle<0>(fullRes);
   [[maybe_unused]] double height_f = glsl::swizzle<1>(fullRes);
   [[maybe_unused]] glsl::Vec2 dims = glsl::FloatExpr<2>(width_f, height_f);
@@ -21914,16 +21920,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double speed_value = glsl::component_max(state.speed, static_cast<float>(0.0));
   [[maybe_unused]] std::int32_t m = glsl::detail::glsl_int_cast(state.mode);
   if (m == std::int32_t(1)) {
-    [[maybe_unused]] double yNorm = (static_cast<double>((static_cast<double>(float(glsl::swizzle<1>(globalGid))) + static_cast<double>(static_cast<float>(0.5)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
-    [[maybe_unused]] double xNorm = (static_cast<double>((static_cast<double>(float(glsl::swizzle<0>(globalGid))) + static_cast<double>(static_cast<float>(0.5)))) / static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
+    [[maybe_unused]] double yNorm = glsl::metal_divide(static_cast<double>((static_cast<double>(float(glsl::swizzle<1>(globalGid))) + static_cast<double>(static_cast<float>(0.5)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+    [[maybe_unused]] double xNorm = glsl::metal_divide(static_cast<double>((static_cast<double>(float(glsl::swizzle<0>(globalGid))) + static_cast<double>(static_cast<float>(0.5)))), static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
     [[maybe_unused]] glsl::Vec2 destCoord = glsl::FloatExpr<2>(xNorm, yNorm);
     [[maybe_unused]] double gradDest = vhs_gradValue(state, context, yNorm, static_cast<float>(5.0), time_value, speed_value);
     [[maybe_unused]] double scanBase = (static_cast<double>(glsl::floor((static_cast<double>(height_f) * static_cast<double>(static_cast<float>(0.5))))) + static_cast<double>(static_cast<float>(1.0)));
     [[maybe_unused]] glsl::Vec2 scanFreq = {};
     if (height_f < width_f) {
-      scanFreq = glsl::Vec2(glsl::FloatExpr<2>((static_cast<double>(scanBase) * static_cast<double>((static_cast<double>(height_f) / static_cast<double>(width_f)))), scanBase));
+      scanFreq = glsl::Vec2(glsl::FloatExpr<2>((static_cast<double>(scanBase) * static_cast<double>(glsl::metal_divide(static_cast<double>(height_f), static_cast<double>(width_f)))), scanBase));
     } else {
-      scanFreq = glsl::Vec2(glsl::FloatExpr<2>(scanBase, (static_cast<double>(scanBase) * static_cast<double>((static_cast<double>(width_f) / static_cast<double>(height_f))))));
+      scanFreq = glsl::Vec2(glsl::FloatExpr<2>(scanBase, (static_cast<double>(scanBase) * static_cast<double>(glsl::metal_divide(static_cast<double>(width_f), static_cast<double>(height_f))))));
     }
     [[maybe_unused]] double scanDest = vhs_scanNoise(state, context, destCoord, scanFreq, time_value, (static_cast<double>(speed_value) * static_cast<double>(static_cast<float>(100.0))));
     [[maybe_unused]] double fullWidth = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::swizzle<0>(state.fullResolution) : width_f);
@@ -21936,7 +21942,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
     localSampleX = glsl::clamp(localSampleX, std::int32_t(0), (glsl::detail::glsl_int_cast(tile_width) - std::int32_t(1)));
     [[maybe_unused]] glsl::Vec4 srcTexel = fetch_texel(*state.inputTex, glsl::IVec2(localSampleX, glsl::detail::glsl_int_cast(glsl::swizzle<1>(gid))));
-    [[maybe_unused]] double srcXNorm = (static_cast<double>((static_cast<double>(float(wrappedGlobalX)) + static_cast<double>(static_cast<float>(0.5)))) / static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
+    [[maybe_unused]] double srcXNorm = glsl::metal_divide(static_cast<double>((static_cast<double>(float(wrappedGlobalX)) + static_cast<double>(static_cast<float>(0.5)))), static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
     [[maybe_unused]] double scanSource = vhs_scanNoise(state, context, glsl::FloatExpr<2>(srcXNorm, yNorm), scanFreq, time_value, (static_cast<double>(speed_value) * static_cast<double>(static_cast<float>(100.0))));
     [[maybe_unused]] double gradSource = vhs_gradValue(state, context, yNorm, static_cast<float>(5.0), time_value, speed_value);
     [[maybe_unused]] glsl::Vec3 noiseColor = glsl::FloatExpr<3>(scanSource);
@@ -21997,7 +22003,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22013,50 +22019,54 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 lumGradient([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept;
 
 [[nodiscard]] glsl::Vec2 hash22([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept {
-  [[maybe_unused]] glsl::Vec3 p3 = glsl::fract((glsl::Vec3(glsl::swizzle<0, 1, 0>(p)) * glsl::FloatExpr<3>(static_cast<double>(0.1031), static_cast<double>(0.1030), static_cast<double>(0.0973))));
-  p3 = glsl::Vec3((p3 + glsl::dot(p3, (glsl::swizzle<1, 2, 0>(p3) + static_cast<double>(33.33)))));
-  return glsl::fract(((glsl::swizzle<0, 0>(p3) + glsl::swizzle<1, 2>(p3)) * glsl::swizzle<2, 1>(p3)));
+  [[maybe_unused]] glsl::Vec3 p3 = glsl::fract((glsl::Vec3(glsl::swizzle<0, 1, 0>(p)) * glsl::FloatExpr<3>(static_cast<float>(0.1031), static_cast<float>(0.1030), static_cast<float>(0.0973))));
+  p3 = glsl::Vec3((p3 + glsl::dot(p3, (glsl::swizzle<1, 2, 0>(p3) + static_cast<float>(33.33)))));
+  return glsl::fract(glsl::Vec2(static_cast<float>(static_cast<double>(static_cast<float>(static_cast<double>(glsl::swizzle<0>(p3)) + static_cast<double>(glsl::swizzle<1>(p3)))) * static_cast<double>(glsl::swizzle<2>(p3))), static_cast<float>(static_cast<double>(static_cast<float>(static_cast<double>(glsl::swizzle<0>(p3)) + static_cast<double>(glsl::swizzle<2>(p3)))) * static_cast<double>(glsl::swizzle<1>(p3)))));
 }
 
 [[nodiscard]] double lum([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 c) noexcept {
-  return glsl::dot(c, glsl::FloatExpr<3>(static_cast<double>(0.2126), static_cast<double>(0.7152), static_cast<double>(0.0722)));
+  return glsl::dot(c, glsl::FloatExpr<3>(static_cast<float>(0.2126), static_cast<float>(0.7152), static_cast<float>(0.0722)));
 }
 
 [[nodiscard]] glsl::Vec2 lumGradient([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<double>(1.0) / state.resolution);
-  [[maybe_unused]] double tl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(-1.0), static_cast<double>(1.0)))))));
-  [[maybe_unused]] double l = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(-1.0), static_cast<double>(0.0)))))));
-  [[maybe_unused]] double bl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(-1.0), static_cast<double>(-1.0)))))));
-  [[maybe_unused]] double tr = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(1.0), static_cast<double>(1.0)))))));
-  [[maybe_unused]] double r = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(1.0), static_cast<double>(0.0)))))));
-  [[maybe_unused]] double br = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(1.0), static_cast<double>(-1.0)))))));
-  [[maybe_unused]] double t = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(0.0), static_cast<double>(1.0)))))));
-  [[maybe_unused]] double b = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<double>(0.0), static_cast<double>(-1.0)))))));
-  return glsl::FloatExpr<2>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(tr) + static_cast<double>((static_cast<double>(static_cast<double>(2.0)) * static_cast<double>(r))))) + static_cast<double>(br))) - static_cast<double>(tl))) - static_cast<double>((static_cast<double>(static_cast<double>(2.0)) * static_cast<double>(l))))) - static_cast<double>(bl)), (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(tl) + static_cast<double>((static_cast<double>(static_cast<double>(2.0)) * static_cast<double>(t))))) + static_cast<double>(tr))) - static_cast<double>(bl))) - static_cast<double>((static_cast<double>(static_cast<double>(2.0)) * static_cast<double>(b))))) - static_cast<double>(br)));
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
+  [[maybe_unused]] double tl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(1.0)))))));
+  [[maybe_unused]] double l = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(0.0)))))));
+  [[maybe_unused]] double bl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(-1.0)))))));
+  [[maybe_unused]] double tr = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(1.0)))))));
+  [[maybe_unused]] double r = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0)))))));
+  [[maybe_unused]] double br = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(-1.0)))))));
+  [[maybe_unused]] double t = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0)))))));
+  [[maybe_unused]] double b = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(-1.0)))))));
+  return glsl::FloatExpr<2>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(tr) + static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(r))))) + static_cast<double>(br))) - static_cast<double>(tl))) - static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(l))))) - static_cast<double>(bl)), (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(tl) + static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(t))))) + static_cast<double>(tr))) - static_cast<double>(bl))) - static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(b))))) - static_cast<double>(br)));
 }
 
 void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2& hashCoord = globalCoord;
   if (state.MODE == std::int32_t(4)) {
-    hashCoord = glsl::Vec2(glsl::Vec2((glsl::floor((globalCoord / static_cast<double>(3.0))) * static_cast<double>(3.0))));
+    hashCoord = glsl::Vec2(glsl::Vec2((glsl::floor((globalCoord / static_cast<float>(3.0))) * static_cast<float>(3.0))));
   }
-  [[maybe_unused]] glsl::Vec2 rnd = glsl::Vec2((hash22(state, context, (hashCoord + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<double>(101.7))))) - static_cast<double>(0.5)));
-  [[maybe_unused]] glsl::Vec2 offset = ((rnd * static_cast<double>(2.0)) * state.radius);
+  [[maybe_unused]] glsl::Vec2 rnd = glsl::Vec2((hash22(state, context, (hashCoord + static_cast<double>(noisemaker::f32(static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(101.7)))))) - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 offset = ((rnd * static_cast<float>(2.0)) * state.radius);
   if (state.MODE == std::int32_t(3)) {
     [[maybe_unused]] glsl::Vec2 grad = lumGradient(state, context, uv);
     [[maybe_unused]] double gradLen = glsl::length(grad);
-    if (gradLen > static_cast<double>(1e-5)) {
-      [[maybe_unused]] glsl::Vec2 perp = (glsl::FloatExpr<2>((-glsl::swizzle<1>(grad)), glsl::swizzle<0>(grad)) / gradLen);
-      glsl::set_swizzle<0>(offset, (static_cast<double>(glsl::dot(offset, perp)) * static_cast<double>(glsl::swizzle<0>(perp))));
-      glsl::set_swizzle<1>(offset, (static_cast<double>(glsl::dot(offset, perp)) * static_cast<double>(glsl::swizzle<1>(perp))));
+    if (gradLen > static_cast<float>(1e-5)) {
+      [[maybe_unused]] glsl::Vec2 perp = glsl::metal_divide(glsl::FloatExpr<2>((-glsl::swizzle<1>(grad)), glsl::swizzle<0>(grad)), gradLen);
+      {
+        const double cpu_vector_write_0 = static_cast<double>((static_cast<double>(glsl::dot(offset, perp)) * static_cast<double>(glsl::swizzle<0>(perp))));
+        const double cpu_vector_write_1 = static_cast<double>((static_cast<double>(glsl::dot(offset, perp)) * static_cast<double>(glsl::swizzle<1>(perp))));
+        glsl::set_swizzle<0>(offset, cpu_vector_write_0);
+        glsl::set_swizzle<1>(offset, cpu_vector_write_1);
+      }
     }
   }
-  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(((glsl::swizzle<0, 1>(context.frag_coord) + offset) / state.resolution), static_cast<double>(0.0), static_cast<double>(1.0));
+  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + offset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 samp = sample_texture(*state.inputTex, sampleUV);
   [[maybe_unused]] glsl::Vec4& result = samp;
@@ -22089,7 +22099,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22104,8 +22114,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 sum = glsl::FloatExpr<4>(static_cast<float>(0.0));
   [[maybe_unused]] double wsum = static_cast<float>(0.0);
@@ -22138,7 +22148,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22187,7 +22197,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22203,15 +22213,15 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalCoord, state.fullResolution);
   glsl::set_swizzle<0>(globalUV, (glsl::swizzle<0>(globalUV) * state.aspect));
   [[maybe_unused]] glsl::Vec2 offset = glsl::FloatExpr<2>((static_cast<double>((-state.x)) + static_cast<double>((static_cast<double>(state.time) * static_cast<double>((-state.speedX))))), (static_cast<double>(state.y) + static_cast<double>((static_cast<double>(state.time) * static_cast<double>(state.speedY)))));
   glsl::set_swizzle<0>(offset, (glsl::swizzle<0>(offset) * state.aspect));
   globalUV = glsl::Vec2((globalUV + offset));
   glsl::set_swizzle<0>(globalUV, (glsl::swizzle<0>(globalUV) / state.aspect));
-  [[maybe_unused]] glsl::Vec2 localUV = (((globalUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((globalUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   if (state.wrap == std::int32_t(0)) {
-    localUV = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((localUV + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    localUV = glsl::Vec2(glsl::abs(glsl::Vec2((localUV - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((localUV + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       localUV = glsl::Vec2(glsl::fract(localUV));
@@ -22241,7 +22251,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22275,7 +22285,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec2 st = (uv * state.repeat);
   st = glsl::Vec2(glsl::fract(st));
   [[maybe_unused]] double wx = edgeWeight(state, context, glsl::swizzle<0>(st), state.blend);
@@ -22310,7 +22320,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22328,9 +22338,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 resolution = glsl::Vec2(texSize);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / resolution);
-  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), resolution);
+  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] std::array<double, 9> kernel{};
   kernel[std::int32_t(0)] = static_cast<float>(-1.0);
   kernel[std::int32_t(1)] = static_cast<float>(0.0);
@@ -22353,7 +22363,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   offsets[std::int32_t(8)] = glsl::Vec2(glsl::FloatExpr<2>(glsl::swizzle<0>(texelSize), glsl::swizzle<1>(texelSize)));
   [[maybe_unused]] glsl::Vec3 conv = glsl::FloatExpr<3>(static_cast<float>(0.0));
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(9)); ++i) {
-    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + ((offsets[i] * state.amount) * state.renderScale)) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + ((offsets[i] * state.amount) * state.renderScale)) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
     conv = glsl::Vec3((conv + (texSample * kernel[i])));
   }
   output = glsl::Vec4(glsl::Vec4(glsl::clamp(conv, static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<3>(origColor)));
@@ -22379,7 +22389,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22395,16 +22405,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalPixel = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalPixel / state.fullResolution);
-  [[maybe_unused]] double maxDisplacementUV = (static_cast<double>(static_cast<float>(256.0)) / static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalPixel, state.fullResolution);
+  [[maybe_unused]] double maxDisplacementUV = glsl::metal_divide(static_cast<double>(static_cast<float>(256.0)), static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
   [[maybe_unused]] double boundedDisplacement = glsl::clamp(state.displacement, (-maxDisplacementUV), maxDisplacementUV);
   [[maybe_unused]] glsl::Vec2 redGlobalUV = (globalUV + glsl::FloatExpr<2>(boundedDisplacement, static_cast<float>(0.0)));
-  [[maybe_unused]] glsl::Vec2 redLocalUV = (((redGlobalUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 redLocalUV = glsl::metal_divide(((redGlobalUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 red = sample_texture(*state.inputTex, redLocalUV);
-  [[maybe_unused]] glsl::Vec2 greenLocalUV = (((globalUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 greenLocalUV = glsl::metal_divide(((globalUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 green = sample_texture(*state.inputTex, greenLocalUV);
   [[maybe_unused]] glsl::Vec2 blueGlobalUV = (globalUV - glsl::FloatExpr<2>(boundedDisplacement, static_cast<float>(0.0)));
-  [[maybe_unused]] glsl::Vec2 blueLocalUV = (((blueGlobalUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 blueLocalUV = glsl::metal_divide(((blueGlobalUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 blue = sample_texture(*state.inputTex, blueLocalUV);
   output = glsl::Vec4(glsl::FloatExpr<4>(glsl::swizzle<0>(red), glsl::swizzle<1>(green), glsl::swizzle<2>(blue), glsl::swizzle<3>(green)));
 }
@@ -22429,7 +22439,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22452,7 +22462,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] bool use_rgb = (state.colorMode > static_cast<float>(0.5));
   if (use_rgb) {
@@ -22489,7 +22499,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22508,8 +22518,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 resolution = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 globalPixel = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalPixel / state.fullResolution);
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalPixel, state.fullResolution);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2& st = globalUV;
   st = glsl::Vec2((st - static_cast<float>(0.5)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * aspect));
@@ -22517,18 +22527,18 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double c = glsl::cos(angle);
   [[maybe_unused]] double s = glsl::sin(angle);
   st = glsl::Vec2((glsl::Mat2(glsl::Vec2(c, (-s)), glsl::Vec2(s, c)) * st));
-  [[maybe_unused]] double maxSkew = (static_cast<double>(static_cast<float>(512.0)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double maxSkew = glsl::metal_divide(static_cast<double>(static_cast<float>(512.0)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double effectiveSkewAmt = glsl::clamp(state.skewAmt, (-maxSkew), maxSkew);
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) + (static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>((-effectiveSkewAmt)))));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) / aspect));
   st = glsl::Vec2((st + static_cast<float>(0.5)));
-  [[maybe_unused]] glsl::Vec2 localUV = (((st * state.fullResolution) - state.tileOffset) / resolution);
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((st * state.fullResolution) - state.tileOffset), resolution);
   [[maybe_unused]] std::int32_t wrapMode = glsl::detail::glsl_int_cast(state.wrap);
   if (wrapMode == std::int32_t(0)) {
     localUV = glsl::Vec2(glsl::clamp(localUV, static_cast<float>(0.0), static_cast<float>(1.0)));
   } else {
     if (wrapMode == std::int32_t(1)) {
-      localUV = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((localUV + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+      localUV = glsl::Vec2(glsl::abs(glsl::Vec2((localUV - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((localUV + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
     } else {
       localUV = glsl::Vec2(glsl::fract(localUV));
     }
@@ -22561,7 +22571,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22760,8 +22770,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 original = fetch_texel(*state.inputTex, glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord)));
   [[maybe_unused]] glsl::Vec4 result = {};
   if (state.smoothType == std::int32_t(0)) {
@@ -22796,7 +22806,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22856,7 +22866,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -22873,7 +22883,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, uv);
   glsl::set_swizzle<0, 1, 2>(color, glsl::smoothstep(state.edge0, state.edge1, glsl::swizzle<0, 1, 2>(color)));
   output = glsl::Vec4(color);
@@ -22902,7 +22912,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23017,7 +23027,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23035,9 +23045,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 resolution = glsl::Vec2(texSize);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / resolution);
-  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), resolution);
+  [[maybe_unused]] glsl::Vec4 origColor = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] std::array<double, 9> sobel_x{};
   sobel_x[std::int32_t(0)] = static_cast<float>(1.0);
   sobel_x[std::int32_t(1)] = static_cast<float>(0.0);
@@ -23071,7 +23081,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 convX = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] glsl::Vec3 convY = glsl::FloatExpr<3>(static_cast<float>(0.0));
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(9)); ++i) {
-    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, ((((uv + ((offsets[i] * state.amount) * state.renderScale)) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)))));
+    [[maybe_unused]] glsl::Vec3 texSample = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, glsl::metal_divide((((uv + ((offsets[i] * state.amount) * state.renderScale)) * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)))));
     convX = glsl::Vec3((convX + (texSample * sobel_x[i])));
     convY = glsl::Vec3((convY + (texSample * sobel_y[i])));
   }
@@ -23105,7 +23115,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23228,11 +23238,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 dims = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(dims));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(dims));
   [[maybe_unused]] glsl::Vec4 base = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(glsl::Vec2(dims)));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
   [[maybe_unused]] glsl::Vec2 nUV = (globalUV * glsl::FloatExpr<2>(aspect, static_cast<float>(1.0)));
   [[maybe_unused]] std::uint32_t s = (glsl::detail::glsl_uint_cast(state.seed) * std::uint32_t(17));
   [[maybe_unused]] double smearFreq = glsl::mix(static_cast<float>(3.0), static_cast<float>(6.0), hashf(state, context, pcg(state, context, (s + std::uint32_t(10)))));
@@ -23282,7 +23292,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23321,9 +23331,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   const std::int32_t N = 32;
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec2 center = glsl::FloatExpr<2>(state.centerX, state.centerY);
   [[maybe_unused]] double arc = glsl::radians(state.amount);
   [[maybe_unused]] double angularStep = (static_cast<double>(arc) / static_cast<double>(float((N - std::int32_t(1)))));
@@ -23333,7 +23343,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < N); ++i) {
     [[maybe_unused]] double theta = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(float(i)) / static_cast<double>(float((N - std::int32_t(1)))))) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>(arc))) + static_cast<double>(jitter));
     [[maybe_unused]] glsl::Vec2 distorted = glsl::clamp(rotateAround(state, context, uv, center, theta, aspectRatio), static_cast<float>(0.0), static_cast<float>(1.0));
-    [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp((((distorted * state.fullResolution) - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(glsl::metal_divide(((distorted * state.fullResolution) - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
     sum = glsl::Vec4((sum + sample_texture(*state.inputTex, sampleUV)));
   }
   output = glsl::Vec4((sum / float(N)));
@@ -23365,7 +23375,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23392,9 +23402,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>(state.rotation) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
   uv = glsl::Vec2((uv - static_cast<float>(0.5)));
   if (state.aspectLens) {
@@ -23410,7 +23420,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   uv = glsl::Vec2((uv + static_cast<float>(0.5)));
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
@@ -23419,7 +23429,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>((-state.rotation)) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
-  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp((((uv * state.fullResolution) - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, sampleUV);
     [[maybe_unused]] glsl::Vec2 dy = glsl::dFdy(context, sampleUV);
@@ -23456,7 +23466,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23472,20 +23482,15 @@ struct State final : KernelState {
 [[nodiscard]] double ticker_row_mask([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t pixelX, [[maybe_unused]] double pixelY, [[maybe_unused]] std::int32_t rowSeed, [[maybe_unused]] double t, [[maybe_unused]] std::int32_t CELL_W, [[maybe_unused]] std::int32_t iScale) noexcept;
 
 [[nodiscard]] double hash_mix([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double v) noexcept {
-  v = glsl::detail::js_bitwise_xor(v, glsl::detail::js_shift_right(v, std::uint32_t(16)));
-  v = glsl::detail::js_umul(v, std::uint32_t(2146121005));
-  v = glsl::detail::js_bitwise_xor(v, glsl::detail::js_shift_right(v, std::uint32_t(15)));
-  v = glsl::detail::js_umul(v, std::uint32_t(2221713035));
-  v = glsl::detail::js_bitwise_xor(v, glsl::detail::js_shift_right(v, std::uint32_t(16)));
-  return v;
+  return static_cast<double>(noisemaker::hash_uint32(static_cast<std::uint32_t>(glsl::detail::js_to_int32(v))));
 }
 
 [[nodiscard]] double sample_glyph([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t digit, [[maybe_unused]] double localX, [[maybe_unused]] double localY, [[maybe_unused]] std::int32_t iScale) noexcept {
   const std::array<std::int32_t, 80> GLYPHS = std::array<std::int32_t, 80>{{std::int32_t(60), std::int32_t(66), std::int32_t(66), std::int32_t(66), std::int32_t(66), std::int32_t(66), std::int32_t(60), std::int32_t(0), std::int32_t(24), std::int32_t(8), std::int32_t(8), std::int32_t(8), std::int32_t(28), std::int32_t(28), std::int32_t(28), std::int32_t(0), std::int32_t(28), std::int32_t(4), std::int32_t(4), std::int32_t(28), std::int32_t(16), std::int32_t(16), std::int32_t(28), std::int32_t(0), std::int32_t(28), std::int32_t(4), std::int32_t(4), std::int32_t(28), std::int32_t(6), std::int32_t(6), std::int32_t(30), std::int32_t(0), std::int32_t(96), std::int32_t(96), std::int32_t(96), std::int32_t(96), std::int32_t(102), std::int32_t(126), std::int32_t(6), std::int32_t(0), std::int32_t(60), std::int32_t(32), std::int32_t(32), std::int32_t(60), std::int32_t(4), std::int32_t(4), std::int32_t(60), std::int32_t(0), std::int32_t(120), std::int32_t(72), std::int32_t(64), std::int32_t(64), std::int32_t(126), std::int32_t(66), std::int32_t(126), std::int32_t(0), std::int32_t(60), std::int32_t(36), std::int32_t(4), std::int32_t(12), std::int32_t(8), std::int32_t(8), std::int32_t(8), std::int32_t(0), std::int32_t(60), std::int32_t(36), std::int32_t(36), std::int32_t(126), std::int32_t(102), std::int32_t(102), std::int32_t(126), std::int32_t(0), std::int32_t(62), std::int32_t(34), std::int32_t(34), std::int32_t(62), std::int32_t(6), std::int32_t(6), std::int32_t(6), std::int32_t(0)}};
   const std::int32_t GLYPH_W = 7;
   const std::int32_t GLYPH_H = 8;
-  [[maybe_unused]] double gx = (static_cast<double>(localX) / static_cast<double>(iScale));
-  [[maybe_unused]] double gy = (static_cast<double>(localY) / static_cast<double>(iScale));
+  [[maybe_unused]] double gx = std::trunc(static_cast<double>(localX) / static_cast<double>(iScale));
+  [[maybe_unused]] double gy = std::trunc(static_cast<double>(localY) / static_cast<double>(iScale));
   if ((((gx < std::int32_t(0)) || (gx >= GLYPH_W)) || (gy < std::int32_t(0))) || (gy >= GLYPH_H)) {
     return static_cast<float>(0.0);
   }
@@ -23497,7 +23502,7 @@ struct State final : KernelState {
   [[maybe_unused]] double scrollSpeed = (static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>((static_cast<double>(float(glsl::detail::js_bitwise_and(hash_mix(state, context, glsl::detail::js_bitwise_xor(glsl::detail::glsl_uint_cast(rowSeed), std::uint32_t(17))), std::uint32_t(65535)))) / static_cast<double>(static_cast<float>(65535.0)))) * static_cast<double>(static_cast<float>(1.5)))));
   [[maybe_unused]] std::int32_t offset = glsl::detail::glsl_int_cast(glsl::floor((static_cast<double>((static_cast<double>(t) * static_cast<double>(scrollSpeed))) * static_cast<double>(static_cast<float>(120.0)))));
   [[maybe_unused]] std::int32_t sx = (pixelX + offset);
-  [[maybe_unused]] double cellX = ((sx >= std::int32_t(0)) ? (static_cast<double>(sx) / static_cast<double>(CELL_W)) : (static_cast<double>(((sx - CELL_W) + std::int32_t(1))) / static_cast<double>(CELL_W)));
+  [[maybe_unused]] double cellX = ((sx >= std::int32_t(0)) ? std::trunc(static_cast<double>(sx) / static_cast<double>(CELL_W)) : std::trunc(static_cast<double>(((sx - CELL_W) + std::int32_t(1))) / static_cast<double>(CELL_W)));
   [[maybe_unused]] double localX = (sx - (cellX * CELL_W));
   [[maybe_unused]] double h = hash_mix(state, context, glsl::detail::js_bitwise_xor(glsl::detail::glsl_uint_cast(cellX), (glsl::detail::glsl_uint_cast(rowSeed) * std::uint32_t(997))));
   [[maybe_unused]] std::int32_t digit = glsl::detail::glsl_int_cast(std::fmod(static_cast<double>(h), static_cast<double>(std::uint32_t(10))));
@@ -23528,7 +23533,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     return;
   }
   [[maybe_unused]] std::int32_t rowStride = (CELL_H + ROW_GAP);
-  [[maybe_unused]] double rowIdx = (static_cast<double>(pyFromBottom) / static_cast<double>(rowStride));
+  [[maybe_unused]] double rowIdx = std::trunc(static_cast<double>(pyFromBottom) / static_cast<double>(rowStride));
   [[maybe_unused]] double localY = (pyFromBottom - (rowIdx * rowStride));
   if ((rowIdx >= state.rows) || (localY >= CELL_H)) {
     output = glsl::Vec4(src);
@@ -23566,7 +23571,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23581,7 +23586,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(0.5), static_cast<float>(20.0), (static_cast<double>(state.smoothness) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -23592,8 +23597,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -23618,7 +23623,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23633,7 +23638,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double radius = glsl::mix(static_cast<float>(0.5), static_cast<float>(20.0), (static_cast<double>(state.smoothness) / static_cast<double>(static_cast<float>(100.0))));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
@@ -23644,8 +23649,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -23675,7 +23680,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23728,7 +23733,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 blur = sample_texture(*state.blurTex, uv);
   [[maybe_unused]] glsl::Vec2 globalCoord = glsl::Vec2((glsl::floor(glsl::swizzle<0, 1>(context.frag_coord)) + state.tileOffset));
@@ -23762,7 +23767,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23779,7 +23784,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 color = sample_texture(*state.inputTex, uv);
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec3 fw = glsl::fwidth(context, glsl::swizzle<0, 1, 2>(color));
@@ -23814,7 +23819,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -23903,14 +23908,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] double alpha = glsl::swizzle<3>(sample_texture(*state.inputTex, uv));
   [[maybe_unused]] glsl::Vec3 result = {};
   if (state.MODE == std::int32_t(0)) {
-    [[maybe_unused]] glsl::Vec2 p = (globalCoord / state.cellSize);
+    [[maybe_unused]] glsl::Vec2 p = glsl::metal_divide(globalCoord, state.cellSize);
     [[maybe_unused]] glsl::Vec4 cell = voronoiCell(state, context, p, static_cast<float>(0.9), float(state.seed));
     [[maybe_unused]] glsl::Vec2 seedGc = (glsl::swizzle<0, 1>(cell) * state.cellSize);
-    [[maybe_unused]] glsl::Vec2 seedUV = glsl::clamp(((seedGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec2 seedUV = glsl::clamp(glsl::metal_divide((seedGc - state.tileOffset), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
     [[maybe_unused]] glsl::Vec3 seedColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, seedUV));
     [[maybe_unused]] double radius = (static_cast<double>(static_cast<float>(0.35)) + static_cast<double>((static_cast<double>(static_cast<float>(0.4)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(lum(state, context, seedColor)))))));
     [[maybe_unused]] double d = glsl::length((p - glsl::swizzle<0, 1>(cell)));
@@ -23925,9 +23930,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       }
       [[maybe_unused]] glsl::Vec2 noiseP = {};
       if (state.MODE == std::int32_t(1)) {
-        noiseP = glsl::Vec2((gc / state.grainSize));
+        noiseP = glsl::Vec2(glsl::metal_divide(gc, state.grainSize));
       } else {
-        noiseP = glsl::Vec2((gc * glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(state.grainSize)), (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>((static_cast<double>(state.grainSize) * static_cast<double>(static_cast<float>(8.0))))))));
+        noiseP = glsl::Vec2((gc * glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(state.grainSize)), glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>((static_cast<double>(state.grainSize) * static_cast<double>(static_cast<float>(8.0))))))));
       }
       [[maybe_unused]] double n = vnoise(state, context, (noiseP + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(101.7)))));
       n = (n + (static_cast<double>((static_cast<double>(state.density) - static_cast<double>(static_cast<float>(50.0)))) / static_cast<double>(static_cast<float>(100.0))));
@@ -23936,7 +23941,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     } else {
       [[maybe_unused]] glsl::Vec3 src = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, uv));
       [[maybe_unused]] double l = lum(state, context, src);
-      [[maybe_unused]] double clumpNoise = (static_cast<double>(fbm(state, context, ((globalCoord / (static_cast<double>(state.grainSize) * static_cast<double>(static_cast<float>(4.0)))) + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(101.7)))))) * static_cast<double>(glsl::mix(static_cast<float>(1.2), static_cast<float>(0.6), l)));
+      [[maybe_unused]] double clumpNoise = (static_cast<double>(fbm(state, context, (glsl::metal_divide(globalCoord, (static_cast<double>(state.grainSize) * static_cast<double>(static_cast<float>(4.0)))) + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(101.7)))))) * static_cast<double>(glsl::mix(static_cast<float>(1.2), static_cast<float>(0.6), l)));
       clumpNoise = (clumpNoise + (static_cast<double>((static_cast<double>(state.density) - static_cast<double>(static_cast<float>(50.0)))) / static_cast<double>(static_cast<float>(100.0))));
       result = glsl::Vec3(tonemap2(state, context, glsl::step(clumpNoise, l), glsl::FloatExpr<3>(static_cast<float>(0.05)), glsl::FloatExpr<3>(static_cast<float>(0.97))));
     }
@@ -23965,7 +23970,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24010,7 +24015,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24024,7 +24029,7 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec3 tent3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept;
 
 [[nodiscard]] glsl::Vec3 tent3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec3 sum = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] double wsum = static_cast<float>(0.0);
   for ([[maybe_unused]] std::int32_t dy = (-std::int32_t(1)); (dy <= std::int32_t(1)); ++dy) {
@@ -24041,7 +24046,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec3 c = glsl::swizzle<0, 1, 2>(sample_texture(*state.smearTex, uv));
   [[maybe_unused]] glsl::Vec3 tent = tent3x3(state, context, uv);
@@ -24071,7 +24076,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24120,7 +24125,7 @@ struct State final : KernelState {
       [[maybe_unused]] double bristle = (static_cast<double>(static_cast<float>(0.78)) + static_cast<double>((static_cast<double>(static_cast<float>(0.22)) * static_cast<double>((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::sin((static_cast<double>((static_cast<double>(glsl::swizzle<1>(local)) * static_cast<double>(static_cast<float>(5.2)))) + static_cast<double>((static_cast<double>(hash12(state, context, (cell + static_cast<float>(97.3)))) * static_cast<double>(static_cast<float>(6.2831853))))))))))))));
       [[maybe_unused]] double mark = (static_cast<double>(body) * static_cast<double>(bristle));
       [[maybe_unused]] glsl::Vec2 centerGlobal = ((dirUnit * glsl::swizzle<0>(center)) + (across * glsl::swizzle<1>(center)));
-      [[maybe_unused]] glsl::Vec2 centerUV = (uv + ((centerGlobal - gc) / state.resolution));
+      [[maybe_unused]] glsl::Vec2 centerUV = (uv + glsl::metal_divide((centerGlobal - gc), state.resolution));
       pigmentSum = glsl::Vec3((pigmentSum + glsl::Vec3((glsl::swizzle<0, 1, 2>(srcSample(state, context, centerUV)) * mark))));
       pigmentWeight = (pigmentWeight + mark);
       field = glsl::component_max(field, mark);
@@ -24147,7 +24152,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 lumGradient([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] double tl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(1.0)))))));
   [[maybe_unused]] double l = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(0.0)))))));
   [[maybe_unused]] double bl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(-1.0)))))));
@@ -24168,7 +24173,7 @@ struct State final : KernelState {
 
 [[nodiscard]] glsl::Vec4 smear([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 gc, [[maybe_unused]] glsl::Vec2 dirUnit, [[maybe_unused]] double L, [[maybe_unused]] double jitterPx) noexcept {
   const std::int32_t MAX_TAPS = 24;
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec4 sum = srcSample(state, context, uv);
   [[maybe_unused]] double wsum = static_cast<float>(1.0);
   for ([[maybe_unused]] std::int32_t i = std::int32_t(1); (i <= MAX_TAPS); ++i) {
@@ -24198,7 +24203,7 @@ struct State final : KernelState {
 
 [[nodiscard]] glsl::Vec4 srcSample([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 sampleUV) noexcept {
   if (state.MODE == std::int32_t(3)) {
-    [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+    [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
     [[maybe_unused]] glsl::Vec4 s = sample_texture(*state.inputTex, sampleUV);
     [[maybe_unused]] glsl::Vec3 e = glsl::swizzle<0, 1, 2>(s);
     e = glsl::Vec3(glsl::component_min(e, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (sampleUV + glsl::FloatExpr<2>(glsl::swizzle<0>(px), static_cast<float>(0.0)))))));
@@ -24228,7 +24233,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec2 gc = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] double runBase = glsl::mix(static_cast<float>(3.0), static_cast<float>(50.0), (static_cast<double>(state.strokeLength) / static_cast<double>(static_cast<float>(100.0))));
@@ -24264,7 +24269,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         [[maybe_unused]] glsl::Vec4 c = glsl::mix(src, pigment, glsl::swizzle<3>(layer));
         [[maybe_unused]] double t = lum(state, context, glsl::swizzle<0, 1, 2>(c));
         [[maybe_unused]] double bAmt = (static_cast<double>(state.balance) / static_cast<double>(static_cast<float>(100.0)));
-        [[maybe_unused]] double exponent = ((t < bAmt) ? (static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(50.0))))) : (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>((static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(100.0))))))));
+        [[maybe_unused]] double exponent = ((t < bAmt) ? (static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(50.0))))) : glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>((static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(100.0))))))));
         glsl::set_swizzle<0, 1, 2>(c, glsl::pow(glsl::component_max(glsl::swizzle<0, 1, 2>(c), glsl::FloatExpr<3>(static_cast<float>(0.0))), glsl::FloatExpr<3>(exponent)));
         outc = glsl::Vec4(c);
       } else {
@@ -24310,7 +24315,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24326,7 +24331,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.srcTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   output = glsl::Vec4(sample_texture(*state.srcTex, uv));
 }
 }  // namespace typed_156
@@ -24357,7 +24362,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24373,7 +24378,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 cur = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] std::array<glsl::Vec4, 9> slots{};
   slots[static_cast<std::size_t>(std::int32_t(0))] = glsl::Vec4(cur);
@@ -24452,7 +24457,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24741,7 +24746,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.inputTex));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / texSize);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), texSize);
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double lum = glsl::dot(glsl::swizzle<0, 1, 2>(inputColor), glsl::FloatExpr<3>(static_cast<float>(0.299), static_cast<float>(0.587), static_cast<float>(0.114)));
   [[maybe_unused]] double t = (static_cast<double>((static_cast<double>((static_cast<double>(lum) * static_cast<double>(static_cast<float>(0.9998999834060669)))) * static_cast<double>(state.repeat))) + static_cast<double>(state.offset));
@@ -24798,7 +24803,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24898,7 +24903,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.inputTex));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / texSize);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), texSize);
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double lum = glsl::dot(glsl::swizzle<0, 1, 2>(inputColor), glsl::FloatExpr<3>(static_cast<float>(0.299), static_cast<float>(0.587), static_cast<float>(0.114)));
   [[maybe_unused]] double t = (static_cast<double>((static_cast<double>(lum) * static_cast<double>(state.repeat))) + static_cast<double>(state.offset));
@@ -24955,7 +24960,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -24971,8 +24976,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] glsl::Vec4 text = sample_texture(*state.textTex, st);
   [[maybe_unused]] double textPresence = glsl::swizzle<3>(text);
   [[maybe_unused]] double matteAlpha = state.matteOpacity;
@@ -25006,7 +25011,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25341,7 +25346,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const double SHADE_GAIN = static_cast<float>(4.4);
   [[maybe_unused]] glsl::Vec4 base_color = sample_texture(*state.inputTex, context.uv);
   [[maybe_unused]] glsl::Vec2 dims = glsl::Vec2(texture_size(*state.inputTex));
-  [[maybe_unused]] glsl::Vec2 pixel_step = (static_cast<float>(1.0) / dims);
+  [[maybe_unused]] glsl::Vec2 pixel_step = glsl::metal_divide(static_cast<float>(1.0), dims);
   [[maybe_unused]] double a = glsl::clamp(state.alpha, static_cast<float>(0.0), static_cast<float>(1.0));
   if (a <= static_cast<float>(0.0)) {
     output = glsl::Vec4(base_color);
@@ -25410,7 +25415,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25426,7 +25431,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 c = sample_texture(*state.inputTex, st);
   [[maybe_unused]] double l = glsl::dot(glsl::swizzle<0, 1, 2>(c), glsl::FloatExpr<3>(static_cast<float>(0.299), static_cast<float>(0.587), static_cast<float>(0.114)));
   [[maybe_unused]] double e = glsl::smoothstep((static_cast<double>(state.level) - static_cast<double>(state.sharpness)), (static_cast<double>(state.level) + static_cast<double>(state.sharpness)), l);
@@ -25458,7 +25463,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25512,8 +25517,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   const double PI = static_cast<float>(3.14159265359);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalUV = (globalCoord / state.fullResolution);
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 st = (globalUV - static_cast<float>(0.5));
   if (state.aspectLens) {
     glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * aspect));
@@ -25526,13 +25531,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 rep = (state.aspectLens ? glsl::Vec2(glsl::FloatExpr<2>((static_cast<double>(state.repeat) * static_cast<double>(aspect)), state.repeat)) : glsl::Vec2(glsl::FloatExpr<2>(state.repeat)));
   if (state.symmetry == std::int32_t(3)) {
     [[maybe_unused]] glsl::Vec2 local = hexCoord(state, context, ((st + glsl::FloatExpr<2>(state.offsetX, state.offsetY)) * rep));
-    local = glsl::Vec2((local / state.scale));
+    local = glsl::Vec2(glsl::metal_divide(local, state.scale));
     st = glsl::Vec2(rotationalFold(state, context, (local + static_cast<float>(0.5)), std::int32_t(6)));
   } else {
     st = glsl::Vec2((st * rep));
     st = glsl::Vec2(glsl::fract(st));
     [[maybe_unused]] double effectiveScale = ((state.symmetry == std::int32_t(0)) ? (static_cast<double>(state.scale) * static_cast<double>(static_cast<float>(0.5))) : state.scale);
-    st = glsl::Vec2(((st - static_cast<float>(0.5)) / effectiveScale));
+    st = glsl::Vec2(glsl::metal_divide((st - static_cast<float>(0.5)), effectiveScale));
     st = glsl::Vec2((st + (static_cast<float>(0.5) + glsl::FloatExpr<2>(state.offsetX, state.offsetY))));
     if (state.symmetry == std::int32_t(0)) {
       glsl::set_swizzle<0>(st, mirrorFold(state, context, glsl::swizzle<0>(st)));
@@ -25570,7 +25575,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25633,9 +25638,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(glsl::component_max(texture_size(*state.inputTex), glsl::IVec2(std::int32_t(1)))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(glsl::component_max(texture_size(*state.inputTex), glsl::IVec2(std::int32_t(1)))));
   [[maybe_unused]] glsl::Vec4 base = sample_texture(*state.inputTex, st);
-  [[maybe_unused]] glsl::Vec3 base_rgb = ((glsl::swizzle<3>(base) > static_cast<float>(0.0)) ? glsl::Vec3(glsl::clamp((glsl::swizzle<0, 1, 2>(base) / glsl::swizzle<3>(base)), static_cast<float>(0.0), static_cast<float>(1.0))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0))));
+  [[maybe_unused]] glsl::Vec3 base_rgb = ((glsl::swizzle<3>(base) > static_cast<float>(0.0)) ? glsl::Vec3(glsl::clamp(glsl::metal_divide(glsl::swizzle<0, 1, 2>(base), glsl::swizzle<3>(base)), static_cast<float>(0.0), static_cast<float>(1.0))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0))));
   [[maybe_unused]] std::int32_t m = glsl::detail::glsl_int_cast(state.mode);
   [[maybe_unused]] glsl::Vec3 tinted = {};
   if (m == std::int32_t(1)) {
@@ -25674,7 +25679,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25691,11 +25696,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   glsl::set_swizzle<0>(uv, (static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(state.x)));
   glsl::set_swizzle<1>(uv, (static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(state.y)));
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::fract(uv));
@@ -25732,7 +25737,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25766,9 +25771,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec2 centered = (uv - static_cast<float>(0.5));
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
   if (state.aspectLens) {
     glsl::set_swizzle<0>(centered, (glsl::swizzle<0>(centered) * aspectRatio));
   }
@@ -25841,7 +25846,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25856,7 +25861,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(state.radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
   [[maybe_unused]] double fTaps = glsl::component_min(state.radius, static_cast<float>(32.0));
@@ -25866,8 +25871,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -25892,7 +25897,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25907,7 +25912,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 dirPx = glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double sigma = glsl::component_max((static_cast<double>(state.radius) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.001));
   [[maybe_unused]] double fTaps = glsl::component_min(state.radius, static_cast<float>(32.0));
@@ -25917,8 +25922,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (float(i) > fTaps) {
       break;
     }
-    [[maybe_unused]] double w = glsl::exp((static_cast<double>((-float((i * i)))) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
-    [[maybe_unused]] glsl::Vec2 o = ((dirPx * float(i)) / state.resolution);
+    [[maybe_unused]] double w = glsl::exp(glsl::metal_divide(static_cast<double>((-float((i * i)))), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma)))));
+    [[maybe_unused]] glsl::Vec2 o = glsl::metal_divide((dirPx * float(i)), state.resolution);
     sum = glsl::Vec4((sum + (glsl::Vec4((sample_texture(*state.inputTex, (uv + o)) + sample_texture(*state.inputTex, (uv - o)))) * w)));
     wsum = (wsum + (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(w)));
   }
@@ -25945,7 +25950,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -25960,7 +25965,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 blur = sample_texture(*state.blurTex, uv);
   [[maybe_unused]] glsl::Vec3 diff = (glsl::swizzle<0, 1, 2>(src) - glsl::swizzle<0, 1, 2>(blur));
@@ -25992,7 +25997,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26024,16 +26029,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const double GOLDEN_ANGLE = static_cast<float>(2.39996323);
   const double BRIGHTNESS_ADJUST = static_cast<float>(0.15);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec4 original = fetch_texel(*state.inputTex, glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord)));
   [[maybe_unused]] double a = glsl::clamp(state.alpha, static_cast<float>(0.0), static_cast<float>(1.0));
   if (a <= static_cast<float>(0.0)) {
     output = glsl::Vec4(glsl::Vec4(clamp01(state, context, glsl::swizzle<0, 1, 2>(original)), glsl::swizzle<3>(original)));
     return;
   }
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), state.fullResolution);
   [[maybe_unused]] glsl::Vec2 radiusUV = ((static_cast<double>(RADIUS) * static_cast<double>(state.renderScale)) * texelSize);
   [[maybe_unused]] glsl::Vec3 blurAccum = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] double weightSum = static_cast<float>(0.0);
@@ -26045,7 +26050,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     [[maybe_unused]] double sigma = static_cast<float>(0.4);
     [[maybe_unused]] double weight = glsl::exp((static_cast<double>((static_cast<double>(static_cast<float>(-0.5)) * static_cast<double>((static_cast<double>(r) * static_cast<double>(r))))) / static_cast<double>((static_cast<double>(sigma) * static_cast<double>(sigma)))));
     [[maybe_unused]] glsl::Vec2 sampleGlobalUV = glsl::clamp((uv + (offset * radiusUV)), glsl::FloatExpr<2>(static_cast<float>(0.0)), glsl::FloatExpr<2>(static_cast<float>(1.0)));
-    [[maybe_unused]] glsl::Vec2 sampleLocalUV = (((sampleGlobalUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+    [[maybe_unused]] glsl::Vec2 sampleLocalUV = glsl::metal_divide(((sampleGlobalUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
     blurAccum = glsl::Vec3((blurAccum + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, sampleLocalUV)) * weight))));
     weightSum = (weightSum + weight);
   }
@@ -26080,7 +26085,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26116,8 +26121,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 dims = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / tileDims);
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / dims);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), tileDims);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), dims);
   [[maybe_unused]] glsl::Vec4 texel = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double mask = computeVignetteMask(state, context, globalUV, dims);
   [[maybe_unused]] glsl::Vec3 brightnessRgb = glsl::FloatExpr<3>(state.vignetteBrightness);
@@ -26152,7 +26157,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26223,8 +26228,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec2 noiseCoord = (uv * glsl::FloatExpr<2>(aspectRatio, static_cast<float>(1.0)));
   [[maybe_unused]] glsl::Vec2 noiseScale = glsl::FloatExpr<2>(glsl::abs((static_cast<double>(state.scale) * static_cast<double>(static_cast<float>(3.0)))));
   [[maybe_unused]] double dx = (static_cast<double>((static_cast<double>((static_cast<double>(perlinNoise(state, context, (noiseCoord + float(state.seed)), noiseScale)) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>(state.strength))) * static_cast<double>(static_cast<float>(0.01)));
@@ -26232,7 +26237,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) + dx));
   glsl::set_swizzle<1>(uv, (glsl::swizzle<1>(uv) + dy));
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
@@ -26275,7 +26280,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26302,7 +26307,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 lumGradientSimplified([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  [[maybe_unused]] glsl::Vec2 px = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 px = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] double tl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.simplifiedTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(1.0)))))));
   [[maybe_unused]] double l = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.simplifiedTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(0.0)))))));
   [[maybe_unused]] double bl = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.simplifiedTex, (uv + (px * glsl::FloatExpr<2>(static_cast<float>(-1.0), static_cast<float>(-1.0)))))));
@@ -26325,7 +26330,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec3 simplified = glsl::swizzle<0, 1, 2>(sample_texture(*state.simplifiedTex, uv));
   [[maybe_unused]] double edge = glsl::length(lumGradientSimplified(state, context, uv));
@@ -26357,7 +26362,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26372,7 +26377,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_174
@@ -26394,7 +26399,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26419,8 +26424,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] double stride = glsl::mix(static_cast<float>(3.0), static_cast<float>(1.0), (static_cast<double>(glsl::clamp(state.detail, static_cast<float>(0.0), static_cast<float>(100.0))) / static_cast<double>(static_cast<float>(100.0))));
-  [[maybe_unused]] glsl::Vec2 texel = (stride / state.resolution);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(stride, state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 s0 = sample_texture(*state.inputTex, (uv + glsl::FloatExpr<2>((-glsl::swizzle<0>(texel)), (-glsl::swizzle<1>(texel)))));
   [[maybe_unused]] glsl::Vec4 s1 = sample_texture(*state.inputTex, (uv + glsl::FloatExpr<2>(static_cast<float>(0.0), (-glsl::swizzle<1>(texel)))));
   [[maybe_unused]] glsl::Vec4 s2 = sample_texture(*state.inputTex, (uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), (-glsl::swizzle<1>(texel)))));
@@ -26487,7 +26492,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26514,18 +26519,18 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>(state.rotation) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
   [[maybe_unused]] double displacement = (static_cast<double>(glsl::sin((static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(uv)) * static_cast<double>(state.scale))) * static_cast<double>(static_cast<float>(10.0)))) + static_cast<double>((static_cast<double>((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318530718)))) * static_cast<double>(float(state.speed))))))) * static_cast<double>((static_cast<double>(state.strength) * static_cast<double>(static_cast<float>(0.01)))));
   if (glsl::any(glsl::notEqual(state.tileOffset, glsl::FloatExpr<2>(static_cast<float>(0.0))))) {
-    [[maybe_unused]] double maxDisplacementUV = (static_cast<double>(static_cast<float>(256.0)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+    [[maybe_unused]] double maxDisplacementUV = glsl::metal_divide(static_cast<double>(static_cast<float>(256.0)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
     displacement = glsl::clamp(displacement, (-maxDisplacementUV), maxDisplacementUV);
   }
   glsl::set_swizzle<1>(uv, (glsl::swizzle<1>(uv) + displacement));
   if (state.wrap == std::int32_t(0)) {
-    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
   } else {
     if (state.wrap == std::int32_t(1)) {
       uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
@@ -26534,7 +26539,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   uv = glsl::Vec2(rotate2D(state, context, uv, (static_cast<double>((-state.rotation)) / static_cast<double>(static_cast<float>(180.0))), aspectRatio));
-  [[maybe_unused]] glsl::Vec2 localCoord = (((uv * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 localCoord = glsl::metal_divide(((uv * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec2 sampleUV = (glsl::any(glsl::notEqual(state.tileOffset, glsl::FloatExpr<2>(static_cast<float>(0.0)))) ? glsl::Vec2(glsl::fract(localCoord)) : glsl::Vec2(glsl::clamp(localCoord, static_cast<float>(0.0), static_cast<float>(1.0))));
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, sampleUV);
@@ -26572,7 +26577,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26596,7 +26601,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const std::int32_t MAX_STEPS = 128;
   const double STEP_PX = static_cast<float>(1.0);
   const double MAX_REACH = static_cast<float>(128.0);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double amount = glsl::clamp((static_cast<double>(state.strength) / static_cast<double>(static_cast<float>(100.0))), static_cast<float>(0.0), static_cast<float>(1.0));
@@ -26620,11 +26625,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       break;
     }
     [[maybe_unused]] double sampleDistance = (static_cast<double>(distancePx) + static_cast<double>(staggerPhase));
-    [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(((glsl::swizzle<0, 1>(context.frag_coord) + glsl::FloatExpr<2>((static_cast<double>(marchDir) * static_cast<double>(sampleDistance)), static_cast<float>(0.0))) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + glsl::FloatExpr<2>((static_cast<double>(marchDir) * static_cast<double>(sampleDistance)), static_cast<float>(0.0))), state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
     [[maybe_unused]] glsl::Vec3 candidate = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, sampleUV));
     [[maybe_unused]] double contrast = (static_cast<double>((static_cast<double>(lum(state, context, candidate)) - static_cast<double>(baseLum))) - static_cast<double>(edge));
     [[maybe_unused]] double activation = glsl::smoothstep(static_cast<float>(0.0), static_cast<float>(0.08), contrast);
-    [[maybe_unused]] double alongRun = (static_cast<double>(distancePx) / static_cast<double>(glsl::component_max(reach, static_cast<float>(1.0))));
+    [[maybe_unused]] double alongRun = glsl::metal_divide(static_cast<double>(distancePx), static_cast<double>(glsl::component_max(reach, static_cast<float>(1.0))));
     [[maybe_unused]] double taperStart = {};
     [[maybe_unused]] double decayRate = {};
     if (state.METHOD == std::int32_t(1)) {
@@ -26685,7 +26690,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26705,7 +26710,7 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 applyWrap([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv) noexcept {
   [[maybe_unused]] std::int32_t mode = glsl::detail::glsl_int_cast(state.wrap);
   if (mode == std::int32_t(0)) {
-    return glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0))));
+    return glsl::abs(glsl::Vec2((uv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((uv + static_cast<float>(1.0)) * static_cast<float>(0.5))))))));
   } else {
     if (mode == std::int32_t(1)) {
       return glsl::fract(uv);
@@ -26800,7 +26805,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26816,9 +26821,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 accum = sample_texture(*state.accumTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.accumTex))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 accum = sample_texture(*state.accumTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.accumTex))));
   [[maybe_unused]] double sum = static_cast<float>(0.0);
   [[maybe_unused]] double count = static_cast<float>(0.0);
   for ([[maybe_unused]] std::int32_t gy = std::int32_t(0); (gy < std::int32_t(32)); ++gy) {
@@ -26856,7 +26861,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26893,7 +26898,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -26931,8 +26936,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
   [[maybe_unused]] glsl::Vec2 tileDims = glsl::Vec2(texSize);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(tileDims));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / tileDims);
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), tileDims);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec3 color = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] double total = static_cast<float>(0.0);
   [[maybe_unused]] glsl::Vec2 toCenter = (globalUV - static_cast<float>(0.5));
@@ -26975,7 +26980,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27174,7 +27179,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     age = static_cast<float>(0.0);
     initialized = static_cast<float>(1.0);
   }
-  [[maybe_unused]] double agentPhase = (static_cast<double>(float(agentIndex)) / static_cast<double>(float(glsl::component_max(totalAgents, std::int32_t(1)))));
+  [[maybe_unused]] double agentPhase = glsl::metal_divide(static_cast<double>(float(agentIndex)), static_cast<double>(float(glsl::component_max(totalAgents, std::int32_t(1)))));
   [[maybe_unused]] double staggeredAge = (static_cast<double>(age) + static_cast<double>((static_cast<double>(agentPhase) * static_cast<double>(state.lifetime))));
   [[maybe_unused]] bool shouldRespawn = ((state.lifetime > static_cast<float>(0.0)) && (staggeredAge >= state.lifetime));
   if (shouldRespawn) {
@@ -27235,7 +27240,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27251,7 +27256,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 outputSize = texture_size(*state.trailTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(outputSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(outputSize));
   [[maybe_unused]] double inputIntensityValue = (static_cast<double>(state.inputIntensity) / static_cast<double>(static_cast<float>(100.0)));
   [[maybe_unused]] glsl::Vec4 baseSample = sample_texture(*state.mixerTex, uv);
   [[maybe_unused]] glsl::Vec4 baseColor = glsl::Vec4((glsl::swizzle<0, 1, 2>(baseSample) * inputIntensityValue), glsl::swizzle<3>(baseSample));
@@ -27277,7 +27282,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27293,7 +27298,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.sourceTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   output = glsl::Vec4(sample_texture(*state.sourceTex, uv));
 }
 }  // namespace typed_184
@@ -27314,7 +27319,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27330,7 +27335,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.sourceTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 trailColor = sample_texture(*state.sourceTex, uv);
   [[maybe_unused]] double decay = glsl::clamp((static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(100.0))), static_cast<float>(0.0), static_cast<float>(1.0));
   output = glsl::Vec4((trailColor * decay));
@@ -27362,7 +27367,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27452,7 +27457,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const std::int32_t PALETTE_COUNT = 55;
   const std::array<PaletteEntry, 55> PALETTES = std::array<PaletteEntry, 55>{{PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.76), static_cast<float>(0.88), static_cast<float>(0.37), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.93), static_cast<float>(0.97), static_cast<float>(0.52), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.21), static_cast<float>(0.41), static_cast<float>(0.56), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.56851584), static_cast<float>(0.7740668), static_cast<float>(0.23485267), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.727029), static_cast<float>(0.08039695), static_cast<float>(0.10427457), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.3), static_cast<float>(0.2), static_cast<float>(0.2), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.45), static_cast<float>(0.2), static_cast<float>(0.1), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.7), static_cast<float>(0.2), static_cast<float>(0.2), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.4), static_cast<float>(0.0), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.09), static_cast<float>(0.59), static_cast<float>(0.48), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.2), static_cast<float>(0.31), static_cast<float>(0.98), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.88), static_cast<float>(0.4), static_cast<float>(0.33), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.1), static_cast<float>(0.4), static_cast<float>(0.7), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.1), static_cast<float>(0.1), static_cast<float>(0.1), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.1), static_cast<float>(0.2), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.7259015), static_cast<float>(0.7004237), static_cast<float>(0.9494409), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.63290054), static_cast<float>(0.37883538), static_cast<float>(0.29405284), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.1), static_cast<float>(0.2), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.94), static_cast<float>(0.33), static_cast<float>(0.27), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.74), static_cast<float>(0.37), static_cast<float>(0.73), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.44), static_cast<float>(0.17), static_cast<float>(0.88), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(0.7), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(0.4), static_cast<float>(0.9), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.4), static_cast<float>(0.5), static_cast<float>(0.6), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.51), static_cast<float>(0.39), static_cast<float>(0.41), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.59), static_cast<float>(0.53), static_cast<float>(0.94), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.15), static_cast<float>(0.41), static_cast<float>(0.46), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.51), static_cast<float>(1.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.43), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.36), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.83), static_cast<float>(0.45), static_cast<float>(0.19), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.79), static_cast<float>(0.45), static_cast<float>(0.35), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.28), static_cast<float>(0.91), static_cast<float>(0.61), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.2), static_cast<float>(0.25), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.22), static_cast<float>(0.48), static_cast<float>(0.62), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.1), static_cast<float>(0.3), static_cast<float>(0.2), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.02), static_cast<float>(0.92), static_cast<float>(0.76), static_cast<float>(1.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.51), static_cast<float>(0.49), static_cast<float>(0.51), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.71), static_cast<float>(0.23), static_cast<float>(0.66), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(2.0), static_cast<float>(2.0), static_cast<float>(2.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.79), static_cast<float>(0.56), static_cast<float>(0.22), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.96), static_cast<float>(0.5), static_cast<float>(0.49), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.15), static_cast<float>(0.98), static_cast<float>(0.87), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.75804377), static_cast<float>(0.62868536), static_cast<float>(0.2227562), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.35536355), static_cast<float>(0.12935615), static_cast<float>(0.17060602), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.25), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.79), static_cast<float>(0.5), static_cast<float>(0.23), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.75), static_cast<float>(0.47), static_cast<float>(0.45), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.08), static_cast<float>(0.84), static_cast<float>(0.16), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.7), static_cast<float>(0.81), static_cast<float>(0.73), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.1), static_cast<float>(0.22), static_cast<float>(0.27), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.99), static_cast<float>(0.12), static_cast<float>(0.94), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.74), static_cast<float>(0.33), static_cast<float>(0.09), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.62), static_cast<float>(0.2), static_cast<float>(0.2), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.2), static_cast<float>(0.1), static_cast<float>(0.0), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.56), static_cast<float>(0.68), static_cast<float>(0.39), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.72), static_cast<float>(0.07), static_cast<float>(0.62), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.25), static_cast<float>(0.4), static_cast<float>(0.41), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.78), static_cast<float>(0.39), static_cast<float>(0.07), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.53), static_cast<float>(0.33), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.94), static_cast<float>(0.92), static_cast<float>(0.9), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.2), static_cast<float>(0.64), static_cast<float>(0.62), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.15), static_cast<float>(0.2), static_cast<float>(0.3), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.64), static_cast<float>(0.12), static_cast<float>(0.84), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.1), static_cast<float>(0.25), static_cast<float>(0.15), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.42), static_cast<float>(0.42), static_cast<float>(0.04), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.47), static_cast<float>(0.27), static_cast<float>(0.27), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.41), static_cast<float>(0.14), static_cast<float>(0.11), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.65), static_cast<float>(0.4), static_cast<float>(0.11), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.72), static_cast<float>(0.45), static_cast<float>(0.08), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.71), static_cast<float>(0.8), static_cast<float>(0.84), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.62), static_cast<float>(0.79), static_cast<float>(0.11), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.22), static_cast<float>(0.56), static_cast<float>(0.17), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.15), static_cast<float>(0.1), static_cast<float>(0.25), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.41), static_cast<float>(0.22), static_cast<float>(0.67), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.2), static_cast<float>(0.25), static_cast<float>(0.2), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.25), static_cast<float>(0.5), static_cast<float>(0.75), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.6059281), static_cast<float>(0.17591387), static_cast<float>(0.17166573), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5224456), static_cast<float>(0.3864609), static_cast<float>(0.36020845), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.25), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.6059281), static_cast<float>(0.17591387), static_cast<float>(0.17166573), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(2.0), static_cast<float>(2.0), static_cast<float>(2.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5224456), static_cast<float>(0.3864609), static_cast<float>(0.36020845), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.25), static_cast<float>(0.5), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.42), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(2.0)), glsl::FloatExpr<4>(static_cast<float>(2.0), static_cast<float>(2.0), static_cast<float>(2.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.45), static_cast<float>(0.5), static_cast<float>(0.42), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.63), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.83), static_cast<float>(0.6), static_cast<float>(0.63), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.3), static_cast<float>(0.1), static_cast<float>(0.0), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.6), static_cast<float>(0.4), static_cast<float>(0.1), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.3), static_cast<float>(0.2), static_cast<float>(0.1), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.46), static_cast<float>(0.73), static_cast<float>(0.19), static_cast<float>(2.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.27), static_cast<float>(0.79), static_cast<float>(0.78), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.27), static_cast<float>(0.16), static_cast<float>(0.04), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.67), static_cast<float>(0.25), static_cast<float>(0.27), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.74), static_cast<float>(0.48), static_cast<float>(0.46), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.07), static_cast<float>(0.79), static_cast<float>(0.39), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.9), static_cast<float>(0.43), static_cast<float>(0.34), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.56), static_cast<float>(0.69), static_cast<float>(0.32), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.03), static_cast<float>(0.8), static_cast<float>(0.4), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.73), static_cast<float>(0.36), static_cast<float>(0.52), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.78), static_cast<float>(0.68), static_cast<float>(0.15), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.74), static_cast<float>(0.93), static_cast<float>(0.28), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(0.0), static_cast<float>(0.8), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.5), static_cast<float>(0.1), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(0.25), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.25), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.26), static_cast<float>(0.57), static_cast<float>(0.03), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.1), static_cast<float>(0.3), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.28), static_cast<float>(0.08), static_cast<float>(0.65), static_cast<float>(2.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.48), static_cast<float>(0.6), static_cast<float>(0.03), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.1), static_cast<float>(0.15), static_cast<float>(0.3), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.65), static_cast<float>(0.93), static_cast<float>(0.73), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.31), static_cast<float>(0.21), static_cast<float>(0.27), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.43), static_cast<float>(0.45), static_cast<float>(0.48), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.9), static_cast<float>(0.76), static_cast<float>(0.63), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.19), static_cast<float>(0.68), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.43), static_cast<float>(0.23), static_cast<float>(0.32), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.78), static_cast<float>(0.63), static_cast<float>(0.68), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.41), static_cast<float>(0.03), static_cast<float>(0.16), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.81), static_cast<float>(0.61), static_cast<float>(0.06), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.97), static_cast<float>(0.74), static_cast<float>(0.23), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.97), static_cast<float>(0.38), static_cast<float>(0.35), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.34), static_cast<float>(0.41), static_cast<float>(0.44), static_cast<float>(0.0))}, PaletteEntry{glsl::FloatExpr<4>(static_cast<float>(0.68), static_cast<float>(0.79), static_cast<float>(0.57), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(1.0), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.56), static_cast<float>(0.35), static_cast<float>(0.14), static_cast<float>(0.0)), glsl::FloatExpr<4>(static_cast<float>(0.73), static_cast<float>(0.9), static_cast<float>(0.99), static_cast<float>(0.0))}}};
   [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.inputTex3d));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / texSize);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), texSize);
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex3d, uv);
   if ((state.paletteIndex <= std::int32_t(0)) || (state.paletteIndex > PALETTE_COUNT)) {
     output = glsl::Vec4(inputColor);
@@ -27507,7 +27512,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27528,7 +27533,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex)));
   [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, uv);
   if (state.maskMode) {
@@ -27570,7 +27575,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27609,9 +27614,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] glsl::Vec3 a = rgb2hsv(state, context, glsl::swizzle<0, 1, 2>(color1));
   [[maybe_unused]] glsl::Vec3 b = rgb2hsv(state, context, glsl::swizzle<0, 1, 2>(color2));
   [[maybe_unused]] glsl::Vec3 resultHSV = {};
@@ -27660,7 +27665,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27742,16 +27747,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] double amt = map(state, context, state.mixAmt, static_cast<float>(-100.0), static_cast<float>(100.0), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] double opacity = ((state.mode == std::int32_t(8)) ? amt : glsl::component_min((static_cast<double>(amt) * static_cast<double>(static_cast<float>(2.0))), static_cast<float>(1.0)));
   [[maybe_unused]] double sourceAlpha = (static_cast<double>(glsl::swizzle<3>(color2)) * static_cast<double>(opacity));
   [[maybe_unused]] glsl::Vec3 source = (glsl::swizzle<0, 1, 2>(color2) * opacity);
   if (state.mode != std::int32_t(8)) {
-    [[maybe_unused]] glsl::Vec4 baseColor = glsl::Vec4(((glsl::swizzle<3>(color1) > static_cast<float>(0.0)) ? glsl::Vec3((glsl::swizzle<0, 1, 2>(color1) / glsl::swizzle<3>(color1))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0)))), static_cast<float>(1.0));
-    [[maybe_unused]] glsl::Vec4 sourceColor = glsl::Vec4(((glsl::swizzle<3>(color2) > static_cast<float>(0.0)) ? glsl::Vec3((glsl::swizzle<0, 1, 2>(color2) / glsl::swizzle<3>(color2))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0)))), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec4 baseColor = glsl::Vec4(((glsl::swizzle<3>(color1) > static_cast<float>(0.0)) ? glsl::Vec3(glsl::metal_divide(glsl::swizzle<0, 1, 2>(color1), glsl::swizzle<3>(color1))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0)))), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec4 sourceColor = glsl::Vec4(((glsl::swizzle<3>(color2) > static_cast<float>(0.0)) ? glsl::Vec3(glsl::metal_divide(glsl::swizzle<0, 1, 2>(color2), glsl::swizzle<3>(color2))) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0)))), static_cast<float>(1.0));
     [[maybe_unused]] glsl::Vec3 blended = glsl::swizzle<0, 1, 2>(applyBlendMode(state, context, baseColor, sourceColor, state.mode));
     blended = glsl::Vec3(glsl::mix(blended, glsl::swizzle<0, 1, 2>(sourceColor), glsl::component_max((static_cast<double>((static_cast<double>(amt) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), static_cast<float>(0.0))));
     source = glsl::Vec3(((source * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<3>(color1)))) + ((blended * sourceAlpha) * glsl::swizzle<3>(color1))));
@@ -27786,7 +27791,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -27825,12 +27830,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   const double TAU = static_cast<float>(6.28318530718);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec2 p = (globalUV * (static_cast<double>(static_cast<float>(31.0)) - static_cast<double>(state.scale)));
   glsl::set_swizzle<0>(p, (glsl::swizzle<0>(p) * aspect));
   [[maybe_unused]] double spd = glsl::floor(state.speed);
@@ -27916,7 +27921,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28019,13 +28024,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 st = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 edgeColor = sample_texture(*state.inputTex, st);
   [[maybe_unused]] glsl::Vec4 centerColor = sample_texture(*state.tex, st);
   [[maybe_unused]] double minRes = glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 p = ((globalCoord - (static_cast<float>(0.5) * state.fullResolution)) / (static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(minRes)));
-  [[maybe_unused]] glsl::Vec2 corner = (state.fullResolution / minRes);
+  [[maybe_unused]] glsl::Vec2 p = glsl::metal_divide((globalCoord - (static_cast<float>(0.5) * state.fullResolution)), (static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(minRes)));
+  [[maybe_unused]] glsl::Vec2 corner = glsl::metal_divide(state.fullResolution, minRes);
   [[maybe_unused]] double dist01 = clamp01(state, context, distanceMetric(state, context, p, corner, state.shape));
   [[maybe_unused]] double scaledPower = glsl::mix(static_cast<float>(0.1), static_cast<float>(25.05), (static_cast<double>((static_cast<double>(state.power) + static_cast<double>(static_cast<float>(100.0)))) / static_cast<double>(static_cast<float>(200.0))));
   [[maybe_unused]] double mask = glsl::pow(dist01, scaledPower);
@@ -28066,7 +28071,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28088,10 +28093,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] double r = (static_cast<double>((static_cast<double>(luminance(state, context, sample_texture(*state.rTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.rTex)))))) * static_cast<double>(state.rLevel))) / static_cast<double>(static_cast<float>(100.0)));
-  [[maybe_unused]] double g = (static_cast<double>((static_cast<double>(luminance(state, context, sample_texture(*state.gTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.gTex)))))) * static_cast<double>(state.gLevel))) / static_cast<double>(static_cast<float>(100.0)));
-  [[maybe_unused]] double b = (static_cast<double>((static_cast<double>(luminance(state, context, sample_texture(*state.bTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.bTex)))))) * static_cast<double>(state.bLevel))) / static_cast<double>(static_cast<float>(100.0)));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] double r = (static_cast<double>((static_cast<double>(luminance(state, context, sample_texture(*state.rTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.rTex)))))) * static_cast<double>(state.rLevel))) / static_cast<double>(static_cast<float>(100.0)));
+  [[maybe_unused]] double g = (static_cast<double>((static_cast<double>(luminance(state, context, sample_texture(*state.gTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.gTex)))))) * static_cast<double>(state.gLevel))) / static_cast<double>(static_cast<float>(100.0)));
+  [[maybe_unused]] double b = (static_cast<double>((static_cast<double>(luminance(state, context, sample_texture(*state.bTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.bTex)))))) * static_cast<double>(state.bLevel))) / static_cast<double>(static_cast<float>(100.0)));
   output = glsl::Vec4(glsl::FloatExpr<4>(r, g, b, static_cast<float>(1.0)));
 }
 }  // namespace typed_192
@@ -28122,7 +28127,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28299,10 +28304,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), state.resolution);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec4 color = {};
   if (state.mode == std::int32_t(0)) {
     if (state.mapSource == std::int32_t(0)) {
@@ -28354,7 +28359,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28378,7 +28383,7 @@ struct State final : KernelState {
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(64)); ++i) {
     [[maybe_unused]] double r = glsl::sqrt((static_cast<double>(float(i)) / static_cast<double>(static_cast<float>(64.0))));
     [[maybe_unused]] double theta = (static_cast<double>(float(i)) * static_cast<double>(GOLDEN));
-    [[maybe_unused]] glsl::Vec2 offset = (((glsl::FloatExpr<2>(glsl::cos(theta), glsl::sin(theta)) * r) * blurRadius) / state.resolution);
+    [[maybe_unused]] glsl::Vec2 offset = glsl::metal_divide(((glsl::FloatExpr<2>(glsl::cos(theta), glsl::sin(theta)) * r) * blurRadius), state.resolution);
     color = glsl::Vec4((color + sample_texture(sceneTex, ((((uv + offset) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(sceneTex))))));
   }
   return (color / static_cast<float>(64.0));
@@ -28399,14 +28404,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] glsl::Vec4 color = {};
   if (state.depthSource == std::int32_t(0)) {
     color = glsl::Vec4(applyFocusBlur(state, context, *state.tex, *state.inputTex, uv));
   } else {
     color = glsl::Vec4(applyFocusBlur(state, context, *state.inputTex, *state.tex, uv));
   }
-  glsl::set_swizzle<3>(color, glsl::component_max(glsl::swizzle<3>(sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))))), glsl::swizzle<3>(sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex)))))));
+  glsl::set_swizzle<3>(color, glsl::component_max(glsl::swizzle<3>(sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))))), glsl::swizzle<3>(sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex)))))));
   output = glsl::Vec4(color);
 }
 }  // namespace typed_194
@@ -28445,7 +28450,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28526,7 +28531,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 controlColor = sample_texture(*state.source, uv);
   [[maybe_unused]] double lum = getLuminosity(state, context, glsl::swizzle<0, 1, 2>(controlColor));
   [[maybe_unused]] std::int32_t n = glsl::clamp(state.layers, std::int32_t(2), std::int32_t(8));
@@ -28536,7 +28541,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       break;
     }
     [[maybe_unused]] glsl::Vec4 src = ((layerActive(state, context, k) == std::int32_t(1)) ? glsl::Vec4(sampleLayer(state, context, k, uv)) : glsl::Vec4(controlColor));
-    [[maybe_unused]] double boundary = (static_cast<double>(float(k)) / static_cast<double>(float(n)));
+    [[maybe_unused]] double boundary = glsl::metal_divide(static_cast<double>(float(k)), static_cast<double>(float(n)));
     [[maybe_unused]] double w = bandWeight(state, context, lum, boundary);
     result = glsl::Vec4(glsl::mix(result, src, w));
   }
@@ -28569,7 +28574,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28688,12 +28693,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec2 p = ((globalUV - static_cast<float>(0.5)) * static_cast<float>(2.0));
   glsl::set_swizzle<0>(p, (glsl::swizzle<0>(p) * aspect));
   [[maybe_unused]] double rad = (static_cast<double>((static_cast<double>(state.rotation) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
@@ -28773,7 +28778,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28804,8 +28809,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 baseColor = ((state.maskSource == std::int32_t(0)) ? glsl::Vec4(sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))))) : glsl::Vec4(sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 baseColor = ((state.maskSource == std::int32_t(0)) ? glsl::Vec4(sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))))) : glsl::Vec4(sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))))));
   [[maybe_unused]] glsl::Vec2 maskUV = (uv - ((glsl::FloatExpr<2>(state.offsetX, state.offsetY) * static_cast<float>(0.1)) * state.renderScale));
   [[maybe_unused]] double shadowMask = static_cast<float>(0.0);
   [[maybe_unused]] double totalWeight = static_cast<float>(0.0);
@@ -28814,9 +28819,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double sigma2 = (static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(sigma))) * static_cast<double>(sigma));
   for ([[maybe_unused]] std::int32_t x = (-std::int32_t(5)); (x <= std::int32_t(5)); ++x) {
     for ([[maybe_unused]] std::int32_t y = (-std::int32_t(5)); (y <= std::int32_t(5)); ++y) {
-      [[maybe_unused]] glsl::Vec2 offset = ((glsl::FloatExpr<2>(float(x), float(y)) * blurPixels) / state.resolution);
+      [[maybe_unused]] glsl::Vec2 offset = glsl::metal_divide((glsl::FloatExpr<2>(float(x), float(y)) * blurPixels), state.resolution);
       [[maybe_unused]] glsl::Vec2 sampleUV = (maskUV + offset);
-      [[maybe_unused]] glsl::Vec2 localUV = (((sampleUV * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(*state.inputTex)));
+      [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(((sampleUV * state.fullResolution) - state.tileOffset), glsl::Vec2(texture_size(*state.inputTex)));
       [[maybe_unused]] double thresholded = static_cast<float>(0.0);
       if (state.wrap == std::int32_t(0)) {
         if ((((glsl::swizzle<0>(localUV) >= static_cast<float>(0.0)) && (glsl::swizzle<0>(localUV) <= static_cast<float>(1.0))) && (glsl::swizzle<1>(localUV) >= static_cast<float>(0.0))) && (glsl::swizzle<1>(localUV) <= static_cast<float>(1.0))) {
@@ -28826,7 +28831,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       } else {
         [[maybe_unused]] glsl::Vec2& wrappedUV = localUV;
         if (state.wrap == std::int32_t(1)) {
-          wrappedUV = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((localUV + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+          wrappedUV = glsl::Vec2(glsl::abs(glsl::Vec2((localUV - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((localUV + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
         } else {
           if (state.wrap == std::int32_t(2)) {
             wrappedUV = glsl::Vec2(glsl::fract(localUV));
@@ -28838,7 +28843,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         thresholded = glsl::step(state.threshold, getChannel(state, context, maskSample, state.sourceChannel));
       }
       [[maybe_unused]] double dist2 = float(((x * x) + (y * y)));
-      [[maybe_unused]] double weight = glsl::exp((static_cast<double>((-dist2)) / static_cast<double>(sigma2)));
+      [[maybe_unused]] double weight = glsl::exp(glsl::metal_divide(static_cast<double>((-dist2)), static_cast<double>(sigma2)));
       shadowMask = (shadowMask + (static_cast<double>(thresholded) * static_cast<double>(weight)));
       totalWeight = (totalWeight + weight);
     }
@@ -28846,7 +28851,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   shadowMask = (shadowMask / totalWeight);
   shadowMask = glsl::clamp((static_cast<double>(shadowMask) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) + static_cast<double>(state.spread)))), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec3 withShadow = glsl::mix(glsl::swizzle<0, 1, 2>(baseColor), state.color, shadowMask);
-  [[maybe_unused]] glsl::Vec4 fgSample = ((state.maskSource == std::int32_t(0)) ? glsl::Vec4(sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))))) : glsl::Vec4(sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))))));
+  [[maybe_unused]] glsl::Vec4 fgSample = ((state.maskSource == std::int32_t(0)) ? glsl::Vec4(sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))))) : glsl::Vec4(sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))))));
   [[maybe_unused]] double fgMask = glsl::step(state.threshold, getChannel(state, context, fgSample, state.sourceChannel));
   [[maybe_unused]] glsl::Vec3 result = glsl::mix(withShadow, glsl::swizzle<0, 1, 2>(fgSample), fgMask);
   output = glsl::Vec4(glsl::Vec4(result, glsl::swizzle<3>(baseColor)));
@@ -28881,7 +28886,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -28954,8 +28959,7 @@ struct State final : KernelState {
   glsl::set_swizzle<0>(p, (static_cast<double>(glsl::abs(glsl::swizzle<0>(p))) - static_cast<double>(r)));
   glsl::set_swizzle<1>(p, (static_cast<double>(glsl::swizzle<1>(p)) + static_cast<double>((static_cast<double>(r) / static_cast<double>(k)))));
   if ((static_cast<double>(glsl::swizzle<0>(p)) + static_cast<double>((static_cast<double>(k) * static_cast<double>(glsl::swizzle<1>(p))))) > static_cast<float>(0.0)) {
-    glsl::set_swizzle<0>(p, (static_cast<double>((static_cast<double>(glsl::swizzle<0>(p)) - static_cast<double>((static_cast<double>(k) * static_cast<double>(glsl::swizzle<1>(p)))))) / static_cast<double>(static_cast<float>(2.0))));
-    glsl::set_swizzle<1>(p, (static_cast<double>((static_cast<double>((static_cast<double>((-k)) * static_cast<double>(glsl::swizzle<0>(p)))) - static_cast<double>(glsl::swizzle<1>(p)))) / static_cast<double>(static_cast<float>(2.0))));
+    p = glsl::Vec2((glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(p)) - static_cast<double>((static_cast<double>(k) * static_cast<double>(glsl::swizzle<1>(p))))), (static_cast<double>((static_cast<double>((-k)) * static_cast<double>(glsl::swizzle<0>(p)))) - static_cast<double>(glsl::swizzle<1>(p)))) / static_cast<float>(2.0)));
   }
   glsl::set_swizzle<0>(p, (glsl::swizzle<0>(p) - glsl::clamp(glsl::swizzle<0>(p), (static_cast<double>(static_cast<float>(-2.0)) * static_cast<double>(r)), static_cast<float>(0.0))));
   return (static_cast<double>((-glsl::length(p))) * static_cast<double>(glsl::sign(glsl::swizzle<1>(p))));
@@ -28966,12 +28970,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec2 p = ((globalUV - static_cast<float>(0.5)) * static_cast<float>(2.0));
   glsl::set_swizzle<0>(p, (glsl::swizzle<0>(p) * aspect));
   p = glsl::Vec2((p - glsl::FloatExpr<2>((static_cast<double>(state.posX) * static_cast<double>(aspect)), (-state.posY))));
@@ -29048,7 +29052,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29064,12 +29068,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
   [[maybe_unused]] glsl::Vec2 centered = ((globalUV - static_cast<float>(0.5)) * static_cast<float>(2.0));
   glsl::set_swizzle<0>(centered, (glsl::swizzle<0>(centered) * aspect));
   [[maybe_unused]] double rad = (static_cast<double>((static_cast<double>(state.rotation) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
@@ -29127,7 +29131,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29169,9 +29173,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
-  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.inputTex))));
+  [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] glsl::Vec3 mapColor = {};
   if (state.mapSource == std::int32_t(0)) {
     mapColor = glsl::Vec3(glsl::swizzle<0, 1, 2>(colorA));
@@ -29225,7 +29229,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29260,7 +29264,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 localUV = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 localUV = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 colorA = sample_texture(*state.inputTex, localUV);
   [[maybe_unused]] glsl::Vec4 colorB = sample_texture(*state.tex, localUV);
   [[maybe_unused]] glsl::Vec4 mapColor = ((state.mapSource == std::int32_t(0)) ? glsl::Vec4(colorA) : glsl::Vec4(colorB));
@@ -29278,7 +29282,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double s = (static_cast<double>(state.scale) / static_cast<double>(static_cast<float>(100.0)));
   [[maybe_unused]] glsl::Vec2 remappedUV = ((rawUV * s) + state.offset);
   remappedUV = glsl::Vec2(applyWrap(state, context, remappedUV, state.wrap));
-  [[maybe_unused]] glsl::Vec2 sampleUV = (((remappedUV * state.fullResolution) - state.tileOffset) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::metal_divide(((remappedUV * state.fullResolution) - state.tileOffset), state.resolution);
   sampleUV = glsl::Vec2(glsl::fract(sampleUV));
   [[maybe_unused]] glsl::Vec4 result = {};
   if (sampleFromB == std::int32_t(1)) {
@@ -29312,7 +29316,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29485,7 +29489,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29500,7 +29504,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_203
@@ -29530,7 +29534,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29690,7 +29694,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29705,7 +29709,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_205
@@ -29728,7 +29732,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29793,7 +29797,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29887,7 +29891,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     return;
   }
   [[maybe_unused]] glsl::Vec2 gridDims = glsl::Vec2(texture_size(*state.gridTex));
-  [[maybe_unused]] double texel = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::component_max(glsl::swizzle<0>(gridDims), glsl::swizzle<1>(gridDims))));
+  [[maybe_unused]] double texel = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::component_max(glsl::swizzle<0>(gridDims), glsl::swizzle<1>(gridDims))));
   [[maybe_unused]] double local = neighborhood(state, context, pos, static_cast<float>(2.0));
   [[maybe_unused]] double proximity = glsl::smoothstep(static_cast<float>(0.015), static_cast<float>(0.12), local);
   [[maybe_unused]] glsl::Vec2 randomDir = randomDirection(state, context, seed);
@@ -29951,7 +29955,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -29966,7 +29970,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.gridTex, uv));
 }
 }  // namespace typed_208
@@ -29991,7 +29995,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30014,7 +30018,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   if (state.resetState) {
     output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     return;
@@ -30057,7 +30061,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30072,7 +30076,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 inputCol = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 grid = sample_texture(*state.gridTex, uv);
   [[maybe_unused]] double gridStrength = glsl::clamp(glsl::swizzle<3>(grid), static_cast<float>(0.0), static_cast<float>(1.0));
@@ -30113,7 +30117,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30274,7 +30278,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         if ((distSq < separationSq) && (distSq > static_cast<float>(0.0))) {
           [[maybe_unused]] glsl::Vec2 away = (-diff);
           [[maybe_unused]] double dist = glsl::sqrt(distSq);
-          separationForce = glsl::Vec2((separationForce + (away / dist)));
+          separationForce = glsl::Vec2((separationForce + glsl::metal_divide(away, dist)));
           (separationCount++);
         }
         if ((distSq < perceptionSq) && (distSq > static_cast<float>(0.0))) {
@@ -30326,17 +30330,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     [[maybe_unused]] glsl::Vec2 wallForce = glsl::FloatExpr<2>(static_cast<float>(0.0));
     [[maybe_unused]] double turnStrength = (static_cast<double>(state.maxForce) * static_cast<double>(static_cast<float>(2.0)));
     if (glsl::swizzle<0>(pos) < state.wallMargin) {
-      glsl::set_swizzle<0>(wallForce, (static_cast<double>(turnStrength) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>(glsl::swizzle<0>(pos)) / static_cast<double>(state.wallMargin)))))));
+      glsl::set_swizzle<0>(wallForce, (static_cast<double>(turnStrength) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(pos)), static_cast<double>(state.wallMargin)))))));
     } else {
       if (glsl::swizzle<0>(pos) > (static_cast<double>(glsl::swizzle<0>(state.resolution)) - static_cast<double>(state.wallMargin))) {
-        glsl::set_swizzle<0>(wallForce, (static_cast<double>((-turnStrength)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.resolution)) - static_cast<double>(glsl::swizzle<0>(pos)))) / static_cast<double>(state.wallMargin)))))));
+        glsl::set_swizzle<0>(wallForce, (static_cast<double>((-turnStrength)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.resolution)) - static_cast<double>(glsl::swizzle<0>(pos)))), static_cast<double>(state.wallMargin)))))));
       }
     }
     if (glsl::swizzle<1>(pos) < state.wallMargin) {
-      glsl::set_swizzle<1>(wallForce, (static_cast<double>(turnStrength) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>(glsl::swizzle<1>(pos)) / static_cast<double>(state.wallMargin)))))));
+      glsl::set_swizzle<1>(wallForce, (static_cast<double>(turnStrength) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(pos)), static_cast<double>(state.wallMargin)))))));
     } else {
       if (glsl::swizzle<1>(pos) > (static_cast<double>(glsl::swizzle<1>(state.resolution)) - static_cast<double>(state.wallMargin))) {
-        glsl::set_swizzle<1>(wallForce, (static_cast<double>((-turnStrength)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<1>(state.resolution)) - static_cast<double>(glsl::swizzle<1>(pos)))) / static_cast<double>(state.wallMargin)))))));
+        glsl::set_swizzle<1>(wallForce, (static_cast<double>((-turnStrength)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(glsl::swizzle<1>(state.resolution)) - static_cast<double>(glsl::swizzle<1>(pos)))), static_cast<double>(state.wallMargin)))))));
       }
     }
     steer = glsl::Vec2((steer + wallForce));
@@ -30350,8 +30354,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     pos = glsl::Vec2(glsl::clamp(pos, glsl::FloatExpr<2>(static_cast<float>(1.0)), (state.resolution - glsl::FloatExpr<2>(static_cast<float>(1.0)))));
   }
   age = (age + static_cast<float>(0.016));
-  [[maybe_unused]] double newPx = (static_cast<double>(glsl::swizzle<0>(pos)) / static_cast<double>(glsl::swizzle<0>(state.resolution)));
-  [[maybe_unused]] double newPy = (static_cast<double>(glsl::swizzle<1>(pos)) / static_cast<double>(glsl::swizzle<1>(state.resolution)));
+  [[maybe_unused]] double newPx = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(pos)), static_cast<double>(glsl::swizzle<0>(state.resolution)));
+  [[maybe_unused]] double newPy = glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(pos)), static_cast<double>(glsl::swizzle<1>(state.resolution)));
   outXYZ = glsl::Vec4(glsl::FloatExpr<4>(newPx, newPy, glsl::swizzle<2>(xyz), static_cast<float>(1.0)));
   outVel = glsl::Vec4(glsl::Vec4(velocity, age, seed));
   outRGBA = glsl::Vec4(rgba);
@@ -30374,7 +30378,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30389,7 +30393,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_212
@@ -30420,7 +30424,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30569,7 +30573,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double scale = glsl::component_max((static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.resolution), glsl::swizzle<1>(state.resolution))) / static_cast<double>(static_cast<float>(1024.0))), static_cast<float>(1.0));
   [[maybe_unused]] double devFactor = (static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>((static_cast<double>(strideRand) * static_cast<double>(static_cast<float>(2.0)))) * static_cast<double>(state.strideDeviation))));
-  [[maybe_unused]] double actualStride = glsl::component_max(static_cast<float>(0.0001), (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(state.stride) * static_cast<double>(static_cast<float>(0.1)))) * static_cast<double>(scale))) * static_cast<double>(devFactor))) / static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.resolution), glsl::swizzle<1>(state.resolution)))));
+  [[maybe_unused]] double actualStride = glsl::component_max(static_cast<float>(0.0001), glsl::metal_divide(static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(state.stride) * static_cast<double>(static_cast<float>(0.1)))) * static_cast<double>(scale))) * static_cast<double>(devFactor))), static_cast<double>(glsl::component_max(glsl::swizzle<0>(state.resolution), glsl::swizzle<1>(state.resolution)))));
   [[maybe_unused]] double newX = (static_cast<double>(px) + static_cast<double>((static_cast<double>(glsl::sin(finalAngle)) * static_cast<double>(actualStride))));
   [[maybe_unused]] double newY = (static_cast<double>(py) + static_cast<double>((static_cast<double>(glsl::cos(finalAngle)) * static_cast<double>(actualStride))));
   newX = glsl::fract(newX);
@@ -30596,7 +30600,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30611,7 +30615,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_214
@@ -30637,7 +30641,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30657,7 +30661,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::Vec4& outRGBA = outputs[2];
   [[maybe_unused]] glsl::IVec2 coord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] glsl::IVec2 stateSize = texture_size(*state.xyzTex);
-  [[maybe_unused]] glsl::Vec2 uv = ((glsl::Vec2(coord) + static_cast<float>(0.5)) / glsl::Vec2(stateSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::Vec2(coord) + static_cast<float>(0.5)), glsl::Vec2(stateSize));
   [[maybe_unused]] glsl::Vec3 heightColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.heightTex, uv));
   [[maybe_unused]] double elevation = glsl::dot(heightColor, glsl::FloatExpr<3>(static_cast<float>(0.2126), static_cast<float>(0.7152), static_cast<float>(0.0722)));
   outXYZ = glsl::Vec4(glsl::FloatExpr<4>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>(state.gridScale)), (static_cast<double>((static_cast<double>(elevation) * static_cast<double>(state.heightScale))) + static_cast<double>(state.heightOffset)), (static_cast<double>((static_cast<double>(static_cast<float>(0.5)) - static_cast<double>(glsl::swizzle<1>(uv)))) * static_cast<double>(state.gridScale)), static_cast<float>(1.0)));
@@ -30682,7 +30686,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30697,7 +30701,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_216
@@ -30726,7 +30730,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30873,7 +30877,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double targetVx = static_cast<float>(0.0);
   [[maybe_unused]] double targetVy = static_cast<float>(0.0);
   if (glen > static_cast<float>(1e-6)) {
-    [[maybe_unused]] double scale = (static_cast<double>((static_cast<double>(state.stride) * static_cast<double>(static_cast<float>(0.1)))) / static_cast<double>(glen));
+    [[maybe_unused]] double scale = glsl::metal_divide(static_cast<double>((static_cast<double>(state.stride) * static_cast<double>(static_cast<float>(0.1)))), static_cast<double>(glen));
     targetVx = (static_cast<double>(gx) * static_cast<double>(scale));
     targetVy = (static_cast<double>(gy) * static_cast<double>(scale));
   }
@@ -30883,10 +30887,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   vy = glsl::mix(vy, targetVy, blendFactor);
   x = wrap_float(state, context, (static_cast<double>(x) + static_cast<double>(vx)), glsl::swizzle<0>(state.resolution));
   y = wrap_float(state, context, (static_cast<double>(y) + static_cast<double>(vy)), glsl::swizzle<1>(state.resolution));
-  [[maybe_unused]] double newPx = (static_cast<double>(x) / static_cast<double>(glsl::swizzle<0>(state.resolution)));
-  [[maybe_unused]] double newPy = (static_cast<double>(y) / static_cast<double>(glsl::swizzle<1>(state.resolution)));
-  [[maybe_unused]] double normVx = (static_cast<double>(vx) / static_cast<double>(glsl::swizzle<0>(state.resolution)));
-  [[maybe_unused]] double normVy = (static_cast<double>(vy) / static_cast<double>(glsl::swizzle<1>(state.resolution)));
+  [[maybe_unused]] double newPx = glsl::metal_divide(static_cast<double>(x), static_cast<double>(glsl::swizzle<0>(state.resolution)));
+  [[maybe_unused]] double newPy = glsl::metal_divide(static_cast<double>(y), static_cast<double>(glsl::swizzle<1>(state.resolution)));
+  [[maybe_unused]] double normVx = glsl::metal_divide(static_cast<double>(vx), static_cast<double>(glsl::swizzle<0>(state.resolution)));
+  [[maybe_unused]] double normVy = glsl::metal_divide(static_cast<double>(vy), static_cast<double>(glsl::swizzle<1>(state.resolution)));
   outXYZ = glsl::Vec4(glsl::FloatExpr<4>(newPx, newPy, glsl::swizzle<2>(xyz), alive));
   outVel = glsl::Vec4(glsl::FloatExpr<4>(normVx, normVy, vz, seed_f));
   outRGBA = glsl::Vec4(rgba);
@@ -30909,7 +30913,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30924,7 +30928,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_218
@@ -30952,7 +30956,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -30998,21 +31002,21 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 uv = glsl::swizzle<0, 1>(xyz);
   [[maybe_unused]] double U = glsl::swizzle<0>(sample_texture(*state.fieldTex, uv));
   [[maybe_unused]] glsl::Vec2 fieldSize = glsl::Vec2(texture_size(*state.fieldTex));
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / fieldSize);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), fieldSize);
   [[maybe_unused]] double Ux_plus = glsl::swizzle<0>(sample_texture(*state.fieldTex, glsl::fract((uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texelSize), static_cast<float>(0.0))))));
   [[maybe_unused]] double Ux_minus = glsl::swizzle<0>(sample_texture(*state.fieldTex, glsl::fract((uv - glsl::FloatExpr<2>(glsl::swizzle<0>(texelSize), static_cast<float>(0.0))))));
   [[maybe_unused]] double Uy_plus = glsl::swizzle<0>(sample_texture(*state.fieldTex, glsl::fract((uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texelSize))))));
   [[maybe_unused]] double Uy_minus = glsl::swizzle<0>(sample_texture(*state.fieldTex, glsl::fract((uv - glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texelSize))))));
-  [[maybe_unused]] glsl::Vec2 gradU = glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(Ux_plus) - static_cast<double>(Ux_minus))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<0>(texelSize))))), (static_cast<double>((static_cast<double>(Uy_plus) - static_cast<double>(Uy_minus))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<1>(texelSize))))));
+  [[maybe_unused]] glsl::Vec2 gradU = glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(Ux_plus) - static_cast<double>(Ux_minus))), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<0>(texelSize))))), glsl::metal_divide(static_cast<double>((static_cast<double>(Uy_plus) - static_cast<double>(Uy_minus))), static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<1>(texelSize))))));
   [[maybe_unused]] double worldScale = (static_cast<double>(glsl::component_min(glsl::swizzle<0>(state.resolution), glsl::swizzle<1>(state.resolution))) * static_cast<double>(static_cast<float>(0.05)));
-  gradU = glsl::Vec2((gradU / worldScale));
+  gradU = glsl::Vec2(glsl::metal_divide(gradU, worldScale));
   [[maybe_unused]] double dGdU = growthDerivative(state, context, U, state.muG, state.sigmaG);
   [[maybe_unused]] glsl::Vec2 gradG = (dGdU * gradU);
   [[maybe_unused]] glsl::Vec2 gradR = (state.repulsion * gradU);
   [[maybe_unused]] glsl::Vec2 force = (gradG - gradR);
   [[maybe_unused]] double forceMag = glsl::length(force);
   if (forceMag > static_cast<float>(10.0)) {
-    force = glsl::Vec2(((force / forceMag) * static_cast<float>(10.0)));
+    force = glsl::Vec2((glsl::metal_divide(force, forceMag) * static_cast<float>(10.0)));
   }
   [[maybe_unused]] glsl::Vec2 newPos = (uv + ((force * state.dt) * static_cast<float>(0.01)));
   newPos = glsl::Vec2(glsl::fract((newPos + static_cast<float>(1.0))));
@@ -31038,7 +31042,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31076,7 +31080,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31101,8 +31105,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const double EPSILON = static_cast<float>(0.0001);
   const double PI = static_cast<float>(3.14159265359);
   [[maybe_unused]] glsl::Vec2 densitySize = glsl::Vec2(texture_size(*state.densityTex));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / densitySize);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / densitySize);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), densitySize);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), densitySize);
   [[maybe_unused]] double wK = static_cast<float>(0.0);
   [[maybe_unused]] std::int32_t numSamples = std::int32_t(64);
   [[maybe_unused]] double dr = (static_cast<double>(state.searchRadius) / static_cast<double>(float(numSamples)));
@@ -31148,7 +31152,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31201,7 +31205,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31250,10 +31254,10 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double radialForce([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double dist, [[maybe_unused]] double strength, [[maybe_unused]] double prefDist, [[maybe_unused]] double curveShape) noexcept {
-  [[maybe_unused]] double normDist = (static_cast<double>((static_cast<double>(dist) - static_cast<double>(state.minRadius))) / static_cast<double>((static_cast<double>(state.maxRadius) - static_cast<double>(state.minRadius))));
+  [[maybe_unused]] double normDist = glsl::metal_divide(static_cast<double>((static_cast<double>(dist) - static_cast<double>(state.minRadius))), static_cast<double>((static_cast<double>(state.maxRadius) - static_cast<double>(state.minRadius))));
   [[maybe_unused]] double forceScale = (static_cast<double>(state.maxSpeed) * static_cast<double>(static_cast<float>(10.0)));
   if (normDist < static_cast<float>(0.0)) {
-    return (static_cast<double>((static_cast<double>((-state.repulsionScale)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>(dist) / static_cast<double>(state.minRadius))))))) * static_cast<double>(forceScale));
+    return (static_cast<double>((static_cast<double>((-state.repulsionScale)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::metal_divide(static_cast<double>(dist), static_cast<double>(state.minRadius))))))) * static_cast<double>(forceScale));
   }
   if (normDist > static_cast<float>(1.0)) {
     return static_cast<float>(0.0);
@@ -31399,13 +31403,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         [[maybe_unused]] double prefDist = glsl::swizzle<1>(forceParams);
         [[maybe_unused]] double curveShape = glsl::swizzle<2>(forceParams);
         [[maybe_unused]] double forceMag = radialForce(state, context, dist, strength, prefDist, curveShape);
-        [[maybe_unused]] glsl::Vec2 forceDir = (diff / dist);
+        [[maybe_unused]] glsl::Vec2 forceDir = glsl::metal_divide(diff, dist);
         totalForce = glsl::Vec2((totalForce + (forceDir * forceMag)));
         (neighborCount++);
       }
     }
   }
-  totalForce = glsl::Vec2((totalForce / mass));
+  totalForce = glsl::Vec2(glsl::metal_divide(totalForce, mass));
   velocity = glsl::Vec2((velocity + totalForce));
   velocity = glsl::Vec2((velocity * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(state.friction))));
   velocity = glsl::Vec2(limitVec(state, context, velocity, state.maxSpeed));
@@ -31461,7 +31465,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31527,7 +31531,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31573,7 +31577,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31708,7 +31712,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31727,7 +31731,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     return;
   }
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 trailColor = sample_texture(*state.trailTex, uv);
   [[maybe_unused]] double persistence = glsl::clamp((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(state.decay)), static_cast<float>(0.0), static_cast<float>(1.0));
   output = glsl::Vec4((trailColor * persistence));
@@ -31749,7 +31753,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31794,7 +31798,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31916,7 +31920,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31931,7 +31935,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_230
@@ -31955,7 +31959,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -31970,7 +31974,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 st = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, st);
   [[maybe_unused]] glsl::Vec4 accum = sample_texture(*state.accumTex, st);
   [[maybe_unused]] double a = (static_cast<double>(state.alpha) / static_cast<double>(static_cast<float>(100.0)));
@@ -31997,7 +32001,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32013,7 +32017,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_232
@@ -32037,7 +32041,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32054,10 +32058,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] glsl::Vec2 globalUV = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / fullRes);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 pos = sample_texture(*state.positionsTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.positionsTex))));
-  [[maybe_unused]] glsl::Vec4 normal = sample_texture(*state.normalsTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.normalsTex))));
+  [[maybe_unused]] glsl::Vec2 globalUV = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), fullRes);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] glsl::Vec4 pos = sample_texture(*state.positionsTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.positionsTex))));
+  [[maybe_unused]] glsl::Vec4 normal = sample_texture(*state.normalsTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texture_size(*state.normalsTex))));
   [[maybe_unused]] glsl::Vec3 color = {};
   if (glsl::swizzle<0>(globalUV) < static_cast<float>(0.5)) {
     color = glsl::Vec3(((glsl::swizzle<0, 1, 2>(pos) * static_cast<float>(0.5)) + static_cast<float>(0.5)));
@@ -32085,7 +32089,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32123,7 +32127,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32138,7 +32142,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 trailColor = sample_texture(*state.trailTex, uv);
   [[maybe_unused]] double t = (static_cast<double>(state.inputIntensity) / static_cast<double>(static_cast<float>(100.0)));
@@ -32174,7 +32178,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32209,7 +32213,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32224,7 +32228,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.sourceTex, uv));
 }
 }  // namespace typed_237
@@ -32248,7 +32252,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32295,7 +32299,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32372,7 +32376,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32399,7 +32403,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 trailColor = sample_texture(*state.trailTex, uv);
   [[maybe_unused]] double decay = glsl::clamp((static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(100.0))), static_cast<float>(0.0), static_cast<float>(1.0));
   output = glsl::Vec4(glsl::clamp((trailColor * decay), static_cast<float>(0.0), static_cast<float>(1.0)));
@@ -32427,7 +32431,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32503,7 +32507,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32531,12 +32535,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec4 total = glsl::FloatExpr<4>(static_cast<float>(0.0));
   for ([[maybe_unused]] std::int32_t y = glsl::swizzle<1>(start); (y < glsl::swizzle<1>(end)); ++y) {
     for ([[maybe_unused]] std::int32_t x = glsl::swizzle<0>(start); (x < glsl::swizzle<0>(end)); ++x) {
-      [[maybe_unused]] glsl::Vec2 uv = ((glsl::Vec2(x, y) + static_cast<float>(0.5)) / glsl::Vec2(dims));
+      [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((glsl::Vec2(x, y) + static_cast<float>(0.5)), glsl::Vec2(dims));
       [[maybe_unused]] glsl::Vec2 weight = glsl::component_max(glsl::FloatExpr<2>(static_cast<float>(0.0)), glsl::Vec2((static_cast<float>(1.0) - glsl::abs(((uv * static_cast<float>(4.0)) - glsl::Vec2(node))))));
       total = glsl::Vec4((total + glsl::Vec4((fetch_texel(*state.spriteTex, glsl::IVec2(x, y)) * (static_cast<double>(glsl::swizzle<0>(weight)) * static_cast<double>(glsl::swizzle<1>(weight)))))));
     }
   }
-  output = glsl::Vec4((total / float((glsl::swizzle<0>(dims) * glsl::swizzle<1>(dims)))));
+  output = glsl::Vec4(glsl::metal_divide(total, float((glsl::swizzle<0>(dims) * glsl::swizzle<1>(dims)))));
 }
 }  // namespace typed_242
 
@@ -32576,7 +32580,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32613,7 +32617,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::Vec4& outVel = outputs[1];
   glsl::Vec4& outRGBA = outputs[2];
   [[maybe_unused]] glsl::IVec2 stateCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / float(state.stateSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), float(state.stateSize));
   [[maybe_unused]] std::uint32_t agentSeed = (glsl::detail::glsl_uint_cast((glsl::swizzle<0>(stateCoord) + (glsl::swizzle<1>(stateCoord) * state.stateSize))) + glsl::detail::glsl_uint_cast(state.seed));
   [[maybe_unused]] glsl::Vec4 pPos = fetch_texel(*state.xyzTex, stateCoord);
   [[maybe_unused]] glsl::Vec4 pVel = fetch_texel(*state.velTex, stateCoord);
@@ -32701,7 +32705,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32716,7 +32720,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_244
@@ -32740,7 +32744,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32755,7 +32759,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 inputColor = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 trailColor = sample_texture(*state.trailTex, uv);
   [[maybe_unused]] double t = (static_cast<double>(state.inputIntensity) / static_cast<double>(static_cast<float>(100.0)));
@@ -32783,7 +32787,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32798,7 +32802,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   output = glsl::Vec4(sample_texture(*state.sourceTex, uv));
 }
 }  // namespace typed_246
@@ -32820,7 +32824,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32835,7 +32839,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec4 trailColor = sample_texture(*state.trailTex, uv);
   [[maybe_unused]] double decay = glsl::clamp((static_cast<double>(state.intensity) / static_cast<double>(static_cast<float>(100.0))), static_cast<float>(0.0), static_cast<float>(1.0));
   output = glsl::Vec4(glsl::clamp((trailColor * decay), static_cast<float>(0.0), static_cast<float>(1.0)));
@@ -32880,7 +32884,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -32909,7 +32913,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 calcNormal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(2.0)) / static_cast<double>(float(state.volumeSize)));
+  [[maybe_unused]] double eps = glsl::metal_divide(static_cast<double>(static_cast<float>(2.0)), static_cast<double>(float(state.volumeSize)));
   [[maybe_unused]] double dx = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))))));
   [[maybe_unused]] double dy = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))))));
   [[maybe_unused]] double dz = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)))));
@@ -32954,7 +32958,7 @@ struct State final : KernelState {
     return result;
   }
   [[maybe_unused]] double tStart = glsl::component_max(tEnter, static_cast<float>(0.0));
-  [[maybe_unused]] double stepSize = (static_cast<double>(static_cast<float>(1.5)) / static_cast<double>(float(state.volumeSize)));
+  [[maybe_unused]] double stepSize = glsl::metal_divide(static_cast<double>(static_cast<float>(1.5)), static_cast<double>(float(state.volumeSize)));
   [[maybe_unused]] double t = tStart;
   [[maybe_unused]] double prevField = getField(state, context, (ro + (rd * t)));
   if (prevField < static_cast<float>(0.0)) {
@@ -33161,7 +33165,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     fullRes = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(1024.0), static_cast<float>(1024.0)));
   }
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (static_cast<float>(0.5) * fullRes)) / glsl::swizzle<1>(fullRes));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (static_cast<float>(0.5) * fullRes)), glsl::swizzle<1>(fullRes));
   [[maybe_unused]] double camDist = static_cast<float>(3.5);
   [[maybe_unused]] double angle = (static_cast<double>((static_cast<double>((-state.time)) * static_cast<double>(TAU))) * static_cast<double>(float(state.orbitSpeed)));
   [[maybe_unused]] glsl::Vec3 ro = glsl::FloatExpr<3>((static_cast<double>(glsl::sin(angle)) * static_cast<double>(camDist)), static_cast<float>(0.5), (static_cast<double>(glsl::cos(angle)) * static_cast<double>(camDist)));
@@ -33239,7 +33243,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -33268,7 +33272,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 calcNormal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(2.0)) / static_cast<double>(float(state.volumeSize)));
+  [[maybe_unused]] double eps = glsl::metal_divide(static_cast<double>(static_cast<float>(2.0)), static_cast<double>(float(state.volumeSize)));
   [[maybe_unused]] double dx = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))))));
   [[maybe_unused]] double dy = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))))));
   [[maybe_unused]] double dz = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)))));
@@ -33313,7 +33317,7 @@ struct State final : KernelState {
     return result;
   }
   [[maybe_unused]] double tStart = glsl::component_max(tEnter, static_cast<float>(0.0));
-  [[maybe_unused]] double stepSize = (static_cast<double>(static_cast<float>(1.5)) / static_cast<double>(float(state.volumeSize)));
+  [[maybe_unused]] double stepSize = glsl::metal_divide(static_cast<double>(static_cast<float>(1.5)), static_cast<double>(float(state.volumeSize)));
   [[maybe_unused]] double t = tStart;
   [[maybe_unused]] double prevField = getField(state, context, (ro + (rd * t)));
   if (prevField < static_cast<float>(0.0)) {
@@ -33518,7 +33522,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   if (glsl::swizzle<0>(fullRes) < static_cast<float>(1.0)) {
     fullRes = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(1024.0), static_cast<float>(1024.0)));
   }
-  [[maybe_unused]] glsl::Vec2 uv = (((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) - (static_cast<float>(0.5) * fullRes)) / (static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<1>(fullRes))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) - (static_cast<float>(0.5) * fullRes)), (static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<1>(fullRes))));
   [[maybe_unused]] glsl::Vec3 ro = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] glsl::Vec3 rd = glsl::normalize((state.cubeBasis * glsl::FloatExpr<3>(glsl::swizzle<0>(uv), (-glsl::swizzle<1>(uv)), static_cast<float>(1.0))));
   [[maybe_unused]] glsl::Vec3 color = {};
@@ -33578,7 +33582,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -33646,7 +33650,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::Vec4& geoOut = outputs[1];
   const std::int32_t MAX_STEPS = 256;
   [[maybe_unused]] glsl::Vec2 res = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] glsl::Vec2 uv = (((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) - (static_cast<float>(0.5) * res)) / (static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<1>(res))));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) - (static_cast<float>(0.5) * res)), (static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<1>(res))));
   [[maybe_unused]] glsl::Vec3 ro = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] glsl::Vec3 rd = glsl::normalize((state.cubeBasis * glsl::FloatExpr<3>(glsl::swizzle<0>(uv), (-glsl::swizzle<1>(uv)), static_cast<float>(1.0))));
   [[maybe_unused]] glsl::Vec3 col = glsl::FloatExpr<3>(static_cast<float>(0.0));
@@ -33724,7 +33728,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -33801,9 +33805,9 @@ void renderPerspective([[maybe_unused]] const State& state, [[maybe_unused]] con
 
 void renderPerspective([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, glsl::Vec4& fragColor, glsl::Vec4& geoOut, [[maybe_unused]] glsl::Vec2 uv) noexcept {
   [[maybe_unused]] double size = float(state.volumeSize);
-  [[maybe_unused]] double focalLength = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::tan((static_cast<double>(glsl::clamp(state.fieldOfView, static_cast<float>(10.0), static_cast<float>(150.0))) * static_cast<double>(static_cast<float>(0.00872664626))))));
+  [[maybe_unused]] double focalLength = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::tan((static_cast<double>(glsl::clamp(state.fieldOfView, static_cast<float>(10.0), static_cast<float>(150.0))) * static_cast<double>(static_cast<float>(0.00872664626))))));
   [[maybe_unused]] glsl::Vec3 origin = glsl::Vec3((glsl::Vec3((glsl::Vec3((inverseRotation(state, context, glsl::FloatExpr<3>((-state.posX), (-state.posY), (static_cast<double>(static_cast<float>(80.0)) - static_cast<double>(state.posZ)))) / static_cast<float>(80.0))) + static_cast<float>(0.5))) * size));
-  [[maybe_unused]] glsl::Vec2 framedUv = ((uv + glsl::FloatExpr<2>(state.panX, state.panY)) / glsl::component_max(state.zoom, static_cast<float>(0.001)));
+  [[maybe_unused]] glsl::Vec2 framedUv = glsl::metal_divide((uv + glsl::FloatExpr<2>(state.panX, state.panY)), glsl::component_max(state.zoom, static_cast<float>(0.001)));
   [[maybe_unused]] glsl::Vec3 cameraRay = glsl::Vec3(((framedUv * static_cast<float>(2.0)) / (static_cast<double>(focalLength) * static_cast<double>(glsl::component_max(state.viewScale, static_cast<float>(0.001))))), static_cast<float>(-1.0));
   [[maybe_unused]] glsl::Vec3 direction = glsl::Vec3((inverseRotation(state, context, cameraRay) * (static_cast<double>(size) / static_cast<double>(static_cast<float>(80.0)))));
   [[maybe_unused]] glsl::Vec3 nearT = glsl::FloatExpr<3>(static_cast<float>(-1.0000000150474662e+30));
@@ -33970,13 +33974,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   fragColor = glsl::Vec4(glsl::Vec4((state.bgColor * state.bgAlpha), state.bgAlpha));
   geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(1.0), static_cast<float>(1.0)));
   [[maybe_unused]] glsl::Vec2 fullRes = ((glsl::swizzle<0>(state.fullResolution) > static_cast<float>(0.0)) ? glsl::Vec2(state.fullResolution) : glsl::Vec2(state.resolution));
-  [[maybe_unused]] glsl::Vec2 uv = (((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) - (fullRes * static_cast<float>(0.5))) / glsl::swizzle<1>(fullRes));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) - (fullRes * static_cast<float>(0.5))), glsl::swizzle<1>(fullRes));
   if (state.VIEW_MODE == std::int32_t(2)) {
     renderPerspective(state, context, fragColor, geoOut, uv);
   } else {
     [[maybe_unused]] double size = float(state.volumeSize);
-    [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(fullRes)) / static_cast<double>(glsl::swizzle<1>(fullRes)));
-    [[maybe_unused]] double span = (static_cast<double>((static_cast<double>((static_cast<double>(glsl::component_max(static_cast<float>(1.6329931619), (static_cast<double>(static_cast<float>(1.4142135624)) / static_cast<double>(aspect)))) * static_cast<double>(size))) * static_cast<double>(static_cast<float>(1.08)))) / static_cast<double>(glsl::component_max(state.zoom, static_cast<float>(0.001))));
+    [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(fullRes)), static_cast<double>(glsl::swizzle<1>(fullRes)));
+    [[maybe_unused]] double span = glsl::metal_divide(static_cast<double>((static_cast<double>((static_cast<double>(glsl::component_max(static_cast<float>(1.6329931619), glsl::metal_divide(static_cast<double>(static_cast<float>(1.4142135624)), static_cast<double>(aspect)))) * static_cast<double>(size))) * static_cast<double>(static_cast<float>(1.08)))), static_cast<double>(glsl::component_max(state.zoom, static_cast<float>(0.001))));
     [[maybe_unused]] glsl::Vec3 right = glsl::FloatExpr<3>(static_cast<float>(0.7071067812), static_cast<float>(0.0), static_cast<float>(-0.7071067690849304));
     [[maybe_unused]] glsl::Vec3 up = glsl::FloatExpr<3>(static_cast<float>(-0.40824830532073975), static_cast<float>(0.8164965809), static_cast<float>(-0.40824830532073975));
     [[maybe_unused]] glsl::Vec3 origin = ((glsl::FloatExpr<3>((static_cast<double>(size) * static_cast<double>(static_cast<float>(2.5)))) + ((right * (static_cast<double>(glsl::swizzle<0>(uv)) + static_cast<double>(state.panX))) * span)) + ((up * (static_cast<double>(glsl::swizzle<1>(uv)) + static_cast<double>(state.panY))) * span));
@@ -34007,7 +34011,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         normal = glsl::Vec3(isosurfaceNormal(state, context, p, normal));
       }
       fragColor = glsl::Vec4(glsl::Vec4(lighting(state, context, glsl::swizzle<0, 1, 2>(sampleAtlasCoords(state, context, *state.volumeCache, hit.coords, true)), normal, glsl::FloatExpr<3>(static_cast<float>(0.5773502692))), static_cast<float>(1.0)));
-      geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), glsl::clamp((static_cast<double>(hit.distance) / static_cast<double>((static_cast<double>(size) * static_cast<double>(static_cast<float>(4.0))))), static_cast<float>(0.0), static_cast<float>(1.0))));
+      geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), glsl::clamp(glsl::metal_divide(static_cast<double>(hit.distance), static_cast<double>((static_cast<double>(size) * static_cast<double>(static_cast<float>(4.0))))), static_cast<float>(0.0), static_cast<float>(1.0))));
       return;
     }
     for ([[maybe_unused]] std::int32_t step = std::int32_t(0); (step < (state.volumeSize * std::int32_t(3))); ++step) {
@@ -34019,7 +34023,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       if ((density > static_cast<float>(0.0)) && (density >= state.threshold)) {
         [[maybe_unused]] glsl::Vec3 color = glsl::swizzle<0, 1, 2>(fetch_texel(*state.volumeCache, atlas));
         fragColor = glsl::Vec4(glsl::Vec4(lighting(state, context, color, normal, glsl::FloatExpr<3>(static_cast<float>(0.5773502692))), static_cast<float>(1.0)));
-        geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), glsl::clamp((static_cast<double>(distance) / static_cast<double>((static_cast<double>(size) * static_cast<double>(static_cast<float>(4.0))))), static_cast<float>(0.0), static_cast<float>(1.0))));
+        geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), glsl::clamp(glsl::metal_divide(static_cast<double>(distance), static_cast<double>((static_cast<double>(size) * static_cast<double>(static_cast<float>(4.0))))), static_cast<float>(0.0), static_cast<float>(1.0))));
         return;
       }
       distance = glsl::component_min(glsl::component_min(glsl::swizzle<0>(nextT), glsl::swizzle<1>(nextT)), glsl::swizzle<2>(nextT));
@@ -34093,7 +34097,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -34156,7 +34160,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 calcNormal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(2.0)) / static_cast<double>(float(state.volumeSize)));
+  [[maybe_unused]] double eps = glsl::metal_divide(static_cast<double>(static_cast<float>(2.0)), static_cast<double>(float(state.volumeSize)));
   [[maybe_unused]] double dx = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))))));
   [[maybe_unused]] double dy = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))))));
   [[maybe_unused]] double dz = (static_cast<double>(getField(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)))) - static_cast<double>(getField(state, context, (p - glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)))));
@@ -34234,7 +34238,7 @@ struct State final : KernelState {
   }
   [[maybe_unused]] double tStart = glsl::swizzle<0>(bounds);
   [[maybe_unused]] double tEnd = glsl::swizzle<1>(bounds);
-  [[maybe_unused]] double stepSize = (static_cast<double>(static_cast<float>(1.5)) / static_cast<double>(float(state.volumeSize)));
+  [[maybe_unused]] double stepSize = glsl::metal_divide(static_cast<double>(static_cast<float>(1.5)), static_cast<double>(float(state.volumeSize)));
   [[maybe_unused]] double t = tStart;
   [[maybe_unused]] double prevField = getField(state, context, (ro + (rd * t)));
   if (prevField < static_cast<float>(0.0)) {
@@ -34335,7 +34339,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     fullRes = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(1024.0), static_cast<float>(1024.0)));
   }
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (static_cast<float>(0.5) * fullRes)) / glsl::swizzle<1>(fullRes));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (static_cast<float>(0.5) * fullRes)), glsl::swizzle<1>(fullRes));
   [[maybe_unused]] glsl::Vec3 ro = (state.cameraPosition * static_cast<float>(3.5));
   [[maybe_unused]] glsl::Vec3 forward = {};
   if (glsl::length(ro) < static_cast<float>(0.001)) {
@@ -34409,7 +34413,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -34477,8 +34481,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 rotated = glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(centered)) * static_cast<double>(c))) - static_cast<double>((static_cast<double>(glsl::swizzle<1>(centered)) * static_cast<double>(s)))), (static_cast<double>((static_cast<double>(glsl::swizzle<0>(centered)) * static_cast<double>(s))) + static_cast<double>((static_cast<double>(glsl::swizzle<1>(centered)) * static_cast<double>(c)))));
   [[maybe_unused]] glsl::Vec2 coord = (rotated + (state.fullResolution * static_cast<float>(0.5)));
   [[maybe_unused]] std::int32_t animOffset = glsl::detail::js_to_int32(glsl::floor((static_cast<double>((static_cast<double>(state.time) * static_cast<double>(float(glsl::detail::js_to_int32((-state.speed)))))) * static_cast<double>(static_cast<float>(256.0)))));
-  [[maybe_unused]] double x = (static_cast<double>((static_cast<double>(glsl::detail::js_to_int32(glsl::floor((static_cast<double>(glsl::swizzle<0>(coord)) / static_cast<double>(pixelScale))))) + static_cast<double>(state.offsetX))) + static_cast<double>(animOffset));
-  [[maybe_unused]] double y = (static_cast<double>(glsl::detail::js_to_int32(glsl::floor((static_cast<double>(glsl::swizzle<1>(coord)) / static_cast<double>(pixelScale))))) + static_cast<double>(state.offsetY));
+  [[maybe_unused]] double x = (static_cast<double>((static_cast<double>(glsl::detail::js_to_int32(glsl::floor(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(coord)), static_cast<double>(pixelScale))))) + static_cast<double>(state.offsetX))) + static_cast<double>(animOffset));
+  [[maybe_unused]] double y = (static_cast<double>(glsl::detail::js_to_int32(glsl::floor(glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(coord)), static_cast<double>(pixelScale))))) + static_cast<double>(state.offsetY));
   x = glsl::detail::js_bitwise_xor(x, state.seed);
   y = glsl::detail::js_bitwise_xor(y, (static_cast<double>(state.seed) * static_cast<double>(std::int32_t(3))));
   [[maybe_unused]] double v = {};
@@ -34493,7 +34497,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       output = glsl::Vec4(glsl::FloatExpr<4>(r, g, b, static_cast<float>(1.0)));
     } else {
       v = bitOp(state, context, x, y, state.operation, state.mask);
-      [[maybe_unused]] double hueScale = (static_cast<double>(static_cast<double>(state.mask)) / static_cast<double>(float((static_cast<double>(state.mask) + static_cast<double>(std::int32_t(1))))));
+      [[maybe_unused]] double hueScale = glsl::metal_divide(static_cast<double>(static_cast<double>(state.mask)), static_cast<double>(float((static_cast<double>(state.mask) + static_cast<double>(std::int32_t(1))))));
       output = glsl::Vec4(glsl::Vec4(hsv2rgb(state, context, glsl::FloatExpr<3>((static_cast<double>(v) * static_cast<double>(hueScale)), static_cast<float>(1.0), static_cast<float>(1.0))), static_cast<float>(1.0)));
     }
   }
@@ -34526,7 +34530,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -34546,9 +34550,9 @@ struct State final : KernelState {
 [[nodiscard]] double smin([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] double k) noexcept;
 
 [[nodiscard]] double cells([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq, [[maybe_unused]] double cellSize, [[maybe_unused]] std::int32_t sides) noexcept {
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * freq));
-  st = glsl::Vec2((st + glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2((st + glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st + glsl::swizzle<0, 1>(prng(state, context, glsl::FloatExpr<3>(float(state.seed))))));
   [[maybe_unused]] glsl::Vec2 i = glsl::floor(st);
   [[maybe_unused]] glsl::Vec2 f = glsl::fract(st);
@@ -34644,7 +34648,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] double freq = map(state, context, state.scale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(20.0), static_cast<float>(1.0));
   [[maybe_unused]] double cellSize = map(state, context, state.cellScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(3.0), static_cast<float>(0.75));
   [[maybe_unused]] double d = cells(state, context, st, freq, cellSize, state.metric);
@@ -34675,7 +34679,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -34797,45 +34801,45 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] double state_glsl_93 = static_cast<float>(0.0);
   if (state.smoothing == std::int32_t(0)) {
-    state_glsl_93 = glsl::swizzle<1>(sample_texture(*state.fbTex, (globalCoord / state.fullResolution)));
+    state_glsl_93 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide(globalCoord, state.fullResolution)));
   } else {
     if (state.smoothing == std::int32_t(3)) {
       [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-      [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-      [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-      [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+      [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+      [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+      [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
       state_glsl_93 = glsl::swizzle<1>(catmullRom3x3(state, context, *state.fbTex, uv, texelSize));
     } else {
       if (state.smoothing == std::int32_t(4)) {
         [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-        [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-        [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-        [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+        [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+        [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+        [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
         state_glsl_93 = glsl::swizzle<1>(catmullRom4x4(state, context, *state.fbTex, uv, texelSize));
       } else {
         if (state.smoothing == std::int32_t(5)) {
           [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-          [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-          [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-          [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+          [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+          [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+          [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
           state_glsl_93 = glsl::swizzle<1>(quadratic(state, context, *state.fbTex, uv, texelSize));
         } else {
           if (state.smoothing == std::int32_t(6)) {
             [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-            [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-            [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-            [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+            [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+            [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+            [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
             state_glsl_93 = glsl::swizzle<1>(bicubic(state, context, *state.fbTex, uv, texelSize));
           } else {
             [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-            [[maybe_unused]] glsl::Vec2 nd2 = (state.fullResolution / texSize);
+            [[maybe_unused]] glsl::Vec2 nd2 = glsl::metal_divide(state.fullResolution, texSize);
             [[maybe_unused]] glsl::Vec2 xy = (globalCoord - (nd2 * static_cast<float>(0.5)));
-            [[maybe_unused]] double v00 = glsl::swizzle<1>(sample_texture(*state.fbTex, (xy / state.fullResolution)));
-            [[maybe_unused]] double v10 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), static_cast<float>(0.0))) / state.fullResolution)));
-            [[maybe_unused]] double v01 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(nd2))) / state.fullResolution)));
-            [[maybe_unused]] double v11 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), glsl::swizzle<1>(nd2))) / state.fullResolution)));
-            [[maybe_unused]] double xAmount = glsl::fract((static_cast<double>(glsl::swizzle<0>(xy)) / static_cast<double>(glsl::swizzle<0>(nd2))));
-            [[maybe_unused]] double yAmount = glsl::fract((static_cast<double>(glsl::swizzle<1>(xy)) / static_cast<double>(glsl::swizzle<1>(nd2))));
+            [[maybe_unused]] double v00 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide(xy, state.fullResolution)));
+            [[maybe_unused]] double v10 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), static_cast<float>(0.0))), state.fullResolution)));
+            [[maybe_unused]] double v01 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide((xy + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(nd2))), state.fullResolution)));
+            [[maybe_unused]] double v11 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), glsl::swizzle<1>(nd2))), state.fullResolution)));
+            [[maybe_unused]] double xAmount = glsl::fract(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(xy)), static_cast<double>(glsl::swizzle<0>(nd2))));
+            [[maybe_unused]] double yAmount = glsl::fract(glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(xy)), static_cast<double>(glsl::swizzle<1>(nd2))));
             if (state.smoothing == std::int32_t(1)) {
               [[maybe_unused]] double v0 = glsl::mix(v00, v10, xAmount);
               [[maybe_unused]] double v1 = glsl::mix(v01, v11, xAmount);
@@ -34882,7 +34886,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -35055,8 +35059,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.bufTex));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / texSize);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), texSize);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
   [[maybe_unused]] double state_glsl_43 = glsl::swizzle<0>(sample_texture(*state.bufTex, uv));
   [[maybe_unused]] glsl::Vec4 bufState = sample_texture(*state.bufTex, uv);
   [[maybe_unused]] bool bufferIsEmpty = ((((glsl::swizzle<0>(bufState) == static_cast<float>(0.0)) && (glsl::swizzle<1>(bufState) == static_cast<float>(0.0))) && (glsl::swizzle<2>(bufState) == static_cast<float>(0.0))) && (glsl::swizzle<3>(bufState) == static_cast<float>(0.0)));
@@ -35114,7 +35118,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -35236,8 +35240,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] double aspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 centered = ((uv - static_cast<float>(0.5)) * glsl::FloatExpr<2>(aspect, static_cast<float>(1.0)));
   [[maybe_unused]] glsl::Vec3 p = glsl::Vec3((centered * (static_cast<double>(static_cast<float>(21.0)) - static_cast<double>(state.scale))), static_cast<float>(0.5));
   [[maybe_unused]] glsl::Vec3 curl = curlNoise3D(state, context, p);
@@ -35301,7 +35305,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -35374,7 +35378,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, glsl::swizzle<1>(state.fullResolution));
   [[maybe_unused]] double freq = map(state, context, state.scale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(20.0), static_cast<float>(1.0));
   [[maybe_unused]] double sigma = map(state, context, state.bandwidth, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(0.05), static_cast<float>(0.35));
   [[maybe_unused]] double baseAngle = (static_cast<double>((static_cast<double>(state.orientation) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
@@ -35434,7 +35438,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -35517,7 +35521,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 rotate2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double angle) noexcept {
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * aspectRatio));
   st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(aspectRatio) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
   [[maybe_unused]] double c = glsl::cos(angle);
@@ -35544,8 +35548,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
-  [[maybe_unused]] double aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
+  [[maybe_unused]] double aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double angle = (static_cast<double>((static_cast<double>((-state.rotation)) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
   [[maybe_unused]] glsl::Vec2 rotatedSt = rotate2D(state, context, st, angle);
   [[maybe_unused]] glsl::Vec2 centered = (st - static_cast<float>(0.5));
@@ -36093,7 +36097,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -36116,7 +36120,7 @@ struct State final : KernelState {
 [[nodiscard]] double mandalaMask([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept {
   [[maybe_unused]] double r = glsl::length(p);
   [[maybe_unused]] double theta = (static_cast<double>(glsl::atan(glsl::swizzle<1>(p), glsl::swizzle<0>(p))) - static_cast<double>(static_cast<float>(1.5707963705062866)));
-  [[maybe_unused]] double wedge = (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(float(state.symmetry)));
+  [[maybe_unused]] double wedge = glsl::metal_divide(static_cast<double>(static_cast<float>(6.28318530718)), static_cast<double>(float(state.symmetry)));
   [[maybe_unused]] double twistRad = (static_cast<double>((static_cast<double>(state.twist) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
   [[maybe_unused]] double baseSize = (static_cast<double>(static_cast<float>(0.25)) + static_cast<double>((static_cast<double>(state.thickness) * static_cast<double>(static_cast<float>(0.65)))));
   [[maybe_unused]] double dynTwistRad = twistRad;
@@ -36148,7 +36152,7 @@ struct State final : KernelState {
     [[maybe_unused]] double tangent = (static_cast<double>(folded) * static_cast<double>(Rlayer));
     [[maybe_unused]] double lt = static_cast<float>(0.0);
     if (state.layers > std::int32_t(1)) {
-      lt = (static_cast<double>((static_cast<double>(float(i)) / static_cast<double>(float((state.layers - std::int32_t(1)))))) - static_cast<double>(static_cast<float>(0.5)));
+      lt = (static_cast<double>(glsl::metal_divide(static_cast<double>(float(i)), static_cast<double>(float((state.layers - std::int32_t(1)))))) - static_cast<double>(static_cast<float>(0.5)));
     }
     [[maybe_unused]] double shapeSize = (static_cast<double>(baseSize) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>(state.shapeGrowth) * static_cast<double>(lt))))));
     if (state.animation == std::int32_t(6)) {
@@ -36193,7 +36197,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   st = glsl::Vec2(((st - static_cast<float>(0.5)) * static_cast<float>(2.0)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
   [[maybe_unused]] double rad = (static_cast<double>((static_cast<double>(state.rotation) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
@@ -36244,7 +36248,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -36452,8 +36456,12 @@ void mandelbrot_df64([[maybe_unused]] const State& state, [[maybe_unused]] const
     }
     [[maybe_unused]] double zx = df64_to_float(state, context, zr);
     [[maybe_unused]] double zy = df64_to_float(state, context, zi);
-    glsl::set_swizzle<0>(dz, (static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>((static_cast<double>((static_cast<double>(zx) * static_cast<double>(glsl::swizzle<0>(dz)))) - static_cast<double>((static_cast<double>(zy) * static_cast<double>(glsl::swizzle<1>(dz)))))))) + static_cast<double>(static_cast<float>(1.0))));
-    glsl::set_swizzle<1>(dz, (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>((static_cast<double>((static_cast<double>(zx) * static_cast<double>(glsl::swizzle<1>(dz)))) + static_cast<double>((static_cast<double>(zy) * static_cast<double>(glsl::swizzle<0>(dz))))))));
+    {
+      const double cpu_vector_write_0 = static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>((static_cast<double>((static_cast<double>(zx) * static_cast<double>(glsl::swizzle<0>(dz)))) - static_cast<double>((static_cast<double>(zy) * static_cast<double>(glsl::swizzle<1>(dz)))))))) + static_cast<double>(static_cast<float>(1.0))));
+      const double cpu_vector_write_1 = static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>((static_cast<double>((static_cast<double>(zx) * static_cast<double>(glsl::swizzle<1>(dz)))) + static_cast<double>((static_cast<double>(zy) * static_cast<double>(glsl::swizzle<0>(dz))))))));
+      glsl::set_swizzle<0>(dz, cpu_vector_write_0);
+      glsl::set_swizzle<1>(dz, cpu_vector_write_1);
+    }
     [[maybe_unused]] glsl::Vec2 zr2 = df64_mul(state, context, zr, zr);
     [[maybe_unused]] glsl::Vec2 zi2 = df64_mul(state, context, zi, zi);
     [[maybe_unused]] glsl::Vec2 zri = df64_mul(state, context, zr, zi);
@@ -36505,7 +36513,7 @@ void mandelbrot_df64([[maybe_unused]] const State& state, [[maybe_unused]] const
 
 [[nodiscard]] double outputNormalMap([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 fragCoord, [[maybe_unused]] glsl::Vec2 cX_df, [[maybe_unused]] glsl::Vec2 cY_df, [[maybe_unused]] double z_zoom, [[maybe_unused]] double rot, [[maybe_unused]] std::int32_t maxIter, [[maybe_unused]] double angle) noexcept {
   const double TAU = static_cast<float>(6.28318530718);
-  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution))));
+  [[maybe_unused]] double eps = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution))));
   [[maybe_unused]] double h0 = computeValueAt_df64(state, context, fragCoord, cX_df, cY_df, z_zoom, rot, maxIter);
   [[maybe_unused]] double hx = computeValueAt_df64(state, context, (fragCoord + glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0))), cX_df, cY_df, z_zoom, rot, maxIter);
   [[maybe_unused]] double hy = computeValueAt_df64(state, context, (fragCoord + glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0))), cX_df, cY_df, z_zoom, rot, maxIter);
@@ -36542,7 +36550,7 @@ void mandelbrot_df64([[maybe_unused]] const State& state, [[maybe_unused]] const
 
 void transformCoords_df64([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 fragCoord, [[maybe_unused]] glsl::Vec2 cX_df, [[maybe_unused]] glsl::Vec2 cY_df, [[maybe_unused]] double z, [[maybe_unused]] double rot, [[maybe_unused]] glsl::Vec2& re_df, [[maybe_unused]] glsl::Vec2& im_df) noexcept {
   const double TAU = static_cast<float>(6.28318530718);
-  [[maybe_unused]] glsl::Vec2 uv = ((fragCoord - (static_cast<float>(0.5) * state.fullResolution)) / glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((fragCoord - (static_cast<float>(0.5) * state.fullResolution)), glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double angle = (static_cast<double>((static_cast<double>((-rot)) * static_cast<double>(TAU))) / static_cast<double>(static_cast<float>(360.0)));
   [[maybe_unused]] double c = glsl::cos(angle);
   [[maybe_unused]] double s = glsl::sin(angle);
@@ -36642,7 +36650,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -36664,7 +36672,7 @@ struct State final : KernelState {
   [[maybe_unused]] glsl::DVec2 size = state.imageSize;
   st = glsl::Vec2((glsl::swizzle<0, 1>(context.frag_coord) / size));
   glsl::set_swizzle<1>(st, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(st))));
-  [[maybe_unused]] double scale = (static_cast<double>(static_cast<float>(100.0)) / static_cast<double>(state.scaleAmt));
+  [[maybe_unused]] double scale = glsl::metal_divide(static_cast<double>(static_cast<float>(100.0)), static_cast<double>(state.scaleAmt));
   if (scale == static_cast<float>(0.0)) {
     scale = static_cast<float>(1.0);
   }
@@ -36849,7 +36857,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   const auto& state = static_cast<const State&>(kernel_base);
   (void)state;
   (void)context;
-  [[maybe_unused]] glsl::Vec2 st = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   glsl::set_swizzle<1>(st, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(st))));
   output = glsl::Vec4(getImage(state, context, st));
 }
@@ -36877,7 +36885,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -36999,45 +37007,45 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] double state_glsl_93 = static_cast<float>(0.0);
   if (state.smoothing == std::int32_t(0)) {
-    state_glsl_93 = glsl::swizzle<1>(sample_texture(*state.fbTex, (globalCoord / state.fullResolution)));
+    state_glsl_93 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide(globalCoord, state.fullResolution)));
   } else {
     if (state.smoothing == std::int32_t(3)) {
       [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-      [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-      [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-      [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+      [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+      [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+      [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
       state_glsl_93 = glsl::swizzle<1>(catmullRom3x3(state, context, *state.fbTex, uv, texelSize));
     } else {
       if (state.smoothing == std::int32_t(4)) {
         [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-        [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-        [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-        [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+        [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+        [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+        [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
         state_glsl_93 = glsl::swizzle<1>(catmullRom4x4(state, context, *state.fbTex, uv, texelSize));
       } else {
         if (state.smoothing == std::int32_t(5)) {
           [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-          [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-          [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-          [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+          [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+          [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+          [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
           state_glsl_93 = glsl::swizzle<1>(quadratic(state, context, *state.fbTex, uv, texelSize));
         } else {
           if (state.smoothing == std::int32_t(6)) {
             [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-            [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-            [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-            [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+            [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+            [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+            [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
             state_glsl_93 = glsl::swizzle<1>(bicubic(state, context, *state.fbTex, uv, texelSize));
           } else {
             [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-            [[maybe_unused]] glsl::Vec2 nd2 = (state.fullResolution / texSize);
+            [[maybe_unused]] glsl::Vec2 nd2 = glsl::metal_divide(state.fullResolution, texSize);
             [[maybe_unused]] glsl::Vec2 xy = (globalCoord - (nd2 * static_cast<float>(0.5)));
-            [[maybe_unused]] double v00 = glsl::swizzle<1>(sample_texture(*state.fbTex, (xy / state.fullResolution)));
-            [[maybe_unused]] double v10 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), static_cast<float>(0.0))) / state.fullResolution)));
-            [[maybe_unused]] double v01 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(nd2))) / state.fullResolution)));
-            [[maybe_unused]] double v11 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), glsl::swizzle<1>(nd2))) / state.fullResolution)));
-            [[maybe_unused]] double xAmount = glsl::fract((static_cast<double>(glsl::swizzle<0>(xy)) / static_cast<double>(glsl::swizzle<0>(nd2))));
-            [[maybe_unused]] double yAmount = glsl::fract((static_cast<double>(glsl::swizzle<1>(xy)) / static_cast<double>(glsl::swizzle<1>(nd2))));
+            [[maybe_unused]] double v00 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide(xy, state.fullResolution)));
+            [[maybe_unused]] double v10 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), static_cast<float>(0.0))), state.fullResolution)));
+            [[maybe_unused]] double v01 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide((xy + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(nd2))), state.fullResolution)));
+            [[maybe_unused]] double v11 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), glsl::swizzle<1>(nd2))), state.fullResolution)));
+            [[maybe_unused]] double xAmount = glsl::fract(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(xy)), static_cast<double>(glsl::swizzle<0>(nd2))));
+            [[maybe_unused]] double yAmount = glsl::fract(glsl::metal_divide(static_cast<double>(glsl::swizzle<1>(xy)), static_cast<double>(glsl::swizzle<1>(nd2))));
             if (state.smoothing == std::int32_t(1)) {
               [[maybe_unused]] double v0 = glsl::mix(v00, v10, xAmount);
               [[maybe_unused]] double v1 = glsl::mix(v01, v11, xAmount);
@@ -37091,7 +37099,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37206,8 +37214,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.bufTex));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / texSize);
-  [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), texSize);
+  [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
   [[maybe_unused]] double state_glsl_48 = glsl::swizzle<0>(sample_texture(*state.bufTex, uv));
   [[maybe_unused]] glsl::Vec4 bufState = sample_texture(*state.bufTex, uv);
   [[maybe_unused]] bool bufferIsEmpty = ((((glsl::swizzle<0>(bufState) == static_cast<float>(0.0)) && (glsl::swizzle<1>(bufState) == static_cast<float>(0.0))) && (glsl::swizzle<2>(bufState) == static_cast<float>(0.0))) && (glsl::swizzle<3>(bufState) == static_cast<float>(0.0)));
@@ -37264,7 +37272,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37316,7 +37324,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (state.fullResolution * static_cast<float>(0.5))) / glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (state.fullResolution * static_cast<float>(0.5))), glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double spd = glsl::floor(state.speed);
   [[maybe_unused]] double anim = (static_cast<double>(state.time) * static_cast<double>(spd));
   [[maybe_unused]] double s1 = (static_cast<double>(static_cast<float>(20.1)) - static_cast<double>(state.scale1));
@@ -37388,7 +37396,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37407,7 +37415,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.fbTex);
   [[maybe_unused]] glsl::IVec2 minIdx = glsl::IVec2(std::int32_t(0));
   [[maybe_unused]] glsl::IVec2 maxIdx = (texSize - glsl::IVec2(std::int32_t(1)));
-  [[maybe_unused]] glsl::Vec2 texelPos = (((globalCoord * glsl::Vec2(texSize)) / state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 texelPos = (glsl::metal_divide((globalCoord * glsl::Vec2(texSize)), state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
   [[maybe_unused]] glsl::IVec2 baseI = glsl::IVec2(glsl::floor(texelPos));
   [[maybe_unused]] glsl::Vec2 f = glsl::fract(texelPos);
   [[maybe_unused]] double v00 = glsl::swizzle<2>(fetch_texel(*state.fbTex, glsl::clamp(baseI, minIdx, maxIdx)));
@@ -37421,7 +37429,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 outCol = glsl::FloatExpr<3>(intensity);
   [[maybe_unused]] double blend = (static_cast<double>(glsl::clamp(state.inputIntensity, static_cast<float>(0.0), static_cast<float>(100.0))) * static_cast<double>(static_cast<float>(0.01)));
   if (blend > static_cast<float>(0.0)) {
-    [[maybe_unused]] glsl::Vec2 inputUv = (globalCoord / state.fullResolution);
+    [[maybe_unused]] glsl::Vec2 inputUv = glsl::metal_divide(globalCoord, state.fullResolution);
     [[maybe_unused]] glsl::Vec3 inputColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, inputUv));
     outCol = glsl::Vec3(glsl::mix(outCol, inputColor, blend));
   }
@@ -37448,7 +37456,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37487,7 +37495,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.bufTex);
   [[maybe_unused]] glsl::Vec2 fragCoord = glsl::swizzle<0, 1>(context.frag_coord);
-  [[maybe_unused]] glsl::Vec2 uv = (fragCoord / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(fragCoord, glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 here = fetch_texel(*state.bufTex, glsl::clamp(glsl::IVec2(fragCoord), glsl::IVec2(std::int32_t(0)), (texSize - glsl::IVec2(std::int32_t(1)))));
   [[maybe_unused]] glsl::Vec2 u = glsl::swizzle<0, 1>(here);
   [[maybe_unused]] double dt = (static_cast<double>(glsl::clamp(state.speed, static_cast<float>(0.0), static_cast<float>(200.0))) * static_cast<double>(static_cast<float>(0.0001)));
@@ -37519,7 +37527,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37536,8 +37544,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.velTex);
   [[maybe_unused]] glsl::Vec2 fragCoord = glsl::swizzle<0, 1>(context.frag_coord);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 uv = (fragCoord / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(fragCoord, glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec2 uR = glsl::swizzle<0, 1>(sample_texture(*state.velTex, (uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0)))));
   [[maybe_unused]] glsl::Vec2 uL = glsl::swizzle<0, 1>(sample_texture(*state.velTex, (uv - glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0)))));
   [[maybe_unused]] glsl::Vec2 uT = glsl::swizzle<0, 1>(sample_texture(*state.velTex, (uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel)))));
@@ -37576,7 +37584,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37593,8 +37601,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.velTex);
   [[maybe_unused]] glsl::Vec2 fragCoord = glsl::swizzle<0, 1>(context.frag_coord);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 uv = (fragCoord / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(fragCoord, glsl::Vec2(texSize));
   [[maybe_unused]] double pR = glsl::swizzle<0>(sample_texture(*state.pressureTex, (uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0)))));
   [[maybe_unused]] double pL = glsl::swizzle<0>(sample_texture(*state.pressureTex, (uv - glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0)))));
   [[maybe_unused]] double pT = glsl::swizzle<0>(sample_texture(*state.pressureTex, (uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel)))));
@@ -37622,7 +37630,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37639,8 +37647,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.bufTex);
   [[maybe_unused]] glsl::Vec2 fragCoord = glsl::swizzle<0, 1>(context.frag_coord);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 uv = (fragCoord / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(fragCoord, glsl::Vec2(texSize));
   [[maybe_unused]] double pR = glsl::swizzle<0>(sample_texture(*state.bufTex, (uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0)))));
   [[maybe_unused]] double pL = glsl::swizzle<0>(sample_texture(*state.bufTex, (uv - glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0)))));
   [[maybe_unused]] double pT = glsl::swizzle<0>(sample_texture(*state.bufTex, (uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel)))));
@@ -37668,7 +37676,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37722,7 +37730,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.canvasTex);
   [[maybe_unused]] glsl::IVec2 minIdx = glsl::IVec2(std::int32_t(0));
   [[maybe_unused]] glsl::IVec2 maxIdx = (texSize - glsl::IVec2(std::int32_t(1)));
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), state.resolution);
   [[maybe_unused]] glsl::Vec2 texelPos = ((uv * glsl::Vec2(texSize)) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
   [[maybe_unused]] glsl::IVec2 baseI = glsl::IVec2(glsl::floor(texelPos));
   [[maybe_unused]] glsl::Vec2 f = glsl::fract(texelPos);
@@ -37830,7 +37838,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -37846,12 +37854,16 @@ struct State final : KernelState {
 [[nodiscard]] double lum([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 c) noexcept;
 
 [[nodiscard]] double hash11([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double x) noexcept {
-  return glsl::fract((static_cast<double>(glsl::sin((static_cast<double>(x) * static_cast<double>(static_cast<float>(12.9898))))) * static_cast<double>(static_cast<float>(43758.5453))));
+  return glsl::fract(static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(glsl::sin(static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(x)) * static_cast<double>(static_cast<float>(12.9898))))))) * static_cast<double>(static_cast<float>(43758.5453)))));
 }
 
 [[nodiscard]] glsl::Vec2 hash22([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept {
-  glsl::set_swizzle<0>(p, glsl::dot(p, glsl::FloatExpr<2>(static_cast<float>(127.1), static_cast<float>(311.7))));
-  glsl::set_swizzle<1>(p, glsl::dot(p, glsl::FloatExpr<2>(static_cast<float>(269.5), static_cast<float>(183.3))));
+  {
+    const double cpu_vector_write_0 = static_cast<double>(glsl::dot(p, glsl::FloatExpr<2>(static_cast<float>(127.1), static_cast<float>(311.7))));
+    const double cpu_vector_write_1 = static_cast<double>(glsl::dot(p, glsl::FloatExpr<2>(static_cast<float>(269.5), static_cast<float>(183.3))));
+    glsl::set_swizzle<0>(p, cpu_vector_write_0);
+    glsl::set_swizzle<1>(p, cpu_vector_write_1);
+  }
   return glsl::fract(glsl::Vec2((glsl::sin(p) * static_cast<float>(43758.5453))));
 }
 
@@ -37865,7 +37877,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.bufTex);
   [[maybe_unused]] glsl::Vec2 fragCoord = glsl::swizzle<0, 1>(context.frag_coord);
-  [[maybe_unused]] glsl::Vec2 uv = (fragCoord / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(fragCoord, glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec4 prev = sample_texture(*state.bufTex, uv);
   [[maybe_unused]] bool bufferEmpty = (glsl::swizzle<3>(prev) == static_cast<float>(0.0));
   if (state.resetState || bufferEmpty) {
@@ -37879,7 +37891,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       [[maybe_unused]] double radius = (static_cast<double>(static_cast<float>(0.10)) + static_cast<double>((static_cast<double>(static_cast<float>(0.06)) * static_cast<double>(hash11(state, context, (static_cast<double>((static_cast<double>(idf) * static_cast<double>(static_cast<float>(2.11)))) + static_cast<double>(seedF)))))));
       [[maybe_unused]] glsl::Vec2 d = (uv - c);
       [[maybe_unused]] double r2 = glsl::dot(d, d);
-      [[maybe_unused]] double falloff = glsl::exp((static_cast<double>((-r2)) / static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(radius))) * static_cast<double>(radius)))));
+      [[maybe_unused]] double falloff = glsl::exp(glsl::metal_divide(static_cast<double>((-r2)), static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(radius))) * static_cast<double>(radius)))));
       [[maybe_unused]] glsl::Vec2 tangent = glsl::FloatExpr<2>((-glsl::swizzle<1>(d)), glsl::swizzle<0>(d));
       vel = glsl::Vec2((vel + (((tangent * sign) * falloff) * static_cast<float>(12.0))));
       dye = (dye + falloff);
@@ -37893,7 +37905,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double iForce = (static_cast<double>(glsl::clamp(state.inputForce, static_cast<float>(0.0), static_cast<float>(100.0))) * static_cast<double>(static_cast<float>(0.01)));
   [[maybe_unused]] double iDye = (static_cast<double>(glsl::clamp(state.inputDye, static_cast<float>(0.0), static_cast<float>(100.0))) * static_cast<double>(static_cast<float>(0.01)));
   if ((iForce > static_cast<float>(0.0)) || (iDye > static_cast<float>(0.0))) {
-    [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / glsl::Vec2(texSize));
+    [[maybe_unused]] glsl::Vec2 texel = glsl::metal_divide(static_cast<float>(1.0), glsl::Vec2(texSize));
     [[maybe_unused]] double lc = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, uv)));
     [[maybe_unused]] double lr = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + glsl::FloatExpr<2>(glsl::swizzle<0>(texel), static_cast<float>(0.0))))));
     [[maybe_unused]] double lu = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, (uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel))))));
@@ -37948,7 +37960,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -38056,7 +38068,7 @@ void df64_cmul([[maybe_unused]] const State& state, [[maybe_unused]] const glsl:
 
 void transformCoords_df64([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 fragCoord, [[maybe_unused]] glsl::Vec2 cX_df, [[maybe_unused]] glsl::Vec2 cY_df, [[maybe_unused]] double z_zoom, [[maybe_unused]] double rot, [[maybe_unused]] glsl::Vec2& re_df, [[maybe_unused]] glsl::Vec2& im_df) noexcept {
   const double TAU = static_cast<float>(6.28318530718);
-  [[maybe_unused]] glsl::Vec2 uv = ((fragCoord - (static_cast<float>(0.5) * state.fullResolution)) / glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((fragCoord - (static_cast<float>(0.5) * state.fullResolution)), glsl::component_min(glsl::swizzle<0>(state.fullResolution), glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double angle = (static_cast<double>((static_cast<double>((-rot)) * static_cast<double>(TAU))) / static_cast<double>(static_cast<float>(360.0)));
   [[maybe_unused]] double c = glsl::cos(angle);
   [[maybe_unused]] double s = glsl::sin(angle);
@@ -38119,7 +38131,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (k >= numRoots) {
       break;
     }
-    [[maybe_unused]] double angle = (static_cast<double>((static_cast<double>(TAU) * static_cast<double>(float(k)))) / static_cast<double>(float(intDeg)));
+    [[maybe_unused]] double angle = glsl::metal_divide(static_cast<double>((static_cast<double>(TAU) * static_cast<double>(float(k)))), static_cast<double>(float(intDeg)));
     roots[static_cast<std::size_t>(k)] = glsl::Vec2(glsl::FloatExpr<2>(glsl::cos(angle), glsl::sin(angle)));
   }
   [[maybe_unused]] double iter = static_cast<float>(0.0);
@@ -38157,7 +38169,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       break;
     }
     [[maybe_unused]] double denom = (static_cast<double>((static_cast<double>(fpzr_f) * static_cast<double>(fpzr_f))) + static_cast<double>((static_cast<double>(fpzi_f) * static_cast<double>(fpzi_f))));
-    [[maybe_unused]] double inv_denom = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(denom));
+    [[maybe_unused]] double inv_denom = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(denom));
     [[maybe_unused]] glsl::Vec2 nr = df64_add(state, context, df64_mul(state, context, fzr, fpzr), df64_mul(state, context, fzi, fpzi));
     [[maybe_unused]] glsl::Vec2 ni = df64_sub(state, context, df64_mul(state, context, fzi, fpzr), df64_mul(state, context, fzr, fpzi));
     [[maybe_unused]] glsl::Vec2 dr = df64_mul_f(state, context, nr, inv_denom);
@@ -38189,21 +38201,21 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double smoothIter = iter;
   if (((convergedRoot >= std::int32_t(0)) && (convergeDist > static_cast<float>(0.0))) && (convergeDist < state.tolerance)) {
-    smoothIter = (static_cast<double>(iter) - static_cast<double>(glsl::log2((static_cast<double>(glsl::log(convergeDist)) / static_cast<double>(glsl::log(state.tolerance))))));
+    smoothIter = (static_cast<double>(iter) - static_cast<double>(glsl::log2(glsl::metal_divide(static_cast<double>(glsl::log(convergeDist)), static_cast<double>(glsl::log(state.tolerance))))));
   }
   [[maybe_unused]] double value = static_cast<float>(0.0);
   [[maybe_unused]] double maxIterF = float(maxIter);
   [[maybe_unused]] double numRootsF = float(numRoots);
   if (outMode == std::int32_t(0)) {
-    value = (static_cast<double>(smoothIter) / static_cast<double>(maxIterF));
+    value = glsl::metal_divide(static_cast<double>(smoothIter), static_cast<double>(maxIterF));
   } else {
     if (outMode == std::int32_t(1)) {
       if (convergedRoot >= std::int32_t(0)) {
-        value = (static_cast<double>(float(convergedRoot)) / static_cast<double>(numRootsF));
+        value = glsl::metal_divide(static_cast<double>(float(convergedRoot)), static_cast<double>(numRootsF));
       }
     } else {
       if (convergedRoot >= std::int32_t(0)) {
-        value = (static_cast<double>((static_cast<double>(float(convergedRoot)) + static_cast<double>((static_cast<double>(smoothIter) / static_cast<double>(maxIterF))))) / static_cast<double>(numRootsF));
+        value = glsl::metal_divide(static_cast<double>((static_cast<double>(float(convergedRoot)) + static_cast<double>(glsl::metal_divide(static_cast<double>(smoothIter), static_cast<double>(maxIterF))))), static_cast<double>(numRootsF));
       }
     }
   }
@@ -38247,7 +38259,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -38391,7 +38403,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double circles([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return (static_cast<double>(dist) * static_cast<double>(freq));
 }
 
@@ -38461,8 +38473,8 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double diamonds([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  st = glsl::Vec2((frame.globalCoord / glsl::swizzle<1>(state.fullResolution)));
-  st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  st = glsl::Vec2(glsl::metal_divide(frame.globalCoord, glsl::swizzle<1>(state.fullResolution)));
+  st = glsl::Vec2((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   st = glsl::Vec2((st * freq));
   return (static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))) + static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(static_cast<float>(3.14159265359))))));
 }
@@ -38525,7 +38537,7 @@ struct State final : KernelState {
       return shape(state, context, frame, st, std::int32_t(3), (static_cast<double>(glsl::swizzle<0>(freq)) * static_cast<double>(static_cast<float>(0.5))));
     } else {
       if (state.LOOP_OFFSET == std::int32_t(30)) {
-        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(glsl::swizzle<0>(freq)))) * static_cast<double>(static_cast<float>(0.5)));
+        return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(glsl::swizzle<0>(freq)))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
         if (state.LOOP_OFFSET == std::int32_t(40)) {
           return shape(state, context, frame, st, std::int32_t(4), (static_cast<double>(glsl::swizzle<0>(freq)) * static_cast<double>(static_cast<float>(0.5))));
@@ -38561,7 +38573,7 @@ struct State final : KernelState {
                               return (static_cast<double>((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(glsl::swizzle<0>(freq)))) * static_cast<double>(static_cast<float>(0.5)));
                             } else {
                               if (state.LOOP_OFFSET == std::int32_t(300)) {
-                                st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
+                                st = glsl::Vec2((st - glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5))));
                                 return value(state, context, frame, st, freq, (static_cast<double>(float(state.seed)) + static_cast<double>(static_cast<float>(50.0))), static_cast<float>(0.0));
                               } else {
                                 if (state.LOOP_OFFSET == std::int32_t(400)) {
@@ -38635,12 +38647,12 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double rings([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
-  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
+  [[maybe_unused]] double dist = glsl::length((st - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(0.5))));
   return glsl::cos((static_cast<double>((static_cast<double>(dist) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(freq)));
 }
 
 [[nodiscard]] double shape([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] std::int32_t sides, [[maybe_unused]] double blend) noexcept {
-  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
+  st = glsl::Vec2(((st * static_cast<float>(2.0)) - glsl::FloatExpr<2>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))), static_cast<float>(1.0))));
   [[maybe_unused]] double a = (static_cast<double>(glsl::atan(glsl::swizzle<0>(st), glsl::swizzle<1>(st))) + static_cast<double>(static_cast<float>(3.14159265359)));
   [[maybe_unused]] double r = (static_cast<double>(static_cast<float>(6.28318530718)) / static_cast<double>(float(sides)));
   return (static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>((static_cast<double>(glsl::floor((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(a) / static_cast<double>(r)))))) * static_cast<double>(r))) - static_cast<double>(a)))) * static_cast<double>(glsl::length(st)))) * static_cast<double>(blend));
@@ -38732,8 +38744,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   Frame frame{};
   frame.globalCoord = glsl::Vec2((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset));
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec2 st = (frame.globalCoord / glsl::swizzle<1>(state.fullResolution));
-  [[maybe_unused]] glsl::Vec2 centered = (st - glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(frame.globalCoord, glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 centered = (st - glsl::FloatExpr<2>((static_cast<double>(glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec2 freq = glsl::FloatExpr<2>(static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec2 lf = glsl::FloatExpr<2>(static_cast<float>(1.0));
   [[maybe_unused]] double base = static_cast<float>(0.0);
@@ -38815,7 +38827,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -38897,7 +38909,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   if (glsl::swizzle<0>(res) < static_cast<float>(1.0)) {
     res = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(1024.0), static_cast<float>(1024.0)));
   }
-  [[maybe_unused]] glsl::Vec2 st = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / res);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), res);
   st = glsl::Vec2((st - static_cast<float>(0.5)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
   [[maybe_unused]] double rotRad = (static_cast<double>((static_cast<double>(state.rotation) * static_cast<double>(PI))) / static_cast<double>(static_cast<float>(180.0)));
@@ -38974,7 +38986,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -39132,7 +39144,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   st = glsl::Vec2(((st - static_cast<float>(0.5)) * static_cast<float>(2.0)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
   [[maybe_unused]] double rad = (static_cast<double>((static_cast<double>(state.rotation) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
@@ -39229,7 +39241,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -39244,9 +39256,9 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 domainWarp3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double z, [[maybe_unused]] std::int32_t iterations, [[maybe_unused]] double wScale, [[maybe_unused]] double wIntensity) noexcept;
 [[nodiscard]] double fbm2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double timeAngle, [[maybe_unused]] double channelOffset, [[maybe_unused]] std::int32_t ridgedMode) noexcept;
 [[nodiscard]] double fbm3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double timeAngle, [[maybe_unused]] double channelOffset, [[maybe_unused]] std::int32_t ridgedMode) noexcept;
-[[nodiscard]] glsl::Vec3 grad3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;
+[[nodiscard]] glsl::Vec3 grad3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p, [[maybe_unused]] glsl::Vec3 k) noexcept;
 [[nodiscard]] double grid2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] glsl::Vec2 cell, [[maybe_unused]] double timeAngle, [[maybe_unused]] double channelOffset) noexcept;
-[[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;
+[[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p, [[maybe_unused]] glsl::Vec3 k) noexcept;
 [[nodiscard]] double noise2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double timeAngle, [[maybe_unused]] double channelOffset) noexcept;
 [[nodiscard]] double noise3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;
 [[nodiscard]] glsl::UVec3 pcg([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::UVec3 v) noexcept;
@@ -39351,10 +39363,10 @@ struct State final : KernelState {
   return (static_cast<double>(sum) / static_cast<double>(maxVal));
 }
 
-[[nodiscard]] glsl::Vec3 grad3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  [[maybe_unused]] double h1 = hash3(state, context, p);
-  [[maybe_unused]] double h2 = hash3(state, context, (p + static_cast<float>(127.1)));
-  [[maybe_unused]] double h3 = hash3(state, context, (p + static_cast<float>(269.5)));
+[[nodiscard]] glsl::Vec3 grad3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p, [[maybe_unused]] glsl::Vec3 k) noexcept {
+  [[maybe_unused]] double h1 = hash3(state, context, p, k);
+  [[maybe_unused]] double h2 = hash3(state, context, p, glsl::Vec3((k + static_cast<float>(127.1))));
+  [[maybe_unused]] double h3 = hash3(state, context, p, glsl::Vec3((k + static_cast<float>(269.5))));
   [[maybe_unused]] glsl::Vec3 g = glsl::FloatExpr<3>((static_cast<double>((static_cast<double>(h1) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h2) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h3) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))));
   return glsl::normalize(g);
 }
@@ -39368,8 +39380,8 @@ struct State final : KernelState {
   return glsl::dot(gradient, dist);
 }
 
-[[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  p = glsl::Vec3((p + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(0.1)))));
+[[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p, [[maybe_unused]] glsl::Vec3 k) noexcept {
+  p = glsl::Vec3(glsl::FloatExpr<3>(static_cast<double>(p[0]) + static_cast<double>(noisemaker::f32(static_cast<double>(k[0]) + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1)))))), static_cast<double>(p[1]) + static_cast<double>(noisemaker::f32(static_cast<double>(k[1]) + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1)))))), static_cast<double>(noisemaker::f32(static_cast<double>(p[2]) + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1)))))) + static_cast<double>(k[2])));
   [[maybe_unused]] glsl::UVec3 q = glsl::UVec3((glsl::IVec3(glsl::Vec3((p * static_cast<float>(1000.0)))) + std::int32_t(65536)));
   q = ((q * std::uint32_t(1664525)) + std::uint32_t(1013904223));
   glsl::set_swizzle<0>(q, (glsl::swizzle<0>(q) + (glsl::swizzle<1>(q) * glsl::swizzle<2>(q))));
@@ -39401,14 +39413,14 @@ struct State final : KernelState {
   [[maybe_unused]] glsl::Vec3 u = glsl::FloatExpr<3>(quintic(state, context, glsl::swizzle<0>(f)), quintic(state, context, glsl::swizzle<1>(f)), quintic(state, context, glsl::swizzle<2>(f)));
   [[maybe_unused]] double iz0 = wrapZ(state, context, glsl::swizzle<2>(i));
   [[maybe_unused]] double iz1 = wrapZ(state, context, (static_cast<double>(glsl::swizzle<2>(i)) + static_cast<double>(static_cast<float>(1.0))));
-  [[maybe_unused]] double n000 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz0) + glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(0))));
-  [[maybe_unused]] double n100 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz0) + glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(0))));
-  [[maybe_unused]] double n010 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz0) + glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(0))));
-  [[maybe_unused]] double n110 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz0) + glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(0))));
-  [[maybe_unused]] double n001 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz1) + glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(1))));
-  [[maybe_unused]] double n101 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz1) + glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(1))));
-  [[maybe_unused]] double n011 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz1) + glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(1))));
-  [[maybe_unused]] double n111 = glsl::dot(grad3(state, context, (glsl::Vec3(glsl::swizzle<0, 1>(i), iz1) + glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n000 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz0)), glsl::Vec3(glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n100 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz0)), glsl::Vec3(glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n010 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz0)), glsl::Vec3(glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n110 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz0)), glsl::Vec3(glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n001 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz1)), glsl::Vec3(glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n101 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz1)), glsl::Vec3(glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n011 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz1)), glsl::Vec3(glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(0), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n111 = glsl::dot(grad3(state, context, glsl::Vec3(glsl::Vec3(glsl::swizzle<0, 1>(i), iz1)), glsl::Vec3(glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec3(std::int32_t(1), std::int32_t(1), std::int32_t(1))));
   [[maybe_unused]] double nx00 = glsl::mix(n000, n100, glsl::swizzle<0>(u));
   [[maybe_unused]] double nx10 = glsl::mix(n010, n110, glsl::swizzle<0>(u));
   [[maybe_unused]] double nx01 = glsl::mix(n001, n101, glsl::swizzle<0>(u));
@@ -39469,10 +39481,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   if (glsl::swizzle<0>(res) < static_cast<float>(1.0)) {
     res = glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(1024.0), static_cast<float>(1024.0)));
   }
-  [[maybe_unused]] glsl::Vec2 st = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / res);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset), res);
   st = glsl::Vec2((st - static_cast<float>(0.5)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
-  [[maybe_unused]] double freq = glsl::component_max(static_cast<float>(0.1), (static_cast<double>(static_cast<float>(100.0)) / static_cast<double>(glsl::component_max(state.scale, static_cast<float>(0.01)))));
+  [[maybe_unused]] double freq = glsl::component_max(static_cast<float>(0.1), glsl::metal_divide(static_cast<double>(static_cast<float>(100.0)), static_cast<double>(glsl::component_max(state.scale, static_cast<float>(0.01)))));
   st = glsl::Vec2((st * freq));
   st = glsl::Vec2((st + static_cast<float>(1000.0)));
   [[maybe_unused]] double timeAngle = (static_cast<double>((static_cast<double>(state.time) * static_cast<double>(state.speed))) * static_cast<double>(TAU));
@@ -39534,7 +39546,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -39558,7 +39570,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   st = glsl::Vec2(((st - static_cast<float>(0.5)) * static_cast<float>(2.0)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
   [[maybe_unused]] double c = glsl::cos((static_cast<double>((static_cast<double>(state.rotation) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0))));
@@ -39568,12 +39580,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   if (state.sides == std::int32_t(3)) {
     st = glsl::Vec2(glsl::FloatExpr<2>(glsl::swizzle<1>(st), (-glsl::swizzle<0>(st))));
   }
-  [[maybe_unused]] double d = (static_cast<double>(polygon(state, context, st, sidesF)) / static_cast<double>(glsl::cos((static_cast<double>(static_cast<float>(3.14159265359)) / static_cast<double>(sidesF)))));
+  [[maybe_unused]] double d = glsl::metal_divide(static_cast<double>(polygon(state, context, st, sidesF)), static_cast<double>(glsl::cos(glsl::metal_divide(static_cast<double>(static_cast<float>(3.14159265359)), static_cast<double>(sidesF)))));
   [[maybe_unused]] double m = ((state.smoothing == static_cast<float>(0.0)) ? ((d <= state.radius) ? static_cast<float>(1.0) : static_cast<float>(0.0)) : glsl::smoothstep(state.radius, (static_cast<double>(state.radius) - static_cast<double>(state.smoothing)), d));
   [[maybe_unused]] double fgMask = (static_cast<double>(m) * static_cast<double>(state.fgAlpha));
   [[maybe_unused]] double bgMask = (static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(m))) * static_cast<double>(state.bgAlpha));
   [[maybe_unused]] double totalAlpha = (static_cast<double>(fgMask) + static_cast<double>(bgMask));
-  [[maybe_unused]] glsl::Vec3 outColor = ((totalAlpha > static_cast<float>(0.0)) ? glsl::Vec3((((state.fgColor * fgMask) + (state.bgColor * bgMask)) / totalAlpha)) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0))));
+  [[maybe_unused]] glsl::Vec3 outColor = ((totalAlpha > static_cast<float>(0.0)) ? glsl::Vec3(glsl::metal_divide(((state.fgColor * fgMask) + (state.bgColor * bgMask)), totalAlpha)) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0))));
   output = glsl::Vec4(glsl::Vec4((outColor * totalAlpha), totalAlpha));
 }
 }  // namespace typed_279
@@ -39601,7 +39613,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -39724,11 +39736,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
   [[maybe_unused]] double state_glsl_95 = static_cast<float>(0.0);
   if (state.smoothing == std::int32_t(0)) {
-    state_glsl_95 = glsl::swizzle<1>(sample_texture(*state.fbTex, (globalCoord / state.fullResolution)));
+    state_glsl_95 = glsl::swizzle<1>(sample_texture(*state.fbTex, glsl::metal_divide(globalCoord, state.fullResolution)));
   } else {
     if (state.smoothing == std::int32_t(2)) {
       [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-      [[maybe_unused]] glsl::Vec2 texelPos = (((globalCoord * texSize) / state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
+      [[maybe_unused]] glsl::Vec2 texelPos = (glsl::metal_divide((globalCoord * texSize), state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
       [[maybe_unused]] glsl::Vec2 base = glsl::floor(texelPos);
       [[maybe_unused]] glsl::Vec2 weights = glsl::fract(texelPos);
       [[maybe_unused]] glsl::Vec2 next = (base + glsl::FloatExpr<2>(static_cast<float>(1.0)));
@@ -39748,34 +39760,34 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     } else {
       if (state.smoothing == std::int32_t(3)) {
         [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-        [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-        [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-        [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+        [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+        [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+        [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
         state_glsl_95 = glsl::swizzle<1>(catmullRom3x3(state, context, *state.fbTex, uv, texelSize));
       } else {
         if (state.smoothing == std::int32_t(4)) {
           [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-          [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-          [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-          [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+          [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+          [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+          [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
           state_glsl_95 = glsl::swizzle<1>(catmullRom4x4(state, context, *state.fbTex, uv, texelSize));
         } else {
           if (state.smoothing == std::int32_t(5)) {
             [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-            [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-            [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-            [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+            [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+            [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+            [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
             state_glsl_95 = glsl::swizzle<1>(quadratic(state, context, *state.fbTex, uv, texelSize));
           } else {
             if (state.smoothing == std::int32_t(6)) {
               [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-              [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
-              [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
-              [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+              [[maybe_unused]] glsl::Vec2 texelSize = glsl::metal_divide(static_cast<float>(1.0), texSize);
+              [[maybe_unused]] glsl::Vec2 scaling = glsl::metal_divide(state.fullResolution, texSize);
+              [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide((globalCoord - (scaling * static_cast<float>(0.5))), state.fullResolution);
               state_glsl_95 = glsl::swizzle<1>(bicubic(state, context, *state.fbTex, uv, texelSize));
             } else {
               [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
-              [[maybe_unused]] glsl::Vec2 texelPos = (((globalCoord * texSize) / state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
+              [[maybe_unused]] glsl::Vec2 texelPos = (glsl::metal_divide((globalCoord * texSize), state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
               [[maybe_unused]] glsl::Vec2 base = glsl::floor(texelPos);
               [[maybe_unused]] glsl::Vec2 weights = glsl::fract(texelPos);
               [[maybe_unused]] glsl::Vec2 next = (base + glsl::FloatExpr<2>(static_cast<float>(1.0)));
@@ -39807,7 +39819,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 rdColor = glsl::FloatExpr<3>(intensity);
   [[maybe_unused]] double blend = (static_cast<double>(state.inputIntensity) * static_cast<double>(static_cast<float>(0.01)));
   if (blend > static_cast<float>(0.0)) {
-    [[maybe_unused]] glsl::Vec2 inputUv = (globalCoord / state.fullResolution);
+    [[maybe_unused]] glsl::Vec2 inputUv = glsl::metal_divide(globalCoord, state.fullResolution);
     [[maybe_unused]] glsl::Vec3 inputColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, inputUv));
     rdColor = glsl::Vec3(glsl::mix(rdColor, inputColor, blend));
   }
@@ -39846,7 +39858,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -39895,7 +39907,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.bufTex);
-  [[maybe_unused]] glsl::Vec4 tex = sample_texture(*state.bufTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize)));
+  [[maybe_unused]] glsl::Vec4 tex = sample_texture(*state.bufTex, glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize)));
   [[maybe_unused]] double a = glsl::swizzle<0>(tex);
   [[maybe_unused]] double b = glsl::swizzle<1>(tex);
   [[maybe_unused]] bool bufferIsEmpty = ((((glsl::swizzle<0>(tex) == static_cast<float>(0.0)) && (glsl::swizzle<1>(tex) == static_cast<float>(0.0))) && (glsl::swizzle<2>(tex) == static_cast<float>(0.0))) && (glsl::swizzle<3>(tex) == static_cast<float>(0.0)));
@@ -39909,7 +39921,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     return;
   }
   [[maybe_unused]] glsl::Vec3 color = lp(state, context, *state.bufTex, glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
-  [[maybe_unused]] glsl::Vec2 prevFrameCoord = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 prevFrameCoord = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   [[maybe_unused]] glsl::Vec3 prevFrame = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, prevFrameCoord));
   [[maybe_unused]] double prevLum = lum(state, context, prevFrame);
   [[maybe_unused]] double f = (static_cast<double>(state.feed) * static_cast<double>(static_cast<float>(0.001)));
@@ -40053,7 +40065,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -40069,7 +40081,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);
-  [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
   output = glsl::Vec4(sample_texture(*state.inputTex, uv));
 }
 }  // namespace typed_283
@@ -40099,7 +40111,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -40115,7 +40127,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] double scrollAmount = (static_cast<double>((static_cast<double>(state.speed) * static_cast<double>(state.deltaTime))) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec2 scrollUv = glsl::FloatExpr<2>((static_cast<double>(glsl::swizzle<0>(uv)) - static_cast<double>(scrollAmount)), glsl::swizzle<1>(uv));
   [[maybe_unused]] glsl::Vec4 prev = glsl::FloatExpr<4>(static_cast<float>(0.0));
@@ -40133,7 +40145,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double keyFrac = glsl::fract(keyExact);
   [[maybe_unused]] double maxVel = static_cast<float>(0.0);
   [[maybe_unused]] double lanePixels = (static_cast<double>(glsl::swizzle<1>(state.fullResolution)) / static_cast<double>(static_cast<float>(16.0)));
-  [[maybe_unused]] double keysPerPixel = (static_cast<double>(float(keyRange)) / static_cast<double>(lanePixels));
+  [[maybe_unused]] double keysPerPixel = glsl::metal_divide(static_cast<double>(float(keyRange)), static_cast<double>(lanePixels));
   [[maybe_unused]] std::int32_t spread = glsl::component_max(std::int32_t(1), glsl::detail::glsl_int_cast(glsl::ceil(keysPerPixel)));
   for ([[maybe_unused]] std::int32_t dk = (-spread); (dk <= spread); ++dk) {
     [[maybe_unused]] std::int32_t k = glsl::clamp((key + dk), std::int32_t(0), std::int32_t(127));
@@ -40143,7 +40155,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       maxVel = glsl::component_max(maxVel, glsl::swizzle<0>(noteData));
     }
   }
-  [[maybe_unused]] double edgeWidth = (static_cast<double>(static_cast<float>(4.0)) / static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
+  [[maybe_unused]] double edgeWidth = glsl::metal_divide(static_cast<double>(static_cast<float>(4.0)), static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
   [[maybe_unused]] double noteVal = static_cast<float>(0.0);
   if ((glsl::swizzle<0>(uv) < edgeWidth) && (maxVel > static_cast<float>(0.0))) {
     noteVal = (static_cast<double>(maxVel) * static_cast<double>(state.gain));
@@ -40199,7 +40211,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -40443,7 +40455,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   st = glsl::Vec2(((st - static_cast<float>(0.5)) * static_cast<float>(2.0)));
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * state.aspect));
   [[maybe_unused]] double rad = (static_cast<double>((static_cast<double>(state.rotation) * static_cast<double>(static_cast<float>(3.14159265359)))) / static_cast<double>(static_cast<float>(180.0)));
@@ -40515,7 +40527,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -40531,7 +40543,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] double fIndex = (static_cast<double>(glsl::swizzle<0>(uv)) * static_cast<double>(static_cast<float>(127.0)));
   [[maybe_unused]] std::int32_t i0 = glsl::detail::glsl_int_cast(glsl::floor(fIndex));
   [[maybe_unused]] std::int32_t i1 = glsl::component_min((i0 + std::int32_t(1)), std::int32_t(127));
@@ -40577,7 +40589,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -40746,7 +40758,7 @@ struct State final : KernelState {
 
 [[nodiscard]] double diamonds([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
   const double PI = static_cast<float>(3.14159265359);
-  [[maybe_unused]] glsl::Vec2 stLocal = (frame.globalCoord / glsl::swizzle<1>(state.fullResolution));
+  [[maybe_unused]] glsl::Vec2 stLocal = glsl::metal_divide(frame.globalCoord, glsl::swizzle<1>(state.fullResolution));
   stLocal = glsl::Vec2((stLocal - glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(frame.aspectRatio)), static_cast<float>(0.5))));
   stLocal = glsl::Vec2((stLocal * freq));
   return (static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<0>(stLocal)) * static_cast<double>(PI)))) + static_cast<double>(glsl::cos((static_cast<double>(glsl::swizzle<1>(stLocal)) * static_cast<double>(PI)))));
@@ -41009,8 +41021,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   Frame frame{};
   [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.0));
   frame.globalCoord = glsl::Vec2((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset));
-  [[maybe_unused]] glsl::Vec2 st = (frame.globalCoord / glsl::swizzle<1>(state.fullResolution));
-  frame.aspectRatio = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(frame.globalCoord, glsl::swizzle<1>(state.fullResolution));
+  frame.aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double lf1 = map(state, context, frame, state.loopAScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(1.0));
   if (state.wrap) {
     lf1 = glsl::floor(lf1);
@@ -41067,7 +41079,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -41107,7 +41119,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -41123,7 +41135,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] double fIndex = (static_cast<double>(glsl::swizzle<0>(uv)) * static_cast<double>(static_cast<float>(127.0)));
   [[maybe_unused]] std::int32_t i0 = glsl::detail::glsl_int_cast(glsl::floor(fIndex));
   [[maybe_unused]] std::int32_t i1 = glsl::component_min((i0 + std::int32_t(1)), std::int32_t(127));
@@ -41133,7 +41145,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double mag = (static_cast<double>(glsl::mix(s0, s1, fract_i)) * static_cast<double>(state.gain));
   [[maybe_unused]] double dist = (static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(uv)) - static_cast<double>(mag)))) * static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double line = glsl::smoothstep((static_cast<double>(state.lineThickness) + static_cast<double>(static_cast<float>(1.0))), state.lineThickness, dist);
-  [[maybe_unused]] double fill = (static_cast<double>(glsl::smoothstep((static_cast<double>(mag) + static_cast<double>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))), mag, glsl::swizzle<1>(uv))) * static_cast<double>(static_cast<float>(0.15)));
+  [[maybe_unused]] double fill = (static_cast<double>(glsl::smoothstep((static_cast<double>(mag) + static_cast<double>(glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))), mag, glsl::swizzle<1>(uv))) * static_cast<double>(static_cast<float>(0.15)));
   [[maybe_unused]] double alpha = glsl::component_max(line, fill);
   output = glsl::Vec4(glsl::Vec4((state.lineColor * alpha), alpha));
 }
@@ -41168,7 +41180,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -41285,14 +41297,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   const double PHI = static_cast<float>(1.618033988749895);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 st = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 st = glsl::metal_divide(globalCoord, state.fullResolution);
   [[maybe_unused]] std::int32_t maxDepth = glsl::detail::glsl_int_cast(state.depth);
   [[maybe_unused]] double dens = (static_cast<double>(state.density) / static_cast<double>(static_cast<float>(100.0)));
   [[maybe_unused]] std::int32_t fillType = glsl::detail::glsl_int_cast(state.fill);
   [[maybe_unused]] std::int32_t modeType = glsl::detail::glsl_int_cast(state.mode);
   [[maybe_unused]] double spd = (static_cast<double>(glsl::floor(state.speed)) * static_cast<double>(static_cast<float>(2.0)));
-  [[maybe_unused]] double outlineWidthX = (static_cast<double>((static_cast<double>(state.outline) * static_cast<double>(state.renderScale))) / static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
-  [[maybe_unused]] double outlineWidthY = (static_cast<double>((static_cast<double>(state.outline) * static_cast<double>(state.renderScale))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+  [[maybe_unused]] double outlineWidthX = glsl::metal_divide(static_cast<double>((static_cast<double>(state.outline) * static_cast<double>(state.renderScale))), static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
+  [[maybe_unused]] double outlineWidthY = glsl::metal_divide(static_cast<double>((static_cast<double>(state.outline) * static_cast<double>(state.renderScale))), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] glsl::Vec2 cellMin = glsl::FloatExpr<2>(static_cast<float>(0.0));
   [[maybe_unused]] glsl::Vec2 cellMax = glsl::FloatExpr<2>(static_cast<float>(1.0));
   [[maybe_unused]] bool isOutline = false;
@@ -41305,8 +41317,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     if (h < dens) {
       [[maybe_unused]] double cellW = (static_cast<double>((static_cast<double>(glsl::swizzle<0>(cellMax)) - static_cast<double>(glsl::swizzle<0>(cellMin)))) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)));
       [[maybe_unused]] double cellH = (static_cast<double>((static_cast<double>(glsl::swizzle<1>(cellMax)) - static_cast<double>(glsl::swizzle<1>(cellMin)))) * static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
-      [[maybe_unused]] bool canSplitH = ((static_cast<double>(glsl::component_min(cellW, (static_cast<double>(cellH) * static_cast<double>(static_cast<float>(0.5))))) / static_cast<double>(glsl::component_max(cellW, (static_cast<double>(cellH) * static_cast<double>(static_cast<float>(0.5)))))) >= static_cast<float>(0.2));
-      [[maybe_unused]] bool canSplitV = ((static_cast<double>(glsl::component_min((static_cast<double>(cellW) * static_cast<double>(static_cast<float>(0.5))), cellH)) / static_cast<double>(glsl::component_max((static_cast<double>(cellW) * static_cast<double>(static_cast<float>(0.5))), cellH))) >= static_cast<float>(0.2));
+      [[maybe_unused]] bool canSplitH = (glsl::metal_divide(static_cast<double>(glsl::component_min(cellW, (static_cast<double>(cellH) * static_cast<double>(static_cast<float>(0.5))))), static_cast<double>(glsl::component_max(cellW, (static_cast<double>(cellH) * static_cast<double>(static_cast<float>(0.5)))))) >= static_cast<float>(0.2));
+      [[maybe_unused]] bool canSplitV = (glsl::metal_divide(static_cast<double>(glsl::component_min((static_cast<double>(cellW) * static_cast<double>(static_cast<float>(0.5))), cellH)), static_cast<double>(glsl::component_max((static_cast<double>(cellW) * static_cast<double>(static_cast<float>(0.5))), cellH))) >= static_cast<float>(0.2));
       if (modeType == std::int32_t(0)) {
         [[maybe_unused]] double dir = cellRand(state, context, cellMin, float(level), static_cast<float>(1.0), levelTime);
         [[maybe_unused]] std::int32_t splitDir = (-std::int32_t(1));
@@ -41376,10 +41388,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double cellPixelH = (static_cast<double>(glsl::swizzle<1>(cellSize)) * static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
   [[maybe_unused]] double minDim = glsl::component_min(cellPixelW, cellPixelH);
   [[maybe_unused]] glsl::Vec2 centered = (cellUv - static_cast<float>(0.5));
-  glsl::set_swizzle<0>(centered, (glsl::swizzle<0>(centered) * (static_cast<double>(cellPixelW) / static_cast<double>(minDim))));
-  glsl::set_swizzle<1>(centered, (glsl::swizzle<1>(centered) * (static_cast<double>(cellPixelH) / static_cast<double>(minDim))));
-  [[maybe_unused]] double halfW = (static_cast<double>((static_cast<double>(cellPixelW) / static_cast<double>(minDim))) * static_cast<double>(static_cast<float>(0.5)));
-  [[maybe_unused]] double halfH = (static_cast<double>((static_cast<double>(cellPixelH) / static_cast<double>(minDim))) * static_cast<double>(static_cast<float>(0.5)));
+  glsl::set_swizzle<0>(centered, (glsl::swizzle<0>(centered) * glsl::metal_divide(static_cast<double>(cellPixelW), static_cast<double>(minDim))));
+  glsl::set_swizzle<1>(centered, (glsl::swizzle<1>(centered) * glsl::metal_divide(static_cast<double>(cellPixelH), static_cast<double>(minDim))));
+  [[maybe_unused]] double halfW = (static_cast<double>(glsl::metal_divide(static_cast<double>(cellPixelW), static_cast<double>(minDim))) * static_cast<double>(static_cast<float>(0.5)));
+  [[maybe_unused]] double halfH = (static_cast<double>(glsl::metal_divide(static_cast<double>(cellPixelH), static_cast<double>(minDim))) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] double visualT = (static_cast<double>((static_cast<double>(state.time) * static_cast<double>(spd))) + static_cast<double>((static_cast<double>(PHI) * static_cast<double>(static_cast<float>(7.0)))));
   [[maybe_unused]] double curVisualTime = glsl::floor(visualT);
   [[maybe_unused]] double nextVisualTime = (static_cast<double>(curVisualTime) + static_cast<double>(static_cast<float>(1.0)));
@@ -41410,20 +41422,20 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     [[maybe_unused]] double nextTexScale = (static_cast<double>(static_cast<float>(0.3)) + static_cast<double>((static_cast<double>(cellRand(state, context, cellMin, static_cast<float>(0.0), static_cast<float>(5.0), nextVisualTime)) * static_cast<double>(static_cast<float>(0.7)))));
     [[maybe_unused]] double texScale = glsl::mix(curTexScale, nextTexScale, visualBlend);
     [[maybe_unused]] glsl::Vec2& texUv = cellUv;
-    [[maybe_unused]] double cellAspect = (static_cast<double>((static_cast<double>(glsl::swizzle<0>(cellSize)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>((static_cast<double>(glsl::swizzle<1>(cellSize)) * static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
-    [[maybe_unused]] double texAspect = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
-    [[maybe_unused]] double ratio = (static_cast<double>(cellAspect) / static_cast<double>(texAspect));
+    [[maybe_unused]] double cellAspect = glsl::metal_divide(static_cast<double>((static_cast<double>(glsl::swizzle<0>(cellSize)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>((static_cast<double>(glsl::swizzle<1>(cellSize)) * static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
+    [[maybe_unused]] double texAspect = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>(state.fullResolution)), static_cast<double>(glsl::swizzle<1>(state.fullResolution)));
+    [[maybe_unused]] double ratio = glsl::metal_divide(static_cast<double>(cellAspect), static_cast<double>(texAspect));
     if (ratio > static_cast<float>(1.0)) {
       glsl::set_swizzle<0>(texUv, (static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(texUv)) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>(ratio)))));
     } else {
-      glsl::set_swizzle<1>(texUv, (static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<1>(texUv)) - static_cast<double>(static_cast<float>(0.5)))) / static_cast<double>(ratio)))));
+      glsl::set_swizzle<1>(texUv, (static_cast<double>(static_cast<float>(0.5)) + static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(glsl::swizzle<1>(texUv)) - static_cast<double>(static_cast<float>(0.5)))), static_cast<double>(ratio)))));
     }
     texUv = glsl::Vec2((texUv * texScale));
     glsl::set_swizzle<0>(texUv, (glsl::swizzle<0>(texUv) + (static_cast<double>(glsl::mix(cellRand(state, context, cellMin, static_cast<float>(0.0), static_cast<float>(6.0), curVisualTime), cellRand(state, context, cellMin, static_cast<float>(0.0), static_cast<float>(6.0), nextVisualTime), visualBlend)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(texScale))))));
     glsl::set_swizzle<1>(texUv, (glsl::swizzle<1>(texUv) + (static_cast<double>(glsl::mix(cellRand(state, context, cellMin, static_cast<float>(0.0), static_cast<float>(7.0), curVisualTime), cellRand(state, context, cellMin, static_cast<float>(0.0), static_cast<float>(7.0), nextVisualTime), visualBlend)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(texScale))))));
     [[maybe_unused]] std::int32_t wrapMode = glsl::detail::glsl_int_cast(state.wrap);
     if (wrapMode == std::int32_t(0)) {
-      texUv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((texUv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+      texUv = glsl::Vec2(glsl::abs(glsl::Vec2((texUv - glsl::Vec2((static_cast<float>(2.0) * glsl::floor(((texUv + static_cast<float>(1.0)) * static_cast<float>(0.5)))))))));
     } else {
       if (wrapMode == std::int32_t(1)) {
         texUv = glsl::Vec2(glsl::mod(texUv, static_cast<float>(1.0)));
@@ -41460,7 +41472,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -41529,7 +41541,7 @@ struct State final : KernelState {
   [[maybe_unused]] std::int32_t n = glsl::component_max(state.gridSize, std::int32_t(1));
   [[maybe_unused]] glsl::Vec2 cellUV = glsl::fract((uv * float(n)));
   [[maybe_unused]] glsl::Vec2 edge = glsl::component_min(cellUV, (static_cast<float>(1.0) - cellUV));
-  [[maybe_unused]] glsl::Vec2 fw = ((glsl::FloatExpr<2>(static_cast<float>(1.0)) / state.fullResolution) * float(n));
+  [[maybe_unused]] glsl::Vec2 fw = (glsl::metal_divide(glsl::FloatExpr<2>(static_cast<float>(1.0)), state.fullResolution) * float(n));
   [[maybe_unused]] double line = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>(glsl::smoothstep(static_cast<float>(0.0), (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<0>(fw))), glsl::swizzle<0>(edge))) * static_cast<double>(glsl::smoothstep(static_cast<float>(0.0), (static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(glsl::swizzle<1>(fw))), glsl::swizzle<1>(edge))))));
   return glsl::Vec4(glsl::FloatExpr<3>(line), static_cast<float>(1.0));
 }
@@ -41596,7 +41608,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)state;
   (void)context;
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);
+  [[maybe_unused]] glsl::Vec2 uv = glsl::metal_divide(globalCoord, state.fullResolution);
   if (state.pattern == std::int32_t(1)) {
     output = glsl::Vec4(colorBars(state, context, uv));
   } else {
@@ -41655,7 +41667,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -41667,7 +41679,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 cellNoise3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;
-[[nodiscard]] glsl::Vec3 hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;
+[[nodiscard]] glsl::Vec3 hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 base, [[maybe_unused]] glsl::Vec3 neighbor) noexcept;
 [[nodiscard]] glsl::UVec3 pcg3d([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::UVec3 v) noexcept;
 
 [[nodiscard]] glsl::Vec2 cellNoise3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
@@ -41680,7 +41692,7 @@ struct State final : KernelState {
       for ([[maybe_unused]] std::int32_t x = (-std::int32_t(1)); (x <= std::int32_t(1)); ++x) {
         [[maybe_unused]] glsl::Vec3 neighbor = glsl::FloatExpr<3>(float(x), float(y), float(z));
         [[maybe_unused]] glsl::Vec3 cellPos = (i + neighbor);
-        [[maybe_unused]] glsl::Vec3 randomOffset = hash3(state, context, cellPos);
+        [[maybe_unused]] glsl::Vec3 randomOffset = hash3(state, context, i, neighbor);
         [[maybe_unused]] double jitter = (static_cast<double>(state.cellVariation) * static_cast<double>(static_cast<float>(0.01)));
         [[maybe_unused]] glsl::Vec3 cellPoint = glsl::Vec3((neighbor + glsl::mix(glsl::FloatExpr<3>(static_cast<float>(0.5)), randomOffset, jitter)));
         [[maybe_unused]] glsl::Vec3 diff = (cellPoint - f);
@@ -41704,8 +41716,9 @@ struct State final : KernelState {
   return glsl::FloatExpr<2>(minDist, cellId);
 }
 
-[[nodiscard]] glsl::Vec3 hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  p = glsl::Vec3((p + (static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1)))));
+[[nodiscard]] glsl::Vec3 hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 base, [[maybe_unused]] glsl::Vec3 neighbor) noexcept {
+  [[maybe_unused]] glsl::Vec3 p{};
+  p = glsl::Vec3(glsl::FloatExpr<3>(static_cast<double>(base[0]) + static_cast<double>(noisemaker::f32(static_cast<double>(neighbor[0]) + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1)))))), static_cast<double>(glsl::Vec3((base + neighbor))[1]) + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1)))), static_cast<double>(glsl::Vec3((base + neighbor))[2]) + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1))))));
   [[maybe_unused]] glsl::UVec3 q = ([](const glsl::Vec3& scaled) noexcept { return glsl::UVec3(static_cast<std::uint32_t>(glsl::detail::js_to_int32(scaled[0])) + std::uint32_t{65536}, static_cast<std::uint32_t>(glsl::detail::js_to_int32(scaled[1])) + std::uint32_t{65536}, static_cast<std::uint32_t>(glsl::detail::js_to_int32(scaled[2])) + std::uint32_t{65536}); }(glsl::Vec3((p * static_cast<float>(1000.0)))));
   q = pcg3d(state, context, q);
   return (glsl::Vec3(q) / static_cast<float>(4294967295.0));
@@ -41741,16 +41754,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
     return;
   }
-  [[maybe_unused]] glsl::Vec3 p = (((glsl::FloatExpr<3>(float(x), float(y), float(z)) / (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec3 p = ((glsl::metal_divide(glsl::FloatExpr<3>(float(x), float(y), float(z)), (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec3 scaledP = (p * (static_cast<double>(static_cast<float>(16.0)) - static_cast<double>(state.scale)));
   [[maybe_unused]] glsl::Vec2 result = cellNoise3D(state, context, scaledP);
   [[maybe_unused]] double dist = glsl::swizzle<0>(result);
   [[maybe_unused]] double cellId = glsl::swizzle<1>(result);
-  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(0.01)) / static_cast<double>(state.scale));
+  [[maybe_unused]] double eps = glsl::metal_divide(static_cast<double>(static_cast<float>(0.01)), static_cast<double>(state.scale));
   [[maybe_unused]] double dxp = glsl::swizzle<0>(cellNoise3D(state, context, (scaledP + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0)))));
   [[maybe_unused]] double dyp = glsl::swizzle<0>(cellNoise3D(state, context, (scaledP + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0)))));
   [[maybe_unused]] double dzp = glsl::swizzle<0>(cellNoise3D(state, context, (scaledP + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps))));
-  [[maybe_unused]] glsl::Vec3 gradient = (glsl::FloatExpr<3>((static_cast<double>(dxp) - static_cast<double>(dist)), (static_cast<double>(dyp) - static_cast<double>(dist)), (static_cast<double>(dzp) - static_cast<double>(dist))) / eps);
+  [[maybe_unused]] glsl::Vec3 gradient = glsl::metal_divide(glsl::FloatExpr<3>((static_cast<double>(dxp) - static_cast<double>(dist)), (static_cast<double>(dyp) - static_cast<double>(dist)), (static_cast<double>(dzp) - static_cast<double>(dist))), eps);
   [[maybe_unused]] glsl::Vec3 normal = glsl::normalize(((-gradient) + glsl::FloatExpr<3>(static_cast<float>(1e-6))));
   [[maybe_unused]] double normalizer = {};
   if (state.metric == std::int32_t(0)) {
@@ -41800,7 +41813,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -41873,10 +41886,10 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  p = glsl::Vec3((p + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(0.1)))));
+  p = glsl::Vec3((p + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1))))));
   p = glsl::Vec3(glsl::fract((p * glsl::FloatExpr<3>(static_cast<float>(0.1031), static_cast<float>(0.1030), static_cast<float>(0.0973)))));
-  p = glsl::Vec3((p + glsl::dot(p, (glsl::swizzle<1, 0, 2>(p) + static_cast<float>(33.33)))));
-  return glsl::fract((static_cast<double>((static_cast<double>(glsl::swizzle<0>(p)) + static_cast<double>(glsl::swizzle<1>(p)))) * static_cast<double>(glsl::swizzle<2>(p))));
+  [[maybe_unused]] const double cpuHashDot = static_cast<double>(glsl::dot(p, (glsl::swizzle<1, 0, 2>(p) + static_cast<float>(33.33))));
+  return glsl::fract(static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(static_cast<double>(p[0]) + static_cast<double>(p[1]))) + static_cast<double>(noisemaker::f32(cpuHashDot + cpuHashDot)))) * static_cast<double>(noisemaker::f32(static_cast<double>(p[2]) + cpuHashDot)))));
 }
 
 [[nodiscard]] glsl::Vec4 sampleSeed([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept {
@@ -42073,7 +42086,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -42308,7 +42321,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   camPos = glsl::Vec3(applyCollisionAvoidance(state, context, camPos));
   [[maybe_unused]] glsl::Vec3 camRight = glsl::normalize(glsl::cross(camDir, camUp));
   camUp = glsl::Vec3(glsl::normalize(glsl::cross(camRight, camDir)));
-  [[maybe_unused]] glsl::Vec3 normalizedCoord = (((glsl::FloatExpr<3>(float(vx), float(vy), float(vz)) / (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec3 normalizedCoord = ((glsl::metal_divide(glsl::FloatExpr<3>(float(vx), float(vy), float(vz)), (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0));
   [[maybe_unused]] double halfExtent = (static_cast<double>(state.voiSize) * static_cast<double>(static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec3 voiOffset = (camDir * halfExtent);
   [[maybe_unused]] glsl::Vec3 worldPos = ((((camPos + voiOffset) + ((camRight * glsl::swizzle<0>(normalizedCoord)) * halfExtent)) + ((camUp * glsl::swizzle<1>(normalizedCoord)) * halfExtent)) + ((camDir * glsl::swizzle<2>(normalizedCoord)) * halfExtent));
@@ -42359,7 +42372,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -42542,7 +42555,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
     return;
   }
-  [[maybe_unused]] glsl::Vec3 p = ((((glsl::FloatExpr<3>(float(x), float(y), float(z)) / (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0)) * static_cast<float>(1.5));
+  [[maybe_unused]] glsl::Vec3 p = (((glsl::metal_divide(glsl::FloatExpr<3>(float(x), float(y), float(z)), (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0)) * static_cast<float>(1.5));
   [[maybe_unused]] glsl::Vec3 juliaC = (glsl::FloatExpr<3>(state.juliaX, state.juliaY, state.juliaZ) * static_cast<float>(0.01));
   [[maybe_unused]] glsl::Vec3 result = computeFractal(state, context, p, juliaC);
   [[maybe_unused]] double dist = glsl::swizzle<0>(result);
@@ -42583,7 +42596,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -42662,7 +42675,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -42674,8 +42687,8 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double fbm4D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
-[[nodiscard]] glsl::Vec4 grad4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
-[[nodiscard]] double hash4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
+[[nodiscard]] glsl::Vec4 grad4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p, [[maybe_unused]] glsl::Vec4 k) noexcept;
+[[nodiscard]] double hash4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p, [[maybe_unused]] glsl::Vec4 k) noexcept;
 [[nodiscard]] double noise4D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
 [[nodiscard]] double quintic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept;
 [[nodiscard]] double wrapW([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double w) noexcept;
@@ -42702,17 +42715,17 @@ struct State final : KernelState {
   return (static_cast<double>(sum) / static_cast<double>(maxVal));
 }
 
-[[nodiscard]] glsl::Vec4 grad4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept {
-  [[maybe_unused]] double h1 = hash4(state, context, p);
-  [[maybe_unused]] double h2 = hash4(state, context, (p + static_cast<float>(127.1)));
-  [[maybe_unused]] double h3 = hash4(state, context, (p + static_cast<float>(269.5)));
-  [[maybe_unused]] double h4 = hash4(state, context, (p + static_cast<float>(419.2)));
+[[nodiscard]] glsl::Vec4 grad4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p, [[maybe_unused]] glsl::Vec4 k) noexcept {
+  [[maybe_unused]] double h1 = hash4(state, context, p, k);
+  [[maybe_unused]] double h2 = hash4(state, context, p, glsl::Vec4((k + static_cast<float>(127.1))));
+  [[maybe_unused]] double h3 = hash4(state, context, p, glsl::Vec4((k + static_cast<float>(269.5))));
+  [[maybe_unused]] double h4 = hash4(state, context, p, glsl::Vec4((k + static_cast<float>(419.2))));
   [[maybe_unused]] glsl::Vec4 g = glsl::FloatExpr<4>((static_cast<double>((static_cast<double>(h1) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h2) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h3) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h4) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))));
   return glsl::normalize(g);
 }
 
-[[nodiscard]] double hash4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept {
-  [[maybe_unused]] glsl::Vec4 ps = (p + (static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1))));
+[[nodiscard]] double hash4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p, [[maybe_unused]] glsl::Vec4 k) noexcept {
+  [[maybe_unused]] glsl::Vec4 ps = glsl::Vec4((p + glsl::Vec4((k + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1))))))));
   [[maybe_unused]] glsl::UVec4 q = ([](const glsl::Vec4& scaled) noexcept { glsl::UVec4 result{}; for (std::size_t lane = 0; lane < 4; ++lane) result[lane] = static_cast<std::uint32_t>(glsl::detail::js_to_int32(static_cast<double>(scaled[lane]))) + std::uint32_t{65536}; return result; }(glsl::Vec4((ps * static_cast<float>(1000.0)))));
   q = ((q * std::uint32_t(1664525)) + std::uint32_t(1013904223));
   glsl::set_swizzle<0>(q, (glsl::swizzle<0>(q) + (glsl::swizzle<1>(q) * glsl::swizzle<2>(q))));
@@ -42733,22 +42746,22 @@ struct State final : KernelState {
   [[maybe_unused]] glsl::Vec4 u = glsl::FloatExpr<4>(quintic(state, context, glsl::swizzle<0>(f)), quintic(state, context, glsl::swizzle<1>(f)), quintic(state, context, glsl::swizzle<2>(f)), quintic(state, context, glsl::swizzle<3>(f)));
   [[maybe_unused]] double iw0 = wrapW(state, context, glsl::swizzle<3>(i));
   [[maybe_unused]] double iw1 = wrapW(state, context, (static_cast<double>(glsl::swizzle<3>(i)) + static_cast<double>(static_cast<float>(1.0))));
-  [[maybe_unused]] double n0000 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0))));
-  [[maybe_unused]] double n1000 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0))));
-  [[maybe_unused]] double n0100 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0))));
-  [[maybe_unused]] double n1100 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0))));
-  [[maybe_unused]] double n0010 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0))));
-  [[maybe_unused]] double n1010 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0))));
-  [[maybe_unused]] double n0110 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0))));
-  [[maybe_unused]] double n1110 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0))));
-  [[maybe_unused]] double n0001 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(1))));
-  [[maybe_unused]] double n1001 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(1))));
-  [[maybe_unused]] double n0101 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(1))));
-  [[maybe_unused]] double n1101 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(1))));
-  [[maybe_unused]] double n0011 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(1))));
-  [[maybe_unused]] double n1011 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(1))));
-  [[maybe_unused]] double n0111 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(1))));
-  [[maybe_unused]] double n1111 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n0000 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n1000 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n0100 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n1100 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n0010 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n1010 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n0110 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n1110 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n0001 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n1001 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n0101 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n1101 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n0011 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n1011 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n0111 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n1111 = glsl::dot(grad4(state, context, glsl::Vec4(glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1)), glsl::Vec4(glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(1))));
   [[maybe_unused]] double nx000 = glsl::mix(n0000, n1000, glsl::swizzle<0>(u));
   [[maybe_unused]] double nx100 = glsl::mix(n0100, n1100, glsl::swizzle<0>(u));
   [[maybe_unused]] double nx010 = glsl::mix(n0010, n1010, glsl::swizzle<0>(u));
@@ -42794,16 +42807,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
     return;
   }
-  [[maybe_unused]] glsl::Vec3 p = (((glsl::FloatExpr<3>(float(x), float(y), float(z)) / (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec3 p = ((glsl::metal_divide(glsl::FloatExpr<3>(float(x), float(y), float(z)), (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec3 scaledP = (p * state.scale);
   [[maybe_unused]] double w = (static_cast<double>((static_cast<double>(state.time) * static_cast<double>(state.speed))) * static_cast<double>(W_PERIOD));
   [[maybe_unused]] glsl::Vec4 p4d = glsl::Vec4(scaledP, w);
   [[maybe_unused]] double noiseVal = fbm4D(state, context, p4d);
-  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(0.01)) / static_cast<double>(state.scale));
+  [[maybe_unused]] double eps = glsl::metal_divide(static_cast<double>(static_cast<float>(0.01)), static_cast<double>(state.scale));
   [[maybe_unused]] double nx = fbm4D(state, context, glsl::Vec4((scaledP + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))), w));
   [[maybe_unused]] double ny = fbm4D(state, context, glsl::Vec4((scaledP + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))), w));
   [[maybe_unused]] double nz = fbm4D(state, context, glsl::Vec4((scaledP + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)), w));
-  [[maybe_unused]] glsl::Vec3 gradient = (glsl::FloatExpr<3>((static_cast<double>(nx) - static_cast<double>(noiseVal)), (static_cast<double>(ny) - static_cast<double>(noiseVal)), (static_cast<double>(nz) - static_cast<double>(noiseVal))) / eps);
+  [[maybe_unused]] glsl::Vec3 gradient = glsl::metal_divide(glsl::FloatExpr<3>((static_cast<double>(nx) - static_cast<double>(noiseVal)), (static_cast<double>(ny) - static_cast<double>(noiseVal)), (static_cast<double>(nz) - static_cast<double>(noiseVal))), eps);
   [[maybe_unused]] glsl::Vec3 normal = glsl::normalize(((-gradient) + glsl::FloatExpr<3>(static_cast<float>(1e-6))));
   if (state.COLOR_MODE == std::int32_t(0)) {
     fragColor = glsl::Vec4(glsl::FloatExpr<4>(noiseVal, noiseVal, noiseVal, static_cast<float>(1.0)));
@@ -42852,7 +42865,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -42875,10 +42888,10 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  p = glsl::Vec3((p + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(0.1)))));
+  p = glsl::Vec3((p + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(0.1))))));
   p = glsl::Vec3(glsl::fract((p * glsl::FloatExpr<3>(static_cast<float>(0.1031), static_cast<float>(0.1030), static_cast<float>(0.0973)))));
-  p = glsl::Vec3((p + glsl::dot(p, (glsl::swizzle<1, 0, 2>(p) + static_cast<float>(33.33)))));
-  return glsl::fract((static_cast<double>((static_cast<double>(glsl::swizzle<0>(p)) + static_cast<double>(glsl::swizzle<1>(p)))) * static_cast<double>(glsl::swizzle<2>(p))));
+  [[maybe_unused]] const double cpuHashDot = static_cast<double>(glsl::dot(p, (glsl::swizzle<1, 0, 2>(p) + static_cast<float>(33.33))));
+  return glsl::fract(static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(static_cast<double>(noisemaker::f32(static_cast<double>(p[0]) + static_cast<double>(p[1]))) + static_cast<double>(noisemaker::f32(cpuHashDot + cpuHashDot)))) * static_cast<double>(noisemaker::f32(static_cast<double>(p[2]) + cpuHashDot)))));
 }
 
 [[nodiscard]] glsl::Vec2 laplacian3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept {
@@ -42950,7 +42963,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double r1 = (static_cast<double>((static_cast<double>(state.rate1) * static_cast<double>(static_cast<float>(0.01)))) / static_cast<double>(static_cast<float>(6.0)));
   [[maybe_unused]] double r2 = (static_cast<double>((static_cast<double>(state.rate2) * static_cast<double>(static_cast<float>(0.01)))) / static_cast<double>(static_cast<float>(6.0)));
   [[maybe_unused]] double iterF = glsl::component_max(static_cast<float>(1.0), float(state.iterations));
-  [[maybe_unused]] double s = (static_cast<double>((static_cast<double>(state.speed) * static_cast<double>(static_cast<float>(0.01)))) / static_cast<double>(iterF));
+  [[maybe_unused]] double s = glsl::metal_divide(static_cast<double>((static_cast<double>(state.speed) * static_cast<double>(static_cast<float>(0.01)))), static_cast<double>(iterF));
   [[maybe_unused]] double newA = (static_cast<double>(a) + static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(r1) * static_cast<double>(glsl::swizzle<1>(lap)))) - static_cast<double>((static_cast<double>((static_cast<double>(a) * static_cast<double>(b))) * static_cast<double>(b))))) + static_cast<double>((static_cast<double>(f) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(a))))))) * static_cast<double>(s))));
   [[maybe_unused]] double newB = (static_cast<double>(b) + static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(r2) * static_cast<double>(glsl::swizzle<0>(lap)))) + static_cast<double>((static_cast<double>((static_cast<double>(a) * static_cast<double>(b))) * static_cast<double>(b))))) - static_cast<double>((static_cast<double>((static_cast<double>(k) + static_cast<double>(f))) * static_cast<double>(b))))) * static_cast<double>(s))));
   if (state.weight > static_cast<float>(0.0)) {
@@ -42996,7 +43009,7 @@ struct State final : KernelState {
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  const Rgba sample = sample_texture_bottom_left(surface, uv[0], uv[1]);
   return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
 }
 [[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
@@ -43171,15 +43184,15 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] std::int32_t yAtlas = glsl::detail::glsl_int_cast(glsl::swizzle<1>(context.frag_coord));
   [[maybe_unused]] std::int32_t y = glsl::integer_mod(yAtlas, volSize);
   [[maybe_unused]] std::int32_t z = (yAtlas / volSize);
-  [[maybe_unused]] glsl::Vec3 p = (glsl::FloatExpr<3>(float(x), float(y), float(z)) / (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0))));
+  [[maybe_unused]] glsl::Vec3 p = glsl::metal_divide(glsl::FloatExpr<3>(float(x), float(y), float(z)), (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0))));
   [[maybe_unused]] double lf1 = map(state, context, state.loopAScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(1.0));
   [[maybe_unused]] double lf2 = map(state, context, state.loopBScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(1.0));
   [[maybe_unused]] double d = computeValue(state, context, p, lf1, lf2);
-  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(volSizeF));
+  [[maybe_unused]] double eps = glsl::metal_divide(static_cast<double>(static_cast<float>(1.0)), static_cast<double>(volSizeF));
   [[maybe_unused]] double dx = computeValue(state, context, (p + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))), lf1, lf2);
   [[maybe_unused]] double dy = computeValue(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))), lf1, lf2);
   [[maybe_unused]] double dz = computeValue(state, context, (p + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)), lf1, lf2);
-  [[maybe_unused]] glsl::Vec3 gradient = (glsl::FloatExpr<3>((static_cast<double>(dx) - static_cast<double>(d)), (static_cast<double>(dy) - static_cast<double>(d)), (static_cast<double>(dz) - static_cast<double>(d))) / eps);
+  [[maybe_unused]] glsl::Vec3 gradient = glsl::metal_divide(glsl::FloatExpr<3>((static_cast<double>(dx) - static_cast<double>(d)), (static_cast<double>(dy) - static_cast<double>(d)), (static_cast<double>(dz) - static_cast<double>(d))), eps);
   [[maybe_unused]] glsl::Vec3 normal = glsl::normalize(((-gradient) + glsl::FloatExpr<3>(static_cast<float>(1e-6))));
   fragColor = glsl::Vec4(glsl::FloatExpr<4>(d, d, d, static_cast<float>(1.0)));
   geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), d));
@@ -43238,7 +43251,7 @@ constexpr std::array<KernelFactory, 278> kCatalog{{
     {"filter/convolutionFeedback:cfSharpen", &bind_filter_convolutionFeedback_cfSharpen},
     {"filter/corrupt:corrupt", &bind_filter_corrupt_corrupt},
     {"filter/craquelure:craquelure", &bind_filter_craquelure_craquelure},
-    {"filter/crt:crt", &bind_filter_crt_crt},
+    {"filter/crt:crt", &noisemaker::effects::bind_crt},
     {"filter/degauss:degauss", &bind_filter_degauss_degauss},
     {"filter/deriv:deriv", &bind_filter_deriv_deriv},
     {"filter/directionalBlur:directionalBlur", &bind_filter_directionalBlur_directionalBlur},
@@ -43519,7 +43532,7 @@ constexpr std::array<FactoryRoute, 286> kCanonicalRoutes{{
     {"filter/convolutionFeedback:cfSharpen", "bind_filter_convolutionFeedback_cfSharpen", "bind_filter_convolutionFeedback_cfSharpen", "typed_emitter", "97d8e84b9ae47100cc2ea384a953e719675c61aee274c6739f1eb9f32caf0baa", "0fc9f853eb80087038f9e677e8d1dc5b7b0e2b1f6dca2992badafb2293f28f81", "none", "", "47c1c4aefd03aa05e75c03de659c6fde804bebc8cc1ece68755ecdd96e24f067", "36236134b304d1122367b04b0acc75668a1f9703726d31d63d7dab3d1fa039e3", "625f8df7213a27a6fc0ce5eca2ff16db2f308589552a52e184b2a8c3b6d93635", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_convolutionFeedback_cfSharpen},
     {"filter/corrupt:corrupt", "bind_filter_corrupt_corrupt", "bind_filter_corrupt_corrupt", "typed_emitter", "b81642d2e63294f9f51656eb2441cdaf479c495c5e4acb0d3a4907a13b070d02", "8d36a9aa9e47ec91370ee7defa9215740fc2a47450f97f7eb6cbd42bd584c781", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ab6cc8ab176f004df8a4c2e180631a2528e6778a42f7a202d29a1022de4c5038", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_corrupt_corrupt},
     {"filter/craquelure:craquelure", "bind_filter_craquelure_craquelure", "bind_filter_craquelure_craquelure", "typed_emitter", "a21be5c20bec6d75d648c0a2debcc69843193e676f5195efff7b643bb0cc9e2b", "7fc3ff4fa7b1adbaaa5221daace8d0da612abba607598dce210e36cfee8ed7c0", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "941daeb22ac7b52021d4304b63c830f15d4f5ba5b331775a08bc88c7446e99fb", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_craquelure_craquelure},
-    {"filter/crt:crt", "bind_filter_crt_crt", "bind_filter_crt_crt", "typed_emitter", "dfbba2918a68889c5b82ef619bf472387acec116b4d72bf76d62f35a60c9aa7f", "7012188e08a1a4bde10defbd0aadcbe8b96ce67ec3b61cc83814c035947cf41d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "834cc92ceb686c4f329ea155c30f4435e0debf6b5709ca08c42f9d8afb5d6d39", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_crt_crt},
+    {"filter/crt:crt", "noisemaker::effects::bind_crt", "bind_filter_crt_crt", "custom_adapter", "dfbba2918a68889c5b82ef619bf472387acec116b4d72bf76d62f35a60c9aa7f", "7012188e08a1a4bde10defbd0aadcbe8b96ce67ec3b61cc83814c035947cf41d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "834cc92ceb686c4f329ea155c30f4435e0debf6b5709ca08c42f9d8afb5d6d39", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &noisemaker::effects::bind_crt},
     {"filter/degauss:degauss", "bind_filter_degauss_degauss", "bind_filter_degauss_degauss", "typed_emitter", "cfefff702ef78db421c088a3b679da2c576b7f4484c777f1d414c66aef0c1a1a", "32c076a4fe52629870c61ed97631507b7f113d409f2b0162569ed99b79e754fb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "c972301ce240e2e8a7dc1a0d5947a718bf1e767a207ba9738d8488c841011ec5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_degauss_degauss},
     {"filter/deriv:deriv", "bind_filter_deriv_deriv", "bind_filter_deriv_deriv", "typed_emitter", "e1283736b0b1aeacf1bb795eda742871f0b6027bdf98659a3c7fa4a68d91f3ce", "e2f0e259531f5ef7eae5ac146ee0bb211a5e2d0827f74433926d0ef2e2b92c8c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8f808fd446a4f03c9d4b3abcabdbcce4f0f115db158be669958d6dfb5ee73012", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_deriv_deriv},
     {"filter/directionalBlur:directionalBlur", "bind_filter_directionalBlur_directionalBlur", "bind_filter_directionalBlur_directionalBlur", "typed_emitter", "1e4a9d6371683b75a1dbefa968e1536e0017e921fe02f80e600e8f1482e8691c", "08afd3e0114746da89f90ac3a4023221888d6ca7416f729a43e1ef861815c551", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "9b3c3b8a9347db63f41aec26961bbaa601e04296314a69012f45264c1f048290", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_directionalBlur_directionalBlur},
