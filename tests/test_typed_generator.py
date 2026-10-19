@@ -11655,7 +11655,7 @@ synth/subdivide:subdivide""".splitlines())
         # 7f47340 regenerates the current-authority captures and binds the
         # canonical full-resolution aspect in the Polygon, Pattern and Osc2D fixtures.
         self.assertEqual(
-            "6f55c3598964cf51f234ab63e34546b5112e297f3a5c8bb62cb6eb6d14667336",
+            "e5b47938314b25bde97b6328e9dc167902c1d40f3434dc067de398bd119502a8",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 

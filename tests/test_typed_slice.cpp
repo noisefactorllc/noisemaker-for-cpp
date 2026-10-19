@@ -1,7 +1,6 @@
 #include "test_harness.hpp"
 #include "fixtures/historical/authority_26d6f42_kernels.hpp"
 #include "fixtures/historical/retired_kernels.hpp"
-#include "fixtures/historical/reverb_kernel.hpp"
 
 #include <algorithm>
 #include <array>
@@ -2630,9 +2629,9 @@ void populate_task15_oracle_bindings(
     const Task15OracleCase& fixture, const std::array<noisemaker::Surface, 9>& surfaces) {
   noisemaker::glsl::Bindings bindings;
   populate_task15_oracle_bindings(bindings, fixture, surfaces);
-  const noisemaker::BoundKernel kernel = fixture.key == "filter/reverb:reverb"
-      ? noisemaker::historical_generated::bind_filter_reverb_reverb(bindings)
-      : noisemaker::generated::bind(fixture.key, bindings);
+  // Reverb renders through its current generated kernel like every other key;
+  // tests/test_reverb_kernel.py keeps the frozen historical reverb kernel's own check.
+  const noisemaker::BoundKernel kernel = noisemaker::generated::bind(fixture.key, bindings);
   noisemaker::Surface result(9U, 7U);
   auto output = result.data();
   for (std::size_t y = 0; y < 7U; ++y) for (std::size_t x = 0; x < 9U; ++x) {
