@@ -40,9 +40,9 @@ differs by a single byte. CI runs that check on pushes affecting source or valid
 
 ## Coverage
 
-This port is **incomplete**. Its pinned authority trails the authority's `main`, and against `main` some effects render different pixels (GAP-001).
+This port is **incomplete**. Its DSL compiler does not yet accept every language form that the pinned authority accepts (see the open work below).
 
-The pinned authority is `noisemaker-for-cpu` at `5b686a45b5c56329adf0c63cbcf572eb6f23fad1`, which pins the upstream Noisemaker shaders at `5976b7a6b77f69c47c41f4ee296a54d5318e1f9d` (v1.0.271). CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes, so a newer authority fails it until the port is synced to that authority.
+The pinned authority is `noisemaker-for-cpu` at `7f473400ac744025d46221bf527b43c1b5c1ef4e`, which pins the upstream Noisemaker shaders at `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d` (v1.0.294). CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes, so a newer authority fails it until the port is synced to that authority.
 
 | | Count | Derived from |
 |---|---:|---|
@@ -58,7 +58,7 @@ The kit claims an effect only when the parameter sweep verified it. An admitted 
 
 At the pinned authority, both CI sweep gates pass. The parameter sweep renders every effect the kit claims byte for byte, including the volume and loop effects. The define enumeration renders every value of every compile-define parameter byte for byte, and every define parameter changes the output. The open work is:
 
-- Sync the port to the authority's current `main` (GAP-001). Until then the `Authority drift` workflow fails.
+- DSL language: the pinned authority's compiler accepts subchain blocks, chain arguments, `midi()` and `audio()` values, `Math.PI`, triple-quoted strings, a `let` alias of an effect, `from()`, and the choice name of a float parameter (for example `palette(rotation: fwd)`). The C++ compiler rejects each of these forms. It matches the authority's compiler on 44 of the 45 fixtures in `tests/fixtures/dsl/compiler-cases.json` and differs on `catalog-value-call-not-osc`, a chain argument.
 - Debug evidence: the corpus lane and both sweeps run a Release build of the C++ driver only.
 - Render options and state: the sweeps render frame 0 at `renderScale` 1. Later frames and other render scales are not measured.
 
