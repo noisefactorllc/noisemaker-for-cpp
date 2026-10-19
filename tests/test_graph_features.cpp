@@ -1285,7 +1285,7 @@ TEST(graph_executor_repeats_animated_noise_for_each_flow_tick) {
 }
 
 TEST(graph_executor_preserves_double_cubemap_basis_uniforms) {
-  // CPU4307 retains the nine parameter values until the completed ray is
+  // CPU 7f47340 retains the nine parameter values until the completed ray is
   // stored as float32. Rounding the matrix first changes one rgba16f step.
   constexpr const char* source =
       "search synth3d, filter3d, render\n"
@@ -1296,18 +1296,18 @@ TEST(graph_executor_preserves_double_cubemap_basis_uniforms) {
       "0.8235589957020275, 0.4221211688745119, 0.8229414908629156, "
       "3.9163901307685807], bgColor: #b9fb5e9f, bgAlpha: 1).write(o0)\n"
       "render(o0)\n";
-  auto render_options = options(128U, 37U);
+  auto render_options = options(128U, 40U);
   render_options.time = 0.0;
   render_options.seed = 3897427244.0;
   Renderer renderer;
   const auto result = renderer.render(source, render_options);
   const auto data = result.surface().data();
-  REQUIRE(data[(18U * 128U + 27U) * 4U + 2U] == 1.9228515625F);
+  REQUIRE(data[(22U * 128U + 106U) * 4U + 0U] == 1.8583984375F);
   REQUIRE(detail::sha256(std::string_view(
               reinterpret_cast<const char*>(data.data()), data.size_bytes())) ==
-          "656a8253a14735d7fa7b6f71df2845261fdb33c3f3f2a63e56e15e81f213607b");
+          "913a4ea2e52a6b65d14e34e086cfbb0147403e784f901329be0adba74b54ff94");
   REQUIRE(rgba8_sha256(result) ==
-          "71858b577b21077619b27468b917f7b565ef9506221ca2444db74cceffeb5fa9");
+          "1f55ffcddc1fce4d4ab43d09da1f8e58730a19bf3aadd78331c3eaaa8b9b4410");
 }
 
 TEST(graph_executor_preserves_hatch_stroke_scale_float32_boundary) {
