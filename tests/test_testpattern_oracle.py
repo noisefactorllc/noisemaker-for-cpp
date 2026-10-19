@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.historical_cpu import current_cpu_root, current_run
 from tests.simulated_links import simulate_symlink
 import copy, hashlib, importlib.util, json, os, pathlib, re, shutil, tempfile
 
@@ -13,10 +13,10 @@ MATERIALIZER = ROOT / 'tools/glslcpp/generate_testpattern_native_oracle_include.
 ORACLE = PACKAGE / 'testPattern-oracles.json'
 INCLUDE = ROOT / 'tests/oracles/testPattern_expected.inc'
 COHERENCE = PACKAGE / 'testPattern-oracle-coherence.json'
-EXPECTED_COHERENCE_SHA256 = '4cb351964732fd9a95f223884f5e99b5e3d5b8decca1cd9998cba0f40900b1ff'
+EXPECTED_COHERENCE_SHA256 = '01adf802033390d96d784d8050db3618d4ba3f25e8332c93c751895f815e6720'
 
 def run_generator(*args, env=None):
-    return historical_run(['node', str(GENERATOR), *args], cwd=ROOT, env=env or os.environ.copy(), text=True, capture_output=True)
+    return current_run(['node', str(GENERATOR), *args], cwd=ROOT, env=env or os.environ.copy(), text=True, capture_output=True)
 
 def anchored_manifest_payload(payload):
     text=payload.decode('utf-8')
@@ -28,8 +28,8 @@ def sidecar(path):
     assert pathlib.Path(f'{path}.sha256').read_text() == f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n'
 
 def authority():
-    value = historical_cpu_root()
-    if not value or not pathlib.Path(value).is_dir(): pytest.skip('NOISEMAKER_HISTORICAL_CPU_ROOT unavailable')
+    value = current_cpu_root()
+    if not value or not pathlib.Path(value).is_dir(): pytest.skip('NOISEMAKER_CPU_ROOT unavailable')
     return pathlib.Path(value)
 
 def live():
@@ -63,7 +63,7 @@ def test_package_files_and_contract():
     assert doc['program_key']=='synth/testPattern:testPattern'
     assert doc['input_contract']=={'kind':'source-only','runtime_input_path':'none','lifetime_claimed':False,'immutability_claimed':False,'reason':'Test Pattern has no sampler or input texture path'}
     assert all('input' not in c and 'input_lifetime_stable' not in c and 'input_immutable_exact_bits' not in c for c in doc['render_cases'])
-    assert len(doc['authority']['import_closure'])==23
+    assert len(doc['authority']['import_closure'])==27
     assert len(doc['render_cases'])==9
     assert {c['pattern'] for c in doc['render_cases']} == set(range(7))
     assert len(doc['behavioral_mutation_ledger'])==9
@@ -75,7 +75,7 @@ def test_package_files_and_contract():
 def test_generator_and_materializer_smoke():
     auth=authority()
     result=run_generator('--check', '--cpu-root', str(auth)); assert result.returncode==0, result.stderr
-    result=historical_run(['python3', str(MATERIALIZER), '--self-test'], cwd=ROOT, text=True, capture_output=True)
+    result=current_run(['python3', str(MATERIALIZER), '--self-test'], cwd=ROOT, text=True, capture_output=True)
     assert result.returncode==0, result.stderr
     assert '9 cases, 9 behavioral mutations, 2 structural-only' in result.stdout
     assert 'coherence forgery probe verified' in result.stdout
@@ -200,7 +200,7 @@ def test_coherence_anchor_rejects_coordinated_manifest_forgery():
         for path in tracked[:3]: path.with_name(path.name+'.sha256').write_text(f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n')
         manifest=json.loads(originals[COHERENCE]); manifest['generator_sha256']=hashlib.sha256(GENERATOR.read_bytes()).hexdigest(); manifest['report_sha256']=hashlib.sha256(report.read_bytes()).hexdigest(); manifest['include_sha256']=hashlib.sha256(INCLUDE.read_bytes()).hexdigest()
         payload=(json.dumps(manifest,indent=2)+'\n').encode(); COHERENCE.write_bytes(payload); COHERENCE.with_name(COHERENCE.name+'.sha256').write_text(f'{hashlib.sha256(payload).hexdigest()}  {COHERENCE.name}\n')
-        materialized=historical_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
+        materialized=current_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
         assert materialized.returncode != 0 and 'content anchor' in materialized.stderr
         forged_env={**os.environ,'NOISEMAKER_FOR_CPU':str(live())}
         generated=run_generator('--check','--cpu-root',str(authority()),env=forged_env)
@@ -225,7 +225,7 @@ def test_coherence_rejects_coordinated_sidecar_forgery():
     original_materializer=MATERIALIZER.read_bytes(); materializer_side=MATERIALIZER.with_name(MATERIALIZER.name+'.sha256').read_bytes()
     try:
         GENERATOR.write_bytes(original_generator+b'\n// forged with matching sidecar\n'); GENERATOR.with_name(GENERATOR.name+'.sha256').write_text(f'{hashlib.sha256(GENERATOR.read_bytes()).hexdigest()}  {GENERATOR.name}\n')
-        result=historical_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
+        result=current_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
         assert result.returncode != 0
     finally:
         GENERATOR.write_bytes(original_generator); GENERATOR.with_name(GENERATOR.name+'.sha256').write_bytes(generator_side)
@@ -243,7 +243,7 @@ def test_coherence_rejects_coordinated_sidecar_forgery():
         report=PACKAGE/'testPattern-oracle-report.md'; original=report.read_bytes(); side=report.with_name(report.name+'.sha256').read_bytes()
         try:
             report.write_bytes(original+b'forged\n'); report.with_name(report.name+'.sha256').write_bytes(f'{hashlib.sha256(report.read_bytes()).hexdigest()}  {report.name}\n'.encode())
-            result=historical_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
+            result=current_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
             assert result.returncode != 0
         finally:
             report.write_bytes(original); report.with_name(report.name+'.sha256').write_bytes(side)
@@ -251,7 +251,7 @@ def test_coherence_rejects_coordinated_sidecar_forgery():
         original=INCLUDE.read_bytes(); side=INCLUDE.with_name(INCLUDE.name+'.sha256').read_bytes()
         try:
             INCLUDE.write_bytes(original.replace(b'kSchemaVersion=1u',b'kSchemaVersion=2u',1)); INCLUDE.with_name(INCLUDE.name+'.sha256').write_text(f'{hashlib.sha256(INCLUDE.read_bytes()).hexdigest()}  {INCLUDE.name}\n')
-            result=historical_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
+            result=current_run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
             assert result.returncode != 0
         finally:
             INCLUDE.write_bytes(original); INCLUDE.with_name(INCLUDE.name+'.sha256').write_bytes(side)
@@ -274,6 +274,6 @@ int main(){using namespace noisemaker_testpattern_oracle;
  assert(kControlGroup.repeat_float32&&kControlGroup.repeat_rgba8&&kControlGroup.distinct_data_objects&&kControlGroup.distinct_backing_buffers&&kControlGroup.public_direct_identity&&kControlGroup.canonical_own_key&&!kControlGroup.adapter_own_key); assert(!kClaimBoundaries.authority.empty()&&!kClaimBoundaries.runtime.empty()&&!kClaimBoundaries.input.empty()&&!kClaimBoundaries.structural_mutations.empty());
  auto eq=compare_exact(kCases[0],kCases[0]); assert(eq.equal&&eq.dimensions_ok&&eq.float_count_ok&&eq.rgba8_count_ok&&eq.mismatch==MismatchKind::None); auto dimensions=kCases[0]; dimensions.width++; auto dim=compare_exact(kCases[0],dimensions); assert(!dim.equal&&!dim.dimensions_ok&&dim.mismatch==MismatchKind::Dimensions); auto float_count=kCases[0]; float_count.output_float_words.pop_back(); auto fc=compare_exact(kCases[0],float_count); assert(!fc.equal&&!fc.float_count_ok&&fc.mismatch==MismatchKind::FloatCount); auto rgba_count=kCases[0]; rgba_count.output_rgba8.pop_back(); auto rc=compare_exact(kCases[0],rgba_count); assert(!rc.equal&&!rc.rgba8_count_ok&&rc.mismatch==MismatchKind::Rgba8Count); auto diff=kCases[0]; diff.output_float_words[0]^=1; auto bad=compare_exact(kCases[0],diff); assert(!bad.equal&&bad.first_mismatch==0&&bad.mismatch==MismatchKind::Float32); auto signed_zero=kCases[0]; signed_zero.output_float_words[0]=0x80000000u; assert(compare_exact(kCases[0],signed_zero).mismatch==MismatchKind::Float32); auto nan_payload=kCases[0]; nan_payload.output_float_words[0]=0x7fc00001u; assert(compare_exact(kCases[0],nan_payload).mismatch==MismatchKind::Float32); auto rgba=kCases[0]; rgba.output_rgba8[0]^=1; auto rgba_bad=compare_exact(kCases[0],rgba); assert(!rgba_bad.equal&&rgba_bad.first_mismatch==0&&rgba_bad.mismatch==MismatchKind::Rgba8);}
 ''')
-        result=historical_run([compiler,'-std=c++20','-I',str(ROOT),str(source),'-o',str(binary)],text=True,capture_output=True)
+        result=current_run([compiler,'-std=c++20','-I',str(ROOT),str(source),'-o',str(binary)],text=True,capture_output=True)
         assert result.returncode==0,result.stderr
-        assert historical_run([str(binary)]).returncode==0
+        assert current_run([str(binary)]).returncode==0

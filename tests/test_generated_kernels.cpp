@@ -25576,13 +25576,13 @@ void testpattern_native_integration_require_oracle_metadata() {
           "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(noisemaker_testpattern_oracle::kSourceRelativePath ==
           "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl");
-  REQUIRE(noisemaker_testpattern_oracle::kFactoryName == "canonicalFactory285");
+  REQUIRE(noisemaker_testpattern_oracle::kFactoryName == "canonicalFactory289");
   REQUIRE(noisemaker_testpattern_oracle::kFactoryRelativePath ==
           "src/effects/generated/canonical-kernels.js");
   REQUIRE(noisemaker_testpattern_oracle::kFactorySha256 ==
-          "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0");
+          "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc");
   REQUIRE(noisemaker_testpattern_oracle::kFactoryClosureSha256 ==
-          "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
+          "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423");
   REQUIRE(noisemaker_testpattern_oracle::kProgramKey ==
           "synth/testPattern:testPattern");
   REQUIRE(noisemaker_testpattern_oracle::kEffectKey == "synth/testPattern");

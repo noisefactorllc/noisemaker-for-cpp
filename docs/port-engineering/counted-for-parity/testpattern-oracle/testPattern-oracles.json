@@ -7,8 +7,8 @@
   "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "factory": {
-    "name": "canonicalFactory285",
-    "text_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+    "name": "canonicalFactory289",
+    "text_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
     "public_direct_identity": true,
     "canonical_own_key": true,
     "adapter_own_key": false
@@ -65,11 +65,23 @@
     "import_closure": [
       {
         "relative_path": "src/csl/glsl-kernel.js",
-        "sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"
+        "sha256": "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff"
       },
       {
         "relative_path": "src/csl/glsl-runtime.js",
-        "sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"
+        "sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
+      },
+      {
+        "relative_path": "src/csl/metal-division.js",
+        "sha256": "104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8"
+      },
+      {
+        "relative_path": "src/csl/metal-reciprocal-data.js",
+        "sha256": "08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87"
+      },
+      {
+        "relative_path": "src/csl/metal-reciprocal-grid.js",
+        "sha256": "bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39"
       },
       {
         "relative_path": "src/csl/runtime.js",
@@ -81,7 +93,7 @@
       },
       {
         "relative_path": "src/effects/adapters/crt.js",
-        "sha256": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"
+        "sha256": "c37f70e15b6481b2f870761bf103529cd45cf6e5e714a0a6fd731dbe90c1c73f"
       },
       {
         "relative_path": "src/effects/adapters/f32-color.js",
@@ -89,7 +101,7 @@
       },
       {
         "relative_path": "src/effects/adapters/fractal.js",
-        "sha256": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"
+        "sha256": "73bb60668d98a142edcd535c146527945af445baa694595da2a19fe0a649e804"
       },
       {
         "relative_path": "src/effects/adapters/index.js",
@@ -113,7 +125,7 @@
       },
       {
         "relative_path": "src/effects/adapters/snow.js",
-        "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+        "sha256": "9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c"
       },
       {
         "relative_path": "src/effects/catalog.js",
@@ -121,7 +133,7 @@
       },
       {
         "relative_path": "src/effects/definition.js",
-        "sha256": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"
+        "sha256": "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"
       },
       {
         "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -129,7 +141,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+        "sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -137,11 +149,15 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+        "sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"
       },
       {
         "relative_path": "src/effects/registry.js",
         "sha256": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"
+      },
+      {
+        "relative_path": "src/runtime/automation.js",
+        "sha256": "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"
       },
       {
         "relative_path": "src/runtime/pass-runner.js",
@@ -149,7 +165,7 @@
       },
       {
         "relative_path": "src/runtime/sampler.js",
-        "sha256": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"
+        "sha256": "5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5"
       },
       {
         "relative_path": "src/runtime/surface.js",
@@ -165,7 +181,7 @@
     },
     "factory": {
       "relative_path": "src/effects/generated/canonical-kernels.js",
-      "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+      "sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
     },
     "cpu_root": "<immutable-cpu-snapshot-root>"
   },
@@ -640,11 +656,11 @@
         "pattern": 3
       },
       "output_f32_words_le": [
-        "0x3ed55555",
+        "0x3ed55556",
         "0x3f200000",
         "0x00000000",
         "0x3f800000",
-        "0x3f155555",
+        "0x3f155556",
         "0x3f200000",
         "0x00000000",
         "0x3f800000",
@@ -652,11 +668,11 @@
         "0x3f200000",
         "0x00000000",
         "0x3f800000",
-        "0x3ed55555",
+        "0x3ed55556",
         "0x3ec00000",
         "0x00000000",
         "0x3f800000",
-        "0x3f155555",
+        "0x3f155556",
         "0x3ec00000",
         "0x00000000",
         "0x3f800000",
@@ -665,7 +681,7 @@
         "0x00000000",
         "0x3f800000"
       ],
-      "output_f32_sha256": "462ac905c1671ec6cbbf7ff9817d6e57d88e24793d73a96126b8514e4dec0420",
+      "output_f32_sha256": "38e40f14bd45525c7c644a4bca9c67af957868effaba16bcf95b12bf26e842c5",
       "output_rgba8_bytes": [
         106,
         159,
@@ -1326,8 +1342,8 @@
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "a1057fa61f01858f306ab6dcf5b834e3bdbb903a31c463e4dc6db8339ae2588f",
       "replacement_sha256": "9c466f62670dd6c0fb92c58f15b924e8110d9b87270a4ee283397ec853cb66ee",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "c62dea58fd9fd86621f7c39d1ca778a8a1b82be4c3615abb4a5bd9daef803341",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "fe237619b85d6f6d7279124dc8a669d8b3c1bb82cc2605e1848b201f1ebfac6d",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1427,8 +1443,8 @@
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "0a4914cc9b5eb2a2cafff43a74b98de946f5c5cde5760b633cd87b6949216659",
       "replacement_sha256": "10e0fa08a73f0cd151617165a96e7df8c8d14ecfc63d6f1f343559f16198939f",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "9120307f3cedceb0a64a97031fab4471db09ada64e1f484d18a8ca86dedea55c",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "1629cf5a9f0e1c33873edf13a623ad734afcd2a323f3b6fcbb48bd1c3e631617",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1528,8 +1544,8 @@
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "79cbacea2c8d1fe3cbedcc756b26b4d16578a7d7dce85a530574893136b4b8e9",
       "replacement_sha256": "97e03d7af108facfd831680b40a4f6fde2eb95e32ab88344dc6e30d358d046b3",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "03b3faf4729986f31cfb3bde1c43a22125ffa4974a4ecf8651e5df631643a7db",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "ca0eafba99f7c500721cc259329a4428986232a4ddfcba4d2a64386e18f69480",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1629,8 +1645,8 @@
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "14900d33a3cc3cfe6177563c778d4b6ddb92bbff17e97fe8e4c6707a2d8d8b58",
       "replacement_sha256": "17a205440af929e287fe4dc3861923ce3d4cdf41f3ae33fe3c4e0f5439767502",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "738c5794af773c9484a943f9688714db56e06990a4cf05046fd8c87321fbd65e",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "5efc2e338f3c740e6b606a6df141617c94b735abedb7429d2b3d1d88d3dfb65b",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1730,8 +1746,8 @@
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "72a76b4cb5a241f4a57b8d6453c3a3e4446239c591b8d3152a1ade23a0aa3b90",
       "replacement_sha256": "cffdb70ad4615a8c0e71f534034cf1e13b9675c44af508be64599eb365d40d4a",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "dc7e8445cf68c005a300ab898bc5df1af34f00193e5bcd093d85106ab5e0ce6e",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "724eafff2d5a52a362715fb8481dbb029e3ce310b4cda29f67f6fe8c2244fca6",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1826,13 +1842,13 @@
       "group": "gradient",
       "mechanism": "gradient axis",
       "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
-      "source_anchor": "globalCoord[0] / fullResolution[0]",
-      "replacement": "globalCoord[1] / fullResolution[1]",
+      "source_anchor": "$runtime.fdiv(globalCoord[0], fullResolution[0])",
+      "replacement": "$runtime.fdiv(globalCoord[1], fullResolution[1])",
       "anchor_occurrence_count": 1,
-      "source_anchor_sha256": "18df2315091eb491b49874a46ea3846f105c835076d6fcf30fb56e4974aed4ab",
-      "replacement_sha256": "1cac07e96cbeaa5712d57839373b476094154075749c1afafcdac92874b5bb37",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "865f75e0e2c399be1fdc9f326dfd2f7b3f535e570c8a6fe255ce9bf9427ba003",
+      "source_anchor_sha256": "131e7d1cf23067b20d3c3b60eb6bdd1cad12317c4ae2b05507ec7290550757a2",
+      "replacement_sha256": "a6181101caabf3cab2d38bf0844e36fecc725715f851d6f09b99c796e1eea9eb",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "744135b96bd64815447a939c29300d1efc5fb118ea2555e3657958bf8dd091ad",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1927,13 +1943,13 @@
       "group": "uv",
       "mechanism": "UV axis swap",
       "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
-      "source_anchor": "[globalCoord[0] / fullResolution[0], globalCoord[1] / fullResolution[1]]",
-      "replacement": "[globalCoord[1] / fullResolution[1], globalCoord[0] / fullResolution[0]]",
+      "source_anchor": "[$runtime.fdiv(globalCoord[0], fullResolution[0]), $runtime.fdiv(globalCoord[1], fullResolution[1])]",
+      "replacement": "[$runtime.fdiv(globalCoord[1], fullResolution[1]), $runtime.fdiv(globalCoord[0], fullResolution[0])]",
       "anchor_occurrence_count": 1,
-      "source_anchor_sha256": "648fe4b6a0bdbcd218fab7001f67a7f37524fbcf7b71875a5be0ba3967370bd3",
-      "replacement_sha256": "e1410da2b889b3b91d5b444ef4e428f03dcc14e3d3d7b13f04857f5c4635a71e",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "1054d2e6a9d5fb5acd68545d0617b78f5dbfedf6da4755f42eda80bc14c518d9",
+      "source_anchor_sha256": "bec88a6129c822edd8820f0a413a890e85b274e070b06820f1165d64962c9e3d",
+      "replacement_sha256": "5ed83039f7ffe92314e5e3a4c35d2041ca2777cad16d5a6e67cd75ef1eafe37e",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "ba1b329d27fdcb67875caecb6f5464493a7bdae66402c01f14fa52038e3956f0",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -2033,8 +2049,8 @@
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "65f8e0708d51cd479dc2481a3798d82b630985eddf1e266aba658ffe715affa3",
       "replacement_sha256": "d2cbad71ff333de67d07ec676e352ab7f38248eb69c942950157220607c55e84",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "22e1b7d8177d520d51f9362c44736465fee9321d6b04b42c7a2d2f45d8539e34",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "555274a556f9c78c1c1b9a30667f9fcef4b554fdb9fd337fc6d5d19bd1ea22f4",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -2134,8 +2150,8 @@
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "6afb33eda84032aca64633c46e349f73c357a56fc8d9ea1ed2af16af9ea6a181",
       "replacement_sha256": "00a3de96b5a7d4c27856b1c161ceaad18153433f8c03ef53bc6a385dcc685a18",
-      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
-      "mutated_factory_sha256": "7734b9f028bf00f216b383f8c550bfe5dda402c4f121d802140f1c4427aa096a",
+      "canonical_factory_sha256": "d2b8acafda2c589069197676e6f7792d8b61a0fc0f8b459df6c232d5d186e5dc",
+      "mutated_factory_sha256": "2416a3236db707a93236e3a19e7a6b7d9c3737a8a77710e65fd28635e0265697",
       "results": [
         {
           "case": "checker-hundreds-digit",
