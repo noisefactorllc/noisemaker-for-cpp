@@ -1,26 +1,26 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import {
-  canonicalAdapterFactories,
-  canonicalKernelFactories,
-  kernelFactories,
-} from '../../../../../noisemaker-for-cpu/src/effects/catalog.js'
-import { effectRecords, UPSTREAM_REVISION } from '../../../../../noisemaker-for-cpu/src/effects/generated/upstream-snapshot.js'
-import { createCanonicalBindings } from '../../../../../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { bindGlslKernel } from '../../../../../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-import { runPass } from '../../../../../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../../../../../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { effectRecords, UPSTREAM_REVISION } = await load('src/effects/generated/upstream-snapshot.js')
+const { createCanonicalBindings } = await load('src/csl/glsl-kernel.js')
+const { bindGlslKernel } = await load('src/csl/glsl-runtime.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-const platformRoot = path.resolve(here, '../../../../..')
-const cppRoot = path.join(platformRoot, 'noisemaker-for-cpp')
-const cpuRoot = path.join(platformRoot, 'noisemaker-for-cpu')
+const cppRoot = path.resolve(here, '../../../..')
 const outputPath = path.join(here, 'blur-parity-oracles.json')
 const reportPath = path.join(here, 'blur-parity-oracle-report.md')
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const corpusRevision = EXPECTED.upstreamRevision
 
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex')
@@ -136,15 +136,15 @@ function compareSurfaces(reference, candidate) {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  adapter_index: ['src/effects/adapters/index.js', '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936'],
-  glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+  adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
-  sampler: ['src/runtime/sampler.js', '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
+  sampler: ['src/runtime/sampler.js', '5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5'],
 }
 
 for (const [name, [relativePath, expectedHash]] of Object.entries(provenanceFiles)) {
@@ -165,9 +165,9 @@ const programs = [
     sourceFile: 'blurH.glsl',
     sourceBytes: 1120,
     sourceSha256: 'c4283e820b2ade9148358ad4582d350bc7f4a5ccb5fc60f2e1b76bcda58deecc',
-    factoryName: 'canonicalFactory24',
-    factoryBytes: 2056,
-    factorySha256: 'a735ebfa7bbdfd8da062c52f46dd2c3143be5526dfb2be805581437d21134d99',
+    factoryName: 'canonicalFactory23',
+    factoryBytes: 2124,
+    factorySha256: '0146923de3ee8c49a1634c5e9f83f05d08c0de21951b5cbf5ca1ddbad5f3f405',
     axisOffsetAnchor: 'var offset = new $runtime.PooledFloat32Array([(i) * texelSize[0], 0]);',
     axisOffsetMutation: 'var offset = new $runtime.PooledFloat32Array([0, (i) * texelSize[1]]);',
     cases: [
@@ -188,9 +188,9 @@ const programs = [
     sourceFile: 'blurV.glsl',
     sourceBytes: 1118,
     sourceSha256: 'cc33343032b34e1ede6eed15fbdcb9229ad64484a092b2914065b09fa957fb9b',
-    factoryName: 'canonicalFactory25',
-    factoryBytes: 2056,
-    factorySha256: '439400fdbb3496fb6399769f5652ab7eb57f71a8e3d770bbdd111c8d2220f796',
+    factoryName: 'canonicalFactory24',
+    factoryBytes: 2124,
+    factorySha256: '4f7da5e9d1c919b362fdc112e61733eca2b50d10ab7a423f94372d7f34347da5',
     axisOffsetAnchor: 'var offset = new $runtime.PooledFloat32Array([0, (i) * texelSize[1]]);',
     axisOffsetMutation: 'var offset = new $runtime.PooledFloat32Array([(i) * texelSize[0], 0]);',
     cases: [
