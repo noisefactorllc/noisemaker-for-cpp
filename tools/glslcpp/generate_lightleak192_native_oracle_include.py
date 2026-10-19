@@ -44,13 +44,13 @@ EXPECTED_CLOSURE = [
     ("src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"),
     ("src/effects/adapters/snow.js", "9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c"),
     ("src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
-    ("src/effects/definition.js", "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"),
+    ("src/effects/definition.js", "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"),
     ("src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"),
     ("src/effects/generated/canonical-kernels.js", "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"),
     ("src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"),
     ("src/effects/generated/upstream-snapshot.js", "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"),
     ("src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"),
-    ("src/runtime/automation.js", "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"),
+    ("src/runtime/automation.js", "7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f"),
     ("src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
     ("src/runtime/sampler.js", "5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5"),
     ("src/runtime/surface.js", "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"),
@@ -478,7 +478,7 @@ def load(oracle_path: pathlib.Path = ORACLE, verify_assets: bool = True) -> tupl
         raise RuntimeError("LightLeak frozen document schema/program mismatch")
     provenance = oracle["provenance"]
     provenance_keys = {"authority_commit", "authority_checkout_clean", "node_version", "factory", "source", "import_closure", "binding_abi", "canonical_public_identity", "adapter_override_absent", "point_count"}
-    if set(provenance) != provenance_keys or (provenance["authority_commit"], provenance["authority_checkout_clean"], provenance["node_version"], provenance["point_count"]) != ("7f473400ac744025d46221bf527b43c1b5c1ef4e", True, "v26.0.0", 6):
+    if set(provenance) != provenance_keys or (provenance["authority_commit"], provenance["authority_checkout_clean"], provenance["node_version"], provenance["point_count"]) != ("36e875283678b9b666fa332639953abfabf711ef", True, "v26.0.0", 6):
         raise RuntimeError("LightLeak authority provenance mismatch")
     if provenance["factory"] != {"name": "canonicalFactory74", "bytes": 7846, "sha256": "a30e8a1c27c9c2774e6d38d649cc695ac35c9db7ecde043980fd20e71d45cbf2"} or provenance["source"] != {"relative_path_from_noisemaker_for_cpp": f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/lightLeak/lightLeak.glsl", "bytes": 5047, "sha256": "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb"}:
         raise RuntimeError("LightLeak factory/source provenance mismatch")
@@ -688,7 +688,7 @@ def self_test_forged_documents() -> None:
             raise RuntimeError(f"forged-document self-test accepted {label}")
         duplicate_lines = {
             "duplicate-top-schema": f'  "schema": "{SCHEMA}",\n',
-            "duplicate-provenance": '    "authority_commit": "7f473400ac744025d46221bf527b43c1b5c1ef4e",\n',
+            "duplicate-provenance": '    "authority_commit": "36e875283678b9b666fa332639953abfabf711ef",\n',
             "duplicate-fixture": '    "source_function": "inputSurface",\n',
             "duplicate-case-dimension": '      "width": 1,\n',
             "duplicate-control": '        "alpha": 0,\n',

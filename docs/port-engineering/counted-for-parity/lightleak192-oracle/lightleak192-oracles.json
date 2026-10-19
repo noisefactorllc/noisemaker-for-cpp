@@ -23,7 +23,7 @@
     ]
   },
   "provenance": {
-    "authority_commit": "7f473400ac744025d46221bf527b43c1b5c1ef4e",
+    "authority_commit": "36e875283678b9b666fa332639953abfabf711ef",
     "authority_checkout_clean": true,
     "node_version": "v26.0.0",
     "factory": {
@@ -107,7 +107,7 @@
       },
       {
         "relative_path": "src/effects/definition.js",
-        "sha256": "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"
+        "sha256": "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"
       },
       {
         "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -131,7 +131,7 @@
       },
       {
         "relative_path": "src/runtime/automation.js",
-        "sha256": "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"
+        "sha256": "7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f"
       },
       {
         "relative_path": "src/runtime/pass-runner.js",
