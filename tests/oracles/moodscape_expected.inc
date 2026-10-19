@@ -8,7 +8,7 @@
 namespace noisemaker_moodscape_oracle {
 inline constexpr std::string_view kSchema = "noisemaker-for-cpp.moodscape.pixel-parity.v1";
 inline constexpr std::string_view kProgramKey = "classicNoisedeck/moodscape:moodscape";
-inline constexpr std::string_view kOracleJsonSha256 = "466584c058df0c4410a9b55d71c2cdf4131d8fd2d811a258764079d0fbd75a7d";
+inline constexpr std::string_view kOracleJsonSha256 = "19d904b2ac62f7f0a4a67ad9e3e2c101c8aee7a76086ea15e0d0218480da1a12";
 inline constexpr std::string_view kFactorySha256 = "b5fe9e225f841e285dace48441ae3945b035b269e2a2e7e4d4938a3357d60fc6";
 inline constexpr std::string_view kSourceSha256 = "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44";
 inline constexpr std::uint32_t kSourceBytes = 19559U;
@@ -33,13 +33,13 @@ inline constexpr std::array<ImportClosureEntry, 27> kImportClosure = {
   ImportClosureEntry{"src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"},
   ImportClosureEntry{"src/effects/adapters/snow.js", "9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c"},
   ImportClosureEntry{"src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"},
-  ImportClosureEntry{"src/effects/definition.js", "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"},
+  ImportClosureEntry{"src/effects/definition.js", "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"},
   ImportClosureEntry{"src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"},
   ImportClosureEntry{"src/effects/generated/canonical-kernels.js", "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"},
   ImportClosureEntry{"src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"},
   ImportClosureEntry{"src/effects/generated/upstream-snapshot.js", "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"},
   ImportClosureEntry{"src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"},
-  ImportClosureEntry{"src/runtime/automation.js", "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"},
+  ImportClosureEntry{"src/runtime/automation.js", "7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f"},
   ImportClosureEntry{"src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"},
   ImportClosureEntry{"src/runtime/sampler.js", "5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5"},
   ImportClosureEntry{"src/runtime/surface.js", "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"},

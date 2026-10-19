@@ -29195,7 +29195,7 @@ void require_oracle_metadata() {
   REQUIRE(noisemaker_moodscape_oracle::kProgramKey ==
           "classicNoisedeck/moodscape:moodscape");
   REQUIRE(noisemaker_moodscape_oracle::kOracleJsonSha256 ==
-          "466584c058df0c4410a9b55d71c2cdf4131d8fd2d811a258764079d0fbd75a7d");
+          "19d904b2ac62f7f0a4a67ad9e3e2c101c8aee7a76086ea15e0d0218480da1a12");
   REQUIRE(noisemaker_moodscape_oracle::kFactorySha256 ==
           "b5fe9e225f841e285dace48441ae3945b035b269e2a2e7e4d4938a3357d60fc6");
   REQUIRE(noisemaker_moodscape_oracle::kSourceSha256 ==
