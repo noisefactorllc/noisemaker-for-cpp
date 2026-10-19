@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -320,6 +321,14 @@ constexpr std::array<std::pair<std::string_view, int>, 8> kOscKinds{{
 constexpr std::array<std::string_view, 6> kOscParamOrder{"type", "min", "max", "speed", "offset", "seed"};
 constexpr int kMaxAutomationDepth = 8;
 
+bool unsupported_input_name(std::string_view name) { return name == "midi" || name == "audio"; }
+
+PlanValue ignore_input(const Call& call) {
+  std::cerr << "Warning: " << call.name << "() is unsupported in CPU ports; real-time input is unavailable. Ignoring this unsupported input value.\n";
+  // DSL values have no null literal; this marker never enters the render plan.
+  return PlanValue::null();
+}
+
 // The authority's compileOscillator: positional arguments fill
 // type/min/max/speed/offset/seed in order (extras are ignored), named ones
 // select by name, every field takes the upstream default, min/max clamp into
@@ -373,6 +382,7 @@ PlanValue compile_oscillator(const Call& call, const std::map<std::string, Inter
   const auto number_field = [&](std::size_t index, std::string_view name, double fallback, bool clamp) {
     if (fields[index] == nullptr) return PlanValue::number_value(fallback);
     const PlanValue value = evaluate(*fields[index], bindings, depth + 1);
+    if (value.kind == PlanValue::Kind::null_value) return PlanValue::number_value(fallback);
     if (value.kind == PlanValue::Kind::oscillator) return value;
     if (value.kind == PlanValue::Kind::boolean) return PlanValue::number_value(value.boolean ? 1.0 : 0.0);
     if (value.kind != PlanValue::Kind::number || !std::isfinite(value.number)) {
@@ -411,6 +421,7 @@ PlanValue evaluate(const Value& value, const std::map<std::string, InternalBindi
       return PlanValue::array_value(std::move(values));
     }
     case Value::Kind::call: {
+      if (unsupported_input_name(value.call().name)) return ignore_input(value.call());
       if (value.call().name == "osc") return compile_oscillator(value.call(), bindings, osc_depth);
       value_error("Unsupported DSL value Call \"" + value.call().name + "\"", value.loc);
     }
@@ -534,6 +545,8 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
     if (std::holds_alternative<Call>(binding.value) && std::get<Call>(binding.value).name == "osc") {
       // `let name = osc(...)` binds an automation value, not an effect partial.
       bindings.emplace(binding.name, compile_oscillator(std::get<Call>(binding.value), bindings, 0));
+    } else if (std::holds_alternative<Call>(binding.value) && unsupported_input_name(std::get<Call>(binding.value).name)) {
+      bindings.emplace(binding.name, ignore_input(std::get<Call>(binding.value)));
     } else if (std::holds_alternative<Call>(binding.value)) {
       const auto& call = std::get<Call>(binding.value);
       bindings.emplace(binding.name, Partial{resolve_call(call, bindings)});
@@ -636,7 +649,13 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
       }
 
       std::vector<effects::ParameterArgument> args;
-      for (const auto& argument : call.args) args.push_back({argument.name, argument.value});
+      for (std::size_t argument_index = 0; argument_index < call.args.size(); ++argument_index) {
+        const auto& argument = call.args[argument_index];
+        const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
+        const bool known = std::any_of(definition->parameters.begin(), definition->parameters.end(), [&](const auto& parameter) { return parameter.name == supplied; });
+        if (argument.value.kind == PlanValue::Kind::null_value && known) continue;
+        args.push_back({supplied, argument.value});
+      }
       effects::NormalizedArguments normalized;
       try { normalized = registry.normalize(*definition, args); }
       catch (const std::exception& error) { throw DslError(error.what(), call.loc); }
@@ -660,7 +679,7 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
       for (std::size_t argument_index = 0; argument_index < call.args.size(); ++argument_index) {
         const auto& argument = call.args[argument_index];
         const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
-        step.explicit_params.push_back(supplied);
+        if (argument.value.kind != PlanValue::Kind::null_value) step.explicit_params.push_back(supplied);
       }
       step.loc = call.loc;
       for (std::size_t pass_index = 0; pass_index < definition->passes.size(); ++pass_index) {

@@ -127,7 +127,7 @@ class Parser {
       do {
         const bool named = peek().type == TokenType::identifier && peek(1).lexeme == ":";
         const auto next_mode = named ? Call::ArgumentMode::named : Call::ArgumentMode::positional;
-        if (mode.has_value() && *mode != next_mode) {
+        if (mode.has_value() && *mode != next_mode && name.lexeme != "midi" && name.lexeme != "audio") {
           throw DslError("Cannot mix positional and named arguments", location(peek()));
         }
         mode = next_mode;
@@ -204,11 +204,8 @@ class Parser {
       return value;
     }
     if (token.type == TokenType::identifier) {
-      // `osc(...)` is the one value-position call the DSL supports (oscillator
-      // automation); it parses as a regular call and the compiler turns it into
-      // an oscillator value. Any other call in a value position stays a parse
-      // error at the dangling '('.
-      if (token.lexeme == "osc" && peek(1).lexeme == "(") {
+      // MIDI/audio calls are parsed only for unsupported-input warnings.
+      if ((token.lexeme == "osc" || token.lexeme == "midi" || token.lexeme == "audio") && peek(1).lexeme == "(") {
         const SourceLocation loc = location(token);
         return Value::call_value(call(), loc);
       }

@@ -101,6 +101,26 @@ TEST(dsl_compiler_merges_named_partials_in_stable_key_order) {
   REQUIRE(step.params[1].value.number == 7.0);
 }
 
+TEST(dsl_compiler_omits_unsupported_inputs_without_shifting_positional_arguments) {
+  auto source = effect("source");
+  for (const auto& name : {"first", "second"}) {
+    noisemaker::effects::ParameterDefinition parameter;
+    parameter.name = name;
+    parameter.type = "float";
+    parameter.default_value = noisemaker::effects::Value::number_value(3.0);
+    source.parameters.push_back(parameter);
+  }
+  noisemaker::effects::EffectRegistry registry({source});
+  for (const auto& arguments : {"midi(channel: 1), 7", "audio(band: low), 7", "first: midi(1, min: 0.8), second: 7"}) {
+    const auto plan = noisemaker::dsl::compile(std::string("search fixture\nsource(") + arguments + ").write(o0)\n", registry);
+    const auto& step = std::get<noisemaker::graph::EffectStep>(plan.chains[0].steps[0]);
+    REQUIRE(step.params[0].value.number == 3.0);
+    REQUIRE(step.params[1].value.number == 7.0);
+    REQUIRE(step.explicit_params.size() == 1);
+    REQUIRE(step.explicit_params[0] == "second");
+  }
+}
+
 TEST(dsl_compiler_preserves_scatter_and_rejects_an_unknown_program) {
   noisemaker::effects::EffectRegistry registry(noisemaker::effects::effect_catalog());
   const auto scatter = noisemaker::dsl::compile(

@@ -104,5 +104,34 @@ class OscAutomationParityTest(unittest.TestCase):
             self.assertEqual(detail, metadata["detail"])
 
 
+class UnsupportedRealtimeInputTest(unittest.TestCase):
+    def test_unsupported_realtime_input_warns_and_uses_defaults(self) -> None:
+        driver = resolve_driver("NOISEMAKER_DSL_CPU_CASE", "noisemaker-dsl-cpu-case")
+        with tempfile.TemporaryDirectory(prefix="noisemaker-unsupported-input-") as temporary:
+            scratch = pathlib.Path(temporary)
+            def render(source):
+                source_path = scratch / "case.dsl"
+                source_path.write_text(source, encoding="utf-8")
+                return subprocess.run([str(driver), *record_flags(_record(source, 0.25), source_path),
+                    "--rgba8-output", str(scratch / "cpp.rgba8"),
+                    "--metadata-output", str(scratch / "cpp.json"),
+                    "--float32-output", str(scratch / "cpp.f32")],
+                    capture_output=True, text=True, timeout=20)
+            for call in ("midi(channel: 1, min: 0.8)", "audio(band: audioBand.low, min: 0.8)"):
+                for binding in (False, True):
+                    with self.subTest(call=call, binding=binding):
+                        prefix = f"let input = {call}\n" if binding else ""
+                        value = "input" if binding else call
+                        source = f"search synth\n{prefix}noise(seed: 1, scaleX: {value}).write(o0)\nrender(o0)\n"
+                        cpp = render(source)
+                        self.assertEqual(0, cpp.returncode, cpp.stdout + cpp.stderr)
+                        self.assertIn("is unsupported in CPU ports; real-time input is unavailable", cpp.stderr)
+                        ignored = (scratch / "cpp.rgba8").read_bytes()
+                        baseline = render("search synth\nnoise(seed: 1).write(o0)\nrender(o0)\n")
+                        self.assertEqual(0, baseline.returncode, baseline.stdout + baseline.stderr)
+                        self.assertEqual("", baseline.stderr)
+                        self.assertEqual(ignored, (scratch / "cpp.rgba8").read_bytes())
+
+
 if __name__ == "__main__":
     unittest.main()
