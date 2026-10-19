@@ -1,22 +1,22 @@
 {
   "schema": "noisemaker-for-cpp.task23-source-global-literal-int.public-canonical-oracles.v1",
-  "corpus_revision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
-  "cpu_revision": "9f3bd6ad1dce5b42420aa1424e69458bdfaf7cb8",
+  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "cpu_revision": "7f473400ac744025d46221bf527b43c1b5c1ef4e",
   "authority": {
-    "ledgerEntries": 784,
+    "ledgerEntries": 891,
     "packageSha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
     "packageLockSha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
-    "sourceLockSha256": "ac6b377c57074ce4c032a9f51a789f49122fad5ecdc224e2df85e625ced4d9ae",
-    "behavioralLockSha256": "05e364dd135dddda7ff4205d2eb83521073b5bcde022295971441e81b3e2de44",
-    "behavioralFileCount": 95,
-    "upstreamRevision": "a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15",
-    "upstreamSourceDigest": "fd2de54727edd1ef93b033cb118a62207a821dd4ee3d37e74620f6b32994f566"
+    "sourceLockSha256": "594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c",
+    "behavioralLockSha256": "6716656e0d81e23960dffc626d56f7f558abdd0bd4c53fd4eb555f7fa63dd608",
+    "behavioralFileCount": 98,
+    "upstreamRevision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+    "upstreamSourceDigest": "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf"
   },
   "provenance": {
-    "node": "v26.0.0",
+    "node": "v26.9.0",
     "api": "public kernelFactories identity with canonicalKernelFactories + bindCanonicalKernel + runPass + Surface",
     "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
-    "canonical_kernels_sha256": "80b2e701426a5003d9ef44dce09de1f601f4c8cd1e4bff1f0c4d2b607e95e91c",
+    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
     "reference_only": "all expected output comes from each pinned public factory after proving it is the identical canonical function object and has no adapter entry"
   },
   "contract": {
@@ -41,7 +41,7 @@
       "normalized_source_sha256": "1d20c3bccadf30a1f6c3c6f8903ed805287933fcc1257d3ae6d4b98c5d0b9f81",
       "defines": {},
       "canonical_factory_name": "canonicalFactory22",
-      "canonical_factory_to_string_sha256": "62e3851da92111ab9a6f6503eb392dc2eb781204f9b42c2dce69f33942600010",
+      "canonical_factory_to_string_sha256": "8c1844ae47d265779080ca6aad348c08e85a24fd4e37f054fee51f9094ebdd6a",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "pre_function_tuple_sha256": "a000425b8ae57882a6877bf2c390f3d1fb3ce226d0181f0fa76d8851d7a79163",
@@ -87,7 +87,7 @@
       "normalized_source_sha256": "587b19df3989bf8bb649a86265f4210561077ccadcec30f0a92077510bcbf668",
       "defines": {},
       "canonical_factory_name": "canonicalFactory45",
-      "canonical_factory_to_string_sha256": "42cf0c8dc56160100db43df0c150e36be06c512198752057373be1846f0e58d9",
+      "canonical_factory_to_string_sha256": "8cb463d1f23388130bf7d18ab2d590491e3ea876702a4c7fc95be01113b30b61",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "pre_function_tuple_sha256": "8c0e81f16787bce2ab63a414b9774702ce3ceac9be71f7bad46c9bccde14ddfa",
@@ -131,7 +131,7 @@
       "normalized_source_sha256": "59b88206d89357582820fb6da5c4ee43c2a57ed9cbfba9676bb441fceb477f04",
       "defines": {},
       "canonical_factory_name": "canonicalFactory142",
-      "canonical_factory_to_string_sha256": "bdb59a43bb7baa3ce8448e1d71ca9bc904601fa269ef903c10fb8fb8aa9618ed",
+      "canonical_factory_to_string_sha256": "f09fa4949dfc943124c67adbb403e8582dadcc57b78fec9eb4d0cfdae8d86f6b",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "pre_function_tuple_sha256": "d99d37c65d0e13b943da42d43913c27e60e969c974729378ceb4f889ce01b3d4",
@@ -180,7 +180,7 @@
         "MODE": 0
       },
       "canonical_factory_name": "canonicalFactory152",
-      "canonical_factory_to_string_sha256": "b3447958e92d11fa674733bdc2e28a54a1124cb192a64a1b3db56795664d651f",
+      "canonical_factory_to_string_sha256": "08351699b72cf7a3ed2f29042746667d76df4e92e6197bbcd27c599a01f045e1",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "pre_function_tuple_sha256": "5e5e0bb5091f6d4221e5396f3ed5dc73854543281ef519fbaddb0fdcd5c3fbc9",
@@ -230,7 +230,7 @@
       "normalized_source_sha256": "1785f58af7b191e5a4f1a55223476d12372c97f87c062d34ecefe07550b05c93",
       "defines": {},
       "canonical_factory_name": "canonicalFactory167",
-      "canonical_factory_to_string_sha256": "803c4001be3529b427f39c9283da61b9c382678905daaef38c7835522480f335",
+      "canonical_factory_to_string_sha256": "6d9e02e3155594fe08d932a7f861623822582de79b8d9996d8fe7b3684be014b",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "pre_function_tuple_sha256": "9f2f11099585a38441157f4e4bb847808c4fd81df1c69cc79d1b651b0fe90374",
@@ -278,7 +278,7 @@
         "METHOD": 1
       },
       "canonical_factory_name": "canonicalFactory174",
-      "canonical_factory_to_string_sha256": "9945b073bcf0b65fb4986bd0b2ba846da739bc5df5648036dc1d5566cb3801bd",
+      "canonical_factory_to_string_sha256": "7b0ad7a01921dd3a362e4c97e1df550c220c478fe8c3cc6602657724b100feff",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "pre_function_tuple_sha256": "214d03b9c58da73392e8b05200035b6e81244dbec06705302a237da23081ef6d",
@@ -741,7 +741,7 @@
         ]
       },
       "output": {
-        "f32_sha256": "3a78a002b48288114cae835018bc89df13c80d4fae6631f5816d1670ebe11939",
+        "f32_sha256": "21e198cbfb980576224f5eeb5b4ed506449cddcedf13a3f97301138d7afdcc8c",
         "rgba8_sha256": "4954e6734cd197c8f205e0eb230daa676db0886e1e5ff5525e382884b7970ff6",
         "probes": [
           {
@@ -787,13 +787,13 @@
             ],
             "values": [
               0.5608736276626587,
-              0.5586382746696472,
+              0.558638334274292,
               0.5320754647254944,
               1
             ],
             "f32_bits_le": [
               "0x3f0f956a",
-              "0x3f0f02eb",
+              "0x3f0f02ec",
               "0x3f083619",
               "0x3f800000"
             ]
@@ -805,13 +805,13 @@
             ],
             "values": [
               0.5409992933273315,
-              0.30822598934173584,
+              0.30822595953941345,
               0.2739279568195343,
               1
             ],
             "f32_bits_le": [
               "0x3f0a7eee",
-              "0x3e9dcfcc",
+              "0x3e9dcfcb",
               "0x3e8c4049",
               "0x3f800000"
             ]
@@ -4055,7 +4055,7 @@
         ]
       },
       "output": {
-        "f32_sha256": "30a1cd6db1a99acad1d136a95026b5925234620d1585ffc55436d814d39b868d",
+        "f32_sha256": "09e4dff5032d1bcd290ae9dcc0d5454d56459e29c2338733125d2b78ea24cef4",
         "rgba8_sha256": "d4a73bf8d550e0af758813c2445e7a1b39fdb070a81a9990011315e5b6d3251f",
         "probes": [
           {
@@ -4826,7 +4826,7 @@
         ]
       },
       "output": {
-        "f32_sha256": "524d7f4ef225d9e3a5dcb586cb9743fa28d0c2e4b8cf9ad1528f66d4e6ba486c",
+        "f32_sha256": "96e82545e65fcacdaaee4fb5cd12000863c5dff821f6011092eae6e09f74d3d6",
         "rgba8_sha256": "55fd1cca149dd565901d7adbba336dc7ba215c65b1f2159c2b0a93823b569888",
         "probes": [
           {
@@ -5232,7 +5232,7 @@
             "different_f32_lanes": 0,
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
-            "mutated_f32_sha256": "3a78a002b48288114cae835018bc89df13c80d4fae6631f5816d1670ebe11939",
+            "mutated_f32_sha256": "21e198cbfb980576224f5eeb5b4ed506449cddcedf13a3f97301138d7afdcc8c",
             "mutated_rgba8_sha256": "4954e6734cd197c8f205e0eb230daa676db0886e1e5ff5525e382884b7970ff6"
           },
           {
@@ -5651,7 +5651,7 @@
             "different_f32_lanes": 348,
             "different_rgba8_bytes": 318,
             "max_absolute_f32_difference": 0.0970563292503357,
-            "mutated_f32_sha256": "d91f6cdf1888cb0b86330e526241bc70fdebad97f3da4d7162f273a84854d2a3",
+            "mutated_f32_sha256": "ea10e4743a22652e3d267e0f526b3dc9d4d69cd963858b4919b1d4797e5343a5",
             "mutated_rgba8_sha256": "12541afc2bf43976de33e151b79ebf065c7b9117b04c025326f505f8f11930c6"
           }
         ]
@@ -5820,7 +5820,7 @@
             "different_f32_lanes": 149,
             "different_rgba8_bytes": 147,
             "max_absolute_f32_difference": 0.3460126221179962,
-            "mutated_f32_sha256": "50753b2b5caf81c4161b866ec82f5f920e30338db978ace7751003081202b6cd",
+            "mutated_f32_sha256": "f236223da80316cfa34cc3a3e8ee5cfdc2226029abf871b3284d340710666252",
             "mutated_rgba8_sha256": "8f2ecef8ae8793d1534318a06c160e39907d1e58488c092dc2a60e85513ef1a8"
           },
           {

@@ -3099,7 +3099,7 @@ and item["program_key"] != "filter/wobble:wobble"
         frozen_sensitivity = json.dumps(
             sensitivity, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(
-            "9020e4420e0c0f082548a8f778d1c86e9ea4182b079c2e9212a6a86f73ebedd4",
+            "5f05fd377023df03e8e0904845ec4adec698dad52ba023e3999c33898f026598",
             hashlib.sha256(frozen_sensitivity).hexdigest())
 
         # name, key, owner, target, mutation kind, before shape/value,
@@ -3600,6 +3600,8 @@ and item["program_key"] != "filter/wobble:wobble"
                 str(REPOSITORY / "src/glsl_runtime.cpp"),
                 str(REPOSITORY / "src/kernel.cpp"),
                 str(REPOSITORY / "src/pass_runner.cpp"),
+                str(REPOSITORY / "src/metal_division.cpp"),
+                str(REPOSITORY / "src/metal_reciprocal_data.cpp"),
                 "-o", str(executable),
             ]
             compiled = subprocess.run(command, text=True, capture_output=True)

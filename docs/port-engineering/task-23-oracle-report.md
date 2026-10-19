@@ -22,7 +22,7 @@ Every public factory was runtime-proved identical to its pinned canonical factor
 | Key / case | Size | Output F32 SHA-256 | RGBA8 SHA-256 | Changed lanes |
 | --- | --- | --- | --- | ---: |
 | `filter/bloom:ntapGather` / bloom-one-tap-zero-radius | 11x7 | `d8bad1a2b5985a0aca4b2f38784960af56d3086b632c1102e0e44aa9dd700cc6` | `33dc54a5807ab8f07dfe1c28e07ae47810b6bb9d68e35f5495ed22cfdaeddf38` | 74 |
-| `filter/bloom:ntapGather` / bloom-seven-taps-tiled | 11x7 | `3a78a002b48288114cae835018bc89df13c80d4fae6631f5816d1670ebe11939` | `4954e6734cd197c8f205e0eb230daa676db0886e1e5ff5525e382884b7970ff6` | 305 |
+| `filter/bloom:ntapGather` / bloom-seven-taps-tiled | 11x7 | `21e198cbfb980576224f5eeb5b4ed506449cddcedf13a3f97301138d7afdcc8c` | `4954e6734cd197c8f205e0eb230daa676db0886e1e5ff5525e382884b7970ff6` | 305 |
 | `filter/bloom:ntapGather` / bloom-max-taps | 11x7 | `fca0a971b81cbf542f1083bcde6cc970b09f04f367888f4a7412ce327547d2e4` | `55bc0f334ac3b8313a5a01900769d309fdecf70b43636b91384d1e2470780e49` | 305 |
 | `filter/directionalBlur:directionalBlur` / directional-zero-distance | 11x7 | `e326961f52b1f78facce16e21f4a2c4d03ea712811be91f38404bb755ae0910a` | `447bfb78702aca0f4967c3f998e3a91688f3dd650b51a4e1d2fe0c8e6476d5e0` | 234 |
 | `filter/directionalBlur:directionalBlur` / directional-positive-angle | 11x7 | `9c653e16170894e23b1e58d77d63270e952bbd6b27982b0297b67d4f3b33bc54` | `27c5bfd69d6cb1377a3255322d8b07c36c082f64cb498c4c193be9ec9a438333` | 308 |
@@ -35,10 +35,10 @@ Every public factory was runtime-proved identical to its pinned canonical factor
 | `filter/strokes:stkSmear` / strokes-long-low-balance | 17x13 | `525ea125b28ef809a2ae14c5037c1572a564076ae56f728beb9d6c8a4ab22f43` | `d402486896fd76c8a5e83bc569836d08a6d2e30a51ed7497bfcd10edc77eb794` | 648 |
 | `filter/vaseline:upsample` / vaseline-alpha-zero-copy | 11x7 | `3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43` | `a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2` | 0 |
 | `filter/vaseline:upsample` / vaseline-mid-alpha-tiled | 11x7 | `50b1c88e9553fd64eb1e1046451b2baa073e646ec04f8d2f91bbe6ce39d22e08` | `ca62da554643982645425e88764c4b0f2c523f22c5fa878967e78347f0b3ce61` | 228 |
-| `filter/vaseline:upsample` / vaseline-alpha-clamped-high | 9x13 | `30a1cd6db1a99acad1d136a95026b5925234620d1585ffc55436d814d39b868d` | `d4a73bf8d550e0af758813c2445e7a1b39fdb070a81a9990011315e5b6d3251f` | 348 |
+| `filter/vaseline:upsample` / vaseline-alpha-clamped-high | 9x13 | `09e4dff5032d1bcd290ae9dcc0d5454d56459e29c2338733125d2b78ea24cef4` | `d4a73bf8d550e0af758813c2445e7a1b39fdb070a81a9990011315e5b6d3251f` | 348 |
 | `filter/wind:wind` / wind-strength-zero-copy | 11x7 | `3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43` | `a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2` | 0 |
 | `filter/wind:wind` / wind-tiny-positive-no-march | 11x7 | `3b956defac9db931c6a7b4b89c3d2496605c5ebaaa873368b3883f9775a8ec43` | `a550154d87fb9c52ce2d8b06aa6beea3928718fe79fbbe10626ebea9e17a27d2` | 0 |
-| `filter/wind:wind` / wind-left-medium-tiled | 11x7 | `524d7f4ef225d9e3a5dcb586cb9743fa28d0c2e4b8cf9ad1528f66d4e6ba486c` | `55fd1cca149dd565901d7adbba336dc7ba215c65b1f2159c2b0a93823b569888` | 60 |
+| `filter/wind:wind` / wind-left-medium-tiled | 11x7 | `96e82545e65fcacdaaee4fb5cd12000863c5dff821f6011092eae6e09f74d3d6` | `55fd1cca149dd565901d7adbba336dc7ba215c65b1f2159c2b0a93823b569888` | 60 |
 | `filter/wind:wind` / wind-right-full-strength | 13x9 | `96d7b19fb9eba8c3edddbeaecddc3e8c0b2fe8498eba3476b868508a16816f9d` | `54a6bd0f5988b108bcc825a0dacbe922e86de45e06586a23c3953a8b8930d028` | 202 |
 
 ## Mutation sensitivity
