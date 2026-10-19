@@ -17237,7 +17237,7 @@ TEST(typed_shapes_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shapes_matches_all_six_independent_js_oracles) {
   REQUIRE(shapes183_oracle::kOracleSha256 ==
-          "e1e5e2a42bf28a03643d3c55ed0f1c445cc74646b16195daf75c29c8347fea1b");
+          "02adb97988736b8e58c7987b4f25cdbaca0e54bb2fb871d1c2353bc47c07328b");
   REQUIRE(shapes183_oracle::kProgramKey == "classicNoisedeck/shapes:shapes");
   REQUIRE(shapes183_oracle::kCorpusRevision ==
           "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");

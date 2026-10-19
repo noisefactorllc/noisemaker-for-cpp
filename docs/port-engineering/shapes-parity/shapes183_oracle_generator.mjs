@@ -35,7 +35,7 @@ const upstreamRevisionExpected = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const authorityNode = 'v26.0.0'
 const defines = { LOOP_A_OFFSET: 40, LOOP_B_OFFSET: 30 }
 const factoryName = 'canonicalFactory16'
-const factoryTextSha256 = 'da457283289faf28068008a86db2319c8a793db4778e24e9b4a0c05f45024fb7'
+const factoryTextSha256 = 'cf175006fb6869161ac03689e484fac45aaca0caf6439c28a1ec99dff3417645'
 // The live checkout is DERIVED, never hardcoded: a machine-specific absolute
 // path in a checked-in gate is unrunnable on any other machine and leaks a home
 // directory into the repository. `NOISEMAKER_FOR_CPU` overrides; otherwise the
@@ -73,10 +73,10 @@ const bindingAbi = Object.freeze({
 })
 
 const pinnedCpuFiles = Object.freeze({
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 })

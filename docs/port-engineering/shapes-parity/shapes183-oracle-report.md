@@ -7,9 +7,9 @@ Program `classicNoisedeck/shapes:shapes`; corpus revision `6cb1a3c3e21010db956d4
 
 This oracle is produced by the unmodified public canonicalFactory16 from an immutable noisemaker-for-cpu snapshot, executed through the pinned bindCanonicalKernel/GlslCpuRuntime/runPass path; no C++ output participates. The generator refuses to run unless
 `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
-`canonicalFactory16`, its `Function.prototype.toString` SHA-256 is `da457283289faf28068008a86db2319c8a793db4778e24e9b4a0c05f45024fb7`, the adapter
+`canonicalFactory16`, its `Function.prototype.toString` SHA-256 is `cf175006fb6869161ac03689e484fac45aaca0caf6439c28a1ec99dff3417645`, the adapter
 table does not own the key, all six pinned CPU files match, and every module in the
-24-file import closure resolves by real path beneath the immutable snapshot.
+27-file import closure resolves by real path beneath the immutable snapshot.
 Bare module specifiers other than `node:` builtins are rejected, and the live checkout is refused as
 a `--cpu-root`.
 
@@ -32,11 +32,11 @@ counted as bindings.
 
 | Case | Size | Route | paletteMode | Float32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- | ---: | --- | --- |
-| oklab-palette-a | 9x5 | full | 2 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | 911d03c1fd327061cb4bb8d41a3b2e7ed9bcb2dfec50776ff03f093dbf50b20d |
-| oklab-palette-tiled | 4x6 | tile | 2 | 18e1aa0f70e98dbae6e200884b1dbf5e5f70c17443c73b9416377883ab831c05 | 16c46d29ad434f914b784bebb351f283d4a55129d341d63befa01da8bd862cf8 |
-| oklab-palette-extreme | 6x6 | full | 2 | 95a5b08c6b6dc994eaa627dde40248177add711a45e4c627c8111cb966a51572 | 40bc2f869f9c1382ef613d3c7e510b4bdb312c27c139c7974194e182e7520ab6 |
-| oklab-palette-negative-speed | 5x9 | full | 2 | 1a7fc784930cd7fcb51adf9a4ece4824e2c198657d07f4b08ce177efe9ff12e8 | a89d1cf8a0e3baac30d8d8451fbf87cb4cec0f93bad72e79e1ac04d9b5f811d2 |
-| diagnostic-palette-hsv | 8x3 | full | 1 | 5c4792a56ee13b0031bbf2e0d22d32af5812f4f7fe3bf0c6bbc0fcaf3b3fa568 | 1b77f7a6812c37b7ee636d7f5361efd3bc70f9a089b366b09ef9c3a9ec6a624f |
+| oklab-palette-a | 9x5 | full | 2 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | 911d03c1fd327061cb4bb8d41a3b2e7ed9bcb2dfec50776ff03f093dbf50b20d |
+| oklab-palette-tiled | 4x6 | tile | 2 | 8a5b038b3bb7ff9073d869153238cab7075e3a06e3668e6b6c8e547f17059c29 | 16c46d29ad434f914b784bebb351f283d4a55129d341d63befa01da8bd862cf8 |
+| oklab-palette-extreme | 6x6 | full | 2 | 72b133f447d6c60e41f70ed434c90f15bebd37e43418a530d0bd03cb9c241528 | 40bc2f869f9c1382ef613d3c7e510b4bdb312c27c139c7974194e182e7520ab6 |
+| oklab-palette-negative-speed | 5x9 | full | 2 | 2e4f3de96f504f7ceaf01bc1d994bfecfdbb11029388092b0d6f5b66eb30ffe3 | a89d1cf8a0e3baac30d8d8451fbf87cb4cec0f93bad72e79e1ac04d9b5f811d2 |
+| diagnostic-palette-hsv | 8x3 | full | 1 | 77d4e6bd44fb9611573bc65fad193166122e725a61dfaeac7e5aa26fc86c7b08 | 1b77f7a6812c37b7ee636d7f5361efd3bc70f9a089b366b09ef9c3a9ec6a624f |
 | diagnostic-palette-rgb | 4x4 | full | 0 | c71acea4851ef666555705cda29cf71cae187cf8f041f985300840aa91e5bfcf | 95eb46516d39683e44fd4922fbfcd69e07c556cdf03df0287676abcaf39b0642 |
 
 Every case stores exact dimensions, all 18 bindings with every float and vector lane as a
@@ -80,7 +80,7 @@ genuine crop: `tileOffset = (crop_x, full_height - crop_y - tile_height)`. For c
 Tile output equals the corresponding top-down crop of the full-route output exactly:
 0 word mismatches and 0 byte mismatches.
 Binding raw top-down `crop_y` into `tileOffset.y` instead changes
-57 lanes, so the witness is not vacuous.
+60 lanes, so the witness is not vacuous.
 
 ## One-axis control group on `oklab-palette-a`
 
@@ -94,14 +94,14 @@ Binding raw top-down `crop_y` into `tileOffset.y` instead changes
 
 | Bound seed | Float32 SHA-256 | Versus baseline |
 | --- | --- | --- |
-| -2147483648 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
-| -7 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
-| 0 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
-| 1 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
-| 3 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
-| 123 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
-| 65537 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
-| 2147483647 | b10627b26cfeaa1bc32b87c18cd78564e77495f83be0e8ac1939d511f51e986e | identical |
+| -2147483648 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
+| -7 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
+| 0 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
+| 1 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
+| 3 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
+| 123 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
+| 65537 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
+| 2147483647 | 204325fb12303d482f6ea3c1f60161302b021599b14cbccc1f0b6521e6073d64 | identical |
 
 At defines LOOP_A_OFFSET=40 / LOOP_B_OFFSET=30 the only main() consumers of the `seed` uniform are the two `offset(...)` calls. Offset 40 dispatches to shape(st, 4, freq*0.5) and offset 30 dispatches to the absolute-distance branch; neither reads its `seed` parameter. The `value()`/`constant()`/`randomFromLatticeWithOffset()` subtree that would consume it is reachable in the conservative call graph but is not entered by a default full render.
 
@@ -118,10 +118,10 @@ The shipped JavaScript materialization does not change. The parity target is the
 | shapes-fwdB-column-swap | oklab-palette-negative-speed | reaching | differs | 135 |
 | shapes-fwdB-column-swap | diagnostic-palette-hsv | control | identical | 0 |
 | shapes-fwdB-column-swap | diagnostic-palette-rgb | control | identical | 0 |
-| shapes-cube-unnarrowed | oklab-palette-a | reaching | differs | 61 |
-| shapes-cube-unnarrowed | oklab-palette-tiled | reaching | differs | 19 |
-| shapes-cube-unnarrowed | oklab-palette-extreme | reaching | differs | 40 |
-| shapes-cube-unnarrowed | oklab-palette-negative-speed | reaching | differs | 63 |
+| shapes-cube-unnarrowed | oklab-palette-a | reaching | differs | 60 |
+| shapes-cube-unnarrowed | oklab-palette-tiled | reaching | differs | 20 |
+| shapes-cube-unnarrowed | oklab-palette-extreme | reaching | differs | 34 |
+| shapes-cube-unnarrowed | oklab-palette-negative-speed | reaching | differs | 61 |
 | shapes-cube-unnarrowed | diagnostic-palette-hsv | control | identical | 0 |
 | shapes-cube-unnarrowed | diagnostic-palette-rgb | control | identical | 0 |
 
