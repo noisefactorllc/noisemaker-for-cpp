@@ -534,7 +534,7 @@ function build() {
 
   return {
     schema: 'noisemaker-for-cpp.future-precompute.task31.curl-tanh-mod-closure-oracles.v1',
-    corpus_revision: revision, cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6', authority: EXPECTED,
     provenance: { ...provenance, node: process.version, public_identity: true, adapter_absent: true },
     program: {
       key, defines: { ...AUTHORIZED_DEFINES }, profile_candidate: 'curl-tanh-vec3-mod-vecN-float-v1',

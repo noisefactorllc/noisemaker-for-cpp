@@ -18849,7 +18849,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         self.assertTrue(oracle_path.is_file(), "Task 31 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "8b82a47c42218d0371989351d4263a47f758b9b0e9680116c60435b93fd688e4",
+            "5c4317f8fb9531cef71b8ed7aab7a1cb9e7a1d48e9379b35bd077aa43df466ad",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
         self.assertEqual(CURL_KEY, oracle["program"]["key"])
