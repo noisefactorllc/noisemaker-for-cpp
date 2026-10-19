@@ -24,4 +24,4 @@ for (const [width,height] of [[7,5],[11,3]]) for(const DIMENSIONS of [2,3]) for(
  const out=render(), again=render();assert.deepEqual(bytes(out.data),bytes(again.data));assert.deepEqual(uniforms,before);
  cases.push({width,height,uniforms,f32:hash(bytes(out.data)),rgba8:hash(bytes(out.toRgba8())),words:Array.from(new Uint32Array(out.data.buffer)),rgba8Bytes:Array.from(out.toRgba8())});
 }
-process.stdout.write(JSON.stringify({cpu:'4307ca9f26fc415e4fc5e75227d429d35cc741cd',factory_sha256:hash(factory.toString()),cases})+'\n');
+process.stdout.write(JSON.stringify({cpu:'7f473400ac744025d46221bf527b43c1b5c1ef4e',factory_sha256:hash(factory.toString()),cases})+'\n');
