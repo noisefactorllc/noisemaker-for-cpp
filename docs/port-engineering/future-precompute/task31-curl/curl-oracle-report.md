@@ -23,20 +23,20 @@ corpus id:line:col numbers are offset by exactly -10 lines from this raw curl.gl
 
 | Case | Size | F32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | --- | --- |
-| default-seed0-time0 | 6x5 | `93ca07d0da2ec4dd39229650b3f869a8fe686abf4a3ee6339710817562da2dcb` | `96e15060eb5916ab3c8039cb926aa4e65c658f6c4cca8649395005fd621a5fc6` |
-| seed7-tiled-midtime | 5x6 | `68578a5c8adfdc5b6a15ec749a5f33024260f1e5c14c1e6c880753032ff51113` | `176960028f9f06a7fd99eb760ab60a462da7380f038d245b2268628f9ffc48c5` |
-| negative-seed-drives-negative-mod-operands | 8x3 | `e5d43599979b0e2b1c7c44ca4b925056e6bf56649c32e3cdd4fd9bf7c99ebbfb` | `ff92d82a215c70ea490077f882e342d3ba92cc9ffec70a69d4c59d527228230b` |
+| default-seed0-time0 | 6x5 | `76c568815908f18e04df72a92ad090be3b3423469c50fe2dd5695364c76b2ba4` | `96e15060eb5916ab3c8039cb926aa4e65c658f6c4cca8649395005fd621a5fc6` |
+| seed7-tiled-midtime | 5x6 | `00c24ac16a3946a7d5775873e0ca76bf4cf7e91d2ca44dca2f919cf9c60f984f` | `176960028f9f06a7fd99eb760ab60a462da7380f038d245b2268628f9ffc48c5` |
+| negative-seed-drives-negative-mod-operands | 8x3 | `cc02854ccceb6f255fb8c9abb441d8957949b318d9e36a4971441dbf0bc8e5ae` | `ff92d82a215c70ea490077f882e342d3ba92cc9ffec70a69d4c59d527228230b` |
 | negative-intensity-flips-tanh-sign | 4x4 | `7eb29f9308f8aadb5ccf69285012bee6e0476987e642aaf847e61a51823c2935` | `df8c2c90ccf93aff72894448dbe5292ece5fd24f3f2ce21fb68f4e23a4001e8b` |
 | large-seed-negative-scale-negative-speed | 7x7 | `959a51de8697422c2e21e4ac430349c295ded5ffabe31d9b83cdc539c82e9bf6` | `8c30b43e53d0cba58519ec98193d19ef0deef8af8f653c90f8c3a169b2551657` |
-| two-pi-time-near-identity-intensity | 10x2 | `164f34e8d0375089bb50181d9a2d9696f483f3d97d317cb21298e0b6973b7284` | `6d92a8ea911d0d96dad7f2d76f2647e8b612e645140157668298db20a9412d4b` |
+| two-pi-time-near-identity-intensity | 10x2 | `5ffe4e0604c2c76310855cb0f14dc26c455f0d974c94c0bd79dcfff68315cfa7` | `6d92a8ea911d0d96dad7f2d76f2647e8b612e645140157668298db20a9412d4b` |
 
 ## Ineligible full-render cases (define-eligibility risk demonstration)
 
 | Case | Defines | F32 SHA-256 |
 | --- | --- | --- |
-| octaves-2-diverges-loop-unroll | {"OCTAVES":2,"OUTPUT_MODE":3,"RIDGES":true} | `987b5063f592cc9a4300f2592ecec3956b708cc9df7602c0e865d437d71fa813` |
-| output-mode-0-flowx-channel | {"OCTAVES":1,"OUTPUT_MODE":0,"RIDGES":true} | `d5d7f688308e77d89e3e472d82fe8eba4e7997d34d2ccbf2c2953ba6ea528713` |
-| ridges-false-no-fold | {"OCTAVES":1,"OUTPUT_MODE":3,"RIDGES":false} | `8ae42acd7a2994d7b69d06ae79768d9b57e120d3c9e6a901f04090a5d80437ca` |
+| octaves-2-diverges-loop-unroll | {"OCTAVES":2,"OUTPUT_MODE":3,"RIDGES":true} | `9cf2f14d1369d1cc2bb38689d8d9accbbfbb1100d51dc5dfe69a3d1185ec0000` |
+| output-mode-0-flowx-channel | {"OCTAVES":1,"OUTPUT_MODE":0,"RIDGES":true} | `d153152c8724be2687dd0fedd72855bc5333d58acde16cb026d87c71ae45c26d` |
+| ridges-false-no-fold | {"OCTAVES":1,"OUTPUT_MODE":3,"RIDGES":false} | `effeb759bad24a5c75b46397267c8d2715667132b4ef4cfd8fbcdb4d51451bdc` |
 
 ## Public-factory mutations (the four brief-specified mutations)
 

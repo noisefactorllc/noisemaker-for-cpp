@@ -120,12 +120,12 @@ function occurrences(text, needle) { return text.split(needle).length - 1 }
 // Provenance / hermeticity pinning.
 // ---------------------------------------------------------------------------
 const provenance = {
-  canonical_kernels_sha256: 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
   adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
   source_sha256: '33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce',
   canonical_factory_name: 'canonicalFactory256',
-  canonical_factory_to_string_sha256: '10a41e2185a925a6f6a4a79a8c6dc428e1319519495d6366c3e9bc9302db3e65',
+  canonical_factory_to_string_sha256: '220b97de9878a214a55eae25f867d838ea8c02e6954dbf59c4c28fac1e800cb0',
 }
 
 if (sha256(fs.readFileSync(canonicalPath)) !== provenance.canonical_kernels_sha256) throw new Error('canonical runtime drift')
@@ -534,7 +534,7 @@ function build() {
 
   return {
     schema: 'noisemaker-for-cpp.future-precompute.task31.curl-tanh-mod-closure-oracles.v1',
-    corpus_revision: revision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
     provenance: { ...provenance, node: process.version, public_identity: true, adapter_absent: true },
     program: {
       key, defines: { ...AUTHORIZED_DEFINES }, profile_candidate: 'curl-tanh-vec3-mod-vecN-float-v1',
