@@ -17,4 +17,4 @@ python3 -B tools/glslcpp/generate_lightleak192_native_oracle_include.py --write
 python3 -B tools/glslcpp/generate_lightleak192_native_oracle_include.py --check
 ```
 
-Behavioral mutations: 11; structural-only mutations: 2; frozen CPU import closure files: 24.
+Behavioral mutations: 11; structural-only mutations: 2; frozen CPU import closure files: 27.

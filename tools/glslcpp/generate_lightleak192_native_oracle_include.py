@@ -28,28 +28,31 @@ HEX256 = re.compile(r"[0-9a-f]{64}\Z")
 EXPECTED_ABI = {"inputTex": "sampler2D", "resolution": "Vec2", "tileOffset": "Vec2", "fullResolution": "Vec2", "alpha": "number", "color": "Vec3", "speed": "number", "seed": "int32", "time": "number"}
 EXPECTED_CLOSURE = [
     ("src/csl/glsl-kernel.js", "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff"),
-    ("src/csl/glsl-runtime.js", "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1"),
+    ("src/csl/glsl-runtime.js", "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"),
+    ("src/csl/metal-division.js", "104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8"),
+    ("src/csl/metal-reciprocal-data.js", "08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87"),
+    ("src/csl/metal-reciprocal-grid.js", "bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39"),
     ("src/csl/runtime.js", "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"),
     ("src/effects/adapters/bit-effects.js", "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7"),
-    ("src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"),
+    ("src/effects/adapters/crt.js", "c37f70e15b6481b2f870761bf103529cd45cf6e5e714a0a6fd731dbe90c1c73f"),
     ("src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"),
-    ("src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"),
+    ("src/effects/adapters/fractal.js", "73bb60668d98a142edcd535c146527945af445baa694595da2a19fe0a649e804"),
     ("src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"),
     ("src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"),
     ("src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"),
     ("src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"),
     ("src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"),
-    ("src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"),
+    ("src/effects/adapters/snow.js", "9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c"),
     ("src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
-    ("src/effects/definition.js", "64d722d6bdeec753ff294c76f4b58c72a38c8182cc8d7bf65c2c113d07a96a6d"),
+    ("src/effects/definition.js", "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"),
     ("src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"),
-    ("src/effects/generated/canonical-kernels.js", "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863"),
+    ("src/effects/generated/canonical-kernels.js", "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"),
     ("src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"),
     ("src/effects/generated/upstream-snapshot.js", "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"),
     ("src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"),
-    ("src/runtime/automation.js", "982b3ea9b83e100aebfb9a9091be058516c41837a40d7731d629f896a4d48c92"),
+    ("src/runtime/automation.js", "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"),
     ("src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
-    ("src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"),
+    ("src/runtime/sampler.js", "5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5"),
     ("src/runtime/surface.js", "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"),
 ]
 EXPECTED_MUTATIONS = [("out-cell-color-materialization", 1, ["color-blue"]), ("out-cell-dist-materialization", 1, ["default-nonsquare"]), ("base-bare-call-site", 1, ["default-nonsquare"]), ("warp-bare-call-site", 1, ["default-nonsquare"]), ("source-global-POINT_COUNT", 1, ["default-nonsquare"]), ("loop-bound-POINT_COUNT", 1, ["speed-high"]), ("alpha-control-axis", 1, ["alpha-half"]), ("speed-control-axis", 1, ["speed-high"]), ("seed-control-axis", 1, ["seed-axis"]), ("color-control-axis", 1, ["color-blue"]), ("time-control-axis", 1, ["time-negative"])]
@@ -102,9 +105,9 @@ EXPECTED_OUTPUT_PAYLOADS = {
         'df73bf99901c6c69913e77b9b56102cca3f42202b040d31e89b5589382d8a6ef',
     ),
     'default-nonsquare': (
-        'PFbDPlOS5z52g7c+mpkZP0hFOD/HVwo/5VUlPzMzMz/Qzwk/jbcZP6BTqT7NzEw/kzMVP10aMj8XlBU/zczMPhJuuj5lpeQ+GGQyPwAAAD8WZz8/890WP4AZ9z6amRk/ooEZPyMWLz8L5DY/MzMzP8vdDD9Dfx0/8IbkPjMzMz92mQI/FNOjPggvHz/NzEw/UtV+PjkrAj86tGg+zczMPigkHz8WTv4+n0UoPwAAAD+GV7Q+KiL4PiYZpD6amRk/eL3OPn7gYz6HdhM/MzMzP8mlBz9/LBc/zoEzP83MTD8Y4qw+XVsiP3yTEj/NzEw/qpcpP+kz/z7tbEM/zczMPj8S1T5WmDQ/LRu8PgAAAD+ji84+AADgPry7Kz+amRk/pzmHPlAzDz/B+Kg+MzMzP3DVLz+x8ig/FqMWP83MTD8BbQw/JApAP4uziD7NzMw+QgMFP2gEBD/2FDI/zczMPphW8T6GNqg+vw3UPgAAAD+VS1c+Jw3LPoXtAz+amRk/8wcVP6PtJD+FCTA/MzMzP4buEj9wqsQ+i3yyPs3MTD+Pj/0+6iL7Psx+Oj/NzMw+o4s+PzVDAT/Y1cs+AAAAP31Zoj4ChTY/olRTPwAAAD9EdSg/HDnAPl4EAD+amRk/QKsbP6krET/OkjI/MzMzP6SaBT+OqAY/IfbePs3MTD+jiz4/E8AcP3YXDT/NzMw+huwwP0mSTD8mAj8/AAAAPyFeKz+/ng8/7hbpPpqZGT8=',
+        'PFbDPlOS5z52g7c+mpkZP0hFOD/IVwo/5VUlPzMzMz/Rzwk/jrcZP6RTqT7NzEw/lDMVP10aMj8YlBU/zczMPhZuuj5opeQ+GGQyPwAAAD8YZz8/9N0WP4IZ9z6amRk/pIEZPyQWLz8L5DY/MzMzP8vdDD9Dfx0/8IbkPjMzMz92mQI/FNOjPggvHz/NzEw/UtV+PjkrAj86tGg+zczMPigkHz8WTv4+n0UoPwAAAD+GV7Q+KiL4PiYZpD6amRk/eb3OPoDgYz6HdhM/MzMzP8ylBz+ALBc/zoEzP83MTD8Y4qw+XVsiP3yTEj/NzEw/qpcpP+kz/z7tbEM/zczMPj8S1T5WmDQ/LRu8PgAAAD+ji84+AADgPry7Kz+amRk/pzmHPlAzDz/B+Kg+MzMzP3DVLz+x8ig/FqMWP83MTD8CbQw/IwpAP4yziD7NzMw+QgMFP2gEBD/2FDI/zczMPphW8T6GNqg+vw3UPgAAAD+VS1c+Jw3LPoXtAz+amRk/8wcVP6PtJD+FCTA/MzMzP4buEj9wqsQ+i3yyPs3MTD+Qj/0+6iL7Psx+Oj/NzMw+o4s+PzZDAT/a1cs+AAAAP31Zoj4ChTY/olRTPwAAAD9EdSg/HDnAPl4EAD+amRk/QKsbP6krET/OkjI/MzMzP6SaBT+OqAY/IfbePs3MTD+jiz4/E8AcP3YXDT/NzMw+huwwP0mSTD8mAj8/AAAAPyJeKz/Ang8/8BbpPpqZGT8=',
         'YXNbmbiKpbKJmVTMlbGVZl1ysoC/lnuZma62soydcrKCUp/MP4I6Zp9/qIBafFKZZzmTsoeXs8xWopLMqX/DZmq0XoBncKuZQ49Usq+olsyMv0RmhISxZnhUaoA2ZYOZlKSvspJiWcx+fbpmvoFmgFG204CoYICZm5GysoWGb8y+nI1msMy+gKuPdJk=',
-        '6bff35a173c852fc5d94bb2619b6ea5f6dc7698dd5bec7cfe09cb5b7302d5bff',
+        '65fcbcfab771bf31f383c29a99189f15fa56ed11cfa8a5ee8abcccdcb27d8efe',
         '35b9d6d6544070c88d4ebde30b156c89ebcb2ab2616eeb5c5bf2635c24fc15fd',
     ),
     'alpha-half': (
@@ -114,9 +117,9 @@ EXPECTED_OUTPUT_PAYLOADS = {
         '61352e5aa0d2a2237d4c506df926c2de40a1e09d65b03fdf2912dd8a7b83a989',
     ),
     'alpha-clamped-high': (
-        'GWHOPp9ayj5nW/M+zcxMP04bSz/PpAE/fs8vP83MzD55URw/27oTP32TsD4AAAA/2Z0NP979bD5zXS8/mpkZP22Btj7mqdg+TPpXPjMzMz8+6Bs/7Do5PwQXGz/NzMw+DmQTPwZs2j4SEVE/AAAAP3s4rT4ydiU/mQvYPpqZGT8y0D4/3b0aP/H3Kz8zMzM/84kTPwNRMT+Fgq8+zcxMP5Dwtj7HOgs/UBwbPwAAAD/fxj4/glwhP/8X5T6amRk/XXQBP5IkqT4RERE/MzMzPwTZzj7+6tg+AAAwP83MTD9e6ak+m1IDP+Is8j7NzMw+VVwPP6r8DT9saDs/mpkZP+/cCD/lE+Y+VXbtPjMzMz9nH5k+zYgJP2uHNj/NzEw/fM80P5IkQT9oTqQ+zczMPvrKCT9w2gU/uIwaPwAAAD8Wsac+KXVSP9mInz4zMzM/VoM7P7y53D5FOMg+zcxMP36aCz8xywk/OAU9P83MzD47Mvo+B6caP762Bj8AAAA//4qUPvqpTD8GSjw/mpkZPw==',
+        'G2HOPp9ayj5nW/M+zcxMP04bSz/QpAE/f88vP83MzD56URw/27oTP36TsD4AAAA/250NP+L9bD50XS8/mpkZP3CBtj7nqdg+UPpXPjMzMz8+6Bs/7Do5PwQXGz/NzMw+DmQTPwZs2j4SEVE/AAAAP3s4rT4ydiU/mQvYPpqZGT8y0D4/3b0aP/H3Kz8zMzM/9IkTPwNRMT+Hgq8+zcxMP5Dwtj7HOgs/UBwbPwAAAD/fxj4/glwhP/8X5T6amRk/XXQBP5IkqT4RERE/MzMzPwTZzj7+6tg+AAAwP83MTD9h6ak+m1IDP+Ms8j7NzMw+VVwPP6r8DT9saDs/mpkZP+/cCD/lE+Y+VXbtPjMzMz9nH5k+zYgJP2uHNj/NzEw/fM80P5IkQT9oTqQ+zczMPvvKCT9x2gU/uIwaPwAAAD8Wsac+KXVSP9mInz4zMzM/VoM7P7y53D5FOMg+zcxMP36aCz8xywk/OAU9P83MzD47Mvo+B6caP762Bj8AAAA/AYuUPvqpTD8GSjw/mpkZPw==',
         'Z2V5zMqBr2ack1iAjTuvmVtsNrKbuZpmk23QgFalbJm+mquyk7FXzFuLm4C+oXKZgVSQsmdsr8xVg3lmj427mYhzdrJMibbMtMBSZomFmoBU0k+yu25kzIuJvGZ9moaASsy8mQ==',
-        '65d5177542142949f07f5e38444a9ec020557ddc90230f4e4e7b927e2a404fe2',
+        'a0c21adcdb7c584deeebc2069d7de7f36d4c2598a327b2492f4207fac2a0f1f4',
         '93ed8d704db14a0f363253c738f87e78bf3681ece1de85b127238c62f8922a3e',
     ),
     'speed-zero': (
@@ -126,21 +129,21 @@ EXPECTED_OUTPUT_PAYLOADS = {
         '31e9f93b440b8f28ee9d825344341b7d46ee8fd2bc6d87c7d0c8e185fa4cbb83',
     ),
     'speed-high': (
-        '64TaPjk2MD8APy4/AAAAP+ShnD76lzc/b8GiPpqZGT/oBTE/cj1FP5yXCz8zMzM/SBAPP5xgAj/YlTU/zcxMPwH34T7+RjE/HfHQPs3MzD5AuWM/X3wqPyaoLD8AAAA/tvMnPz+KPj8Ju7w+mpkZP/iABj+xLtA+N5QxPzMzMz/bDLQ+kRskP0ExUD/NzEw/deoxP1wy8T6hszI/mpkZPxWtCz8UlPU+lRyJPjMzMz8iV84+9cgOP1qoID/NzEw/fsNWPy6mFT8ZEIE+zczMPhXnEj+B5YQ+kK/uPgAAAD/FaSA/uHT+PpCZLT+amRk/Vy65PqUoBj9c95s+MzMzPymVUj8KIAg/5KEVP83MTD9DyBs/sa68PiYDxj7NzMw+hJG1PlhYJj/NilI/MzMzPwy8Qj/fyVA/wPrQPs3MTD8+sR8/OWTgPmgKKj/NzMw+BKsPP4IfEj+Gk4s+AAAAP4Ptkz6QXQE/hdAZP5qZGT+dSFk//TBBP214WD4zMzM/rfgTPwlSzT7A4OA+zcxMP2iy6T5j8A0/MuoeP83MzD4TVI8+DvQ0P+FOAj8AAAA/EBczP2j7Fj/aGtI+zcxMP+u/DD+Y9BY/CqrtPs3MzD7cvJU+/GQvPy1/OT8AAAA/DkVZP+THoj4D1ao+mpkZP4FyEz9wjOw+kHspPzMzMz9B6gM/ybAAP/w/iz7NzEw/WTmAPgBeJj8D8ho/zczMPr10VT/6Oag+LCBfPgAAAD+chR8/AR8LP49PCz+amRk//RqrPslC4j5xpNw+zczMPs+nUj/yIfM+wf4ePwAAAD/87hM/fy/hPgsJkT6amRk/MPsDP+ShEz+YLAA/MzMzP2L2eD69JFo+o2M5P83MTD9hp00/SabsPtYlqz7NzMw+YWQIP+N4Aj9M+ik/AAAAP9DV1z4RLSQ/7AHGPpqZGT/ex3E+vDFYPy4iLj8zMzM/x/cdP5JbKz9DV+k+AAAAP3UeET8rs1E/U31DP5qZGT+7HqI+9CLtPr15rj4zMzM/JA1BP1ti/T7LMig/zcxMP/zE+D51nwU/awmPPs3MzD7wEgk/vT5CP98U/T4AAAA/gOSIPrYz3j6gbTU/mpkZP/ssPT+RF+0+/AXPPjMzMz+zmgo/M1YePx38TD/NzEw/Iq6bPkR7DT9YzBQ/mpkZP6hvSj9YpRc/2c5nPzMzMz9I2BM/MWFBP6f95D7NzEw/1/ULP+m88j7mUlI/zczMPrjomz4qqg4/2DvPPgAAAD8RLkg/SWwMPxpXLj+amRk/fusMP6tSOz+1bcM+MzMzPw+p2j6LrNU+looXP83MTD/X/24+WQAeP/N6Uj/NzMw+',
+        '64TaPjk2MD8APy4/AAAAP+WhnD77lzc/ccGiPpqZGT/qBTE/cj1FP5yXCz8zMzM/SRAPP55gAj/YlTU/zcxMPwP34T7/RjE/H/HQPs3MzD5AuWM/YHwqPyeoLD8AAAA/tvMnPz+KPj8Mu7w+mpkZP/mABj+1LtA+N5QxPzMzMz/dDLQ+kxskP0ExUD/NzEw/deoxP1wy8T6hszI/mpkZPxWtCz8UlPU+lRyJPjMzMz8jV84+9cgOP1qoID/NzEw/fsNWPy6mFT8aEIE+zczMPhXnEj+D5YQ+kK/uPgAAAD/FaSA/unT+PpCZLT+amRk/Vy65PqUoBj9d95s+MzMzPymVUj8KIAg/5KEVP83MTD9DyBs/tK68PikDxj7NzMw+hJG1PlhYJj/NilI/MzMzPwy8Qj/fyVA/wPrQPs3MTD8+sR8/OWTgPmgKKj/NzMw+BKsPP4IfEj+Gk4s+AAAAP4Ptkz6QXQE/hdAZP5qZGT+dSFk//TBBP214WD4zMzM/rfgTPwlSzT7A4OA+zcxMP2iy6T5j8A0/MuoeP83MzD4UVI8+D/Q0P+JOAj8AAAA/EBczP2j7Fj/aGtI+zcxMP+u/DD+Y9BY/CqrtPs3MzD7cvJU+/GQvPy1/OT8AAAA/DkVZP+THoj4D1ao+mpkZP4FyEz9wjOw+kHspPzMzMz9B6gM/ybAAP/w/iz7NzEw/WTmAPgBeJj8D8ho/zczMPr10VT/6Oag+LCBfPgAAAD+dhR8/Ah8LP49PCz+amRk//RqrPslC4j5xpNw+zczMPs+nUj/yIfM+wf4ePwAAAD/87hM/fy/hPgsJkT6amRk/MPsDP+ShEz+YLAA/MzMzP2L2eD69JFo+o2M5P83MTD9hp00/SabsPtYlqz7NzMw+YWQIP+N4Aj9M+ik/AAAAP9DV1z4RLSQ/7AHGPpqZGT/hx3E+vDFYPy4iLj8zMzM/x/cdP5JbKz9DV+k+AAAAP3UeET8rs1E/U31DP5qZGT+7HqI+9CLtPr15rj4zMzM/JA1BP1ti/T7LMig/zcxMP/zE+D51nwU/awmPPs3MzD7wEgk/vT5CP98U/T4AAAA/gOSIPrYz3j6gbTU/mpkZP/ssPT+RF+0+/AXPPjMzMz+zmgo/M1YePx38TD/NzEw/Iq6bPkR7DT9YzBQ/mpkZP6hvSj9YpRc/2c5nPzMzMz9I2BM/MWFBP6f95D7NzEw/1/ULP+m88j7mUlI/zczMPrjomz4qqg4/2DvPPgAAAD8RLkg/SWwMPxpXLj+amRk/fusMP6tSOz+1bcM+MzMzPw+p2j6LrNU+looXP83MTD/c/24+WwAeP/N6Uj/NzMw+',
         'bbCugE63UZmwxIuyj4K1zHGxaGbjqqyAp75emYZosbJao8/MsXiymYt6RLJnjqDM1pVAZpJCd4Cgf62ZXIZOstKIlcybXmNmWqbSssLQaMyfcKlmj5JGgEqBmZnYwDayk2ZwzHSNnmZHtIKAspZpzIyWdmZLr7mA2FFVmZN2qbKDgEXMQKaaZtVUOICfi4uZVXFuZtJ5noCTcEiZg5OAsj42uczNdlVmiIKpgGukY5k8162ynat0gJHRw5lRdleywH6ozHyFR2aJwX6ARG+1mbx2Z7KKnszMTo2UmcqX57KTwXLMi3nSZk6OZ4DHjK6ZjLthsm1ql8w8ndJm',
-        '58d0fc75e00d8eaba13a5cc198e1b738346eb02af3464fc62a9c70673094c15e',
+        'f141a91ade173f7dbf9099da233f1a261193c3dd9bc8a605c6cac867e05feb6e',
         '42cff95df4a84cd3ee600218cf3a8165292c744d17f8d48e0f97e211958420a3',
     ),
     'seed-axis': (
-        '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',
+        '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',
-        '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',
+        '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',
         'a2670fd61be4c3df3feefee69c99dab575cc46cfcff50484159912d9f7dc2b26',
     ),
     'time-negative': (
-        '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',
+        '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',
-        '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',
+        '8c22ddbe3a358e48f207e72f0f4d000fd97542c095e0cf51cdc91be7b8ac58cc',
         'e3ca807698433e7eb2a71e0c330251400f158fc04cc11d0cf690cd4dfea3f642',
     ),
     'tiled-full-resolution': (
@@ -156,9 +159,9 @@ EXPECTED_OUTPUT_PAYLOADS = {
         '42a0c75c83a23393e985b297893594d4a3b021a6dbc565708d60d3194f867af9',
     ),
     'fullresolution-fallback': (
-        'QOs1P/a8Pj86JNQ+AAAAP5zo+j4+Fe8+zQ8mP5qZGT83x2Y/LGYeP0jgTD8zMzM/GWc+P7rSKz+BwhU/zcxMP6krMD+a6Dk/XINHP83MzD7bN1s/Qds1P9zxBz+amRk/5VAvP+gtJz9EIUE/MzMzP+LHST/x90M/MycXP83MTD8Thyo/rJgGP7dmQD/NzMw+O7BUP/EuMT9oZUc/AAAAPxGCCj/PL4M+qizFPjMzMz+PFpk+CV+9PocnQz/NzEw/KcxdP6Ra9z6FX6o+zczMPtRJJj/CSTU/vNUhPwAAAD/XhSs/MHn4PhC1yD6amRk/',
+        'QOs1P/a8Pj86JNQ+AAAAP5zo+j4+Fe8+zQ8mP5qZGT83x2Y/LGYeP0jgTD8zMzM/GWc+P7rSKz+BwhU/zcxMP6krMD+a6Dk/XINHP83MzD7bN1s/Qds1P9zxBz+amRk/5VAvP+gtJz9EIUE/MzMzP+LHST/x90M/MycXP83MTD8Thyo/q5gGP7dmQD/NzMw+O7BUP/AuMT9oZUc/AAAAPxKCCj/RL4M+qyzFPjMzMz+QFpk+C1+9PocnQz/NzEw/KcxdP6Za9z6FX6o+zczMPtRJJj/DSTU/vNUhPwAAAD/XhSs/MHn4PhC1yD6amRk/',
         'tb5qgH13pZnmnsyyvquVzK+5x2batYeZr6fAssnDl8yqhsBm1LDHgIpBYrJMXsLM3XtVZqa1oYCrfGSZ',
-        'e3bb2b0dd471ffab8a2f50b4e306394907e62e849dbcbaaa9e32780f963827b4',
+        '0d61cb448bcd1968f21561c6c10b71c2b35fba8faf2083e8ce6bcd8cdfb739b8',
         'eef16e203d410260366641eb7798613640ed68c7738b34e3bfcf3e24f3628ee7',
     ),
 }
@@ -169,17 +172,17 @@ _DIVERGENCE_C = ["alpha-half", "alpha-clamped-high", "speed-zero", "speed-high",
 _DIVERGENCE_D = ["alpha-half", "alpha-clamped-high", "speed-high", "seed-axis", "time-negative", "tiled-full-resolution", "color-blue", "fullresolution-fallback"]
 _DIVERGENCE_E = ["alpha-half", "alpha-clamped-high", "speed-zero", "speed-high", "seed-axis", "time-negative", "tiled-full-resolution", "color-blue", "fullresolution-fallback"]
 EXPECTED_MUTATION_DETAILS = {
-    "out-cell-color-materialization": ("8a822d7ce423401deb21fe1a7b6434191254da102280233445e5b85810eec8cf", _DIVERGENCE_A, [{"case": "color-blue", "mismatched_lanes": 92, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ef608e8", "candidate_bits_le": "0x3f1883fe"}}]),
-    "out-cell-dist-materialization": ("f1be7858a87a276807543b5ffe94a9d1b8bf63f3f45750ffc300b46978449417", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 97, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ec3563c", "candidate_bits_le": "0x3ec3015f"}}]),
-    "base-bare-call-site": ("61c15f6e57d7658c7ee9bcc618d7da6a263708575b7f8b01b54e9f28d839d2ff", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 96, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ec3563c", "candidate_bits_le": "0x3eb96fcd"}}]),
-    "warp-bare-call-site": ("fe47acaa35ca0834fe92ff4f476d8df5011084f344c06ce290998fdecfeaa7e0", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 96, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ec3563c", "candidate_bits_le": "0x3ec941ba"}}]),
-    "source-global-POINT_COUNT": ("18c2b87c4a66b25fb2e044c95e4c6268ab162abaef4c78c1f88d07ac6f83a30b", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 36, "first_mismatch": {"lane_index": 64, "top_down_xy": [2, 2], "channel": "r", "reference_bits_le": "0x3ed5123f", "candidate_bits_le": "0x3ed5028e"}}]),
-    "loop-bound-POINT_COUNT": ("5f397229d6325cb7020de9682c2dc855a915900690963d2d28c3bb9f498e44e4", _DIVERGENCE_A, [{"case": "speed-high", "mismatched_lanes": 49, "first_mismatch": {"lane_index": 80, "top_down_xy": [2, 2], "channel": "r", "reference_bits_le": "0x3f1fb13e", "candidate_bits_le": "0x3f1fb0ee"}}]),
-    "alpha-control-axis": ("ba09d10d7c2576671e5dba0225db12961fcb15e85f46e30be4831e1e09ff71b1", _DIVERGENCE_B, [{"case": "alpha-half", "mismatched_lanes": 144, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3e845caf", "candidate_bits_le": "0x3eac9a9c"}}]),
-    "speed-control-axis": ("d0d99f95e6f175d00ea6341658053192da09484efb0b6c9189e7ca351c30e538", _DIVERGENCE_C, [{"case": "speed-high", "mismatched_lanes": 175, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3eda84eb", "candidate_bits_le": "0x3ec98e59"}}]),
-    "seed-control-axis": ("e2968592802b94b94f2b9fb38e624e181895175f49b36175fe4bda501007e57a", _DIVERGENCE_E, [{"case": "seed-axis", "mismatched_lanes": 121, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ee79a98", "candidate_bits_le": "0x3ee48365"}}]),
-    "color-control-axis": ("a000d8075f5d5b9267765432345b7f94cf3a2dfd9b8d326f4a2dc54170d198be", ["default-nonsquare", "alpha-half", "alpha-clamped-high", "speed-zero", "speed-high", "seed-axis", "time-negative", "tiled-full-resolution", "color-blue"], [{"case": "color-blue", "mismatched_lanes": 93, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ef608e8", "candidate_bits_le": "0x3f0fe9ba"}}]),
-    "time-control-axis": ("bd1d6ba02ca5c19d69e7c05b513116ceef9cceb4ced4e98b204de3d7e370d788", _DIVERGENCE_D, [{"case": "time-negative", "mismatched_lanes": 116, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3f0fab09", "candidate_bits_le": "0x3f08a9e0"}}]),
+    "out-cell-color-materialization": ("8b3722f83f4ab6a68c68a2d3bf622418dcc0db627a457c5bcc5539cccb32e38b", _DIVERGENCE_A, [{"case": "color-blue", "mismatched_lanes": 92, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ef608e8", "candidate_bits_le": "0x3f1883fe"}}]),
+    "out-cell-dist-materialization": ("f3055137c88df4151a5e31580606ba5299c97aeae4c97af1c54fb9014b184141", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 97, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ec3563c", "candidate_bits_le": "0x3ec3015f"}}]),
+    "base-bare-call-site": ("e997eade23d40fdf428af06557e638a5dec2eb51575fda5df2f2f996a9d65f43", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 96, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ec3563c", "candidate_bits_le": "0x3eb96fcd"}}]),
+    "warp-bare-call-site": ("f2d6a1763d0e6e02537ffc379350fe22dde3447f50c6ea38c37786cdb55b5b9f", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 96, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ec3563c", "candidate_bits_le": "0x3ec941ba"}}]),
+    "source-global-POINT_COUNT": ("7da3eb479f8c48e37081cfa692183fda8a92344744e626da225ade510af3013c", _DIVERGENCE_A, [{"case": "default-nonsquare", "mismatched_lanes": 36, "first_mismatch": {"lane_index": 64, "top_down_xy": [2, 2], "channel": "r", "reference_bits_le": "0x3ed5123f", "candidate_bits_le": "0x3ed5028e"}}]),
+    "loop-bound-POINT_COUNT": ("b30f3f8c2c1cddadfed338a5ef77c1123eaa82f77149f2bb0a647def4fd7dd62", _DIVERGENCE_A, [{"case": "speed-high", "mismatched_lanes": 49, "first_mismatch": {"lane_index": 80, "top_down_xy": [2, 2], "channel": "r", "reference_bits_le": "0x3f1fb13e", "candidate_bits_le": "0x3f1fb0ee"}}]),
+    "alpha-control-axis": ("81b91e653b59b740269ab5eaa9ac995277aa12047da2a518ccb1254e4f6414f3", _DIVERGENCE_B, [{"case": "alpha-half", "mismatched_lanes": 144, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3e845caf", "candidate_bits_le": "0x3eac9a9c"}}]),
+    "speed-control-axis": ("c3b3c7ba17a7cb93f44b78b953bdeb9c33a86a8fb305253f5efac961ce8e0acf", _DIVERGENCE_C, [{"case": "speed-high", "mismatched_lanes": 175, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3eda84eb", "candidate_bits_le": "0x3ec98e59"}}]),
+    "seed-control-axis": ("8155f45370adc3dc9460732286cc93e8d1bf7f63a9c057747067e89f601601a3", _DIVERGENCE_E, [{"case": "seed-axis", "mismatched_lanes": 121, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ee79a98", "candidate_bits_le": "0x3ee48365"}}]),
+    "color-control-axis": ("2fce87568ae305910314ce72e095de47daf233d32b4ec4cfb9ce1b79a1fc230e", ["default-nonsquare", "alpha-half", "alpha-clamped-high", "speed-zero", "speed-high", "seed-axis", "time-negative", "tiled-full-resolution", "color-blue"], [{"case": "color-blue", "mismatched_lanes": 93, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3ef608e8", "candidate_bits_le": "0x3f0fe9ba"}}]),
+    "time-control-axis": ("4b514093e05d29b720cf459207495ac1ec8b1ddd219c70eec2f4f9a5e0c257ff", _DIVERGENCE_D, [{"case": "time-negative", "mismatched_lanes": 116, "first_mismatch": {"lane_index": 0, "top_down_xy": [0, 0], "channel": "r", "reference_bits_le": "0x3f0fab09", "candidate_bits_le": "0x3f08a9e0"}}]),
 }
 EXPECTED_MUTATION_ANCHORS = {
     "out-cell-color-materialization": ("mix(hash33(s), color, 0.6000000238418579)", "mix(hash33(s), new $runtime.PooledFloat32Array([1, 1, 1]), 0.6000000238418579)", "433f04a5bfc4f79b830e6265c9b8906ed3319d93e4f3bba03afaf5db737b7069", "00e70b0adb73bc4c93ff294d545623a634f445d361582df2fac9767096de977e"),
@@ -475,9 +478,9 @@ def load(oracle_path: pathlib.Path = ORACLE, verify_assets: bool = True) -> tupl
         raise RuntimeError("LightLeak frozen document schema/program mismatch")
     provenance = oracle["provenance"]
     provenance_keys = {"authority_commit", "authority_checkout_clean", "node_version", "factory", "source", "import_closure", "binding_abi", "canonical_public_identity", "adapter_override_absent", "point_count"}
-    if set(provenance) != provenance_keys or (provenance["authority_commit"], provenance["authority_checkout_clean"], provenance["node_version"], provenance["point_count"]) != ("4307ca9f26fc415e4fc5e75227d429d35cc741cd", True, "v26.0.0", 6):
+    if set(provenance) != provenance_keys or (provenance["authority_commit"], provenance["authority_checkout_clean"], provenance["node_version"], provenance["point_count"]) != ("7f473400ac744025d46221bf527b43c1b5c1ef4e", True, "v26.0.0", 6):
         raise RuntimeError("LightLeak authority provenance mismatch")
-    if provenance["factory"] != {"name": "canonicalFactory74", "bytes": 7818, "sha256": "65cd5bf20b2349cce62369b921a8c163dea496d4a3a6815d551edf060e20f745"} or provenance["source"] != {"relative_path_from_noisemaker_for_cpp": f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/lightLeak/lightLeak.glsl", "bytes": 5047, "sha256": "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb"}:
+    if provenance["factory"] != {"name": "canonicalFactory74", "bytes": 7846, "sha256": "a30e8a1c27c9c2774e6d38d649cc695ac35c9db7ecde043980fd20e71d45cbf2"} or provenance["source"] != {"relative_path_from_noisemaker_for_cpp": f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/lightLeak/lightLeak.glsl", "bytes": 5047, "sha256": "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb"}:
         raise RuntimeError("LightLeak factory/source provenance mismatch")
     if provenance["binding_abi"] != EXPECTED_ABI or provenance["canonical_public_identity"] is not True or provenance["adapter_override_absent"] is not True:
         raise RuntimeError("LightLeak binding/identity provenance mismatch")
@@ -651,7 +654,7 @@ def self_test_forged_documents() -> None:
         "public-exact-string": lambda value: value["render_cases"][0]["public_identity"].update(exact="true"),
         "input-immutable-number": lambda value: value["render_cases"][0].update(input_immutable_exact_bits=1),
         "factory-bytes-bool": lambda value: value["provenance"]["factory"].update(bytes=True),
-        "factory-bytes-float": lambda value: value["provenance"]["factory"].update(bytes=7818.0),
+        "factory-bytes-float": lambda value: value["provenance"]["factory"].update(bytes=7846.0),
         "source-bytes-string": lambda value: value["provenance"]["source"].update(bytes="5047"),
         "point-count-bool": lambda value: value["provenance"].update(point_count=False),
         "comparer-value-number": lambda value: value["comparer_self_tests"].update(good_equal=1),
@@ -685,7 +688,7 @@ def self_test_forged_documents() -> None:
             raise RuntimeError(f"forged-document self-test accepted {label}")
         duplicate_lines = {
             "duplicate-top-schema": f'  "schema": "{SCHEMA}",\n',
-            "duplicate-provenance": '    "authority_commit": "4307ca9f26fc415e4fc5e75227d429d35cc741cd",\n',
+            "duplicate-provenance": '    "authority_commit": "7f473400ac744025d46221bf527b43c1b5c1ef4e",\n',
             "duplicate-fixture": '    "source_function": "inputSurface",\n',
             "duplicate-case-dimension": '      "width": 1,\n',
             "duplicate-control": '        "alpha": 0,\n',
