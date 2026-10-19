@@ -79,12 +79,12 @@ class MoodscapeOracleTests(unittest.TestCase):
                           "refractAmt": "float", "speed": "float", "hueRotation": "float",
                           "hueRange": "float", "intensity": "float", "ridges": "bool"},
                          document["source_uniform_abi"])
-        self.assertEqual(24, document["authority"]["closure_cardinality"])
-        self.assertEqual(24, len(document["authority"]["import_closure"]))
+        self.assertEqual(27, document["authority"]["closure_cardinality"])
+        self.assertEqual(27, len(document["authority"]["import_closure"]))
         self.assertEqual(6, len(document["render_cases"]))
         self.assertEqual(5, len(document["mutation_ledger"]))
         self.assertEqual("canonicalFactory11", document["factory"]["name"])
-        self.assertEqual("1ed6bdafbced57679854e7502909d052875c5a9814a2e49fa4e86bd56abc1516",
+        self.assertEqual("b5fe9e225f841e285dace48441ae3945b035b269e2a2e7e4d4938a3357d60fc6",
                          document["factory"]["text_sha256"])
         self.assertEqual(19559, document["provenance"]["source"]["bytes"])
         self.assertEqual("a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44",
@@ -240,7 +240,7 @@ class MoodscapeOracleTests(unittest.TestCase):
                 "int main() {\n"
                 "  static_assert(noisemaker_moodscape_oracle::kCases.size() == 6);\n"
                 "  static_assert(noisemaker_moodscape_oracle::kRuntimeBindings.size() == 15);\n"
-                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 24);\n"
+                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 27);\n"
                 "  static_assert(noisemaker_moodscape_oracle::kMutations.size() == 5);\n"
                 "  return 0;\n}\n"
             )

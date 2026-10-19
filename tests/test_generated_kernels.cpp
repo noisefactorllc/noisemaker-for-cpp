@@ -29196,16 +29196,16 @@ void require_oracle_metadata() {
   REQUIRE(noisemaker_moodscape_oracle::kProgramKey ==
           "classicNoisedeck/moodscape:moodscape");
   REQUIRE(noisemaker_moodscape_oracle::kOracleJsonSha256 ==
-          "475aa45021575b46f5ceadf10ed9a3dd0dec6bd6a1d2eab2ad2e12cabcb1834e");
+          "466584c058df0c4410a9b55d71c2cdf4131d8fd2d811a258764079d0fbd75a7d");
   REQUIRE(noisemaker_moodscape_oracle::kFactorySha256 ==
-          "1ed6bdafbced57679854e7502909d052875c5a9814a2e49fa4e86bd56abc1516");
+          "b5fe9e225f841e285dace48441ae3945b035b269e2a2e7e4d4938a3357d60fc6");
   REQUIRE(noisemaker_moodscape_oracle::kSourceSha256 ==
           "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44");
   REQUIRE(noisemaker_moodscape_oracle::kSourceBytes == 19559U);
   REQUIRE(noisemaker_moodscape_oracle::kSourceRelativePath ==
           "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/classicNoisedeck/moodscape/moodscape.glsl");
-  REQUIRE(noisemaker_moodscape_oracle::kImportClosureCardinality == 24U);
-  REQUIRE(noisemaker_moodscape_oracle::kImportClosure.size() == 24U);
+  REQUIRE(noisemaker_moodscape_oracle::kImportClosureCardinality == 27U);
+  REQUIRE(noisemaker_moodscape_oracle::kImportClosure.size() == 27U);
   constexpr std::array<std::string_view, 15> runtime_names{
       "NOISE_TYPE", "COLOR_MODE", "time", "seed", "wrap", "resolution",
       "tileOffset", "fullResolution", "noiseScale", "refractAmt", "speed",
@@ -29230,11 +29230,11 @@ void require_oracle_metadata() {
   constexpr std::array<std::uint32_t, 6> f32_counts{192U, 16U, 480U, 320U, 336U, 96U};
   constexpr std::array<std::uint32_t, 6> rgba8_counts{48U, 4U, 120U, 80U, 84U, 24U};
   constexpr std::array<std::string_view, 6> f32_hashes{
-      "1f6ea1b967d053002b587f96b176046de11f0f96df563e687148a74f47c2c47b",
+      "6a838da815e95a9edd545f920cd059e92aa25258b53f2f906dff6e28532fc926",
       "249cd66ba48f4691303dd5da94e022053dc5906d9388b6789876abc487c666af",
-      "476c793ce0904cfb16001fefda86e226efd4e2d97425bea47ea0bb2f577cf298",
+      "fa9ccdb0d4d6258cc724300144ff8e965edda74f51e5cfc30505a1286e9849a2",
       "5dc7a1e74cd47703061f3875100e3ea362d693d13b10557e3d4e03a9277f317c",
-      "8a044d60011f8f676dec8c997e36c3aba17dd6c6e7929dadf27f8c3ebf308e3f",
+      "5d0eed6222d666f591bb8534db138d9e5ab5b940786108c23285c699d78c265e",
       "73c5aceadbf02395441d072e875ed84e681070900e4df24db97ee2b23c9bfc10"};
   constexpr std::array<std::string_view, 6> rgba8_hashes{
       "9f1ffd875bf49b4446be0d19252114de613bcf57a9dc80ab1e8ef6357977979a",
@@ -29309,11 +29309,11 @@ void require_oracle_metadata() {
       "be612bc0fbf3fc21d41ecaed73aa07c94c899f778135c55b22059cbcc05c009a",
       "8b4d2f6b80440e27a5ea157c65915173b29a640ebb6dc334245d3ede7df36af2"};
   constexpr std::array<std::string_view, 5> mutation_factory_hashes{
-      "687eb24107224d77c9b648d3044ba7da65977eefe715cdd795ff867bd5e69355",
-      "bb3eb5a2621a661f6ec2c74a4bf72cfa8de75df9b3fe5ed8ade71ec3fb01382a",
-      "32a5c68fbbaa1ed8abbad6a0a816138703199dfe90ec5c5d7d44434832b7e3a7",
-      "2a4ae6dc96a3ec02ef7c8dec1d59b71cfd5229ba8837420a542c2b5b2c88020d",
-      "eeacb89cfbfd207b42c95235f5cce07e9c0bb23499cf5affc665406d31f0e476"};
+      "b71f4ec6e118d39bb7da8e28f9f18a9758d875dcf6851821cb388b1f40510690",
+      "d5071bc260bcecf09128229b71b4820f9a095b0995f130b7a27bfd6362e3272d",
+      "041ec2fa115d9b49c10ca6ecca76abd9c94de368036c9c8c4d460a916177b4c0",
+      "c71a93821043415000532d5ccc0bc9f6dcd03c9cb13ecc5acb0048a239f4aed7",
+      "41c0d9ffa2088922183a8880cdc38cbbd199a7217d613cfe2af3d582eccad0ef"};
   REQUIRE(noisemaker_moodscape_oracle::kMutations.size() == 5U);
   for (std::size_t index = 0U; index < mutation_names.size(); ++index) {
     const auto& mutation = noisemaker_moodscape_oracle::kMutations[index];
