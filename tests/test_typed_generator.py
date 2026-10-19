@@ -1972,7 +1972,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertTrue(oracle_path.is_file(), "Task 24 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "07dd6f31c3e2b5451cbde8fc0ae6f68ec7c3b06cd6296222ac938cdcee37a72a",
+            "3dfcf33963abdb52c1b483139261dc22944eaa78709d2c3cc062311ed6a57af8",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
@@ -1988,7 +1988,7 @@ and item["program_key"] != "filter/wobble:wobble"
         embedded_bytes = ("\n" + match.group(1) + "\n").encode()
         self.assertEqual(31764, len(embedded_bytes))
         self.assertEqual(
-            "d090c406de8a7a4f16b6e4869c52e8a71fee1cd33ca34555ecde51eccb0da29e",
+            "b2be589cece6b508dfbd0edba0c8508b0444eae4d047ee0d5091cac22673dde7",
             hashlib.sha256(embedded_bytes).hexdigest())
         embedded = json.loads(embedded_bytes)
         expected = {name: oracle[name] for name in (
@@ -2023,7 +2023,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertTrue(oracle_path.is_file(), "Task 24 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "07dd6f31c3e2b5451cbde8fc0ae6f68ec7c3b06cd6296222ac938cdcee37a72a",
+            "3dfcf33963abdb52c1b483139261dc22944eaa78709d2c3cc062311ed6a57af8",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
@@ -2425,6 +2425,8 @@ and item["program_key"] != "filter/wobble:wobble"
                 str(REPOSITORY / "src/glsl_runtime.cpp"),
                 str(REPOSITORY / "src/kernel.cpp"),
                 str(REPOSITORY / "src/pass_runner.cpp"),
+                str(REPOSITORY / "src/metal_division.cpp"),
+                str(REPOSITORY / "src/metal_reciprocal_data.cpp"),
                 "-o", str(executable),
             ]
             compiled = subprocess.run(command, text=True, capture_output=True)

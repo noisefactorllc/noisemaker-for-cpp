@@ -1,26 +1,31 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'task-24-oracles.json')
 const reportPath = path.join(here, 'task-24-oracle-report.md')
-const cpuRoot = '../noisemaker-for-cpu'
-const cppRoot = '.'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+const cppRoot = path.resolve(here, '../..')
+const corpusRevision = EXPECTED.upstreamRevision
 const sourceRelative = 'sources/filter/pixelSort/gatherSorted.glsl'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, sourceRelative)
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
-const canonicalSha256 = 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56'
+const canonicalSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
 const key = 'filter/pixelSort:gatherSorted'
-const factoryName = 'canonicalFactory107'
-const factorySha256 = '6f4021f01bc289554506215c3f01d716b4fcbf2b458527d02f1a0888d7eecb7c'
+const factoryName = 'canonicalFactory104'
+const factorySha256 = '89a124f9dd6d1ad836335a5523b140235d6de8c8ef8e6c709bd5d396184f752a'
 const originalLine = 'var brightestX = round(brightestXNorm * (cpu_float(width - 1)))|0;'
 const f = Math.fround
 
@@ -232,7 +237,7 @@ function buildReport(data) {
 const data = buildData()
 const json = `${JSON.stringify(data, null, 2)}\n`
 const report = buildReport(data)
-if (process.argv.length === 2) process.stdout.write(json)
-else if (process.argv.length === 3 && process.argv[2] === '--write') { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-24-oracles.json and task-24-oracle-report.md\n') }
-else if (process.argv.length === 3 && process.argv[2] === '--check') { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-24-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-24-oracle-report.md drift'); process.stdout.write('ok task-24-oracles.json and task-24-oracle-report.md\n') }
+if (!process.argv.includes('--write') && !process.argv.includes('--check')) process.stdout.write(json)
+else if (process.argv.includes('--write')) { fs.writeFileSync(jsonPath, json); fs.writeFileSync(reportPath, report); process.stdout.write('wrote task-24-oracles.json and task-24-oracle-report.md\n') }
+else if (process.argv.includes('--check')) { if (fs.readFileSync(jsonPath, 'utf8') !== json) throw new Error('task-24-oracles.json drift'); if (fs.readFileSync(reportPath, 'utf8') !== report) throw new Error('task-24-oracle-report.md drift'); process.stdout.write('ok task-24-oracles.json and task-24-oracle-report.md\n') }
 else throw new Error('usage: node task-24-oracle-generator.mjs [--write|--check]')

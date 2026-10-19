@@ -1,12 +1,12 @@
 {
   "schema": "noisemaker-for-cpp.task24-gather-sorted-round-to-int.public-canonical-oracles.v1",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "provenance": {
-    "node": "v24.7.0",
+    "node": "v26.9.0",
     "public_api": "kernelFactories.get(key)",
     "canonical_identity": true,
     "adapter_entry_absent": true,
-    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56"
+    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
   },
   "program": {
     "key": "filter/pixelSort:gatherSorted",
@@ -18,8 +18,8 @@
     "defines": {},
     "profile": "gather-sorted-round-to-int-v1",
     "unrestricted_round_capability": false,
-    "canonical_factory_name": "canonicalFactory107",
-    "canonical_factory_to_string_sha256": "6f4021f01bc289554506215c3f01d716b4fcbf2b458527d02f1a0888d7eecb7c",
+    "canonical_factory_name": "canonicalFactory104",
+    "canonical_factory_to_string_sha256": "89a124f9dd6d1ad836335a5523b140235d6de8c8ef8e6c709bd5d396184f752a",
     "bindings": [
       "preparedTex:sampler2D@1/S1",
       "rankTex:sampler2D@2/S2",
@@ -1631,8 +1631,8 @@
         ]
       },
       "output": {
-        "f32_sha256": "156bb977e833e4b09b51a83b2a357dec5baef1608224512c2920b78cd5dfbd43",
-        "rgba8_sha256": "67367ef5cae19cfb7c03d76d63f59e1b26a019531d23f15979c39629a6b57d3c",
+        "f32_sha256": "39931b614df9e09b41085b266dd8790b024cf929b9fb08e2da1eb42fb028aa70",
+        "rgba8_sha256": "69dd085626f3f961bcedde34631c3224073cae3ce377a10c35bf7d689917ff8d",
         "probes": [
           {
             "at_top_down_xy": [
@@ -1784,8 +1784,8 @@
           "different_f32_lanes": 512,
           "different_rgba8_bytes": 490,
           "max_absolute_f32_difference": 1.5454545319080353,
-          "candidate_f32_sha256": "0b24384f62cd3a7782be8f9cc8bb2ebe5e62f74705213d8acbcd40c62f5536a2",
-          "candidate_rgba8_sha256": "6412a80aec08a3ef1ea2c36214a7bdc4599de4119e976fa6e9d859a9db3829ed"
+          "candidate_f32_sha256": "c517674d13f04a2288c4818c5c2ff68450dd682a53ed50c421a53ea9050e9e1b",
+          "candidate_rgba8_sha256": "28c4b7c4ee7ef031772c6bf5938f0e097137f44df3c5f76493351fcf4e0c10b3"
         }
       ]
     },
@@ -1833,8 +1833,8 @@
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "156bb977e833e4b09b51a83b2a357dec5baef1608224512c2920b78cd5dfbd43",
-          "candidate_rgba8_sha256": "67367ef5cae19cfb7c03d76d63f59e1b26a019531d23f15979c39629a6b57d3c"
+          "candidate_f32_sha256": "39931b614df9e09b41085b266dd8790b024cf929b9fb08e2da1eb42fb028aa70",
+          "candidate_rgba8_sha256": "69dd085626f3f961bcedde34631c3224073cae3ce377a10c35bf7d689917ff8d"
         }
       ]
     },
@@ -1878,12 +1878,12 @@
           "case": "normalized-wide-67",
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 4016,
-          "different_f32_lanes": 1161,
-          "different_rgba8_bytes": 1131,
+          "different_f32_bytes": 4021,
+          "different_f32_lanes": 1162,
+          "different_rgba8_bytes": 1132,
           "max_absolute_f32_difference": 1.5454545319080353,
-          "candidate_f32_sha256": "6b5a08534824cf65038153647791d6680b66279b3ec3abcdb8ac7e8fe4ead4b6",
-          "candidate_rgba8_sha256": "ae415e5d25131b7edcb705f06ab7333189a7a6ad335c7b4d7ce3dc319b4e13fa"
+          "candidate_f32_sha256": "28acf01769d1c1602b8a9ade1acf0c4143e8dda1f17f8117f21dffedcb08ef52",
+          "candidate_rgba8_sha256": "8d847efdbfb7686b54e83c1630ca01ffe91bb44907f422be549300aebb206984"
         }
       ]
     },
@@ -1931,8 +1931,8 @@
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "156bb977e833e4b09b51a83b2a357dec5baef1608224512c2920b78cd5dfbd43",
-          "candidate_rgba8_sha256": "67367ef5cae19cfb7c03d76d63f59e1b26a019531d23f15979c39629a6b57d3c"
+          "candidate_f32_sha256": "39931b614df9e09b41085b266dd8790b024cf929b9fb08e2da1eb42fb028aa70",
+          "candidate_rgba8_sha256": "69dd085626f3f961bcedde34631c3224073cae3ce377a10c35bf7d689917ff8d"
         }
       ]
     }
