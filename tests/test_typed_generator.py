@@ -11652,8 +11652,10 @@ synth/subdivide:subdivide""".splitlines())
         # The 8ae8e2a migration does the same for Coalesce, Refract, Degauss and
         # Scale, and adds the 8ae8e2a current-authority capture table. 5b686a4
         # re-captures the Life matrix under the authority's LCG hash routing.
+        # 7f47340 regenerates the current-authority captures and binds the
+        # canonical full-resolution aspect in the Polygon, Pattern and Osc2D fixtures.
         self.assertEqual(
-            "a66b7bd37d2585fc686193d15329dd692e54e3a328515afe453aa450537a4a93",
+            "0dbd97b805b918ff3829bea1fd2b62e8272218f8afc355baf466f3a9432a874c",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
