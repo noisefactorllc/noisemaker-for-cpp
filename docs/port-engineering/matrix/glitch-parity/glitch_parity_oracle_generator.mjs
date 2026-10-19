@@ -279,39 +279,42 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
 
 const expectedImportClosure = {
   "src/csl/glsl-kernel.js": "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff",
-  "src/csl/glsl-runtime.js": "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1",
+  "src/csl/glsl-runtime.js": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd",
+  "src/csl/metal-division.js": "104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8",
+  "src/csl/metal-reciprocal-data.js": "08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87",
+  "src/csl/metal-reciprocal-grid.js": "bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39",
   "src/csl/runtime.js": "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee",
   "src/effects/adapters/bit-effects.js": "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7",
-  "src/effects/adapters/crt.js": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
+  "src/effects/adapters/crt.js": "c37f70e15b6481b2f870761bf103529cd45cf6e5e714a0a6fd731dbe90c1c73f",
   "src/effects/adapters/f32-color.js": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046",
-  "src/effects/adapters/fractal.js": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29",
+  "src/effects/adapters/fractal.js": "73bb60668d98a142edcd535c146527945af445baa694595da2a19fe0a649e804",
   "src/effects/adapters/index.js": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e",
   "src/effects/adapters/julia.js": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
   "src/effects/adapters/median.js": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583",
   "src/effects/adapters/palette.js": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452",
   "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
-  "src/effects/adapters/snow.js": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366",
+  "src/effects/adapters/snow.js": "9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c",
   "src/effects/catalog.js": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
-  "src/effects/definition.js": "64d722d6bdeec753ff294c76f4b58c72a38c8182cc8d7bf65c2c113d07a96a6d",
+  "src/effects/definition.js": "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886",
   "src/effects/generated/canonical-adapter-data.js": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab",
-  "src/effects/generated/canonical-kernels.js": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
+  "src/effects/generated/canonical-kernels.js": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
   "src/effects/generated/kernels.js": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01",
   "src/effects/generated/upstream-snapshot.js": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467",
   "src/effects/registry.js": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618",
-  "src/runtime/automation.js": "982b3ea9b83e100aebfb9a9091be058516c41837a40d7731d629f896a4d48c92",
+  "src/runtime/automation.js": "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e",
   "src/runtime/pass-runner.js": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
-  "src/runtime/sampler.js": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328",
+  "src/runtime/sampler.js": "5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5",
   "src/runtime/surface.js": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
 }
 const actualImportClosure = importClosure()
@@ -358,7 +361,7 @@ if (JSON.stringify(sourceCensus) !== JSON.stringify({ mat4_constructors: 3, mat4
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
 if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory8') throw new Error('canonical Glitch factory identity drift')
-if (Buffer.byteLength(canonicalFactory.toString()) !== 13082 || sha256(canonicalFactory.toString()) !== '3f173bf9985737b2727080d0ed94cb1c873c73df7cbc36ab0c9ddf7d9f231bcb') {
+if (Buffer.byteLength(canonicalFactory.toString()) !== 13141 || sha256(canonicalFactory.toString()) !== 'bd51f73be90c40dc830dbca92b2e057939fb50bb9c2d1662ab068520d0c3eb6b') {
   throw new Error('canonical Glitch factory body drift')
 }
 if (publicFactory !== canonicalFactory) throw new Error('public catalog Glitch factory is not the canonical factory identity')

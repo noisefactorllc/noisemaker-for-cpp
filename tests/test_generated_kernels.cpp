@@ -15515,7 +15515,7 @@ TEST(typed_glitch_exact_comparer_rejects_shape_and_signed_zero) {
 
 TEST(typed_glitch_matches_all_eight_authoritative_js_oracles) {
   REQUIRE(glitch_native_oracle::kOracleSha256 ==
-          "3c4f075f51a1d6951b3701335bfcb0f0764d9ca13b3ee0dba7ceb0f1fe65554c");
+          "327ae25acaa6c73ba27625b3fd1a0310133ae8eb55417c2d356407990265bda0");
   REQUIRE(glitch_native_oracle::kProgramKey ==
           "classicNoisedeck/glitch:glitch");
   REQUIRE(glitch_native_oracle::kTotalFloatWords == 2468U);
@@ -15604,9 +15604,9 @@ TEST(typed_glitch_time_uniform_ingress_freezes_f32_before_number_binding) {
       fixture.width, fixture.height, static_cast<float>(fixture.time));
   constexpr std::size_t x1_red_lane = 4U;
   REQUIRE(noisemaker::float_bits_to_uint(
-              canonical.data()[x1_red_lane]) == 0x3f2dfc67U);
+              canonical.data()[x1_red_lane]) == 0x3f2dfc68U);
   REQUIRE(noisemaker::float_bits_to_uint(
-              raw_binary64.data()[x1_red_lane]) == 0x3f2dfc69U);
+              raw_binary64.data()[x1_red_lane]) == 0x3f2dfc6eU);
   REQUIRE(task23_float_bytes(canonical) != task23_float_bytes(raw_binary64));
 }
 

@@ -14,7 +14,7 @@ The reachable matrix closure is exactly three `mat4` constructors, two nested `m
 - RGBA8 output uses exact encoded bytes and never substitutes for Float32 parity.
 - The custom comparer rejects equal-byte-length dimension mismatches, distinguishes +0 from -0, and reports the first top-down pixel/channel and both lane words.
 - Every render is repeated, compared through the public-catalog identity, checked finite, and proves input-surface immutability.
-- Time ingress is checked at one fixed lane: canonical Float32 `0x3f2dfc67`, raw binary64 `0x3f2dfc69`.
+- Time ingress is checked at one fixed lane: canonical Float32 `0x3f2dfc68`, raw binary64 `0x3f2dfc6e`.
 
 ## Direct matrix fixtures
 
@@ -33,10 +33,10 @@ These fixtures call the real shipped `GlslCpuRuntime.stdlib.matrixMult` and inde
 | Case | Size | Seed | Scanlines | Float32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | ---: | ---: | --- | --- |
 | matrix-masked-control | 9x7 | 1 | 0 | 5c37b773a4ee6e5fdca3e7e6f706cef8292843e03346d7a3862a45a9d9faffa4 | 1a4f5661a45951cbaf878d33c9943d7d71c5b48c6dc8ca901ef9656f86623a2c |
-| scanlines-max-seed-one | 11x9 | 1 | 100 | ad97a810fbd8b75b94bfa5441acd24c7be1425e5b68938894646dbaa9fd722bc | 1c6365833f1ab510bac28fff814bb230144809bdf62f61766a8a905534054d38 |
-| scanlines-mid-seed-thirty-seven | 13x10 | 37 | 77 | d902156a47ca797e395f275e65a889ddecb4db941a7901be326fd5fd0f2d7d64 | 62c9a94a0074c290c83f0f3f339e5407a61fa5a112233360b231fc21e919a1e4 |
-| scanlines-min-nonzero | 17x6 | 100 | 1 | 0c07666b6c50c46ede7e4fcbe9445bfb4a71c1d474a9b1513862aec6cc9983d4 | 7f51a24b06d6994fa973005b23c73e5764a04f526c586cc7e8a36cd16832f751 |
-| aspect-negative-lens-vignette | 7x12 | 99 | 91 | d4fa0ffb18af54cf0b19eee89466f1ee5f161e71114be5069cbd91dde88b912f | 8db36265535fcc6de70fb9deeb2f69d3037460a9ed8f859d914c313f60f04aa4 |
+| scanlines-max-seed-one | 11x9 | 1 | 100 | e2d5a447f71f71e330c1a754eef4a7ec73d9ff2af2c05a6d7e978ab8607ca34f | 1c6365833f1ab510bac28fff814bb230144809bdf62f61766a8a905534054d38 |
+| scanlines-mid-seed-thirty-seven | 13x10 | 37 | 77 | dce3ae02179ebe668671b69358a520c46e20553962f49cbdba81ad4ebd72b552 | 62c9a94a0074c290c83f0f3f339e5407a61fa5a112233360b231fc21e919a1e4 |
+| scanlines-min-nonzero | 17x6 | 100 | 1 | 304ea75d40b980e418c4270b105849e7d10e68dfeab1dd4884c8c89abe0bbe1d | 7f51a24b06d6994fa973005b23c73e5764a04f526c586cc7e8a36cd16832f751 |
+| aspect-negative-lens-vignette | 7x12 | 99 | 91 | 60cb28c7b54525aee681b2b7336d922031b113daecea7df4c5ac52aa6f5ddf51 | 8db36265535fcc6de70fb9deeb2f69d3037460a9ed8f859d914c313f60f04aa4 |
 | snow-upper-midpoint | 8x8 | 2 | 63 | e850ccdebc789265a4f2747f310838db9a2c812f9a66a1746feb080d436c1a61 | 490e98f1cfa649e6273aee5ba49321c570ec6c1ffd33eae2623d169784c8917f |
 | snow-saturated-tiled | 6x5 | 73 | 88 | ecac2d53127699c55cf7ab9e1e542c68a4ea8ee06b163a0eff677e4fd13567a7 | 46223df666bb4b8b51651fdb54e97604523820660adcd9c4e659c8e3a9b7f103 |
 | fractional-full-resolution-tile | 5x9 | 41 | 56 | c6b566b5a70b290201ef83f064be0f0f3c1b4428868313a30c2bb76c8f522fd3 | 049db190f87941b08b396a4517400b08db275885edfea7a2f5bbf4e6b1479893 |
@@ -48,7 +48,7 @@ The suite covers matrix-masked control, maximum and minimum nonzero scanline inf
 | Mutation | Required witnesses | All Float32-divergent cases | All RGBA8-divergent cases |
 | --- | --- | --- | --- |
 | right-associated-chain | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, aspect-negative-lens-vignette | (none; Float32 remains authoritative) |
-| missing-intermediate-f32-stores | scanlines-mid-seed-thirty-seven, snow-upper-midpoint | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, snow-upper-midpoint | (none; Float32 remains authoritative) |
+| missing-intermediate-f32-stores | scanlines-mid-seed-thirty-seven, snow-upper-midpoint | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, aspect-negative-lens-vignette, snow-upper-midpoint | (none; Float32 remains authoritative) |
 | reverse-inner-operands | scanlines-max-seed-one | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, scanlines-min-nonzero, aspect-negative-lens-vignette, snow-upper-midpoint, fractional-full-resolution-tile | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, aspect-negative-lens-vignette, snow-upper-midpoint, fractional-full-resolution-tile |
 | swap-basis-matrices | scanlines-max-seed-one | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, scanlines-min-nonzero, aspect-negative-lens-vignette, snow-upper-midpoint, fractional-full-resolution-tile | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, aspect-negative-lens-vignette, snow-upper-midpoint, fractional-full-resolution-tile |
 | omit-basis-products | scanlines-max-seed-one | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, scanlines-min-nonzero, aspect-negative-lens-vignette, snow-upper-midpoint, fractional-full-resolution-tile | scanlines-max-seed-one, scanlines-mid-seed-thirty-seven, aspect-negative-lens-vignette, snow-upper-midpoint, fractional-full-resolution-tile |
