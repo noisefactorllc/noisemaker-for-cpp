@@ -9,7 +9,7 @@
 
 namespace lightleak192_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "5f2202a88b54e32e8573ee0acfd9aa411cba27916e14debc56fa4f14c95823af";
+inline constexpr std::string_view kOracleSha256 = "0bb81cd4f421fcfeafe16c1e31e22c42f0c61f92bd60c688576c008ff8ca6500";
 inline constexpr std::string_view kProgramKey = "filter/lightLeak:lightLeak";
 inline constexpr std::size_t kCaseCount = 11U;
 inline constexpr std::size_t kBindingCount = 9U;

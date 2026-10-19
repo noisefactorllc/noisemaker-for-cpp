@@ -478,7 +478,7 @@ def load(oracle_path: pathlib.Path = ORACLE, verify_assets: bool = True) -> tupl
         raise RuntimeError("LightLeak frozen document schema/program mismatch")
     provenance = oracle["provenance"]
     provenance_keys = {"authority_commit", "authority_checkout_clean", "node_version", "factory", "source", "import_closure", "binding_abi", "canonical_public_identity", "adapter_override_absent", "point_count"}
-    if set(provenance) != provenance_keys or (provenance["authority_commit"], provenance["authority_checkout_clean"], provenance["node_version"], provenance["point_count"]) != ("36e875283678b9b666fa332639953abfabf711ef", True, "v26.0.0", 6):
+    if set(provenance) != provenance_keys or (provenance["authority_commit"], provenance["authority_checkout_clean"], provenance["node_version"], provenance["point_count"]) != ("3cc7a0362d0ae37cba15e71e17d2113c86caf2d6", True, "v26.0.0", 6):
         raise RuntimeError("LightLeak authority provenance mismatch")
     if provenance["factory"] != {"name": "canonicalFactory74", "bytes": 7846, "sha256": "a30e8a1c27c9c2774e6d38d649cc695ac35c9db7ecde043980fd20e71d45cbf2"} or provenance["source"] != {"relative_path_from_noisemaker_for_cpp": f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/lightLeak/lightLeak.glsl", "bytes": 5047, "sha256": "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb"}:
         raise RuntimeError("LightLeak factory/source provenance mismatch")
@@ -688,7 +688,7 @@ def self_test_forged_documents() -> None:
             raise RuntimeError(f"forged-document self-test accepted {label}")
         duplicate_lines = {
             "duplicate-top-schema": f'  "schema": "{SCHEMA}",\n',
-            "duplicate-provenance": '    "authority_commit": "36e875283678b9b666fa332639953abfabf711ef",\n',
+            "duplicate-provenance": '    "authority_commit": "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6",\n',
             "duplicate-fixture": '    "source_function": "inputSurface",\n',
             "duplicate-case-dimension": '      "width": 1,\n',
             "duplicate-control": '        "alpha": 0,\n',
