@@ -157,7 +157,7 @@
       },
       {
         "relative_path": "src/effects/definition.js",
-        "sha256": "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"
+        "sha256": "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"
       },
       {
         "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -181,7 +181,7 @@
       },
       {
         "relative_path": "src/runtime/automation.js",
-        "sha256": "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"
+        "sha256": "7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f"
       },
       {
         "relative_path": "src/runtime/pass-runner.js",
@@ -205,11 +205,11 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/noise-parity/noise_oracle_generator.mjs",
-      "sha256": "cdcb2201df140d5baad478149047b7a49eda66c34fa5a59584f46ceb08536370"
+      "sha256": "cb1c1d1fa8a1c831d75eb82a2c2e6da570f438e1105f9dd9c370c660ddee314f"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_noise_native_oracle_include.py",
-      "sha256": "c3eb4acaed7904a8496d1c56138e8d116921c219a1b47e554fd0d38b7b62f733"
+      "sha256": "0da8a28058095c3d60f75280fc37ac27cc94a46beca878d14a67c82f3cfdd689"
     },
     "cpu_root": "<immutable-cpu-snapshot-root>"
   },
