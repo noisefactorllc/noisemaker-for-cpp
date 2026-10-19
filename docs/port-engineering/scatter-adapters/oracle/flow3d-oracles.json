@@ -2,7 +2,7 @@
   "adapter": "filter3d/flow3d:deposit",
   "authority": {
     "upstreamRevision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
-    "behavioralLockSha256": "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801"
+    "behavioralLockSha256": "30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b"
   },
   "cases": [
     {
