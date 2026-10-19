@@ -17971,7 +17971,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         self.assertTrue(oracle_path.is_file(), "Task 30 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "bf8c4c165846eb116d2afb4f78b7c1de78f70f104ac714e09395ceffbe51c758",
+            "5a4c1a5dc58a7a38e5c411dd9d85fe700c812cd6030155ed926f47d01e3ea4a4",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
@@ -18025,8 +18025,8 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
 
         # Independently recomputed public-factory mutation divergence counts
         # (out of the oracle's full 6 cases per mutation, across both
-        # authorized and sensitivity-only define maps), cross-checked against
-        # the brief's claimed 3/6, 2/6, 4/6, 2/6.
+        # authorized and sensitivity-only define maps). The brief claimed
+        # 3/6, 2/6, 4/6, 2/6; authority 7f47340 measures 3/6, 1/6, 4/6, 1/6.
         mutations = {item["id"]: item for item in oracle["public_factory_mutations"]}
         self.assertEqual(
             {"top-lane-any", "side-lane-any", "top-strict-less",
@@ -18036,8 +18036,8 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
             1 for row in item["case_results"] if not row["same_f32_bytes"])
             for mutation_id, item in mutations.items()}
         self.assertEqual({
-            "top-lane-any": 3, "side-lane-any": 2,
-            "top-strict-less": 4, "side-strict-less": 2,
+            "top-lane-any": 3, "side-lane-any": 1,
+            "top-strict-less": 4, "side-strict-less": 1,
         }, divergence)
 
         # Mode enum / dispatch table: five structurally distinct native modes
@@ -18109,7 +18109,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
             self.assertNotEqual(baseline, changed,
                                 f"Task30 executable token {ordinal}: {old}")
         self.assertEqual(
-            "bf8c4c165846eb116d2afb4f78b7c1de78f70f104ac714e09395ceffbe51c758",
+            "5a4c1a5dc58a7a38e5c411dd9d85fe700c812cd6030155ed926f47d01e3ea4a4",
             hashlib.sha256(oracle_bytes).hexdigest())
 
     def test_task30_node_level_closure_logic_rejects_past_the_coarse_hash_gate(self) -> None:

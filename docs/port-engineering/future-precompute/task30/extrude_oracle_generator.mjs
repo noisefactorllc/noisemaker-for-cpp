@@ -1,22 +1,28 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { bindCanonicalKernel } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+import { authenticateCpuRoot, EXPECTED } from '../../../../tools/dsl/corpus_authority.mjs'
+const rootIndex = process.argv.indexOf('--cpu-root')
+const ledgerIndex = process.argv.indexOf('--ledger')
+if (rootIndex < 0 || !process.argv[rootIndex + 1] || ledgerIndex < 0 || !process.argv[ledgerIndex + 1]) throw new Error('pass --cpu-root ROOT --ledger FILE')
+const cpuRoot = authenticateCpuRoot(process.argv[rootIndex + 1], process.argv[ledgerIndex + 1])
+const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await load('src/effects/catalog.js')
+const { bindCanonicalKernel } = await load('src/csl/glsl-kernel.js')
+const { runPass } = await load('src/runtime/pass-runner.js')
+const { Surface } = await load('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outPath = path.join(here, 'extrude-oracles.json')
 const reportPath = path.join(here, 'extrude-oracle-report.md')
 const key = 'filter/extrude:extrude'
-const revision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const sourcePath = `tools/glslcpp/corpus/${revision}/sources/filter/extrude/extrude.glsl`
-const canonicalPath = '../noisemaker-for-cpu/src/effects/generated/canonical-kernels.js'
-const catalogPath = '../noisemaker-for-cpu/src/effects/catalog.js'
-const adapterPath = '../noisemaker-for-cpu/src/effects/adapters/index.js'
+const revision = EXPECTED.upstreamRevision
+const sourcePath = path.resolve(here, '../../../..', `tools/glslcpp/corpus/${revision}/sources/filter/extrude/extrude.glsl`)
+const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
+const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
+const adapterPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
 const f = Math.fround
 
 function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex') }
@@ -27,12 +33,12 @@ function occurrences(text, needle) { return text.split(needle).length - 1 }
 function evaluated(text) { return (0, eval)(`(${text})`) }
 
 const provenance = {
-  canonical_kernels_sha256: 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56',
+  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  adapter_index_sha256: '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267',
+  adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
   source_sha256: '3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29',
-  canonical_factory_name: 'canonicalFactory51',
-  canonical_factory_to_string_sha256: '7d5cdd050eaa13282060557e7d6a097ef8300c1b71f31c13d782680eb58d91ef',
+  canonical_factory_name: 'canonicalFactory49',
+  canonical_factory_to_string_sha256: '4c5aeab58271dd76a54f523fa918c366c84affa954e3b67b0da14ee68a84fd98',
 }
 
 if (sha256(fs.readFileSync(canonicalPath)) !== provenance.canonical_kernels_sha256) throw new Error('canonical runtime drift')
@@ -44,7 +50,7 @@ if (canonical?.name !== provenance.canonical_factory_name || sha256(canonical.to
 if (kernelFactories.get(key) !== canonical || canonicalAdapterFactories[key] !== undefined) throw new Error('public factory is not direct canonical identity')
 
 const factoryText = canonical.toString()
-const topLine = 'var topHit = all(lessThanEqual(abs(new $runtime.PooledFloat32Array([P[0] - faceCenter[0], P[1] - faceCenter[1]])), faceHalf));'
+const topLine = 'var topHit = all(lessThanEqual(abs(new $runtime.PooledFloat32Array([(P[0] - imgCenter[0]) - (cellC[0] - imgCenter[0]) * s, (P[1] - imgCenter[1]) - (cellC[1] - imgCenter[1]) * s])), faceHalf));'
 const sideLine = 'var sideHit = (!topHit) && (all(lessThanEqual(abs(new $runtime.PooledFloat32Array([P[0] - cellC[0], P[1] - cellC[1]])), halfCell)));'
 if (occurrences(factoryText, topLine) !== 1 || occurrences(factoryText, sideLine) !== 1) throw new Error('exact relational factory shape drift')
 const mutations = [
