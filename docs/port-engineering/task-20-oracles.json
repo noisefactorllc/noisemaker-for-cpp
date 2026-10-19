@@ -2,14 +2,14 @@
   "schema": "noisemaker-for-cpp.task20-fixed-affine-centers13.canonical-oracles.v1",
   "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
   "provenance": {
-    "node": "v26.0.0",
-    "cpu_revision": "4307ca9f26fc415e4fc5e75227d429d35cc741cd",
-    "cpu_behavioral_sha256": "ae01190b9e5c14950f8f27acec69d8b6b6a4b4f5ea7495443155d8a9058ece9a",
+    "node": "v26.9.0",
+    "cpu_revision": "7f473400ac744025d46221bf527b43c1b5c1ef4e",
+    "cpu_behavioral_sha256": "6716656e0d81e23960dffc626d56f7f558abdd0bd4c53fd4eb555f7fa63dd608",
     "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
     "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
-    "canonical_kernels_sha256": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
+    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
     "factory_name": "canonicalFactory283",
-    "factory_to_string_sha256": "48de593c3096b18f8ca98518fac3f1055cdc3746883860273b5b1d82e374ef37",
+    "factory_to_string_sha256": "5e1e07a05251573d22324cc4cb83347e01838bc2341b41400acfb74833cd8843",
     "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",
     "generator": "task-20-oracle-generator.mjs",
     "reference_only": "all expected images come from the pinned direct canonical CPU factory; mutations are eval-created copies of that exact factory text with counted replacements"
@@ -234,7 +234,7 @@
         "nested-q-r-13x13",
         "animation-off"
       ],
-      "f32_sha256": "fc5265d3605f4fea4fdcda273bdd06e683cb9786673f1dba7f3294c6e084c0b8",
+      "f32_sha256": "de30efa1db2a90e108433ce18d04e55319583ba72c66707f18c0d93cedf50f1a",
       "rgba8_sha256": "839c10ec3273b8bc4fc9c3245b49fc513803e1fe58c4c3bd89e70f6464a8fb11",
       "probes": [
         {
@@ -279,15 +279,15 @@
             11
           ],
           "values": [
-            0.22249671816825867,
-            0.22249671816825867,
-            0.22249671816825867,
+            0.22249291837215424,
+            0.22249291837215424,
+            0.22249291837215424,
             1
           ],
           "f32_bits_le": [
-            "0x3e63d62e",
-            "0x3e63d62e",
-            "0x3e63d62e",
+            "0x3e63d52f",
+            "0x3e63d52f",
+            "0x3e63d52f",
             "0x3f800000"
           ]
         },
@@ -315,15 +315,15 @@
             15
           ],
           "values": [
-            0.7539110779762268,
-            0.7539110779762268,
-            0.7539110779762268,
+            0.7539071440696716,
+            0.7539071440696716,
+            0.7539071440696716,
             1
           ],
           "f32_bits_le": [
-            "0x3f410051",
-            "0x3f410051",
-            "0x3f410051",
+            "0x3f41000f",
+            "0x3f41000f",
+            "0x3f41000f",
             "0x3f800000"
           ]
         },
@@ -504,7 +504,7 @@
         "circle-i-read-sites",
         "drawLines-false"
       ],
-      "f32_sha256": "f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62",
+      "f32_sha256": "debdff8bcc19ab78d75068a5efcf65c8ba0cf608307871d423685ad8cf465cf4",
       "rgba8_sha256": "52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e",
       "probes": [
         {
@@ -775,7 +775,7 @@
         "78-unordered-line-pairs",
         "centers-i-and-j-line-reads"
       ],
-      "f32_sha256": "7b29aafc75000b7da82a15ad30b77e1046340451ec9ad8be93c69db397dcd36c",
+      "f32_sha256": "348adfb4dc08d89f459ee450a3313db1d873903e2762288b0be6601d85f371ef",
       "rgba8_sha256": "116f61afd10ccf1dba02786e751ea58399b278a66766ca242b2f6b63aefc9dee",
       "probes": [
         {
@@ -820,15 +820,15 @@
             11
           ],
           "values": [
-            0.14823439717292786,
-            0.2069406360387802,
-            0.30079594254493713,
+            0.14823587238788605,
+            0.20694151520729065,
+            0.3007957935333252,
             1
           ],
           "f32_bits_le": [
-            "0x3e17cac2",
-            "0x3e53e83f",
-            "0x3e9a01ed",
+            "0x3e17cb25",
+            "0x3e53e87a",
+            "0x3e9a01e8",
             "0x3f800000"
           ]
         },
@@ -838,15 +838,15 @@
             11
           ],
           "values": [
-            0.5605988502502441,
-            0.4543593227863312,
-            0.2522824704647064,
+            0.5605977773666382,
+            0.45435866713523865,
+            0.25228261947631836,
             1
           ],
           "f32_bits_le": [
-            "0x3f0f8368",
-            "0x3ee8a1c9",
-            "0x3e812b2b",
+            "0x3f0f8356",
+            "0x3ee8a1b3",
+            "0x3e812b30",
             "0x3f800000"
           ]
         },
@@ -856,15 +856,15 @@
             15
           ],
           "values": [
-            0.1695689857006073,
-            0.21974138915538788,
-            0.29828599095344543,
+            0.16956940293312073,
+            0.21974164247512817,
+            0.29828596115112305,
             1
           ],
           "f32_bits_le": [
-            "0x3e2da37e",
-            "0x3e6103e3",
-            "0x3e98b8f1",
+            "0x3e2da39a",
+            "0x3e6103f4",
+            "0x3e98b8f0",
             "0x3f800000"
           ]
         },
@@ -1044,7 +1044,7 @@
         "nondefault-speed-pulseDepth-time",
         "F32-center-lane-sensitivity"
       ],
-      "f32_sha256": "0530845ee4f2637154a532cd32668da5cf9560ecd6e7396c24fba2a2f975d970",
+      "f32_sha256": "4d50184492224073d6ed36da7e36a7ce5152f0a116c810927c2850c6c475fe22",
       "rgba8_sha256": "3c8fd01ab01d1a258ca14115f9816810d4d3ebd35e08c4fa4dba2880f90fb3b0",
       "probes": [
         {
@@ -1179,15 +1179,15 @@
             21
           ],
           "values": [
-            0.09183574467897415,
-            0.17310144007205963,
-            0.30743110179901123,
+            0.09183479100465775,
+            0.17310087382793427,
+            0.3074311912059784,
             1
           ],
           "f32_bits_le": [
-            "0x3dbc1461",
-            "0x3e314181",
-            "0x3e9d679c",
+            "0x3dbc13e1",
+            "0x3e31415b",
+            "0x3e9d679f",
             "0x3f800000"
           ]
         },
@@ -1314,7 +1314,7 @@
         "lineVis-unfoldVis-0.65f",
         "78-line-pairs"
       ],
-      "f32_sha256": "7684e6eb202d4ad871d475f4634fae90208090eeb88475c8fce32f89a65c6fed",
+      "f32_sha256": "5cf964b00d0d1acbcab2cf6400a958bf80201e7bb49965f44c1d261afaeba812",
       "rgba8_sha256": "9411d0e41a6081c706b5ad6f7e0cfdfc33dc306f51416fdbe2b6203b84c244da",
       "probes": [
         {
@@ -1359,15 +1359,15 @@
             11
           ],
           "values": [
-            0.13970735669136047,
-            0.20182441174983978,
-            0.30179914832115173,
+            0.13970868289470673,
+            0.20182520151138306,
+            0.3017989695072174,
             1
           ],
           "f32_bits_le": [
-            "0x3e0f0f72",
-            "0x3e4eab0f",
-            "0x3e9a856b",
+            "0x3e0f0fcb",
+            "0x3e4eab44",
+            "0x3e9a8565",
             "0x3f800000"
           ]
         },
@@ -1377,15 +1377,15 @@
             11
           ],
           "values": [
-            0.5071268081665039,
-            0.422276109457016,
-            0.2585733234882355,
+            0.5071257948875427,
+            0.42227548360824585,
+            0.258573442697525,
             1
           ],
           "f32_bits_le": [
-            "0x3f01d310",
-            "0x3ed83493",
-            "0x3e8463b9",
+            "0x3f01d2ff",
+            "0x3ed8347e",
+            "0x3e8463bd",
             "0x3f800000"
           ]
         },
@@ -1395,15 +1395,15 @@
             15
           ],
           "values": [
-            0.15871663391590118,
-            0.2132299691438675,
-            0.2995627522468567,
+            0.15871699154376984,
+            0.2132301926612854,
+            0.2995627224445343,
             1
           ],
           "f32_bits_le": [
-            "0x3e22869d",
-            "0x3e5a58f5",
-            "0x3e99604a",
+            "0x3e2286b5",
+            "0x3e5a5904",
+            "0x3e996049",
             "0x3f800000"
           ]
         },
@@ -1582,7 +1582,7 @@
         "non-array-control",
         "main-rotate-animation"
       ],
-      "f32_sha256": "9e34c924e1f3877083934d62aac1d722e53cd979307641d0b63f858cb10c0497",
+      "f32_sha256": "edf4a8e43f7358ba0d6aeb18f9f62fe65f91cb2d67c6f44d768fdb5347cc1ba7",
       "rgba8_sha256": "8d3e2cd198ebe8257530c38512354b19116ca879fa27eceeea1665cc24970a71",
       "probes": [
         {
@@ -2119,7 +2119,7 @@
         "main-pulse-animation",
         "visible-mixed-output"
       ],
-      "f32_sha256": "b7f5cda337223fc06bd2f6e95d50266fdb4b41565b6bab3dfa574652592c0cba",
+      "f32_sha256": "a088510b07e9a805c0e18a8c0801e8bf373c201d302d6f8cb29dc30e37590b9c",
       "rgba8_sha256": "29a84ec3bfb586b33ed25b67a3306468bbaac9b25f0725fc40504688847352f7",
       "probes": [
         {
@@ -2388,7 +2388,7 @@
         "three-trip-loop",
         "ripple-animation"
       ],
-      "f32_sha256": "5fc17595d0d0a1f82a2792e73486691370a8b0ca8402f61c8c14dadbacf41961",
+      "f32_sha256": "422bbc9dec5aa5072b62359b32a9ecaed6364fdc60954bd18ec0727119dfaed2",
       "rgba8_sha256": "2e10fb5660e04c7523c7bf29df18c0d39dd9e9e3be8ea925db194ab2978832c5",
       "probes": [
         {
@@ -2451,15 +2451,15 @@
             11
           ],
           "values": [
-            0.24753500521183014,
-            0.26652100682258606,
-            0.28911352157592773,
+            0.247537299990654,
+            0.2665223777294159,
+            0.28911325335502625,
             1
           ],
           "f32_bits_le": [
-            "0x3e7d79d1",
-            "0x3e887571",
-            "0x3e9406b0",
+            "0x3e7d7a6b",
+            "0x3e88759f",
+            "0x3e9406a7",
             "0x3f800000"
           ]
         },
@@ -2523,15 +2523,15 @@
             21
           ],
           "values": [
-            0.326978862285614,
-            0.31418731808662415,
-            0.2797671854496002,
+            0.32697629928588867,
+            0.31418576836586,
+            0.2797674834728241,
             1
           ],
           "f32_bits_le": [
-            "0x3ea769c6",
-            "0x3ea0dd29",
-            "0x3e8f3da5",
+            "0x3ea76970",
+            "0x3ea0dcf5",
+            "0x3e8f3daf",
             "0x3f800000"
           ]
         },
@@ -3311,7 +3311,7 @@
       "different_rgba8_bytes": 2553,
       "max_absolute_f32_difference": 0,
       "nonfinite_lane_transitions": 2553,
-      "mutated_f32_sha256": "155585055be5f51240ef2b5e2cd6c62cbd1e21ba1465502052e04b3ca842ff18",
+      "mutated_f32_sha256": "978a2c7762eefd65643c146e13cffa1d53d95597606e13d2d87e2cb04f0e1b93",
       "mutated_rgba8_sha256": "ba1edb9f2de0b7d4af5bd22d566dceced832bdf7a4a229f7af2acbb1bb287046"
     },
     "metadata_starPoints_5_through_12": [
@@ -3320,7 +3320,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "48447be4e3ae606005e02a3d0f88cd6dc8312dc4152dd4060639991db25d39eb",
+        "intended_control_f32_sha256": "253d0d85ba0bb656a2781b659bf131e4cf06d0d9e9cce86dfede245a0e6eeaa6",
         "intended_control_rgba8_sha256": "e214828fbd2e9bfaabc86716e01aafaae6da8cfb807a31c757c3b0b11133c229",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3336,12 +3336,12 @@
         "difference": {
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 10205,
+          "different_f32_bytes": 10208,
           "different_f32_lanes": 2553,
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "48447be4e3ae606005e02a3d0f88cd6dc8312dc4152dd4060639991db25d39eb",
+          "mutated_f32_sha256": "253d0d85ba0bb656a2781b659bf131e4cf06d0d9e9cce86dfede245a0e6eeaa6",
           "mutated_rgba8_sha256": "e214828fbd2e9bfaabc86716e01aafaae6da8cfb807a31c757c3b0b11133c229"
         }
       },
@@ -3350,7 +3350,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "781e86db766a9c27eccd2207b8fed3401160e057d98a1c77711cf40e4cb03876",
+        "intended_control_f32_sha256": "b5b4d9b741981fc80a61fce63a9c4244b95be6655988b26596ebeb1c426fdeef",
         "intended_control_rgba8_sha256": "d637411ca7a4fd503254da9984410b3facff66a856f160264ad8745dde418574",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3371,7 +3371,7 @@
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "781e86db766a9c27eccd2207b8fed3401160e057d98a1c77711cf40e4cb03876",
+          "mutated_f32_sha256": "b5b4d9b741981fc80a61fce63a9c4244b95be6655988b26596ebeb1c426fdeef",
           "mutated_rgba8_sha256": "d637411ca7a4fd503254da9984410b3facff66a856f160264ad8745dde418574"
         }
       },
@@ -3380,7 +3380,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "155585055be5f51240ef2b5e2cd6c62cbd1e21ba1465502052e04b3ca842ff18",
+        "intended_control_f32_sha256": "978a2c7762eefd65643c146e13cffa1d53d95597606e13d2d87e2cb04f0e1b93",
         "intended_control_rgba8_sha256": "ba1edb9f2de0b7d4af5bd22d566dceced832bdf7a4a229f7af2acbb1bb287046",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3401,7 +3401,7 @@
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "155585055be5f51240ef2b5e2cd6c62cbd1e21ba1465502052e04b3ca842ff18",
+          "mutated_f32_sha256": "978a2c7762eefd65643c146e13cffa1d53d95597606e13d2d87e2cb04f0e1b93",
           "mutated_rgba8_sha256": "ba1edb9f2de0b7d4af5bd22d566dceced832bdf7a4a229f7af2acbb1bb287046"
         }
       },
@@ -3410,7 +3410,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "20b7c0dfd15c564d71a25de1324906508c3d7d320b59c9759c94ce9e166440d8",
+        "intended_control_f32_sha256": "1d5d0aedeb368d711594569eedde2800c99f9371a4df4c337d659fd5349b86f6",
         "intended_control_rgba8_sha256": "f9267ca6b00fa80bfe8cac736f5f517ab09845f67f187c466a6b5743ace0c2bd",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3426,12 +3426,12 @@
         "difference": {
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 10212,
+          "different_f32_bytes": 10211,
           "different_f32_lanes": 2553,
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "20b7c0dfd15c564d71a25de1324906508c3d7d320b59c9759c94ce9e166440d8",
+          "mutated_f32_sha256": "1d5d0aedeb368d711594569eedde2800c99f9371a4df4c337d659fd5349b86f6",
           "mutated_rgba8_sha256": "f9267ca6b00fa80bfe8cac736f5f517ab09845f67f187c466a6b5743ace0c2bd"
         }
       },
@@ -3440,7 +3440,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "25492d82b2b973fdab6be5afa306c7c89dcf3696f6ac04c5fe333a0c64854854",
+        "intended_control_f32_sha256": "0526e7b736ffc047a8e3db5d486adb51d5499488278b08f277cd53e8b24bcaff",
         "intended_control_rgba8_sha256": "41c55a0f46f23eccd10e72205572d3c2fa3b928fe41e4ceca1b47f7059bb5486",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3461,7 +3461,7 @@
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "25492d82b2b973fdab6be5afa306c7c89dcf3696f6ac04c5fe333a0c64854854",
+          "mutated_f32_sha256": "0526e7b736ffc047a8e3db5d486adb51d5499488278b08f277cd53e8b24bcaff",
           "mutated_rgba8_sha256": "41c55a0f46f23eccd10e72205572d3c2fa3b928fe41e4ceca1b47f7059bb5486"
         }
       },
@@ -3470,7 +3470,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "61cca10d218315f7276fe542162af1aeafde6fc546d46a9e26027c1c0097ff7d",
+        "intended_control_f32_sha256": "3ab1be5313197f5265727dff20c900754b043530abb73edeb75540efcbddca9e",
         "intended_control_rgba8_sha256": "347eefb65e5547770326c4e2a1bdf63bd38aec158f730d518a9ddcccc9a887f4",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3486,12 +3486,12 @@
         "difference": {
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 10211,
+          "different_f32_bytes": 10212,
           "different_f32_lanes": 2553,
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "61cca10d218315f7276fe542162af1aeafde6fc546d46a9e26027c1c0097ff7d",
+          "mutated_f32_sha256": "3ab1be5313197f5265727dff20c900754b043530abb73edeb75540efcbddca9e",
           "mutated_rgba8_sha256": "347eefb65e5547770326c4e2a1bdf63bd38aec158f730d518a9ddcccc9a887f4"
         }
       },
@@ -3500,7 +3500,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "5b1e4d60e55d29138a1667fcdab9082c850afe5b28d181f0bdfb94acd8d7f9bc",
+        "intended_control_f32_sha256": "c962728dd720901da795e3c3f8dbfe102bc1f2a19fb6db0ea685ffeaf7803614",
         "intended_control_rgba8_sha256": "9807488f39989db33cbf1f01bb79a4cd58d4d4cfeb3ff2345be749244bebbf1d",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3521,7 +3521,7 @@
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "5b1e4d60e55d29138a1667fcdab9082c850afe5b28d181f0bdfb94acd8d7f9bc",
+          "mutated_f32_sha256": "c962728dd720901da795e3c3f8dbfe102bc1f2a19fb6db0ea685ffeaf7803614",
           "mutated_rgba8_sha256": "9807488f39989db33cbf1f01bb79a4cd58d4d4cfeb3ff2345be749244bebbf1d"
         }
       },
@@ -3530,7 +3530,7 @@
         "canonical_f32_sha256": "2582e12629310c9fbd4781a158fd7f77512709b7b081bfb5ca00f38efde57879",
         "canonical_rgba8_sha256": "0ca995365b120c89a3dbf0f3def90f25c768c1f6af5556f57d15ef2fda197ebe",
         "canonical_nonfinite_rgb_lanes": 2553,
-        "intended_control_f32_sha256": "18080543707cb922423d8951b044ec7883e633a2ad4b2cb7025173abc65b568f",
+        "intended_control_f32_sha256": "1c1d758c39fb1f96074d8c7d93e865f7e773f8ca567a8c9c8ed81152b9d8d056",
         "intended_control_rgba8_sha256": "6f09a011c851736603a696edd734eda5872557838d937a8f8c6f78332430dd1e",
         "intended_control_metrics": {
           "pixels": 851,
@@ -3546,12 +3546,12 @@
         "difference": {
           "same_f32_bytes": false,
           "same_rgba8_bytes": false,
-          "different_f32_bytes": 10211,
+          "different_f32_bytes": 10209,
           "different_f32_lanes": 2553,
           "different_rgba8_bytes": 2553,
           "max_absolute_f32_difference": 0,
           "nonfinite_lane_transitions": 2553,
-          "mutated_f32_sha256": "18080543707cb922423d8951b044ec7883e633a2ad4b2cb7025173abc65b568f",
+          "mutated_f32_sha256": "1c1d758c39fb1f96074d8c7d93e865f7e773f8ca567a8c9c8ed81152b9d8d056",
           "mutated_rgba8_sha256": "6f09a011c851736603a696edd734eda5872557838d937a8f8c6f78332430dd1e"
         }
       }
@@ -3595,36 +3595,36 @@
             "case": "geometry-1-fruit-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 1949,
+            "different_f32_bytes": 1950,
             "different_f32_lanes": 570,
             "different_rgba8_bytes": 541,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "6e4b49704e9efe05487bfaa176a5a2223ffdde324eba5aa17e1fd5373526e4e5",
+            "mutated_f32_sha256": "da30c1cbe1f48bbbfc7f2f83ff81f487e82f22ca226c1af6b1ebafcf85b3ba15",
             "mutated_rgba8_sha256": "b6a55289236ff645cd94b741c1df28baca80c347ff7c0152ef62a68165301e4c"
           },
           {
             "case": "geometry-3-metatron-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 2648,
-            "different_f32_lanes": 914,
+            "different_f32_bytes": 2657,
+            "different_f32_lanes": 918,
             "different_rgba8_bytes": 710,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "e02aae507f91f23886fd0cffca35f7b82fbcec6eca3875a7e5a3987a49e41145",
+            "mutated_f32_sha256": "248419235b86af014b7a787fcebf3cd368c8174b1d1df3bbdc170d1d7da789ad",
             "mutated_rgba8_sha256": "f7d6dcdabae26151d0fb317945225750083314680d387a932d7a75814bd7e86f"
           },
           {
             "case": "geometry-1-fruit-ripple",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 2802,
+            "different_f32_bytes": 2800,
             "different_f32_lanes": 807,
             "different_rgba8_bytes": 782,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "cce5c6743aca2d8522a8712df63c481f4b3e6c20fb6f43bce07be6a02545e3d8",
+            "mutated_f32_sha256": "009664537d3e3c2f5a534b510d31237243fbc6946d6ce08aa6bb2b302786416e",
             "mutated_rgba8_sha256": "4c1e1f56e922971bb43ffde92e0b9bc7f00138904c65061fce8d13b780a0c530"
           },
           {
@@ -3632,11 +3632,11 @@
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
             "different_f32_bytes": 1988,
-            "different_f32_lanes": 728,
+            "different_f32_lanes": 730,
             "different_rgba8_bytes": 512,
             "max_absolute_f32_difference": 0.757355622947216,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "807b227ed6ff7a0ae46877ddb7a63c857961ec8f2ba958a27753a6e5e7354b90",
+            "mutated_f32_sha256": "1abf50bac772de1518a393c34ec13d3cc2eeabeeff6e6166ea443de48ae362e3",
             "mutated_rgba8_sha256": "895ba04b42fca0f7a89fd05d6ff4ef631a6934100f5fd49a71470f3182389db6"
           }
         ],
@@ -3675,14 +3675,14 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62",
+            "mutated_f32_sha256": "debdff8bcc19ab78d75068a5efcf65c8ba0cf608307871d423685ad8cf465cf4",
             "mutated_rgba8_sha256": "52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e"
           },
           {
             "case": "geometry-3-metatron-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 10202,
+            "different_f32_bytes": 10201,
             "different_f32_lanes": 2553,
             "different_rgba8_bytes": 2553,
             "max_absolute_f32_difference": 0,
@@ -3699,14 +3699,14 @@
             "different_rgba8_bytes": 108,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "bfbe9b05f13edfb47e27d1f31182462206a652028ef57510748262fdef4aed77",
+            "mutated_f32_sha256": "8524f838156714dd6caeaf6251c044646cf3eaad9d7c2703ec77801a957ffcdd",
             "mutated_rgba8_sha256": "79a8b67629bd451d5f9612b32a6babc2884297ea6b85c83221399f91d92c9b56"
           },
           {
             "case": "geometry-3-metatron-unfold",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 10201,
+            "different_f32_bytes": 10200,
             "different_f32_lanes": 2553,
             "different_rgba8_bytes": 2553,
             "max_absolute_f32_difference": 0,
@@ -3750,14 +3750,14 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62",
+            "mutated_f32_sha256": "debdff8bcc19ab78d75068a5efcf65c8ba0cf608307871d423685ad8cf465cf4",
             "mutated_rgba8_sha256": "52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e"
           },
           {
             "case": "geometry-3-metatron-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 10202,
+            "different_f32_bytes": 10201,
             "different_f32_lanes": 2553,
             "different_rgba8_bytes": 2553,
             "max_absolute_f32_difference": 0,
@@ -3774,14 +3774,14 @@
             "different_rgba8_bytes": 108,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "bfbe9b05f13edfb47e27d1f31182462206a652028ef57510748262fdef4aed77",
+            "mutated_f32_sha256": "8524f838156714dd6caeaf6251c044646cf3eaad9d7c2703ec77801a957ffcdd",
             "mutated_rgba8_sha256": "79a8b67629bd451d5f9612b32a6babc2884297ea6b85c83221399f91d92c9b56"
           },
           {
             "case": "geometry-3-metatron-unfold",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 10201,
+            "different_f32_bytes": 10200,
             "different_f32_lanes": 2553,
             "different_rgba8_bytes": 2553,
             "max_absolute_f32_difference": 0,
@@ -3825,7 +3825,7 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62",
+            "mutated_f32_sha256": "debdff8bcc19ab78d75068a5efcf65c8ba0cf608307871d423685ad8cf465cf4",
             "mutated_rgba8_sha256": "52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e"
           },
           {
@@ -3837,7 +3837,7 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "7b29aafc75000b7da82a15ad30b77e1046340451ec9ad8be93c69db397dcd36c",
+            "mutated_f32_sha256": "348adfb4dc08d89f459ee450a3313db1d873903e2762288b0be6601d85f371ef",
             "mutated_rgba8_sha256": "116f61afd10ccf1dba02786e751ea58399b278a66766ca242b2f6b63aefc9dee"
           },
           {
@@ -3849,7 +3849,7 @@
             "different_rgba8_bytes": 823,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "404acf8de1664d77db643431ab1a2e1226d5d75dda59dcc173c497174ca05dcb",
+            "mutated_f32_sha256": "d5078bfd02863c5b6938f9328b50ecb22861b6fd948f15406d1729df87b4d723",
             "mutated_rgba8_sha256": "cdf5968958df2d7f6820c812e2ab5183cc7cc618b057844d298279aa750a4215"
           },
           {
@@ -3861,7 +3861,7 @@
             "different_rgba8_bytes": 81,
             "max_absolute_f32_difference": 0.11400093883275986,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "0440041ef4ad297e9a42242d52e2aa14caf4acf49cf10c1f470e1392d4643ee2",
+            "mutated_f32_sha256": "80debc8a3540aef7b32a39db6b10c4049477d5db31da570ed4b1f8505ca59432",
             "mutated_rgba8_sha256": "9956dbd515c02ec3876b1990acec144ce80c9dc5b1fc6d51770f9413b7e1604e"
           }
         ],
@@ -3895,24 +3895,24 @@
             "case": "geometry-1-fruit-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 904,
+            "different_f32_bytes": 905,
             "different_f32_lanes": 264,
             "different_rgba8_bytes": 253,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "f0e42476410a2c39d9cc5d9adc0e73c157ebe3cd0361ff00a318b41e40bc5007",
+            "mutated_f32_sha256": "8db3a5f8d6c782a60b505e587cfa7be6ba600706b21b85069b6308ef80993cc6",
             "mutated_rgba8_sha256": "dbfefd219bb9cf6a69dfd88d23719f9317f1cb4b2517566ce9ccdb5c56fa79c0"
           },
           {
             "case": "geometry-3-metatron-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 591,
+            "different_f32_bytes": 592,
             "different_f32_lanes": 177,
             "different_rgba8_bytes": 175,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "c9cb9e574ab74d6ad581d94de1cee407d9e52ab1dac3907c01dd7be8a188ec6a",
+            "mutated_f32_sha256": "d86bcd95c2381e6374dffb25d460400cf3d86d45ef090f38341520fc136ec536",
             "mutated_rgba8_sha256": "541a0257e3c106a786c86f037bc5aa29d6bb4b50b95d8d03dc4ed4d552eb9c1e"
           },
           {
@@ -3924,19 +3924,19 @@
             "different_rgba8_bytes": 999,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "4eccdc69a35faafe3d0794134847542dbe769d764f5c1d8d2bc0a32b96b2052c",
+            "mutated_f32_sha256": "236f5fee783ebd1b082b4b4e6f274fd5bd8358dcd15a6728bd42204ec9894889",
             "mutated_rgba8_sha256": "8fb4d8dce10cc98f67d4924d060d84c2ae693ced82e431701f6a1ab4a69dce42"
           },
           {
             "case": "geometry-3-metatron-unfold",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 1477,
+            "different_f32_bytes": 1478,
             "different_f32_lanes": 453,
             "different_rgba8_bytes": 445,
             "max_absolute_f32_difference": 0.8395350500941277,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "ba95e4142eb831ffa3b78ce12e070f586584739dba3e5603a5294ddc9f5e2656",
+            "mutated_f32_sha256": "5349f793940ffb09e40bbd92e4cadf96926a6dc742b942e70ddb66f732c38f8a",
             "mutated_rgba8_sha256": "e570b17f338798b23f1c094fbe4ec7ecd46a00a3cb3f602a51a633ed4a8dad24"
           }
         ],
@@ -3975,19 +3975,19 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62",
+            "mutated_f32_sha256": "debdff8bcc19ab78d75068a5efcf65c8ba0cf608307871d423685ad8cf465cf4",
             "mutated_rgba8_sha256": "52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e"
           },
           {
             "case": "geometry-3-metatron-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 4931,
+            "different_f32_bytes": 4929,
             "different_f32_lanes": 1431,
             "different_rgba8_bytes": 1383,
             "max_absolute_f32_difference": 0.8500000163912773,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "de2cd4610a3c3c25445612cc6dde0dc8b275415385ed8cd875ba0fac4691f9d0",
+            "mutated_f32_sha256": "f95a5b3c795e41d56005621696c4151fe86ca84bb1255f03bc71f5c1c063829b",
             "mutated_rgba8_sha256": "21a0f4aeacdcba83dcb772cc67e200ae7fa6bceb8d8be781c0ba26c5088e00fb"
           },
           {
@@ -3999,19 +3999,19 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "0530845ee4f2637154a532cd32668da5cf9560ecd6e7396c24fba2a2f975d970",
+            "mutated_f32_sha256": "4d50184492224073d6ed36da7e36a7ce5152f0a116c810927c2850c6c475fe22",
             "mutated_rgba8_sha256": "3c8fd01ab01d1a258ca14115f9816810d4d3ebd35e08c4fa4dba2880f90fb3b0"
           },
           {
             "case": "geometry-3-metatron-unfold",
             "same_f32_bytes": false,
             "same_rgba8_bytes": false,
-            "different_f32_bytes": 6118,
+            "different_f32_bytes": 6120,
             "different_f32_lanes": 1776,
             "different_rgba8_bytes": 1723,
             "max_absolute_f32_difference": 0.757355622947216,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "62290d49066444d0370ee4077bb0c19c1f7466ab1a208323097b737b1f11dddc",
+            "mutated_f32_sha256": "e4cd01ac9153654c5e566dcad859170f3a7270b64a7fe094643435f05ec94f5c",
             "mutated_rgba8_sha256": "7296f3182b573783f76d979cfa00c474fed9514d64f712e2710fa1d0c16aaa0f"
           }
         ],
@@ -4052,19 +4052,19 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "f11ad8eb98bce19933227fb38ab0c4888df7ea876a38f911f508db88a6089a62",
+            "mutated_f32_sha256": "debdff8bcc19ab78d75068a5efcf65c8ba0cf608307871d423685ad8cf465cf4",
             "mutated_rgba8_sha256": "52a90288985c5e7cb3c455b58ffb64b6c365335aecc7200d8f8bfe5bbb9f6b6e"
           },
           {
             "case": "geometry-3-metatron-animation-off",
             "same_f32_bytes": false,
             "same_rgba8_bytes": true,
-            "different_f32_bytes": 97,
-            "different_f32_lanes": 89,
+            "different_f32_bytes": 91,
+            "different_f32_lanes": 82,
             "different_rgba8_bytes": 0,
-            "max_absolute_f32_difference": 0.0000041425228118896484,
+            "max_absolute_f32_difference": 0.000005066394805908203,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "3d2792216f138af2c416cefe6e561c363a6609511ba5429d3470ad601fcbb6fd",
+            "mutated_f32_sha256": "8063ed2652ff81972a2bce0f864395ffd91a3460620adf0aa615898acae5691d",
             "mutated_rgba8_sha256": "116f61afd10ccf1dba02786e751ea58399b278a66766ca242b2f6b63aefc9dee"
           },
           {
@@ -4076,19 +4076,19 @@
             "different_rgba8_bytes": 0,
             "max_absolute_f32_difference": 0,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "0530845ee4f2637154a532cd32668da5cf9560ecd6e7396c24fba2a2f975d970",
+            "mutated_f32_sha256": "4d50184492224073d6ed36da7e36a7ce5152f0a116c810927c2850c6c475fe22",
             "mutated_rgba8_sha256": "3c8fd01ab01d1a258ca14115f9816810d4d3ebd35e08c4fa4dba2880f90fb3b0"
           },
           {
             "case": "geometry-3-metatron-unfold",
             "same_f32_bytes": false,
             "same_rgba8_bytes": true,
-            "different_f32_bytes": 129,
-            "different_f32_lanes": 116,
+            "different_f32_bytes": 116,
+            "different_f32_lanes": 107,
             "different_rgba8_bytes": 0,
-            "max_absolute_f32_difference": 0.0000036954879760742188,
+            "max_absolute_f32_difference": 0.0000045299530029296875,
             "nonfinite_lane_transitions": 0,
-            "mutated_f32_sha256": "64df234b8e74555ddb66f4898402b01009451a68887622d4926094e99a9f4eb0",
+            "mutated_f32_sha256": "647a758031874b556cda368a930d21ecc6f5f1dab6911b05eb32e199dd8ff6b1",
             "mutated_rgba8_sha256": "9411d0e41a6081c706b5ad6f7e0cfdfc33dc306f51416fdbe2b6203b84c244da"
           }
         ],

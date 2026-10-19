@@ -26,8 +26,8 @@ const key = 'synth/sacredGeometry:sacredGeometry'
 const source = 'sources/synth/sacredGeometry/sacredGeometry.glsl'
 const expectedRawSha256 = '24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de'
 const expectedNormalizedSha256 = '6b3c4e8492a69969f3d6f78689cfd19de846656fd0c6d5c8dfd5a758427c61d3'
-const expectedCanonicalKernelsSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
-const expectedFactorySha256 = '48de593c3096b18f8ca98518fac3f1055cdc3746883860273b5b1d82e374ef37'
+const expectedCanonicalKernelsSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
+const expectedFactorySha256 = '5e1e07a05251573d22324cc4cb83347e01838bc2341b41400acfb74833cd8843'
 
 const f = Math.fround
 const dimensions = Object.freeze({ output: [37, 23], tileOffset: [5, 7], fullResolution: [53, 41] })
@@ -466,7 +466,7 @@ function build() {
     corpus_revision: corpusRevision,
     provenance: {
       node: process.version,
-      cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+      cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e',
       cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
       api: 'canonicalKernelFactories+bindCanonicalKernel+runPass+Surface',
       canonical_kernels_path: 'src/effects/generated/canonical-kernels.js',
