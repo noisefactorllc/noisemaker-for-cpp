@@ -1302,10 +1302,10 @@ TEST(graph_executor_preserves_double_cubemap_basis_uniforms) {
   Renderer renderer;
   const auto result = renderer.render(source, render_options);
   const auto data = result.surface().data();
-  REQUIRE(data[(18U * 128U + 27U) * 4U + 2U] == 1.984375F);
+  REQUIRE(data[(18U * 128U + 27U) * 4U + 2U] == 1.9228515625F);
   REQUIRE(detail::sha256(std::string_view(
               reinterpret_cast<const char*>(data.data()), data.size_bytes())) ==
-          "c1edc08ca35217bc2557599be579c1b7f4ca5a0bdd96e18eb5b11ea0776884bb");
+          "656a8253a14735d7fa7b6f71df2845261fdb33c3f3f2a63e56e15e81f213607b");
   REQUIRE(rgba8_sha256(result) ==
           "71858b577b21077619b27468b917f7b565ef9506221ca2444db74cceffeb5fa9");
 }
@@ -1325,8 +1325,8 @@ TEST(graph_executor_preserves_hatch_stroke_scale_float32_boundary) {
        "8a0aad0d586a53893bfc9e8fe003ebf1992205ac9c976a155502a95137978128",
        "713b504f89da8082a0cd0dff314d4297997a6f9ae590e3f0a48b33fc5f683260"},
       {97U, 61U, 654448771.0,
-       "93d9d856f36516902cbd796839ab2c4a61e73136a4b9cc239e6d479f07a2155e",
-       "55484798ec831b2dc40cc78dfd16baf768f0bd5c0b99adb48c6550d7daa9baf4"},
+       "dcb3330d427bb10aef511c6f8fd7b22a72248e850689935012d3d2a3100b733c",
+       "c33ab452cd658be2ea8b20ce3bdd6a0d5327389eed75370bcc58bc11d43a7896"},
   };
   Renderer renderer;
   for (const auto& item : cases) {
@@ -1379,8 +1379,8 @@ TEST(graph_executor_preserves_gradient_rotation_value_copy) {
        "speed: 0.5, seed: 1).scratches(density: 0.3, alpha: 0.75, seed: 1)"
        ".write(o0)\nrender(o0)\n",
        97U, 61U, 0.999, 2082350962.0,
-       "bea9955db4056623773e1bfcbeaa6a2b0706e845fde6efdc248de43a59641a93",
-       "455aa078b1f000b46107c0e285ec7d80e8078ae805b45fc1aad10f57a2532561"},
+       "ff8d6917d28a95463a58b91ba4d9c8c758a6c1fee6aa6266ec7d6bb62cfa513c",
+       "040320f4f162c52bb84cbaf48e7f035d18299f583c53c52613fc61c5a7c6e751"},
   };
   Renderer renderer;
   for (const auto& item : cases) {
@@ -1562,8 +1562,9 @@ TEST(graph_executor_rejects_unseedable_typed_route_and_unknown_route) {
 }
 
 TEST(graph_executor_navier_stokes_default_matches_cpu9f3_hash_order) {
-  // CPU9f3 canonicalFactory271 stores hash22 lane 0 before it reads the
-  // vector for lane 1. This full effect witnesses the seeded state.
+  // CPU 7f47340 canonicalFactory271 reads both hash22 lanes from the input
+  // vector before it stores either lane. This full effect witnesses the
+  // seeded state.
   Renderer renderer;
   const auto result = renderer.render(
       "search synth\n"
@@ -1573,11 +1574,11 @@ TEST(graph_executor_navier_stokes_default_matches_cpu9f3_hash_order) {
       "iterationCount: 60).write(o0)\nrender(o0)\n",
       options(17U, 11U));
   REQUIRE(rgba8_sha256(result) ==
-          "49b3a57cc0fda9e451bca86153feed47c4b8d3d6ff7e646c67a00a4e174b4f0c");
+          "3a30c53de177c1087d58f6559fab4296b0d618e7888b2809953c8596d25e2746");
   const auto data = result.surface().data();
   REQUIRE(detail::sha256(std::string_view(reinterpret_cast<const char*>(data.data()),
                                           data.size_bytes())) ==
-          "c3dda248ad13fdc9e8497d20a4722fd454c8e7210ab8e89aa0926c34254e0174");
+          "4c4c49dfaae4a0fe155df1852ab1504eacd486e132c1fef3a2582c4d2d53966c");
 }
 
 TEST(graph_executor_rejects_volume_from_an_earlier_chain) {
@@ -1733,11 +1734,11 @@ TEST(graph_executor_worm_overlay_explicit_seed_bypasses_the_render_seed_substitu
 
 
 TEST(graph_executor_runtime_perlin_and_emboss_defines_match_cpu) {
-  // Captured by tests/fixtures/runtime_define_graph_reference.mjs against CPU9f3.
+  // Captured by tests/fixtures/runtime_define_graph_reference.mjs against CPU 7f47340.
   struct Case { const char* source; const char* floats; const char* rgba; };
   const std::array<Case, 4> cases{{
       {"search synth\nperlin(dimensions: 2).write(o0)\nrender(o0)\n", "f96c3fdde5e7da28fe616c0f668e03caeac7ca4b07a10c8c6e218353e897efd7", "63e9783ccd4685694267d430306c5ed00cc9c61b2906037c91d5246a682e6f57"},
-      {"search synth\nperlin(dimensions: 3).write(o0)\nrender(o0)\n", "224403f8a5f28a9f31ce0b7965473766e971300f9ed2fb00a6e3c87e0b96d569", "ce83abe48ce9b86de40aa2e9c361e0b884c8d01cd2fcc75bd54674625126d364"},
+      {"search synth\nperlin(dimensions: 3).write(o0)\nrender(o0)\n", "4c9df6444aa8766ea2eb4b848cd25dba549297646c3b99745399748fa6e23cbb", "2e2b34d4314dbd85d72d57727b2ee7c1e663db8570d814b037d32b9dac9f7018"},
       {"search synth, filter\nsolid(color: #3a7).emboss(style: 0).write(o0)\nrender(o0)\n", "bbab47259fa6a1340de8b4d202619b0552481b96b09418e3afd33e0c62c4161e", "a00aa40f8749301bc115f5b3ab96bb1ea7110bdb4a0f2947d82af672d29d1a43"},
       {"search synth, filter\nsolid(color: #3a7).emboss(style: 1).write(o0)\nrender(o0)\n", "843226302196ad6439a199a7fc8f1f258f4f082db30c43ba593483eecdd3be72", "eec68212ac4794baa76cf2d4520d0401aeb7156ee1ee28dabbc0bf0fdec54cb7"},
   }};
