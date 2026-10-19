@@ -21,7 +21,7 @@ inline constexpr std::string_view kProgramKey="synth/testPattern:testPattern";
 inline constexpr std::string_view kEffectKey="synth/testPattern";
 inline constexpr std::string_view kRuntimeKey="synth/testPattern:testPattern";
 inline constexpr std::string_view kCorpusRevision="0ed489ec46842bffba33ee2ec65a218b6dda51f5";
-inline constexpr std::string_view kUpstreamRevision="0ed489ec46842bffba33ee2ec65a218b6dda51f5";
+inline constexpr std::string_view kUpstreamRevision="6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d";
 inline constexpr std::string_view kSourceRelativePath="tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl";
 inline constexpr std::size_t kSourceBytes=5919U;
 inline constexpr std::string_view kSourceSha256="f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20";
@@ -31,7 +31,7 @@ inline constexpr std::string_view kFactorySha256="d2b8acafda2c589069197676e6f779
 inline constexpr std::string_view kFactoryClosureSha256="86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423";
 inline constexpr InputContract kInputContract{"source-only","none","Test Pattern has no sampler or input texture path",false,false};
 inline constexpr std::string_view kReportSha256="9bf0ef04fb4b6fa5a1e2ebb0396a7765b8e8c80e24d970607671412b6b56107e";
-inline constexpr std::string_view kOracleSha256="0b5558e2ca7ac68e5e7900977419f2fbc6f674a7cc5fe27565c357a1c29121a2";
+inline constexpr std::string_view kOracleSha256="1109bcfa9e2e915e867cfaa8db9b8e742652227782abd63783c44c5a1f196965";
 inline constexpr std::array<Binding,5> kBindingAbi = {{{"resolution","Vec2","vec2"}, {"tileOffset","Vec2","vec2"}, {"fullResolution","Vec2","vec2"}, {"gridSize","int32","int"}, {"pattern","int32","int"}}};
 inline constexpr bool kExactFloat32=true, kExactRgba8=true, kSignedZeroSignificant=true, kNaNPayloadSignificant=true, kToleranceNone=true;
 inline constexpr std::string_view kComparisonOrder="dimensions, counts, every float32 word, every RGBA8 byte";

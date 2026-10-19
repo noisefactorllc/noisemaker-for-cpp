@@ -15,7 +15,7 @@ TARGET = ROOT / 'tests/oracles/testPattern_expected.inc'
 COHERENCE = PACKAGE / 'testPattern-oracle-coherence.json'
 COHERENCE_SCHEMA = 'noisemaker-for-cpp.testPattern.oracle-coherence.v1'
 # Canonical manifest anchor; generator_sha256 is redacted to avoid a self-hash cycle.
-COHERENCE_SHA256 = '01adf802033390d96d784d8050db3618d4ba3f25e8332c93c751895f815e6720'
+COHERENCE_SHA256 = 'b61424b42b2799544d6c3e58c5006a080fdb022ef9a3594a742bae24fb095ec7'
 SCHEMA = 'noisemaker-for-cpp.testPattern.pixel-parity.v1'
 KEY = 'synth/testPattern:testPattern'
 WORD = re.compile(r'^0x[0-9a-f]{8}$')
@@ -185,7 +185,7 @@ def pack_words(value): return b''.join(struct.pack('<I', int(x, 16)) for x in va
 def validate(doc):
     reject_paths(doc)
     top = obj(doc, {'schema','schema_version','program_key','effect_key','runtime_key','corpus_revision','upstream_revision','factory','binding_names','binding_abi','source_uniform_abi','input_contract','exactness_contract','comparer_self_tests','authority','provenance','render_cases','mutation_contract','behavioral_mutation_ledger','structural_mutation_ledger','control_group','claim_boundaries'}, 'document')
-    if (top['schema'], top['schema_version'], top['program_key'], top['effect_key'], top['runtime_key'], top['corpus_revision'], top['upstream_revision']) != (SCHEMA, 1, KEY, 'synth/testPattern', KEY, CORPUS_REVISION, '0ed489ec46842bffba33ee2ec65a218b6dda51f5'): raise OracleError('identity drift')
+    if (top['schema'], top['schema_version'], top['program_key'], top['effect_key'], top['runtime_key'], top['corpus_revision'], top['upstream_revision']) != (SCHEMA, 1, KEY, 'synth/testPattern', KEY, CORPUS_REVISION, '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'): raise OracleError('identity drift')
     integer(top['schema_version'], 'schema_version'); string(top['corpus_revision'], 'corpus_revision'); string(top['upstream_revision'], 'upstream_revision')
     factory = obj(top['factory'], {'name','text_sha256','public_direct_identity','canonical_own_key','adapter_own_key'}, 'factory'); string(factory['name'],'factory.name'); digest(factory['text_sha256'],'factory.text_sha256');
     if factory['text_sha256'] != EXPECTED_FACTORY_SHA256: raise OracleError('factory text pin drift'); [boolean(factory[k],f'factory.{k}') for k in ('public_direct_identity','canonical_own_key','adapter_own_key')]

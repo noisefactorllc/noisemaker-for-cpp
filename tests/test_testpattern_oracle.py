@@ -13,7 +13,7 @@ MATERIALIZER = ROOT / 'tools/glslcpp/generate_testpattern_native_oracle_include.
 ORACLE = PACKAGE / 'testPattern-oracles.json'
 INCLUDE = ROOT / 'tests/oracles/testPattern_expected.inc'
 COHERENCE = PACKAGE / 'testPattern-oracle-coherence.json'
-EXPECTED_COHERENCE_SHA256 = '01adf802033390d96d784d8050db3618d4ba3f25e8332c93c751895f815e6720'
+EXPECTED_COHERENCE_SHA256 = 'b61424b42b2799544d6c3e58c5006a080fdb022ef9a3594a742bae24fb095ec7'
 
 def run_generator(*args, env=None):
     return current_run(['node', str(GENERATOR), *args], cwd=ROOT, env=env or os.environ.copy(), text=True, capture_output=True)

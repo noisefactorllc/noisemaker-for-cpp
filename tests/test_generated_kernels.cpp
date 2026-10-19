@@ -25572,7 +25572,7 @@ void testpattern_native_integration_require_oracle_metadata() {
   REQUIRE(noisemaker_testpattern_oracle::kCorpusRevision ==
           "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(noisemaker_testpattern_oracle::kUpstreamRevision ==
-          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+          "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
   REQUIRE(noisemaker_testpattern_oracle::kSourceRelativePath ==
           "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl");
   REQUIRE(noisemaker_testpattern_oracle::kFactoryName == "canonicalFactory289");
