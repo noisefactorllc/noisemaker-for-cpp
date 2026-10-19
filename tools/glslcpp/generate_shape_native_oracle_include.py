@@ -44,7 +44,7 @@ EFFECT_KEY = "synth/shape"
 CORPUS_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
 DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
 FACTORY_NAME = "canonicalFactory285"
-FACTORY_SHA256 = "36117882ac517282234caa52869e72e0a067b62183f6e18e787c8a5ee3f598b6"
+FACTORY_SHA256 = "3990c88aae14f81b5ea57e259b12e3fa5ce36490e828ba83c8a630205a5adfd0"
 SOURCE_RELATIVE = (
     f"tools/glslcpp/corpus/{CORPUS_REVISION}"
     "/sources/synth/shape/shape.glsl")
@@ -53,7 +53,7 @@ SOURCE_SHA256 = "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863"),
+        "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
@@ -62,7 +62,7 @@ PINNED_CPU_FILES = {
         "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff"),
     "glsl_runtime": (
         "src/csl/glsl-runtime.js",
-        "a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1"),
+        "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"),
     "pass_runner": (
         "src/runtime/pass-runner.js",
         "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
@@ -150,13 +150,13 @@ GLOBALCOORD_CASE = "shape-extreme-tile-offset"
 # discriminate, so every cell is frozen and every cell is checked.
 MUTANT_DISCRIMINATION = {
     "shape-aspect-f32-narrowed": {
-        "shape-landscape-16x9": True,
+        "shape-landscape-16x9": False,
         "shape-crop-1280x720": True,
-        "shape-square-12": False,
+        "shape-square-12": True,
         "shape-portrait-9x16": False,
         "shape-zero-speeds": False,
         "shape-wrap-live-37-61": True,
-        "shape-negative-speeds": True,
+        "shape-negative-speeds": False,
         "shape-extreme-tile-offset": False,
     },
     "shape-globalcoord-unnarrowed": {
@@ -1597,10 +1597,9 @@ def _fabricate_mutant_digest(doc: dict[str, Any]) -> None:
     from the digests it carries.
     """
     ledger = doc["mutation_ledger"][0]
-    row = next(item for item in ledger["results"]
-               if item["case"] == ANCHOR_CASE)
+    row = next(item for item in ledger["results"] if item["differs"])
     canonical = next(case for case in doc["render_cases"]
-                     if case["name"] == ANCHOR_CASE)["output_expected"]
+                     if case["name"] == row["case"])["output_expected"]
     row["f32_sha256"] = canonical["f32_sha256"]
     row["rgba8_sha256"] = canonical["rgba8_sha256"]
 
@@ -1825,11 +1824,11 @@ def self_test() -> int:
              "shape-landscape-16x9", True),
          "does not match the frozen table"),
         ("mutant-row-expectation-drift",
-         lambda doc: doc["mutation_ledger"][0]["results"][2].__setitem__(
+         lambda doc: doc["mutation_ledger"][0]["results"][0].__setitem__(
              "expected_discriminates", True),
          "carries the wrong per-case expectation"),
         ("mutant-witness-non-discriminating",
-         lambda doc: doc["mutation_ledger"][0]["results"][0].__setitem__(
+         lambda doc: doc["mutation_ledger"][0]["results"][1].__setitem__(
              "differs", False), "but the ledger records False"),
         ("mutant-control-changed",
          lambda doc: doc["mutation_ledger"][1]["results"][0].__setitem__(

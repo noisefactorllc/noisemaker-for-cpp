@@ -17737,9 +17737,9 @@ TEST(typed_shapes_runtime_defines_match_all_current_cpu_cases) {
 //    only the 40x24 window it yields is. The native side therefore compares
 //    the tile route against that stored window. The full-route-versus-tile
 //    identity is proven natively at 11x9 by kCropProof, not at 1280x720.
-//  * The aspect mutant's inertness on `shape-extreme-tile-offset` is a
-//    measured property of the mutant render that the native side cannot
-//    reproduce without the mutant; see the mutant test's boundary note.
+//  * The aspect mutant's witness set follows the 7f47340 Metal division
+//    (fullResolution[0] times the hardware reciprocal of fullResolution[1]);
+//    the native side models that quotient with noisemaker::metal::metal_divide.
 // ---------------------------------------------------------------------------
 namespace {
 
@@ -18167,15 +18167,18 @@ void shape184_require_alpha_and_finite(const noisemaker::Surface& surface,
   throw std::runtime_error("Shape184 has no case named " + std::string(name));
 }
 
-// `aspectRatio` is a double: fullResolution[0] / fullResolution[1] evaluated
-// and stored in double precision. The `shape-aspect-f32-narrowed` mutant wraps
-// that in Math.fround. This reports whether that narrowing is a real value
-// change for a given fullResolution -- a NECESSARY condition for the mutant to
-// discriminate at a case.
+// `aspectRatio` is a double: the 7f47340 authority evaluates
+// $runtime.fdiv(fullResolution[0], fullResolution[1]) -- the float32 dividend
+// times the Metal reciprocal of the divisor -- and stores the product in double
+// precision. The `shape-aspect-f32-narrowed` mutant wraps that in Math.fround.
+// This reports whether that narrowing is a real value change for a given
+// fullResolution -- a NECESSARY condition for the mutant to discriminate at a
+// case.
 [[nodiscard]] bool shape184_aspect_narrowing_changes_value(
     const noisemaker::glsl::Vec2& full_resolution) {
-  const double ratio = static_cast<double>(full_resolution[0]) /
-                       static_cast<double>(full_resolution[1]);
+  const double ratio = noisemaker::metal::metal_divide(
+      static_cast<double>(full_resolution[0]),
+      static_cast<double>(full_resolution[1]));
   const double narrowed = static_cast<double>(noisemaker::f32(ratio));
   return std::bit_cast<std::uint64_t>(ratio) !=
          std::bit_cast<std::uint64_t>(narrowed);
@@ -18397,7 +18400,7 @@ TEST(typed_shape184_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape184_matches_all_eight_independent_js_oracles) {
   REQUIRE(shape184_oracle::kOracleSha256 ==
-          "8eb0d48e137b43f3e3dca6f8443642714032230c49e387474b3053fa74a545cb");
+          "6262b9832046d318b5fddae9b84fdaca243dc9f963169b6efbc1db61881cb0f6");
   REQUIRE(shape184_oracle::kProgramKey == "synth/shape:shape");
   REQUIRE(shape184_oracle::kCorpusRevision ==
           "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
@@ -18818,7 +18821,7 @@ TEST(typed_shape184_seed_is_invariant_and_time_live_at_defines_forty_thirty) {
   REQUIRE(moved.width() == fixture.width);
   REQUIRE(moved.height() == fixture.height);
   shape184_require_changed_words(shape184_words(moved), fixture.expected_words,
-                                 423U, "shape bound-time-ten");
+                                 426U, "shape bound-time-ten");
   shape184_require_alpha_and_finite(moved, "shape bound-time-ten");
   // The same comparer that certifies parity above rejects this surface, so the
   // seed-invariance, resolution-inertness, wrap-inertness and
@@ -18986,19 +18989,15 @@ TEST(typed_shape184_binding_abi_and_catalog_are_exact) {
 //    tileOffset is observable on exactly `shape-extreme-tile-offset` and on no
 //    other case. That is precisely the mutant's witness/control partition, so
 //    all eight cells are natively explained.
-//  * aspect, 7 of 8 cells -- 2 + 4 + 1: `shape-square-12` and
-//    `shape-portrait-9x16` (2) are controls because their ratios (1.0 and
-//    0.5625) are exactly f32, so the mutation is a bit-level no-op -- measured
-//    here. All four witnesses (4) have a ratio the narrowing does change AND a
+//  * aspect, all 8 cells -- 5 + 3: under the 7f47340 Metal division the
+//    stored quotient is exactly f32 for `shape-landscape-16x9`,
+//    `shape-portrait-9x16`, `shape-zero-speeds`, `shape-negative-speeds` and
+//    `shape-extreme-tile-offset` (5), so the mutation is a bit-level no-op
+//    there -- measured here. The three witnesses (3) have a quotient the
+//    narrowing does change (12 * rcp(12) is 1 + 2^-25, for example) AND a
 //    pixel-live aspectRatio -- both necessary conditions, both measured here.
-//    `shape-zero-speeds` (1) is a control because offset() is never called, so
-//    aspectRatio is written and never read -- measured here as pixel-deadness.
-//  * aspect, the 1 remaining cell: `shape-extreme-tile-offset` is a control even
-//    though its ratio (4/3) does change under narrowing. The oracle measured
-//    the mutant render to be byte-identical there -- the sampled pixels happen
-//    not to differ at that narrowing magnitude. The native side cannot
-//    reproduce that without the mutant, and this test does not claim to. It is
-//    a boundary, recorded, not a covered cell.
+//    `shape-zero-speeds` is also pixel-dead because offset() is never called,
+//    so aspectRatio is written and never read -- measured here.
 //
 // Nothing here is evidence that the native kernel matches the mutants; it must
 // match only the unmutated oracle, which the parity test above asserts.
@@ -19084,8 +19083,8 @@ TEST(typed_shape184_mutant_ledger_is_disjoint_and_natively_discriminated) {
     // so the case must be a control.
     if (!value_changes) REQUIRE(!witness);
   }
-  REQUIRE(aspect_value_changes == 6U);
-  REQUIRE(!shape184_aspect_narrowing_changes_value(shape184_vec2(
+  REQUIRE(aspect_value_changes == 3U);
+  REQUIRE(shape184_aspect_narrowing_changes_value(shape184_vec2(
       shape184_case("shape-square-12").full_resolution_words)));
   REQUIRE(!shape184_aspect_narrowing_changes_value(shape184_vec2(
       shape184_case("shape-portrait-9x16").full_resolution_words)));

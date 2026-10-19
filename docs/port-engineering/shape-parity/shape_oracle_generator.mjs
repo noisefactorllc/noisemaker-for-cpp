@@ -44,7 +44,7 @@ const upstreamRevisionExpected = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
 const authorityNode = 'v26.0.0'
 const defines = { LOOP_A_OFFSET: 40, LOOP_B_OFFSET: 30 }
 const factoryName = 'canonicalFactory285'
-const factoryTextSha256 = '36117882ac517282234caa52869e72e0a067b62183f6e18e787c8a5ee3f598b6'
+const factoryTextSha256 = '3990c88aae14f81b5ea57e259b12e3fa5ce36490e828ba83c8a630205a5adfd0'
 const nextFactoryName = 'canonicalFactory286'
 
 // The live checkout is DERIVED, never hardcoded: a machine-specific absolute
@@ -80,10 +80,10 @@ const bindingAbi = Object.freeze({
 })
 
 const pinnedCpuFiles = Object.freeze({
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 })
@@ -479,8 +479,8 @@ const cases = [
   {
     name: 'shape-landscape-16x9',
     coverage: ['control-group anchor', 'landscape 16x9', 'untiled full route',
-      'aspect 16/9 is not exactly f32-representable', 'wrap false with integral lf (wrap-invariant witness)',
-      'both speeds positive', 'discriminates shape-aspect-f32-narrowed'],
+      'Metal aspect quotient 16 * rcp(9) is exactly f32-representable', 'wrap false with integral lf (wrap-invariant witness)',
+      'both speeds positive', 'non-reaching control for shape-aspect-f32-narrowed'],
     width: 16, height: 9, time: 0.5, seed: 3, wrap: false,
     loopAScale: 1, loopBScale: 1, speedA: 50, speedB: 50,
   },
@@ -498,9 +498,9 @@ const cases = [
   },
   {
     name: 'shape-square-12',
-    coverage: ['square 12x12', 'aspect exactly 1.0', 'untiled full route',
+    coverage: ['square 12x12', 'Metal aspect quotient 12 * rcp(12) is 1 + 2^-25, not exactly f32-representable', 'untiled full route',
       'non-integral lf with wrap false', 'speedA -100 / speedB +100 extrema', 'INT32_MAX seed',
-      'non-reaching control for shape-aspect-f32-narrowed'],
+      'discriminates shape-aspect-f32-narrowed'],
     width: 12, height: 12, time: 1.5, seed: 2147483647, wrap: false,
     loopAScale: 50, loopBScale: 20, speedA: -100, speedB: 100,
   },
@@ -536,7 +536,7 @@ const cases = [
   {
     name: 'shape-negative-speeds',
     coverage: ['landscape 16x9', 'untiled full route', 'both speeds negative (the speedA<0 / speedB<0 arms)',
-      'wrap false', 'discriminates shape-aspect-f32-narrowed'],
+      'wrap false', 'non-reaching control for shape-aspect-f32-narrowed'],
     width: 16, height: 9, time: 0.75, seed: 123, wrap: false,
     loopAScale: 1, loopBScale: 1, speedA: -50, speedB: -25,
   },
@@ -544,7 +544,7 @@ const cases = [
     name: 'shape-extreme-tile-offset',
     coverage: ['synthetic extreme tileOffset [131072.1, 0.3]',
       'the only case that discriminates shape-globalcoord-unnarrowed',
-      'aspect 16/12 = 4/3 but the sampled pixels do not discriminate shape-aspect-f32-narrowed',
+      'Metal aspect quotient 16 * rcp(12) is exactly f32-representable, so shape-aspect-f32-narrowed cannot discriminate',
       'globalCoord leaves the exactly-representable range'],
     width: 16, height: 12, time: 0.5, seed: 3, wrap: false,
     loopAScale: 1, loopBScale: 1, speedA: 50, speedB: 50,
@@ -1052,26 +1052,26 @@ const mutantSpecs = [
     name: 'shape-aspect-f32-narrowed',
     target: 'the `aspectRatio` write in main(): a plain JS Number (double), never narrowed to f32',
     contract: 'aspectRatio is a double; a port that types it float diverges',
-    anchor: 'aspectRatio = fullResolution[0] / fullResolution[1];',
-    replacement: 'aspectRatio = Math.fround(fullResolution[0] / fullResolution[1]);',
-    reaching: 'cases whose aspect ratio is not exactly f32-representable AND that reach an aspectRatio read',
+    anchor: 'aspectRatio = $runtime.fdiv(fullResolution[0], fullResolution[1]);',
+    replacement: 'aspectRatio = Math.fround($runtime.fdiv(fullResolution[0], fullResolution[1]));',
+    reaching: 'cases whose Metal aspect quotient is not exactly f32-representable AND that reach an aspectRatio read',
     expected: {
-      'shape-landscape-16x9': true,
+      'shape-landscape-16x9': false,
       'shape-crop-1280x720': true,
-      'shape-square-12': false,
+      'shape-square-12': true,
       'shape-portrait-9x16': false,
       'shape-zero-speeds': false,
       'shape-wrap-live-37-61': true,
-      'shape-negative-speeds': true,
+      'shape-negative-speeds': false,
       'shape-extreme-tile-offset': false,
     },
   },
   {
     name: 'shape-globalcoord-unnarrowed',
-    target: 'the `globalCoord` declaration: a Float32Array whose every lane store narrows to f32',
-    contract: 'globalCoord lanes are f32; a port that keeps them double diverges',
-    anchor: 'var globalCoord = new Float32Array([0, 0]);',
-    replacement: 'var globalCoord = [0, 0];',
+    target: 'the globalCoord / fullResolution[1] division in main(): its Metal-division dividend is the f32 globalCoord lane',
+    contract: 'globalCoord lanes are f32; a port that divides the double gl_FragCoord + tileOffset by the same Metal reciprocal diverges',
+    anchor: 'var st = new $runtime.PooledFloat32Array([$runtime.fdiv(globalCoord[0], fullResolution[1]), $runtime.fdiv(globalCoord[1], fullResolution[1])]);',
+    replacement: 'var st = new $runtime.PooledFloat32Array([(gl_FragCoord[0] + tileOffset[0]) * $runtime.fdiv(1, fullResolution[1]), (gl_FragCoord[1] + tileOffset[1]) * $runtime.fdiv(1, fullResolution[1])]);',
     reaching: 'only tile offsets that push gl_FragCoord.xy + tileOffset out of the exactly-representable range',
     expected: {
       'shape-landscape-16x9': false,
@@ -1225,9 +1225,9 @@ if (globalCoordCensus.probes[0].discriminates) {
 const caseNames = cases.map((item) => item.name)
 const coverageAxes = {
   aspect_exactly_f32_representable: {
-    'no': ['shape-landscape-16x9', 'shape-crop-1280x720', 'shape-wrap-live-37-61',
-      'shape-negative-speeds', 'shape-zero-speeds', 'shape-extreme-tile-offset'],
-    'yes': ['shape-square-12', 'shape-portrait-9x16'],
+    'no': ['shape-crop-1280x720', 'shape-square-12', 'shape-wrap-live-37-61'],
+    'yes': ['shape-landscape-16x9', 'shape-portrait-9x16', 'shape-negative-speeds',
+      'shape-zero-speeds', 'shape-extreme-tile-offset'],
   },
   aspect_shape: {
     landscape: ['shape-landscape-16x9', 'shape-crop-1280x720', 'shape-zero-speeds',
@@ -1291,7 +1291,7 @@ const fixture = {
     aspectRatio: {
       javascript_declaration: 'var aspectRatio = 0;',
       numeric_contract: 'plain JS Number -- a double, NEVER narrowed to f32',
-      write_expression: 'aspectRatio = fullResolution[0] / fullResolution[1];',
+      write_expression: 'aspectRatio = $runtime.fdiv(fullResolution[0], fullResolution[1]);',
       mutant: 'shape-aspect-f32-narrowed',
       oracle_discriminable: true,
     },
@@ -1510,7 +1510,7 @@ each recorded here rather than absorbed silently.
 | Design | Shipped as | Change | Reason |
 | --- | --- | --- | --- |
 | \`shape-landscape-64x36\` | \`shape-landscape-16x9\` | 2,304 px to 144 px | 64/36 and 16/9 are the same rational, so the \`aspectRatio\` double is bit-identical. The control group renders four one-axis variants of the anchor, so the anchor's area is multiplied by five in the stored document. |
-| \`shape-square-48\` | \`shape-square-12\` | 2,304 px to 144 px | ratio is exactly 1.0 either way; this is a non-reaching control |
+| \`shape-square-48\` | \`shape-square-12\` | 2,304 px to 144 px | the Metal aspect quotient is 1 + 2^-25 either way (rcp(48) is rcp(12) / 4 exactly); this case witnesses \`shape-aspect-f32-narrowed\` |
 | \`shape-portrait-36x64\` | \`shape-portrait-9x16\` | 2,304 px to 144 px | ratio is exactly 0.5625 either way; this is a non-reaching control |
 | \`shape184_*\` filenames (design section 6) | \`shape_*\` | \`shape_oracle_generator.mjs\`, \`shape-oracles.json\`, \`shape-oracle-report.md\`, \`tests/oracles/shape_expected.inc\` | the unversioned names were specified for this package; the C++ namespace remains \`shape184_oracle\` and the schema remains \`…shape184.pixel-parity.v1\`, so the typed-row identity is unchanged |
 | \`shape-crop-1280x720\` full route | stored as the 40x24 **crop window** only | the whole 1280x720 array is not stored | the proof needs only the window (3,840 words + 3,840 bytes, the size of a tile array), so the full route is rendered in memory, compared, and discarded. The translation is re-derived from the stored window, and \`shape-wrap-live-37-61\` additionally re-derives its tile from a stored 11x9 full route. |
