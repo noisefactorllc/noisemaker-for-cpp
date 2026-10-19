@@ -18400,7 +18400,7 @@ TEST(typed_shape184_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape184_matches_all_eight_independent_js_oracles) {
   REQUIRE(shape184_oracle::kOracleSha256 ==
-          "6262b9832046d318b5fddae9b84fdaca243dc9f963169b6efbc1db61881cb0f6");
+          "465b53d5bf6cf4a1fbadc6e1a169bb29e03da463673849305fcb690ed1d43414");
   REQUIRE(shape184_oracle::kProgramKey == "synth/shape:shape");
   REQUIRE(shape184_oracle::kCorpusRevision ==
           "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
