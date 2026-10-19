@@ -78,7 +78,7 @@ class RollKernelTests(unittest.TestCase):
             compiler, "-std=c++20", "-O1", "-ffp-contract=off", "-I", str(ROOT / "include"),
             "-I", str(temporary), str(FIXTURE / "probe.cpp"),
             *(str(ROOT / "src" / f"{name}.cpp") for name in
-              ("surface", "numeric", "sampler", "glsl_runtime", "kernel")),
+              ("surface", "numeric", "sampler", "glsl_runtime", "kernel", "metal_division", "metal_reciprocal_data")),
             "-o", str(cls.binary),
         ], capture_output=True, text=True)
         if result.returncode:
@@ -109,8 +109,8 @@ class RollReferenceTests(unittest.TestCase):
         for name, digest in FIXTURE_HASHES.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
-        self.assertEqual(len(expected["source_hashes"]), 5)
+        self.assertEqual(expected["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
+        self.assertEqual(len(expected["source_hashes"]), 8)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({(c["width"], c["height"]) for c in cases}, {(1, 1), (17, 11), (64, 256)})
         self.assertEqual({c["grid"] for c in cases}, {"zero", "sparse", "bright"})
@@ -150,5 +150,5 @@ class RollReferenceTests(unittest.TestCase):
 
 FIXTURE_HASHES = {
     "cases.json": "7b4763eb3e72116ead1f7251dbe9c756918888bd92fb1197bf3fa455f5171c9c",
-    "expected.json": "4efb7b33d5a634d6ba35f9907c36b0847a65179a0c19034d1b036f3313770e62",
+    "expected.json": "fdd57b6dcd481a151c7fd117b005b121e83dc42f090220d8dcc16c00f1c39a53",
 }

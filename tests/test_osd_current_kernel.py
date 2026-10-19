@@ -92,11 +92,11 @@ class OsdCurrentKernelTests(unittest.TestCase):
 
 class OsdCurrentReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
-        for name, digest in {'cases.json': '0a507681df91bbd819a5126bc88c55739ecb17642e3dc81b0849388a32fb9f4b', 'expected.json': 'fe82647bdce522745350ece90f1d2f8ab4967800ace59f0ad6368ad07e59bc4e'}.items():
+        for name, digest in {'cases.json': '0a507681df91bbd819a5126bc88c55739ecb17642e3dc81b0849388a32fb9f4b', 'expected.json': 'b01268f4bbed66480dc24aa1c663fb107ef521c77b8983e489e582cec07a159d'}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
-        self.assertEqual(len(expected["source_hashes"]), 5)
+        self.assertEqual(expected["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
+        self.assertEqual(len(expected["source_hashes"]), 8)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual(len(cases), 38)
         self.assertEqual({c["uniforms"]["corner"] for c in cases}, {0, 1, 2, 3})

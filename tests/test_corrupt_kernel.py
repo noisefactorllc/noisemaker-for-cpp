@@ -72,7 +72,8 @@ class CorruptKernelTests(unittest.TestCase):
             compiler, "-std=c++20", "-O1", "-ffp-contract=off", "-I", str(ROOT / "include"),
             "-I", str(temporary), str(FIXTURE / "probe.cpp"),
             *(str(ROOT / "src" / f"{name}.cpp") for name in
-              ("surface", "numeric", "sampler", "glsl_runtime", "kernel", "fdlibm", "fdlibm_off")),
+              ("surface", "numeric", "sampler", "glsl_runtime", "kernel", "fdlibm", "fdlibm_off",
+               "metal_division", "metal_reciprocal_data")),
             "-o", str(cls.binary),
         ], capture_output=True, text=True)
         if result.returncode:
@@ -100,11 +101,11 @@ class CorruptReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "3a8fe2538d58395696245eec7425b5491e3e6ca2135ea85240b7f7c3ee762e53",
-                "expected.json": "db10622bce60fb5a264cc72f88e69a47e9da0b21b3330229867d62227c40163d"}.items():
+                "expected.json": "ff06cc76a2bbc12b9974f96be7e7365ef6fde5c090ab02d108d8578d9c460a0a"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
-        self.assertEqual(len(expected["source_hashes"]), 5)
+        self.assertEqual(expected["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
+        self.assertEqual(len(expected["source_hashes"]), 8)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({c["name"].split("-")[0] for c in cases},
                          {"v1", "v2", "v3", "v6", "v7", "v9", "v13", "v17", "v18"})

@@ -5,18 +5,21 @@ import {resolve, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 const hashes = {
-  'src/effects/generated/canonical-kernels.js': 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863',
+  'src/effects/generated/canonical-kernels.js': '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
   'src/csl/glsl-kernel.js': 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
-  'src/csl/glsl-runtime.js': 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1',
-  'src/runtime/sampler.js': '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328',
+  'src/csl/glsl-runtime.js': 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd',
+  'src/runtime/sampler.js': '5a3e494e79f431605fecd682fd9fe6fc8437dde1332f1dc872632af59d0eeaf5',
   'src/runtime/surface.js': '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
+  'src/csl/metal-division.js': '104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8',
+  'src/csl/metal-reciprocal-data.js': '08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87',
+  'src/csl/metal-reciprocal-grid.js': 'bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39',
 };
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const [cpuRoot, inputPath] = process.argv.slice(2);
 if (!cpuRoot || !inputPath) throw new Error('usage: reference.mjs CPU_ROOT INPUT_JSON');
 const scratch = await mkdtemp(resolve(tmpdir(), 'roll-reference-'));
 try {
-  // Import only an authenticated, regular-file copy of the complete five-file closure.
+  // Import only an authenticated, regular-file copy of the complete eight-file closure.
   await writeFile(resolve(scratch, 'package.json'), '{"type":"module"}');
   for (const [name, digest] of Object.entries(hashes)) {
     const bytes = await readFile(resolve(cpuRoot, name));
@@ -57,5 +60,5 @@ try {
     results.push({name: test.name, float32_sha256: sha(bytes), rgba8_sha256: sha(destination.toRgba8()),
       float32_bytes: bytes.length, rgba8_bytes: words.length});
   }
-  console.log(JSON.stringify({cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', source_hashes: hashes, results}));
+  console.log(JSON.stringify({cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', source_hashes: hashes, results}));
 } finally { await rm(scratch, {recursive: true, force: true}); }

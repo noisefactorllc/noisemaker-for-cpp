@@ -64,7 +64,8 @@ class ReverbKernelTests(unittest.TestCase):
             compiler, "-std=c++20", "-O1", "-ffp-contract=off", "-I", str(ROOT / "include"),
             "-I", str(temporary), str(FIXTURE / "probe.cpp"),
             *(str(ROOT / "src" / f"{name}.cpp") for name in
-              ("surface", "numeric", "sampler", "glsl_runtime", "kernel", "fdlibm", "fdlibm_off")),
+              ("surface", "numeric", "sampler", "glsl_runtime", "kernel", "fdlibm", "fdlibm_off",
+               "metal_division", "metal_reciprocal_data")),
             "-o", str(cls.binary),
         ], capture_output=True, text=True)
         if result.returncode:
@@ -92,11 +93,11 @@ class ReverbReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "86ab3d3fe7e8a63ce56e3deec9faf1d928850ec32c94c82ab9dd6ab90d9dd530",
-                "expected.json": "60c84f39965eb55250e256eb4c88a32a3cd05e68bfb1cad44078ae1a1cd30f87"}.items():
+                "expected.json": "1edf193cd5843f1e52af8d1dbec513935af5a1fc76a4e17df6f223a8512b258d"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
-        self.assertEqual(len(expected["source_hashes"]), 5)
+        self.assertEqual(expected["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
+        self.assertEqual(len(expected["source_hashes"]), 8)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({c["uniforms"]["iterations"] for c in cases}, {1, 3, 8})
         self.assertEqual({c["uniforms"]["alpha"] for c in cases}, {0, .37, 1})

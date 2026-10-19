@@ -71,7 +71,8 @@ class ChainValueCopyTests(unittest.TestCase):
                 compiler, "-std=c++20", "-O1", "-ffp-contract=off", "-I", str(ROOT / "include"),
                 "-I", str(root), str(FIXTURE / "probe.cpp"),
                 *(str(ROOT / "src" / (name + ".cpp")) for name in
-                  ("surface", "numeric", "sampler", "glsl_runtime", "kernel", "fdlibm", "fdlibm_off")),
+                  ("surface", "numeric", "sampler", "glsl_runtime", "kernel", "fdlibm", "fdlibm_off",
+               "metal_division", "metal_reciprocal_data")),
                 "-o", str(binary)], capture_output=True, text=True)
             if result.returncode:
                 raise AssertionError(result.stderr)
@@ -105,7 +106,7 @@ class ChainValueCopyTests(unittest.TestCase):
     def test_capture_provenance_and_live_reproduction(self):
         for name, digest in {
             "cases.json": "609b4825df1db6ad466798e5f4f54cbf7cc4af454cb158d11b9a2ec7f182a141",
-            "expected.json": "cf855852d9efcccb667c234b1f0f2080c4e2246336892a5b09d8ff675d85e270",
+            "expected.json": "57596f19617aeab4539d6abedcbfb5d9ce5e245063a73808075cec54cfa96f92",
         }.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         configured = os.environ.get("NOISEMAKER_CHAIN_COPY_CPU_ROOT")

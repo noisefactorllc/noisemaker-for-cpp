@@ -44,7 +44,7 @@ class GradeValueCopyTests(unittest.TestCase):
         result = subprocess.run(["node", str(REFERENCE), configured], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         captured = json.loads(result.stdout)
-        self.assertEqual(captured["cpu_revision"], "4307ca9f26fc415e4fc5e75227d429d35cc741cd")
+        self.assertEqual(captured["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
         self.assertEqual(captured["pixels"], 230)
         self.assertEqual(captured["float32_sha256"], EXPECTED)
         self.assertEqual(captured["rgba8_sha256"], "0b5bec91de3a56e47fb5f54ea24fac0c73ec47ff8d11dffc801b18e03d7ba8b3")
