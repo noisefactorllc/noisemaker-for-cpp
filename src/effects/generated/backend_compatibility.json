@@ -20814,7 +20814,7 @@
             "cpp_type": "glsl::Vec4"
           },
           "source": "src/effects/f32_color.cpp",
-          "source_sha256": "5e65320499df547de69400c422a4477e7e1ccc6d2a3251af54263438ca595354"
+          "source_sha256": "ca6aca76791dcc7706332765ce74d91746a228b51e24e367ddc20da62e14655d"
         }
       },
       "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
@@ -22567,6 +22567,21 @@
                 "cpp_type": "double",
                 "name": "uDisplacement",
                 "source": "custom_adapter"
+              },
+              {
+                "cpp_type": "glsl::Vec2",
+                "name": "resolution",
+                "source": "custom_adapter"
+              },
+              {
+                "cpp_type": "glsl::Vec2",
+                "name": "tileOffset",
+                "source": "custom_adapter"
+              },
+              {
+                "cpp_type": "glsl::Vec2",
+                "name": "fullResolution",
+                "source": "custom_adapter"
               }
             ]
           },
@@ -22578,7 +22593,7 @@
             "cpp_type": "glsl::Vec4"
           },
           "source": "src/effects/f32_color.cpp",
-          "source_sha256": "5e65320499df547de69400c422a4477e7e1ccc6d2a3251af54263438ca595354"
+          "source_sha256": "ca6aca76791dcc7706332765ce74d91746a228b51e24e367ddc20da62e14655d"
         }
       },
       "typed_abi_sha256": "79f327c5e8d11dc33bc7377accb5521cb3f1b33e2640e33a28fbb6611bcd0cb1",
@@ -22862,7 +22877,7 @@
             "cpp_type": "glsl::Vec4"
           },
           "source": "src/effects/f32_color.cpp",
-          "source_sha256": "5e65320499df547de69400c422a4477e7e1ccc6d2a3251af54263438ca595354"
+          "source_sha256": "ca6aca76791dcc7706332765ce74d91746a228b51e24e367ddc20da62e14655d"
         }
       },
       "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
@@ -82833,7 +82848,7 @@
             "cpp_type": "glsl::Vec4"
           },
           "source": "src/effects/f32_color.cpp",
-          "source_sha256": "5e65320499df547de69400c422a4477e7e1ccc6d2a3251af54263438ca595354"
+          "source_sha256": "ca6aca76791dcc7706332765ce74d91746a228b51e24e367ddc20da62e14655d"
         }
       },
       "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
@@ -84586,6 +84601,21 @@
                 "cpp_type": "double",
                 "name": "uDisplacement",
                 "source": "custom_adapter"
+              },
+              {
+                "cpp_type": "glsl::Vec2",
+                "name": "resolution",
+                "source": "custom_adapter"
+              },
+              {
+                "cpp_type": "glsl::Vec2",
+                "name": "tileOffset",
+                "source": "custom_adapter"
+              },
+              {
+                "cpp_type": "glsl::Vec2",
+                "name": "fullResolution",
+                "source": "custom_adapter"
               }
             ]
           },
@@ -84597,7 +84627,7 @@
             "cpp_type": "glsl::Vec4"
           },
           "source": "src/effects/f32_color.cpp",
-          "source_sha256": "5e65320499df547de69400c422a4477e7e1ccc6d2a3251af54263438ca595354"
+          "source_sha256": "ca6aca76791dcc7706332765ce74d91746a228b51e24e367ddc20da62e14655d"
         }
       },
       "typed_abi_sha256": "79f327c5e8d11dc33bc7377accb5521cb3f1b33e2640e33a28fbb6611bcd0cb1",
@@ -84881,7 +84911,7 @@
             "cpp_type": "glsl::Vec4"
           },
           "source": "src/effects/f32_color.cpp",
-          "source_sha256": "5e65320499df547de69400c422a4477e7e1ccc6d2a3251af54263438ca595354"
+          "source_sha256": "ca6aca76791dcc7706332765ce74d91746a228b51e24e367ddc20da62e14655d"
         }
       },
       "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",

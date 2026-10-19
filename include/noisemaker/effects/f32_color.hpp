@@ -35,11 +35,14 @@ inline constexpr std::array<std::pair<std::string_view, std::string_view>, kRein
     kReindexStatsBindingAbi{{
         {"inputTex", "sampler2D"},
     }};
-inline constexpr std::size_t kReindexApplyBindingAbiSize = 3U;
+inline constexpr std::size_t kReindexApplyBindingAbiSize = 6U;
 inline constexpr std::array<std::pair<std::string_view, std::string_view>, kReindexApplyBindingAbiSize>
     kReindexApplyBindingAbi{{
         {"inputTex", "sampler2D"},
         {"statsTex", "sampler2D"},
         {"uDisplacement", "double"},
+        {"resolution", "glsl::Vec2"},
+        {"tileOffset", "glsl::Vec2"},
+        {"fullResolution", "glsl::Vec2"},
     }};
 }  // namespace noisemaker::effects

@@ -10,8 +10,10 @@ run. ``src/effects/f32_color.cpp`` ports the adapters. As for
 programs are still generated (they anchor the declared interface and the
 ``emitted_factory`` provenance) and only the canonical factory changes.
 
-Each ``bind_*`` reads exactly the bindings its JS factory reads, in the same
-order. ``verify_custom_adapter_binding_abi`` fails closed if a declaration
+Each ``bind_*`` reads the bindings its JS factory reads, in the same order;
+``bind_reindex_apply`` then also checks the three vec2 uniforms that
+``nmReindexApply.glsl`` declares, so a missing or mistyped one fails closed.
+``verify_custom_adapter_binding_abi`` fails closed if a declaration
 drifts from the matching table in ``include/noisemaker/effects/f32_color.hpp``.
 """
 
@@ -38,7 +40,8 @@ _ADAPTERS = {
     REINDEX_APPLY_KEY: (
         "noisemaker::effects::bind_reindex_apply", "bind_reindex_apply",
         "kReindexApplyBindingAbi",
-        (("inputTex", "sampler2D"), ("statsTex", "sampler2D"), ("uDisplacement", "double"))),
+        (("inputTex", "sampler2D"), ("statsTex", "sampler2D"), ("uDisplacement", "double"),
+         ("resolution", "glsl::Vec2"), ("tileOffset", "glsl::Vec2"), ("fullResolution", "glsl::Vec2"))),
 }
 
 CUSTOM_ADAPTER_FACTORIES = {key: value[0] for key, value in _ADAPTERS.items()}

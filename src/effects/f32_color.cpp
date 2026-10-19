@@ -173,6 +173,11 @@ BoundKernel bind_reindex_apply(const glsl::Bindings& b) {
   state->input = &b.texture("inputTex");
   state->stats = &b.texture("statsTex");
   state->displacement = b.get_number("uDisplacement");
+  // nmReindexApply.glsl declares these three; the JS adapter never reads
+  // them, but the binding still fails closed when one is missing or mistyped.
+  static_cast<void>(b.get<glsl::Vec2>("resolution"));
+  static_cast<void>(b.get<glsl::Vec2>("tileOffset"));
+  static_cast<void>(b.get<glsl::Vec2>("fullResolution"));
   return BoundKernel(state, &reindex_apply);
 }
 
