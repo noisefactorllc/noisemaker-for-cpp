@@ -1,7 +1,7 @@
 {
   "schema": "noisemaker-for-cpp.testPattern.oracle-coherence.v1",
-  "generator_sha256": "2004d4071fee3f9e9912932090333900cffc485c4bc0ac903179fa90f1c814f5",
+  "generator_sha256": "448fe042ec8cd75778a5aa184dd66538885e453da64bf8e7d4713bddbc28dca7",
   "report_sha256": "9bf0ef04fb4b6fa5a1e2ebb0396a7765b8e8c80e24d970607671412b6b56107e",
-  "oracle_sha256": "1109bcfa9e2e915e867cfaa8db9b8e742652227782abd63783c44c5a1f196965",
-  "include_sha256": "f4aef4fa6199a91b6d539329ce7c5d312607215eddbe533b3c29a065155d9451"
+  "oracle_sha256": "6f32d967d4396cadd68164b777f25ef3686ae5f7edd0d5d580a141edec4aec53",
+  "include_sha256": "c7f32e68e14f435caa81363f336e252269dbe278f0bff723f4c4c7ed782583c9"
 }

@@ -31,7 +31,7 @@ inline constexpr std::string_view kFactorySha256="d2b8acafda2c589069197676e6f779
 inline constexpr std::string_view kFactoryClosureSha256="86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423";
 inline constexpr InputContract kInputContract{"source-only","none","Test Pattern has no sampler or input texture path",false,false};
 inline constexpr std::string_view kReportSha256="9bf0ef04fb4b6fa5a1e2ebb0396a7765b8e8c80e24d970607671412b6b56107e";
-inline constexpr std::string_view kOracleSha256="1109bcfa9e2e915e867cfaa8db9b8e742652227782abd63783c44c5a1f196965";
+inline constexpr std::string_view kOracleSha256="6f32d967d4396cadd68164b777f25ef3686ae5f7edd0d5d580a141edec4aec53";
 inline constexpr std::array<Binding,5> kBindingAbi = {{{"resolution","Vec2","vec2"}, {"tileOffset","Vec2","vec2"}, {"fullResolution","Vec2","vec2"}, {"gridSize","int32","int"}, {"pattern","int32","int"}}};
 inline constexpr bool kExactFloat32=true, kExactRgba8=true, kSignedZeroSignificant=true, kNaNPayloadSignificant=true, kToleranceNone=true;
 inline constexpr std::string_view kComparisonOrder="dimensions, counts, every float32 word, every RGBA8 byte";
