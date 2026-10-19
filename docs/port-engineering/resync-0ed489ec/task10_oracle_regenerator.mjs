@@ -126,7 +126,7 @@ function bindingsFor(key, polygonSmoothing) {
   } else if (key === 'synth/polygon:shape') {
     uniforms.tileOffset = [3.0, 3.0]
     uniforms.fullResolution = [13.0, 11.0]
-    uniforms.aspect = 7.0 / 5.0
+    uniforms.aspect = 13.0 / 11.0
     uniforms.sides = 3
     uniforms.radius = 0.4; uniforms.smoothing = polygonSmoothing; uniforms.rotation = 23.0
     uniforms.fgColor = [0.14, 0.73, 0.31]; uniforms.fgAlpha = 0.83

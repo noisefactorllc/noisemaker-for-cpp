@@ -313,8 +313,8 @@ void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_
     uniform("tileOffset", noisemaker::glsl::Vec2(3.0f, 3.0f));
     uniform("fullResolution", noisemaker::glsl::Vec2(13.0f, 11.0f));
     // createCanonicalBindings owns this built-in and overwrites caller uniforms
-    // with the output surface aspect (7 / 5) after merging them.
-    uniform("aspect", 7.0f / 5.0f); uniform("sides", std::int32_t(3));
+    // with the full-resolution aspect (13 / 11) after merging them.
+    uniform("aspect", static_cast<float>(13.0 / 11.0)); uniform("sides", std::int32_t(3));
     uniform("radius", 0.4f); uniform("smoothing", polygon_smoothing); uniform("rotation", 23.0f);
     uniform("fgColor", noisemaker::glsl::DVec3(0.14, 0.73, 0.31)); uniform("fgAlpha", 0.83f);
     uniform("bgColor", noisemaker::glsl::DVec3(0.91, 0.22, 0.58)); uniform("bgAlpha", 0.47f);
@@ -462,22 +462,22 @@ TEST(typed_control_flow_slice_external_oracles_are_repeatable) {
       {"filter/highPass:hpCombine", "b7d5dab26de4a4fe50a8cdc6439c52133a733625b9651abf31a4dc28bd37e40e", "37f0995e070ba207c0aac4722cabb5c78617281f23562193509956649577990d", {0x00000000U,0x3ebbbbbcU,0x3e66e6e6U,0x3f7afafbU,0x3d38b8b8U,0x3e66e6e6U,0x3ed3d3d4U,0x3f27a7a8U,0x3f800000U,0x3f800000U,0x3f1a1a1aU,0x3ea8a8a9U}},
       {"filter/pixels:pixels", "feb89b0e6a128d533471c06cac88fe82d78874442cfbd509204de736ad6bbc0d", "59adf71406e87307e5f915828cfce8b52ec0bb667bd62c853dc7181f413c9641", {0x3df0f0f1U,0x3e989899U,0x3dd0d0d1U,0x3f55d5d6U,0x3e74f4f5U,0x3eaeaeafU,0x3ebababbU,0x3f3ebebfU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
       {"filter/plasticWrap:pwSpec", "b59b84a82075ebafd04ed19e6a224be8e16a223898ffd776b19dcae17052e096", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3eb8b8b9U,0x3ec4c4c5U,0x3f20a0a1U,0x3f27a7a8U,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
-      {"filter/seamless:seamless", "95627615549b377e800f657471499a978d7c445c1a35cfc9ac9915e4bdf73bf0", "90255d926242b26be8853e926acca831507d557afe72a00016c9e134a772dea2", {0x3e8f1222U,0x3eb5fd45U,0x3ee73c4fU,0x3f800000U,0x3ef0e420U,0x3eca102eU,0x3f607f02U,0x3f800000U,0x3eb91a13U,0x3ec4e750U,0x3f2040d9U,0x3f800000U}},
+      {"filter/seamless:seamless", "bb46aba7be87fa920d68614933afbb8034b19a14b3b6b9f36705a8822fbe1472", "90255d926242b26be8853e926acca831507d557afe72a00016c9e134a772dea2", {0x3e8f1222U,0x3eb5fd45U,0x3ee73c4fU,0x3f800000U,0x3ef0e421U,0x3eca1031U,0x3f607f03U,0x3f800000U,0x3eb91a12U,0x3ec4e750U,0x3f2040daU,0x3f800000U}},
       {"filter/sine:sine", "73b6f26c811b0a8676d475bd8eed36917f3ab0d914f87da8f50da49a0d197014", "6f09375716db998f9df1655f106383dde3444800b8e1242a5390f01be0b916d9", {0x3f36edbcU,0x3f6af852U,0x3f1e4797U,0x3f7afafbU,0x3e8af2fcU,0x3f6d7d57U,0x3f5cff8aU,0x3f35b5b6U,0x3e90dd22U,0x3e650b52U,0x3f7727f2U,0x3ea8a8a9U}},
-      {"filter/vignette:vignette", "276695edb633b4394dd03b1058af01c40af21d71bdb00c5b31c1d1b16ffe8b7e", "03f0b8e7644def6fbf6fa486b93646041c870baff6684fb98ff8171f3d56dab7", {0x3dc6ddf3U,0x3e110c83U,0x3da4a7caU,0x3f7afafbU,0x3eb7080eU,0x3e6f5ee4U,0x3f24f08eU,0x3f35b5b6U,0x3eeae795U,0x3ee690f7U,0x3e5e860dU,0x3ea8a8a9U}},
+      {"filter/vignette:vignette", "ec4c106f3bf2a3c0efd58b37d0d2fbcd27986d56de4a85939da391c1aa5cc168", "03f0b8e7644def6fbf6fa486b93646041c870baff6684fb98ff8171f3d56dab7", {0x3dc6ddf3U,0x3e110c83U,0x3da4a7caU,0x3f7afafbU,0x3eb7080eU,0x3e6f5ee4U,0x3f24f08eU,0x3f35b5b6U,0x3eeae795U,0x3ee690f7U,0x3e5e860dU,0x3ea8a8a9U}},
       {"mixer/alphaMask:alphaMask", "cd459701e88a9422cbf042e08013043760e6ef2d6566dde1f1d0c4fd0410cfb7", "b352155bb35bb1b39d427784164f2edfe75e8d9373161a2209d98feb4b967032", {0x3e3926fbU,0x3f22910dU,0x3f234fa2U,0x3f4889cbU,0x3f55704eU,0x3f628f41U,0x3f83c258U,0x3efcbb80U,0x3f818c4dU,0x3dbf284aU,0x3e94a2faU,0x3f63d371U}},
       {"mixer/applyMode:applyMode", "7aeee2945e2264b2706af1000de073f87afa3de89fb58b74d7d45c5e489fc462", "901503d50bab78d19f2bdd7f32efd5a6166653885a965813a1a12b735c9517e5", {0x3dc01c46U,0x3eaff106U,0x3eb6cb47U,0x3f7afafbU,0x3efb291fU,0x3f4760fbU,0x3ea6022bU,0x3f35b5b6U,0x3f4f0f0fU,0x3e0ff65cU,0x3e9cc8c2U,0x3f5ddddeU}},
       {"mixer/thresholdMix:thresholdMix", "f6e338ca581f3243524f124f3db407c3e0a56c42d9563eaba6901f48eb373712", "9499f26e19394e0bd91fad082d820362851877598640cfbdf87f9719ffa62b7e", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f088889U,0x3f3cbcbdU,0x3f50d0d1U,0x3ed82d83U,0x3f76f6f7U,0x3f27a7a8U,0x3e64e4e5U,0x3f022cd8U}},
-      {"synth/polygon:shape", "ea0b018bc0cb8dbf445e26a4e7d5d944f2636ad046dd1d2e0ee8b22e9978e32e", "22dc2377820085ffdead0646a681390f2285f1dc2de1fba0283145cec687a69c", {0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U,0x3dedfa44U,0x3f1b1c43U,0x3e83bcd3U,0x3f547ae1U,0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U}},
+      {"synth/polygon:shape", "6a0b2a8fcbf6b80c611e7ad9cf8fe0703ad1411617785c655d9c856d078a44b3", "efde74185f2fdeef07aec3de84b1442e65b4013f2e4ea85b7f027a6254498e02", {0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U,0x3dedfa44U,0x3f1b1c43U,0x3e83bcd3U,0x3f547ae1U,0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U}},
   }};
   const noisemaker::Surface polygon_nonzero_before = render_task10("synth/polygon:shape", 0.12f);
   const noisemaker::Surface polygon_zero = render_task10("synth/polygon:shape", 0.0f);
   const noisemaker::Surface polygon_nonzero_after = render_task10("synth/polygon:shape", 0.12f);
   const noisemaker::Surface polygon_zero_after = render_task10("synth/polygon:shape", 0.0f);
-  REQUIRE(hex(sha256(little_endian_float_bytes(polygon_nonzero_before))) == "ea0b018bc0cb8dbf445e26a4e7d5d944f2636ad046dd1d2e0ee8b22e9978e32e");
-  REQUIRE(hex(sha256(polygon_nonzero_before.to_rgba8())) == "22dc2377820085ffdead0646a681390f2285f1dc2de1fba0283145cec687a69c");
+  REQUIRE(hex(sha256(little_endian_float_bytes(polygon_nonzero_before))) == "6a0b2a8fcbf6b80c611e7ad9cf8fe0703ad1411617785c655d9c856d078a44b3");
+  REQUIRE(hex(sha256(polygon_nonzero_before.to_rgba8())) == "efde74185f2fdeef07aec3de84b1442e65b4013f2e4ea85b7f027a6254498e02");
   const std::string polygon_zero_float = hex(sha256(little_endian_float_bytes(polygon_zero)));
-  if (polygon_zero_float != "1d15ee530fda3a6edcc2234b7c796461eab1b0156cba3916adec7e610313f850") {
+  if (polygon_zero_float != "14842e67934a7c529dab72fd6a3ddbdddcafc99ead7bf4ce2dd4a3692780743e") {
     std::ostringstream detail;
     detail << "polygon zero float oracle hash: " << polygon_zero_float << " foreground pixels:";
     for (std::size_t pixel = 0; pixel < 35U; ++pixel) {
@@ -486,7 +486,7 @@ TEST(typed_control_flow_slice_external_oracles_are_repeatable) {
     }
     throw std::runtime_error(detail.str());
   }
-  REQUIRE(hex(sha256(polygon_zero.to_rgba8())) == "3968f2377d75bb572eebc82b4640e94594775758817197a5dae711f8426fb885");
+  REQUIRE(hex(sha256(polygon_zero.to_rgba8())) == "908bdd2044e12e7a0a864920ca32bbcc5cb37bdeef163dfee4580c18175071f3");
   require_repeat(polygon_nonzero_before, polygon_nonzero_after);
   require_repeat(polygon_zero, polygon_zero_after);
   for (const Fixture& fixture : fixtures) {
@@ -519,7 +519,7 @@ TEST(typed_control_flow_slice_external_branch_oracles_cover_every_arm) {
       {"filter/channel:channel", "channel0", "f06aad98061e763aeaaeb3642a7c6f6193c325fa6ae2f718a8904358e5778d00", "f8956632116fec613352479918e6907d8735e45021a48503cc08bb2c773cc5f6"},
       {"filter/channel:channel", "channel1", "7188cfe8d07b5c3ecf55d2c2dd4f2e421d6bbc50c019b6132673a3363dfc9b6c", "c29398951217bef5ae55ea839afb45b41a80459ea27eb5fcc12807d36cb83361"},
       {"filter/channel:channel", "channel3", "05b55b15d8e517d4d2a0370f61a2a69338092d1228995929b7db7cadd4377677", "b4d9bf4bf793c1a8c0169e66f270a626162fe24aaaf59f8e5eb62027e09b58ab"},
-      {"filter/chromaticAberration:chromaticAberration", "fullResolutionZero", "d8a8c910968045fd854b6d28bae45cf531116d05ab93934560ffd8c8f49f35a0", "a5689109e8eb8c4d94b1ae4541dfb920d38ba23d866ed323220a24302f55690e"},
+      {"filter/chromaticAberration:chromaticAberration", "fullResolutionZero", "103f341ac27ebb92b3986b60a0b284f0aafece72559be1b889d98195acdbcdfc", "0853f39530090c34540be01998f924ed3772614d644c1641bc26ba1e7c42a2af"},
       {"filter/glowingEdge:glowingEdge", "metric0", "019ab0ef1020e05e5e901cb340e9a46f66529cefc054bc8a28886981b2ce4fde", "8f42b60bab0ab75aea84707043c8ae0afc3047b1fc1aa420a56b557d6abaaf3d"},
       {"filter/glowingEdge:glowingEdge", "metric1", "383c60189de282fadff8bdba44e57ef5641a73ba55382c0dca3d49d6e66ebd7b", "c361423fb4e4852699976ef7419619ac87aba5a98ca09e3ee673557d2d61b568"},
       {"filter/glowingEdge:glowingEdge", "metric2", "84b1e9202b2d144924c3ed00cf409c6f716f595254751a8206429919b82e3d04", "4fd31f9f94d8f89761bb05af87b02285ae12da1e2a89567da829f1746c47ed83"},
@@ -527,11 +527,11 @@ TEST(typed_control_flow_slice_external_branch_oracles_cover_every_arm) {
       {"filter/pixels:pixels", "earlyReturn", "bde61fe2cc345cd2979280e465847046eec54926ac7a5569ab36b7c9d4fac749", "5f07b0549bb0b7480f9f9709f6e2d863b9e1f93ebe4a6147459092c931e38718"},
       {"filter/plasticWrap:pwSpec", "zeroLightFallback", "b59b84a82075ebafd04ed19e6a224be8e16a223898ffd776b19dcae17052e096", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a"},
       {"filter/plasticWrap:pwSpec", "oppositeLightHalfFallback", "b59b84a82075ebafd04ed19e6a224be8e16a223898ffd776b19dcae17052e096", "9d1599d1124a34c34d246cf95de8de038e299917769d139057cd453d05449d3a"},
-      {"filter/seamless:seamless", "linear", "bf23e99fe10fa918184d272409eedc549341302a770bea6d1d1f6dd1d8454dd9", "625bf1a9f9c15319aacb8c2a366a08b7d02476b83f3f2d685c1bcc1f690d9f2c"},
-      {"filter/seamless:seamless", "sharp", "67fb825c82e87193a565ffb6c9cb1c18081c20513690255ae4c714d37c821a03", "98ce2fb4c75815268e9fd8f8a5e4857dda251f1d85eb96310fbc759caf029837"},
+      {"filter/seamless:seamless", "linear", "b5ba0537a15d961c4d6a15d80cd212140cdbcf541f7811a87f5577463116f665", "625bf1a9f9c15319aacb8c2a366a08b7d02476b83f3f2d685c1bcc1f690d9f2c"},
+      {"filter/seamless:seamless", "sharp", "2fb88ecf907dfaf2cbeb3c534ca6f1622dc26ab39105949ce80ae59878c5f959", "98ce2fb4c75815268e9fd8f8a5e4857dda251f1d85eb96310fbc759caf029837"},
       {"filter/seamless:seamless", "zeroBlend", "43633d6a9d949ac1d965090c18be1e4709a35cc680f0348e2ee0bf735c7f7672", "002a6dc460f3a727c0ed3cd108dcad1f1bb6bc925acdd86cba0006dbb834b862"},
       {"filter/sine:sine", "luminance", "1361edb9630997113f9d535468ef0caf947c86d7e6c57be87066cb6d384c8d3f", "ecc2703ea467bb15781f2d5f5688befde66441b5e2d0ac1972a206bc06129cbc"},
-      {"filter/vignette:vignette", "fullResolutionZero", "2da1d72b224dac747a3cb700bceed7447e7843ce3b94a58c5bf5efff8f82e92c", "65daf291de28c048faf144e018b39b2ff6082c1c993b280154e961e1f02ece79"},
+      {"filter/vignette:vignette", "fullResolutionZero", "49d0c54b98a32c28d244bee620a623b606522a254b34efcc4a192b1ac29434d9", "65daf291de28c048faf144e018b39b2ff6082c1c993b280154e961e1f02ece79"},
       {"mixer/alphaMask:alphaMask", "maskReturn", "6248f17d402205d7d9989d34c415d412253e104be2b18c954d6a8d868f617ce0", "f5ab5871ccab6489846aac701b44eee7efb15d1023abcede7ba5c0b5415b8722"},
       {"mixer/alphaMask:alphaMask", "maskTranslucentBase", "5c0155acf5d163fcd4c2e8441719f2d051ce18d885c99f566c7f0da639f07741", "33ddffd6c473b2acd0d067cc8d75648a911b8347a407d0534cab8fa95078b614"},
       {"mixer/alphaMask:alphaMask", "alphaNegative", "594438d9e093edc81819ed52ced98f6c35d7678b34298a2bf1e27b49447d264e", "290e9f41f11f4200c75792050f53987b7b0757246663b625602b9bd02c12abb8"},
