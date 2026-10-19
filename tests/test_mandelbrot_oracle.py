@@ -47,7 +47,7 @@ def test_package_and_sidecars_are_exact_and_semantic() -> None:
     assert doc["program_key"] == "synth/mandelbrot:mandelbrot"
     assert doc["factory"]["name"] == "canonicalFactory260"
     assert doc["provenance"]["cpu_snapshot"]["immutable_snapshot"] is True
-    assert len(doc["provenance"]["cpu_snapshot"]["import_closure"]) == 24
+    assert len(doc["provenance"]["cpu_snapshot"]["import_closure"]) == 27
     assert len(doc["render_cases"]) >= 6
     assert len(doc["render_cases"]) == 7
     assert doc["comparer_self_tests"] == {
