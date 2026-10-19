@@ -27,8 +27,8 @@ const source = 'sources/filter/degauss/degauss.glsl'
 const expectedRawBytes = 11490
 const expectedRawSha256 = 'cfefff702ef78db421c088a3b679da2c576b7f4484c777f1d414c66aef0c1a1a'
 const expectedNormalizedSha256 = 'a0a42b0db6bae308295657d5540989bba939ec7cc99f121d97e5d98fd3cca304'
-const expectedCanonicalKernelsSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
-const expectedFactorySha256 = '2dc66240984430c10a2a417e891517094371b3f2a03574931f50be929399f776'
+const expectedCanonicalKernelsSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
+const expectedFactorySha256 = '37d93ff98c6d2c7f9fa639595133f020cf4e3c29fef783957e10f87a47adc9e2'
 const expectedFunctionTupleFingerprint = 'b806b6ce4f98eae3438bc0b01ed3fe0a3aa1f1d1c9a6186c8d18da0675c878d0'
 const expectedWholeProgramFingerprint = '3079146057f6cc68f832636748032e32777c84b0d2e36a6843ea9c2a0542d3f6'
 
@@ -447,7 +447,7 @@ function build() {
     corpus_revision: corpusRevision,
     provenance: {
       node: process.version,
-      cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd',
+      cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e',
       cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
       api: 'canonicalKernelFactories+bindCanonicalKernel+runPass+Surface',
       canonical_kernels_path: 'src/effects/generated/canonical-kernels.js',
