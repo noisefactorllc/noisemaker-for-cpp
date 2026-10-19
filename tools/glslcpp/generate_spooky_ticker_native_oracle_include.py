@@ -14,9 +14,9 @@ ORACLE = PACKAGE / "spooky-ticker-oracles.json"
 INCLUDE = ROOT / "tests/oracles/spooky_ticker_expected.inc"
 SCHEMA = "noisemaker-for-cpp.spooky-ticker.pixel-parity.v1"
 PROGRAM = "filter/spookyTicker:spookyTicker"
-FACTORY = "canonicalFactory147"
+FACTORY = "canonicalFactory144"
 SOURCE_SHA = "d50ca880cd6c6c03dd01a7ae683316d42ed93baddaadce9f3b918be1c816d50f"
-FACTORY_SHA = "9eb9fa9412b700f73e687209bb60803d121ab5e4e036a80d5552797011a0384b"
+FACTORY_SHA = "b411b5b5192202bc06365ed0e163e9cf0b6f8abeb4e6ec62401d70818e13cad1"
 
 def digest(payload: bytes) -> str: return hashlib.sha256(payload).hexdigest()
 def sidecar(path: Path, payload: bytes) -> str: return f"{digest(payload)}  {path.name}\n"
