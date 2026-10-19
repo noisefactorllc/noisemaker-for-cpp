@@ -27,5 +27,17 @@
   {"name":"parse-astral-location","parse":true,"source":"search synth\n// 😀\nsolid(color: #f80).write(o0)\nrender(o0)"},
   {"name":"parse-empty-call","parse":true,"source":"search synth\nsolid().write(o0); render(o0)"},
   {"name":"parse-huge-surface","parse":true,"source":"search synth\nsolid().write(o999999999999999999999999999999999999999999999999999999999999)"},
+  {"name":"parse-subchain","parse":true,"source":"search synth, filter\nnoise(seed: 1).subchain(name: \"look\", id: \"a\") { .invert() .posterize(levels: 4) }.write(o0)\nrender(o0)\n"},
+  {"name":"parse-chain-argument","parse":true,"source":"search synth, mixer, filter\nnoise(seed: 1).blendMode(tex: solid(color: #ff0000).invert(), mode: screen).write(o0)\nrender(o0)\n"},
+  {"name":"parse-from-namespace","parse":true,"source":"search synth\nfrom(classicNoisedeck, noise(seed: 3)).write(o0)\nrender(o0)\n"},
+  {"name":"parse-triple-quoted-string","parse":true,"source":"search synth, filter\nsolid(color: #000).text(text: \"\"\"a \"b\"\nc\"\"\").write(o0)\nrender(o0)\n"},
+  {"name":"parse-math-pi","parse":true,"source":"search synth\nnoise(scaleX: Math.PI * 2).write(o0)\nrender(o0)\n"},
+  {"name":"parse-write3d-read3d","parse":true,"source":"search synth3d, render\nnoise3d(seed: 1).write3d(vol0, geo0)\nread3d(vol0, geo0).render3d().write(o0)\nrender(o0)\n"},
+  {"name":"parse-let-effect-alias","parse":true,"source":"search synth\nlet pattern = noise\npattern(seed: 3).write(o0)\nrender(o0)\n"},
+  {"name":"parse-subchain-missing-brace","parse":true,"source":"search synth, filter\nnoise(seed: 1).subchain() .invert().write(o0)\n"},
+  {"name":"parse-subchain-keyword-binding","parse":true,"source":"search synth\nlet subchain = noise\n"},
+  {"name":"lex-triple-quoted-string","source":"text: \"\"\"x \"y\"\nz\"\"\" + 1"},
+  {"name":"lex-subchain-braces","source":"subchain() { .invert() }"},
+  {"name":"lex-unterminated-triple-quoted-string","source":"text: \"\"\"open\n"},
   {"name":"empty","source":""}
 ]

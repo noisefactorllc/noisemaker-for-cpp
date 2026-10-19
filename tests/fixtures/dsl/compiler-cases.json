@@ -303,5 +303,145 @@
     "name": "catalog-value-call-not-osc", "registryMode": "catalog_records", "sourceName": "value-call.dsl",
     "source": "search synth\npattern(scale: noise()).write(o0)\nrender(o0)\n", "options": {"requireExecutable": false},
     "sourceSha256": "33bb2595c4a2f5e72dbf2944e6e0a2626624d9f1aab92fd95316384f7ca4d2a8"
+  },
+  {
+    "name": "catalog-subchain",
+    "registryMode": "catalog_records",
+    "sourceName": "subchain.dsl",
+    "source": "search synth, filter\nnoise(seed: 1).subchain(name: \"look\", id: \"a\") { .invert() .posterize(levels: 4) }.write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "c159e6959e684a7cde1c1bddd2b0f049853065ef517d8cccea85dfdc475161ed"
+  },
+  {
+    "name": "catalog-subchain-generator-inside",
+    "registryMode": "catalog_records",
+    "sourceName": "subchain-generator.dsl",
+    "source": "search synth, filter\nnoise(seed: 1).subchain() { .noise() }.write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "75acd6347345b463891548ab120361444d6ed59f2350204eca8efaaa79366b4a"
+  },
+  {
+    "name": "catalog-chain-argument",
+    "registryMode": "catalog_records",
+    "sourceName": "chain-argument.dsl",
+    "source": "search synth, mixer\nnoise(seed: 1).blendMode(tex: solid(color: #ff0000), mode: screen).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "8a44f2a31a9308785d65366278d13fa6881cc171f8d1feaad072a12bd7d582ea"
+  },
+  {
+    "name": "catalog-chain-argument-needs-input",
+    "registryMode": "catalog_records",
+    "sourceName": "chain-argument-input.dsl",
+    "source": "search filter, mixer, synth\nnoise(seed: 1).blendMode(tex: invert(), mode: screen).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "5e228578cd5a28b1e683cf35ebe556e0c0000d3ed41f81f954ecddbf569d0f2d"
+  },
+  {
+    "name": "catalog-midi-ignored",
+    "registryMode": "catalog_records",
+    "sourceName": "midi.dsl",
+    "source": "search synth\nnoise(seed: 1, scaleX: midi(channel: 1)).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "f655c8f8b581b89edde259327e9dc114cb0218e9302c202588315f300bb1f303"
+  },
+  {
+    "name": "catalog-audio-ignored",
+    "registryMode": "catalog_records",
+    "sourceName": "audio.dsl",
+    "source": "search synth\nnoise(seed: 1, scaleX: audio(band: audioBand.low, min: 0.25, max: 0.75)).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "949a030662d1a967395e6695668d928b14795d92e32cf5ed0abd268fa5a24854"
+  },
+  {
+    "name": "catalog-math-pi",
+    "registryMode": "catalog_records",
+    "sourceName": "math-pi.dsl",
+    "source": "search synth\nnoise(seed: 1, scaleX: Math.PI * 4).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "38f267b46cdcfb6afae801290284eb6bbe0cc203c2e0389a854e184a028911a8"
+  },
+  {
+    "name": "catalog-triple-quoted-string",
+    "registryMode": "catalog_records",
+    "sourceName": "triple-quoted.dsl",
+    "source": "search synth, filter\nsolid(color: #000).text(text: \"\"\"hi\"\"\").write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "b04dbcd640f3a42a3cd123d8ec5e60f146300ace1a93af30603a37e7aa602dd6"
+  },
+  {
+    "name": "catalog-let-effect-alias",
+    "registryMode": "catalog_records",
+    "sourceName": "let-alias.dsl",
+    "source": "search synth\nlet pattern = noise\npattern(seed: 3).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "e555f5591c57fcccdcd3e85aed522ea5c8496a6fd02b85ca2897f2e368da6aae"
+  },
+  {
+    "name": "catalog-let-alias-not-callable",
+    "registryMode": "catalog_records",
+    "sourceName": "let-alias-unknown.dsl",
+    "source": "search synth\nlet pattern = wobble\npattern().write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "56776b1adb0bf97be3adad2fb3185cab07f120f77a6f805f7071390d357095e7"
+  },
+  {
+    "name": "catalog-write3d-read3d",
+    "registryMode": "catalog_records",
+    "sourceName": "volume-io.dsl",
+    "source": "search synth3d, render\nnoise3d(seed: 1, volumeSize: 8).write3d(vol0, geo0)\nread3d(vol0, geo0).render3d().write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "832ee6519f20888eefddbcbe26e009ac6f3e04bf8996b2898f802e987af65823"
+  },
+  {
+    "name": "catalog-from-namespace",
+    "registryMode": "catalog_records",
+    "sourceName": "from.dsl",
+    "source": "search synth, filter\nfrom(classicNoisedeck, noise(seed: 3)).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "f5c7c0aac1248c0b9557896099313c008d60670b7485e5e14bb9f6ee87804fe8"
+  },
+  {
+    "name": "catalog-float-choice-name",
+    "registryMode": "catalog_records",
+    "sourceName": "float-choice.dsl",
+    "source": "search filter, synth\nnoise(seed: 1, ridges: true).palette(rotation: fwd).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "a43d0eea23c1fec56e954bdcf71b92473ba28c9692b12e1532d6a0698497e8e0"
+  },
+  {
+    "name": "catalog-float-choice-qualified",
+    "registryMode": "catalog_records",
+    "sourceName": "float-choice-qualified.dsl",
+    "source": "search filter, synth\nnoise(seed: 1, ridges: true).palette(rotation: choices.back).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "e39c1cda7e6e5807f47b62d2d5f17e5674918c1acd2a2a0eec1c7cc595c67d78"
   }
 ]
