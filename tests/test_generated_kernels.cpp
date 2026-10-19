@@ -11459,7 +11459,7 @@ constexpr std::string_view kTask35MaskZeroFloatHash =
 constexpr std::array<Task35BitwiseCase, 6> kTask35BitwiseCases{{
     {"xor-mono-seed-negative-one-signbit-mask", 6U, 5U, 0.0, 0.0, 6.0, 5.0, 1.0, 0, 3.5, 17, -9, (-2147483647 - 1), -1, 0, 0.4, 15.0, 0, 0.0, "6b974a31a2eb50d7d7a809bfafe3a477c1838657941f6a1dd55674b19ec02d8b", "a867f774a9b52de6716665e4f23ed7b0342508511fb112b49fd3d46600e4b209", false},
     {"and-rgb-int32min-offsets-near-max-mask", 5U, 6U, 0.0, 0.0, 5.0, 6.0, 1.0, 1, 1.7, -1500000000, 500000000, 2147483647, -2000000000, 1, 1.1, -40.0, 37, 0.75, "35d4755eb6b88c0a2fa5b9a1109e00cbaed2203c0ed99045dee6fc9538cb2c46", "02bc6717b1256d975316f93619834874ef320092e10e23eb08dff0971e795e28", false},
-    {"or-hsv-negative-offsets-large-seed", 7U, 4U, 0.0, 0.0, 7.0, 4.0, 1.0, 2, 0.6, -777, 888, 999983, 123456789, 2, -0.3, 200.0, 5, 0.0, "9a7907811e4db580b1ce3bf3b477da2eb667768ed329c5fad6ff05948a81ac5b", "03fe3364206e61a0a511a12a9f965e61447407287081fb42ae6efeca72fb3378", false},
+    {"or-hsv-negative-offsets-large-seed", 7U, 4U, 0.0, 0.0, 7.0, 4.0, 1.0, 2, 0.6, -777, 888, 999983, 123456789, 2, -0.3, 200.0, 5, 0.0, "409be694ccf5a371f79cf9493c8378f13f5927e03fc8dbb916cbc91144bcfcce", "03fe3364206e61a0a511a12a9f965e61447407287081fb42ae6efeca72fb3378", false},
     {"nand-mono-int32-extremes-tiled", 4U, 7U, 1.0, 1.0, 6.0, 9.0, 1.0, 3, 2.2, 2000000000, -2000000000, -65536, -1, 0, 0.9, 77.0, 0, 0.0, "18df6df90284225e0d2850a3858d3bab3a8bffdd75f0804f440c053cd820ead1", "d583aef59874543a14822c32be48385b86bd239a918575d36cf695b0eb1e0c1c", false},
     {"xnor-rgb-high-bit-mixed-signs", 6U, 6U, 0.0, 0.0, 6.0, 6.0, 1.0, 4, 4.1, 333, -444, -3, 2147483647, 1, 0.2, -15.0, -19, 2.3, "5ab11529ca24e34bf7a38b09a757690d18dde44d219fe554006e8cf8365ec100", "218be6c5703006d77363e4bda8ff683649616f6314ff9dab331b6f4974c4934c", false},
     {"mask-zero-divide-by-zero-diagnostic", 3U, 3U, 0.0, 0.0, 3.0, 3.0, 1.0, 0, 2.0, 1, 1, 0, 5, 0, 0.0, 0.0, 0, 0.0, kTask35MaskZeroFloatHash, "d574fbbbc44a56d8ec9bf06a4221e0c975b101e434c87e030572be6660dfb538", true},
@@ -11536,9 +11536,9 @@ constexpr std::array<Task35NumberBoundaryCase, 7>
          "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"},
         {"mul-rgb-unwrapped-coloroffset", 5, 1.0, -2147483647,
          -2147483647, -1, 0, 1, 0.0, (-2147483647 - 1), 0.0,
-         {0x80000000U, 0x4f000000U, 0x4f000000U, 0x3f800000U},
-         "8d9c5b77c43fc52d62c26f5211fb023f159646648dc9349a9ebf99d3dff0b37f",
-         "9e83509b5f2891c382dbd70ebb1f17d1fd6b41951f87713368060ebda78cc505"},
+         {0x80000000U, 0x80000000U, 0x80000000U, 0x3f800000U},
+         "7b7d8bede78ff6d064c16b3f034c0ecb201a81287df04d49f5fccccf12b96506",
+         "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"},
         {"add-signed-overflow", 6, 1.0, 2147483647, 1, -1, 0, 0,
          0.0, 0, 0.0,
          {0x4f000000U, 0x4f000000U, 0x4f000000U, 0x3f800000U},
@@ -11561,8 +11561,8 @@ constexpr std::array<Task35NumberBoundaryCase, 7>
          "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"},
         {"infinite-speed-int-cast", 0, 1.0, 1, 2, -1, 3, 0,
          std::numeric_limits<double>::infinity(), 0, 1.0,
-         {0xc1100000U, 0xc1100000U, 0xc1100000U, 0x3f800000U},
-         "c5fc5ccb87ba6f56c72c96da2feb5b1de3c8a9ca0d977909a551668020c7e884",
+         {0xc1300000U, 0xc1300000U, 0xc1300000U, 0x3f800000U},
+         "c7d014ea3adf34f25f35c2d3eebef17d0fa882b878182062a05d7a315331ae13",
          "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"},
     }};
 

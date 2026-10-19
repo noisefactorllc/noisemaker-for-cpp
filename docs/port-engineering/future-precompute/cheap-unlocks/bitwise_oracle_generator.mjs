@@ -147,8 +147,8 @@ function occurrences(text, needle) { return text.split(needle).length - 1 }
 // recomputed here.
 // ---------------------------------------------------------------------------
 const RUNTIME_PROVENANCE = {
-  glsl_kernel_sha256: 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa',
-  glsl_runtime_sha256: 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072',
+  glsl_kernel_sha256: 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
+  glsl_runtime_sha256: 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd',
   pass_runner_sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   surface_sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
@@ -159,8 +159,8 @@ const RUNTIME_PROVENANCE = {
   // canonical_factory_to_string_sha256 below, which is still exactly
   // a00438c5b07fb3e4cfe58a511453f8856f70cb9449465c9bd8d2f35a3afdd3e2 on both
   // architectures: canonicalFactory244's own text has not changed.
-  canonical_kernels_sha256: '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe',
-  adapter_index_sha256: '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267',
+  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
+  adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
 }
 for (const [file, hash] of [
   [glslKernelPath, RUNTIME_PROVENANCE.glsl_kernel_sha256],
@@ -282,7 +282,7 @@ function loadProgram() {
 
   const canonical = canonicalKernelFactories[PROGRAM_KEY]
   if (!canonical) throw new Error(`bitwise: canonical factory missing for key ${PROGRAM_KEY}`)
-  if (canonical.name !== 'canonicalFactory244') throw new Error(`bitwise: factory name drift (got ${canonical.name})`)
+  if (canonical.name !== 'canonicalFactory252') throw new Error(`bitwise: factory name drift (got ${canonical.name})`)
   const factoryText = canonical.toString()
   const factorySha256 = sha256(factoryText)
 
