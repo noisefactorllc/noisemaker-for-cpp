@@ -13893,8 +13893,8 @@ struct GlyphGeneralCase {
 constexpr std::array<GlyphGeneralCase, 9> kGlyphGeneralCases{{
     {"mono-min-cell-pattern", 19U, 15U, 1U, 4, 1, 0, 1, 0, 0U, 0,
      {0, 0}, {19, 15},
-     "afb5fb5d45bfab209c8ff417e4124ad4d08c92cb5faa597f990f7189af4f7e15",
-     "e58c2a636885b780fdc28dc4d7474ca0993b73d1cb1765ced83660d85900f1a8"},
+     "57b7c39a6d8cbf4642e857bfda2c500d86098aa7591dfdd171a14ef67200aafa",
+     "f41818e29d5e69936097731312b5f3a9b716aff0fd5516996b40c473ccf65fb3"},
     {"rgb-default-pattern", 19U, 15U, 2U, 16, 1, 1, 1, 0, 0U, 0,
      {0, 0}, {19, 15},
      "0cd79cc961dcaf65bc9f0d64b3cc9dd8747314b8a3331f9213099323d9e96874",

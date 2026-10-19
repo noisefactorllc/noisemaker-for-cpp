@@ -5,8 +5,7 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-const platformRoot = path.resolve(here, '../../../../..')
-const cppRoot = path.join(platformRoot, 'noisemaker-for-cpp')
+const cppRoot = path.resolve(here, '../../../..')
 const mode = ['--check', '--write', '--json-only'].filter((value) => process.argv.includes(value))
 const cpuIndex = process.argv.indexOf('--cpu-root')
 const ledgerIndex = process.argv.indexOf('--ledger')
@@ -194,12 +193,12 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
   upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'a18d735d9417708ad0c90f8347c8a96a9790d4f2ff999a6b4be41ed5b24098d1'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }
@@ -221,7 +220,7 @@ if ((sourceText.match(/row >> \(4 - x\)/g) ?? []).length !== 1 || (sourceText.ma
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
 if (!canonicalFactory || canonicalFactory.name !== 'canonicalFactory56') throw new Error('canonical Glyph Map factory identity drift')
-if (Buffer.byteLength(canonicalFactory.toString()) !== 6826 || sha256(canonicalFactory.toString()) !== 'da7f49bffd02ea705db223296a620e20183b4b307fc8b5f0e0c505dd2045320c') {
+if (Buffer.byteLength(canonicalFactory.toString()) !== 6910 || sha256(canonicalFactory.toString()) !== '9440d2bc8f051ddb8b0db22d193f88aeb6684a0439b2c86920c7cdc502f8770c') {
   throw new Error('canonical Glyph Map factory body drift')
 }
 if (publicFactory !== canonicalFactory) throw new Error('public catalog Glyph Map factory is not the canonical factory identity')

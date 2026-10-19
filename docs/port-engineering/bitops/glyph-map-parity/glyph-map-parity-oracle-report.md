@@ -7,7 +7,7 @@ Frozen JavaScript ground truth for `filter/glyphMap:glyphMap`. Exact Float32 and
 - Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
 - GLSL source: 8145 bytes, SHA-256 `dc0af9a6a6fb4d0cd62ea25c4508a714a36a1dc66923f5578d91ac190d9f4dd6`
-- Canonical factory: `canonicalFactory56`, 6826 bytes, SHA-256 `da7f49bffd02ea705db223296a620e20183b4b307fc8b5f0e0c505dd2045320c`
+- Canonical factory: `canonicalFactory56`, 6910 bytes, SHA-256 `9440d2bc8f051ddb8b0db22d193f88aeb6684a0439b2c86920c7cdc502f8770c`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
 
 ## Captured C++ frontend boundary
@@ -50,7 +50,7 @@ Pixel renders intentionally cannot distinguish `>>` from `>>>`: authenticated gl
 
 | Case | Size | Cell | Seed | Mode | Scale | Tile/full | Float32 SHA-256 | RGBA8 SHA-256 |
 | --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- |
-| mono-min-cell-pattern | 19x15 | 4 | 1 | 0 | 1 | 0,0/19,15 | `afb5fb5d45bfab209c8ff417e4124ad4d08c92cb5faa597f990f7189af4f7e15` | `e58c2a636885b780fdc28dc4d7474ca0993b73d1cb1765ced83660d85900f1a8` |
+| mono-min-cell-pattern | 19x15 | 4 | 1 | 0 | 1 | 0,0/19,15 | `57b7c39a6d8cbf4642e857bfda2c500d86098aa7591dfdd171a14ef67200aafa` | `f41818e29d5e69936097731312b5f3a9b716aff0fd5516996b40c473ccf65fb3` |
 | rgb-default-pattern | 19x15 | 16 | 1 | 1 | 1 | 0,0/19,15 | `0cd79cc961dcaf65bc9f0d64b3cc9dd8747314b8a3331f9213099323d9e96874` | `a446cf3e64af0c587d8ffa667f1f17db451032d05927c44e384e8f917a23006d` |
 | rgb-variant-two-seed | 23x17 | 7 | 2 | 1 | 1 | 0,0/23,17 | `1f4d11179bb37180a7d3cb249cc769545fe72ed2fef14eb3393bd0e351773459` | `b7cb96cca9d6d904f0b82861fcf6303c6dfbe4289b387e04cb2a63ca4d05b2b8` |
 | scale-zero-cs-one | 7x11 | 4 | 100 | 0 | 0 | 0,0/7,11 | `07110a6cdf3075fb98f5d1bbda4b7cbd75ded61cc45de1c6b09c0135ed605ef2` | `ca25b6a4fd644d91e92e434e4a20b59bff22f682816906de24a0103e40936f61` |
