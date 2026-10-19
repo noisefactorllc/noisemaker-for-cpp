@@ -25,6 +25,7 @@ from tests.historical_cross_lane import historical_cross_lane
 from tests.historical_authority import historical_authority
 from historical_compare import compare_artifact_pins, format_mismatches
 from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
+from tools.glslcpp import emit_typed_cpp
 from tests.gate import full_run_only
 
 
@@ -7332,13 +7333,26 @@ and item["program_key"] != "filter/wobble:wobble"
                 "void main(){fragColor=vec4(sdfTriangle(vec2(0.2),0.4)+sdfStar5(vec2(0.3),0.5));}")
         typed = analyze_program(parse_program(body, "mixer/shapeMask:shapeMask"),
                                 "mixer/shapeMask:shapeMask")
-        transformed = generate_typed_slice.apply_compatibility_transform(
-            typed, "shape-mask-sequential-lanes-v1")
-        emitted = render_typed_cpp(transformed, "mixer/shapeMask:shapeMask", "c" * 64)
+        # Authority 5e93c23c also split the triangle's whole-vector store
+        # into ordered lane stores.
+        with emit_typed_cpp.authority_before_7f47340():
+            transformed = generate_typed_slice.apply_compatibility_transform(
+                typed, "shape-mask-sequential-lanes-v1")
+            emitted = render_typed_cpp(transformed, "mixer/shapeMask:shapeMask", "c" * 64)
         self.assertEqual(4, emitted.count("glsl::set_swizzle<0>(p,"))
         self.assertEqual(4, emitted.count("glsl::set_swizzle<1>(p,"))
         self.assertNotIn("p = glsl::Vec2", emitted)
         self.assertNotIn("} else {", emitted)
+        # Authority 7f47340 (vector-writes.js) reads both triangle lanes before
+        # it stores them, which is the whole-vector store; the star keeps its
+        # ordered lane stores.
+        transformed = generate_typed_slice.apply_compatibility_transform(
+            typed, "shape-mask-sequential-lanes-v1")
+        current = render_typed_cpp(transformed, "mixer/shapeMask:shapeMask", "c" * 64)
+        self.assertEqual(3, current.count("glsl::set_swizzle<0>(p,"))
+        self.assertEqual(3, current.count("glsl::set_swizzle<1>(p,"))
+        self.assertEqual(1, current.count("p = glsl::Vec2("))
+        self.assertNotIn("} else {", current)
 
         near_misses = {
             "wrong-key": ("not/shapeMask:shapeMask", body),
@@ -8755,13 +8769,21 @@ and item["program_key"] != "filter/wobble:wobble"
 
         scatter = analyze_program(parse_program(source, "filter/scatter:scatterSmooth"),
                                   "filter/scatter:scatterSmooth")
-        scatter_emitted = render_typed_cpp(scatter, "filter/scatter:scatterSmooth", "4" * 64,
-                                           numeric_literal_contract="source-double")
+        # Authority 5e93c23c left filter/scatter's hashes unfenced.
+        with emit_typed_cpp.authority_before_7f47340():
+            scatter_emitted = render_typed_cpp(scatter, "filter/scatter:scatterSmooth", "4" * 64,
+                                               numeric_literal_contract="source-double")
         self.assertNotIn("glsl::fract(static_cast<float>(", scatter_emitted)
         self.assertNotIn("glsl::fract(glsl::Vec2(static_cast<float>(", scatter_emitted)
         self.assertIn("static_cast<double>(0.1031)", scatter_emitted)
         self.assertIn("static_cast<double>(33.33)", scatter_emitted)
         self.assertIn("static_cast<float>(0.1031)", emitted)
+        # Authority 7f47340 fences them like every other hash.
+        self.assertTrue(emit_typed_cpp.HASH_PRECISION_FENCE_INCLUDES_SCATTER)
+        scatter_current = render_typed_cpp(scatter, "filter/scatter:scatterSmooth", "4" * 64,
+                                           numeric_literal_contract="source-double")
+        self.assertIn("glsl::fract(static_cast<float>(", scatter_current)
+        self.assertIn("glsl::fract(glsl::Vec2(static_cast<float>(", scatter_current)
 
     def test_vector_arithmetic_rooted_in_builtin_materializes_each_operation(self) -> None:
         from tools.glslcpp.emit_typed_cpp import render_typed_cpp
@@ -17395,12 +17417,22 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         self.assertEqual(0, emitted.count("glsl::greaterThan("))
         self.assertEqual(0, emitted.count("glsl::greaterThanEqual("))
         self.assertEqual(0, emitted.count("glsl::BVec2"))
+        # Authority 7f47340 (compile-glsl.js) reassociates the top-face test
+        # around imgCenter; 5e93c23c compared against faceCenter.
         self.assertIn(
             "bool topHit = glsl::all(glsl::lessThanEqual(glsl::abs("
-            "(P - faceCenter)), faceHalf));", emitted)
+            "((P - imgCenter) - ((cellC - imgCenter) * s))), faceHalf));", emitted)
         self.assertIn(
             "bool sideHit = ((!topHit) && glsl::all(glsl::lessThanEqual("
             "glsl::abs((P - cellC)), halfCell)));", emitted)
+        with emit_typed_cpp.authority_before_7f47340():
+            historical = render_typed_cpp(
+                exact, exact.key, source_hash,
+                extrude_bvec2_relational_reduction_profile=PROFILE)
+        self.assertIn(
+            "bool topHit = glsl::all(glsl::lessThanEqual(glsl::abs("
+            "(P - faceCenter)), faceHalf));", historical)
+        self.assertEqual(2, historical.count("glsl::all(glsl::lessThanEqual("))
 
         # Independent reconstruction: a distinct-object, structurally equal
         # tree still authenticates on its own authority, sharing no object
@@ -20374,9 +20406,11 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         self.assertIn(
             "  frame.globalCoord = glsl::Vec2((glsl::swizzle<0, 1>("
             "context.frag_coord) + state.tileOffset));", pixel)
+        # Authority 7f47340 divides by the run-time resolution with Metal
+        # division (`$runtime.fdiv`).
         self.assertIn(
-            "  frame.aspectRatio = (static_cast<double>(glsl::swizzle<0>("
-            "state.fullResolution)) / static_cast<double>(glsl::swizzle<1>("
+            "  frame.aspectRatio = glsl::metal_divide(static_cast<double>(glsl::swizzle<0>("
+            "state.fullResolution)), static_cast<double>(glsl::swizzle<1>("
             "state.fullResolution)));", pixel)
         # `frame` is emitter-bound, so it must be reserved everywhere. The
         # 184 -> 183 reconstruction below is what proves that a no-op.
@@ -22815,11 +22849,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3855540,
-                "1af48d38b7722ac96052615c5c5af4ff27d58be1372b2c0a3cd618125a45d5cc"),
+                3873369,
+                "5bccfb5e5e238bde522303c8aabace79e1f2283cc0c21d44f3f228eb00aca935"),
             "src/typed_generated/typed_manifest.json": (
-                923284,
-                "619d6264adfb3589253d3b7fc25235da26176d68a9f9cc3e3fd29fc5acba1698"),
+                924824,
+                "6e3b8ced0f4c4683409e863c5f14e4c123cc06b322b0f0ce153bf28d2ae6da3b"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23603,11 +23637,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3855540,
-                "1af48d38b7722ac96052615c5c5af4ff27d58be1372b2c0a3cd618125a45d5cc"),
+                3873369,
+                "5bccfb5e5e238bde522303c8aabace79e1f2283cc0c21d44f3f228eb00aca935"),
             "src/typed_generated/typed_manifest.json": (
-                923284,
-                "619d6264adfb3589253d3b7fc25235da26176d68a9f9cc3e3fd29fc5acba1698"),
+                924824,
+                "6e3b8ced0f4c4683409e863c5f14e4c123cc06b322b0f0ce153bf28d2ae6da3b"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24377,11 +24411,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3855540,
-                "1af48d38b7722ac96052615c5c5af4ff27d58be1372b2c0a3cd618125a45d5cc"),
+                3873369,
+                "5bccfb5e5e238bde522303c8aabace79e1f2283cc0c21d44f3f228eb00aca935"),
             "src/typed_generated/typed_manifest.json": (
-                923284,
-                "619d6264adfb3589253d3b7fc25235da26176d68a9f9cc3e3fd29fc5acba1698"),
+                924824,
+                "6e3b8ced0f4c4683409e863c5f14e4c123cc06b322b0f0ce153bf28d2ae6da3b"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24916,11 +24950,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3855540,
-                "1af48d38b7722ac96052615c5c5af4ff27d58be1372b2c0a3cd618125a45d5cc"),
+                3873369,
+                "5bccfb5e5e238bde522303c8aabace79e1f2283cc0c21d44f3f228eb00aca935"),
             "src/typed_generated/typed_manifest.json": (
-                923284,
-                "619d6264adfb3589253d3b7fc25235da26176d68a9f9cc3e3fd29fc5acba1698"),
+                924824,
+                "6e3b8ced0f4c4683409e863c5f14e4c123cc06b322b0f0ce153bf28d2ae6da3b"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25519,11 +25553,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3855540,
-                "1af48d38b7722ac96052615c5c5af4ff27d58be1372b2c0a3cd618125a45d5cc"),
+                3873369,
+                "5bccfb5e5e238bde522303c8aabace79e1f2283cc0c21d44f3f228eb00aca935"),
             "src/typed_generated/typed_manifest.json": (
-                923284,
-                "619d6264adfb3589253d3b7fc25235da26176d68a9f9cc3e3fd29fc5acba1698"),
+                924824,
+                "6e3b8ced0f4c4683409e863c5f14e4c123cc06b322b0f0ce153bf28d2ae6da3b"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -26776,7 +26810,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertIn("static_cast<double>(state.seed)", cpp)
         self.assertIn("std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);", cpp)
         from unittest import mock
-        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False):
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False), \
+                emit_typed_cpp.authority_before_7f47340():
             historical_cpp = emit_typed_cpp.render_typed_cpp(
                 typed, key, shash, "pixel", factory,
                 runtime_loop_bound_profile=RUNTIME_LOOP_PROFILE,
@@ -28058,7 +28093,8 @@ class HashPrecisionFenceTests(unittest.TestCase):
             glsl = (sources / effect / f"{program}.glsl").read_text(encoding="utf-8")
             for source, fence in ((self.SCALAR_SOURCE, self.SCALAR_FENCE), (self.VEC2_SOURCE, self.VEC2_FENCE)):
                 with self.subTest(program=key, shape=source):
-                    if effect == "filter/scatter":
+                    # Authority 5e93c23c skipped filter/scatter; 7f47340 fences it too.
+                    if effect == "filter/scatter" and not emit_typed_cpp.HASH_PRECISION_FENCE_INCLUDES_SCATTER:
                         self.assertNotIn(fence, body)
                     elif source in glsl:
                         self.assertIn(fence, body)

@@ -6,6 +6,7 @@ from pathlib import Path
 import unittest
 
 from tools.glslcpp.check_corpus import REVISION
+from tools.glslcpp import emit_typed_cpp
 from tools.glslcpp.emit_typed_cpp import render_typed_cpp
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -26,14 +27,28 @@ class NavierHash22ProfileTests(unittest.TestCase):
     def test_exact_source_emits_two_ordered_lane_stores(self) -> None:
         proof = authenticate_navier_hash22(self.program, self.sha)
         self.assertIsNotNone(proof)
-        emitted = render_typed_cpp(self.program, KEY, self.sha, "pixel",
-                                   "bind_synth_navierStokes_nsSplat")
+        # Authority 5e93c23c stored lane 0 before it read lane 1.
+        with emit_typed_cpp.authority_before_7f47340():
+            emitted = render_typed_cpp(self.program, KEY, self.sha, "pixel",
+                                       "bind_synth_navierStokes_nsSplat")
         first = "glsl::set_swizzle<0>(p, glsl::dot(p,"
         second = "glsl::set_swizzle<1>(p, glsl::dot(p,"
         self.assertEqual(emitted.count(first), 1)
         self.assertEqual(emitted.count(second), 1)
         self.assertLess(emitted.index(first), emitted.index(second))
         self.assertNotIn("p = glsl::Vec2(glsl::FloatExpr<2>(glsl::dot(p,", emitted)
+        # Authority 7f47340 (vector-writes.js) reads both lanes, then stores them.
+        current = render_typed_cpp(self.program, KEY, self.sha, "pixel",
+                                   "bind_synth_navierStokes_nsSplat")
+        reads = ("const double cpu_vector_write_0 = static_cast<double>(glsl::dot(p,",
+                 "const double cpu_vector_write_1 = static_cast<double>(glsl::dot(p,")
+        stores = ("glsl::set_swizzle<0>(p, cpu_vector_write_0);",
+                  "glsl::set_swizzle<1>(p, cpu_vector_write_1);")
+        for text in reads + stores:
+            self.assertEqual(current.count(text), 1)
+        self.assertLess(current.index(reads[1]), current.index(stores[0]))
+        self.assertLess(current.index(stores[0]), current.index(stores[1]))
+        self.assertNotIn(first, current)
 
     def test_wrong_caller_hash_and_raw_bytes_fail(self) -> None:
         with self.assertRaisesRegex(ValueError, "source identity"):

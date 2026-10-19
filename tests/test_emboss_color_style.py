@@ -282,9 +282,11 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 proof.texture_coordinate_divisions):
             self.assertIs(division.children[0], numerator)
 
-        rendered = emit_typed_cpp.render_typed_cpp(
-            program, KEY, RAW_SHA256, "emboss_probe", "bind_emboss_probe",
-            emboss_color_style_profile=PROFILE)
+        # Authority 5e93c23c divided in float64.
+        with emit_typed_cpp.authority_before_7f47340():
+            rendered = emit_typed_cpp.render_typed_cpp(
+                program, KEY, RAW_SHA256, "emboss_probe", "bind_emboss_probe",
+                emboss_color_style_profile=PROFILE)
         texture_lines = [line for line in rendered.splitlines()
                          if "texSample =" in line and "sample_texture" in line]
         self.assertEqual(2, len(texture_lines))
@@ -294,6 +296,18 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             numerator_start = line.index("glsl::Vec2((")
             divide = line.index(" / glsl::Vec2(texture_size")
             self.assertLess(numerator_start, divide)
+        # Authority 7f47340 divides by the run-time texture size with Metal
+        # division; the materialized numerator is its first operand.
+        current = emit_typed_cpp.render_typed_cpp(
+            program, KEY, RAW_SHA256, "emboss_probe", "bind_emboss_probe",
+            emboss_color_style_profile=PROFILE)
+        texture_lines = [line for line in current.splitlines()
+                         if "texSample =" in line and "sample_texture" in line]
+        self.assertEqual(2, len(texture_lines))
+        for line in texture_lines:
+            self.assertIn("glsl::metal_divide(glsl::Vec2((", line)
+            self.assertIn(", glsl::Vec2(texture_size(*state.inputTex)))", line)
+            self.assertNotIn(" / glsl::Vec2(texture_size", line)
 
     def test_coarse_source_locks_reject_behavioral_table_and_boolean_mutations(self):
         profile = _profile()
@@ -1120,30 +1134,35 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         # milestone under the new emitter. Derived from a measured regeneration of
         # this test's own projection; see
         # task-7-typed-generator-census-repair.md.
+        # Re-frozen 2026-10-19: every projected manifest records the live
+        # src/effects/snow.cpp SHA-256 in the filter/snow:snow custom_adapter
+        # route, and the authority 7f47340 snow port changed that file
+        # (ecc1cf53... -> 454d3194...). With the old source hash substituted,
+        # each projection reproduces its previous frozen digest exactly.
         expected_artifact_hashes = {
             "live182": {
                 "src/typed_generated/typed_slice.cpp": "53c0e0e5cd9d3bf0dcc7fce0b0694a7993f2955474ede6e92f2860aa35b7c5bd",
-                "src/typed_generated/typed_manifest.json": "52aa10d3765e486dec90322d6e3c98d5d8674a9034ba4071c8a7adcd5545f754",
+                "src/typed_generated/typed_manifest.json": "e5bc5a951b37e34fbbd8e201dca90b8dff3ed37f26195ef5a7c9ff03d610834c",
                 "include/noisemaker/generated/catalog.hpp": "c167d502824e6ee052d404f403c524e75c49ee8d153aed5b7ef18a3bb7d66dc6",
             },
             "emboss181": {
                 "src/typed_generated/typed_slice.cpp": "8ce331ad506a9578580cc4d996032449efb4d14ed606d6f38384e656af890795",
-                "src/typed_generated/typed_manifest.json": "5458269298536fe281419d95be087c429c4f7ee08080509180998a9d5b8d5b47",
+                "src/typed_generated/typed_manifest.json": "b09cc3991b3020a4d37e0fe2e3692ec492f7da5851393b3152b92004659d32a8",
                 "include/noisemaker/generated/catalog.hpp": "afa8e867e782e540a323113549c3b5e6d6f1a7c2abd504846661999359ff4673",
             },
             "glitch180": {
                 "src/typed_generated/typed_slice.cpp": "946af18c35612c8e80d2cc4e8f96c0ddc9bb1e97dedf7d900d5180a067425bb9",
-                "src/typed_generated/typed_manifest.json": "df2dd265d7b4c2ad4a594071a391f9ac8b10720a3c5741dfb9edaab78d0b5abf",
+                "src/typed_generated/typed_manifest.json": "d124156f7d9f0833e0d4211e1dd784523769b8ebb4079499eac1b0976ad24862",
                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
                 "src/typed_generated/typed_slice.cpp": "761f9b59548fc92eadaf9b2d97fdd6e51a4ca66ddb6a2d12bb4331321f9c1952",
-                "src/typed_generated/typed_manifest.json": "7b55e493ae1e8c33ccceef346a84432ed577c331de9803a60850cd80555623de",
+                "src/typed_generated/typed_manifest.json": "a8a808400cb627db2d878524c106bfde3df1f89e886a39fe06928974b71d20fa",
                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
                 "src/typed_generated/typed_slice.cpp": "01b0f3f2f675c1404dfb395395c63f3fb29779092d03647caf1e2bf930e4b57d",
-                "src/typed_generated/typed_manifest.json": "b7f8f7a5e85ebd46ed3fb91d5044f05b7567aa71ba29abe04474242497be21de",
+                "src/typed_generated/typed_manifest.json": "4f8e5321a46f09a876b1cc839680fc069cbb13adffbc80868d74e3eda378e2d9",
                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }

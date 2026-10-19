@@ -7,7 +7,7 @@ import json
 import pathlib
 import unittest
 
-from tools.glslcpp.emit_typed_cpp import render_typed_cpp
+from tools.glslcpp.emit_typed_cpp import authority_before_7f47340, render_typed_cpp
 from tools.glslcpp.generate_typed_slice import apply_compatibility_transform
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -46,10 +46,11 @@ class HistoricalRetiredKernelTests(unittest.TestCase):
                 transform = "corrupt-sample-uv-alias-v1" if key == "filter/corrupt:corrupt" else None
                 if transform:
                     program = apply_compatibility_transform(program, transform)
-                regenerated = render_typed_cpp(
-                    program, key, entry["raw_sha256"], f"typed_{ordinal}",
-                    "bind_" + key.replace("/", "_").replace(":", "_"),
-                    compatibility_transform=transform)
+                with authority_before_7f47340():
+                    regenerated = render_typed_cpp(
+                        program, key, entry["raw_sha256"], f"typed_{ordinal}",
+                        "bind_" + key.replace("/", "_").replace(":", "_"),
+                        compatibility_transform=transform)
                 # The original combined translation unit separates emitted blocks
                 # by one additional newline; preserve that byte as well.
                 self.assertEqual(block, (regenerated + "\n").encode())

@@ -189,7 +189,8 @@ class HistoricalParallaxTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(source).hexdigest(), entry["raw_sha256"])
         typed = analyze_program(parse_program(source.decode(), key, {}), key,
                                 source_global_literal_int_profile=SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
-        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False):
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False), \
+                emit_typed_cpp.authority_before_7f47340():
             rendered = emit_typed_cpp.render_typed_cpp(
                 typed, key, entry["raw_sha256"], "typed_98", "bind_filter_parallax_parallax",
                 source_global_literal_int_profile=SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,

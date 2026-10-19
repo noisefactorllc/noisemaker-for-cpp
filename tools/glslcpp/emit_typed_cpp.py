@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import contextlib
 import dataclasses
 import hashlib
 import math
 import re
 import struct
+import sys
 
 from .frontend.audio_uniform_profile import authenticate_audio_uniform
 from .frontend.physical_unused_sampler import omitted_physical_samplers
@@ -68,6 +70,10 @@ AUTHORITY_ADAPTER_PROGRAMS = frozenset({
     "synth/julia:julia",
     "synth/remap:remap",
 })
+# Since 7f47340 the authority renders filter/crt with its float32 crt.js
+# adapter (src/effects/crt.cpp is its port). Historical reconstructions keep
+# the typed-emitter route.
+CURRENT_AUTHORITY_CRT_ADAPTER = True
 # Since 7f47340 the transpiled kernels select a nearest texel as the GPU does
 # (sampleNearestTexelBottomLeft). Historical reconstructions turn this off.
 CURRENT_AUTHORITY_GPU_NEAREST_TEXEL = True
@@ -125,6 +131,49 @@ CELL3D_LATTICE_KEY = "synth3d/cell3d:precompute"
 VOLUME_SEED_HASH_KEYS = frozenset({
     "synth3d/reactionDiffusion3d:simulate", "synth3d/cellularAutomata3d:simulate"})
 _LATTICE_KEYS = frozenset({NOISE3D_LATTICE_KEY, PERLIN_LATTICE_KEY, CELL3D_LATTICE_KEY}) | VOLUME_SEED_HASH_KEYS
+# The pinned corpus sources these program-specific rewrites authenticate.
+_CURRENT_REWRITE_SOURCES = {
+    EXTRUDE_KEY: "3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29",
+    PERLIN_LATTICE_KEY: "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318",
+    CELL3D_LATTICE_KEY: "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755",
+    NOISE3D_LATTICE_KEY: "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727",
+    "synth3d/cellularAutomata3d:simulate": "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a",
+    "synth3d/reactionDiffusion3d:simulate": "23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17",
+}
+# Every lowering added by the 7f47340 sync. Historical reconstructions turn
+# all of them off.
+AUTHORITY_7F47340_FLAGS = (
+    "HASH_PRECISION_FENCE_INCLUDES_SCATTER",
+    "CURRENT_AUTHORITY_METAL_DIVISION",
+    "CURRENT_AUTHORITY_GPU_NEAREST_TEXEL",
+    "CURRENT_AUTHORITY_SPOOKY_TICKER_UINT_HASH",
+    "CURRENT_AUTHORITY_STAGED_VECTOR_WRITES",
+    "CURRENT_AUTHORITY_NAVIER_HASH11_FENCE",
+    "CURRENT_AUTHORITY_MOD_MIRROR_REWRITE",
+    "CURRENT_AUTHORITY_SCATTER_SEED_TERM",
+    "CURRENT_AUTHORITY_SCATTER_FLOAT_LITERALS",
+    "CURRENT_AUTHORITY_EXTRUDE_REWRITE",
+    "CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES",
+    "CURRENT_AUTHORITY_CRT_ADAPTER",
+)
+
+
+@contextlib.contextmanager
+def authority_before_7f47340():
+    """Emit as the generator did for authority 5e93c23c and earlier.
+
+    Frozen historical blocks were generated before these 7f47340 lowerings;
+    their reconstructions run inside this context.
+    """
+    module = sys.modules[__name__]
+    saved = {name: getattr(module, name) for name in AUTHORITY_7F47340_FLAGS}
+    try:
+        for name in saved:
+            setattr(module, name, False)
+        yield
+    finally:
+        for name, value in saved.items():
+            setattr(module, name, value)
 NAVIER_SPLAT_KEY = "synth/navierStokes:nsSplat"
 
 from .frontend.loop_proof import (
@@ -2047,17 +2096,16 @@ class _Emitter:
     extrude_scale_initializer: TypedExpression | None = field(init=False, default=None)
     extrude_face_center_initializer: TypedExpression | None = field(init=False, default=None)
     emitting_extrude_scale: bool = field(init=False, default=False)
-    metal_divisions: MetalDivisionSites = field(
-        init=False, default_factory=lambda: MetalDivisionSites(()))
+    metal_divisions_cache: MetalDivisionSites | None = field(init=False, default=None)
     emitted_metal_divisions: list[TypedExpression] = field(
         init=False, default_factory=list)
 
     def __post_init__(self) -> None:
-        if CURRENT_AUTHORITY_METAL_DIVISION and self.program.key not in AUTHORITY_ADAPTER_PROGRAMS:
-            self.metal_divisions = metal_division_sites(self.program)
-        if CURRENT_AUTHORITY_EXTRUDE_REWRITE and self.program.key == EXTRUDE_KEY:
+        if (CURRENT_AUTHORITY_EXTRUDE_REWRITE and self.program.key == EXTRUDE_KEY
+                and self.source_hash == _CURRENT_REWRITE_SOURCES[EXTRUDE_KEY]):
             self._locate_extrude_rewrites()
-        if CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES and self.program.key in _LATTICE_KEYS:
+        if (CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES and self.program.key in _LATTICE_KEYS
+                and self.source_hash == _CURRENT_REWRITE_SOURCES[self.program.key]):
             self._locate_lattice_rewrites()
         if (self.program.key == "filter/hatch:hatch"
                 and len(self.program.preprocessor_defines) == 1
@@ -10310,6 +10358,16 @@ class _Emitter:
 
     # -- Seeded lattice hashes (CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES) ----------
 
+    @property
+    def metal_divisions(self) -> MetalDivisionSites:
+        """The authority's `$runtime.fdiv` sites of this program, computed on first use."""
+        if self.metal_divisions_cache is None:
+            routed = (CURRENT_AUTHORITY_METAL_DIVISION
+                      and self.program.key not in AUTHORITY_ADAPTER_PROGRAMS)
+            self.metal_divisions_cache = (metal_division_sites(self.program) if routed
+                                          else MetalDivisionSites(()))
+        return self.metal_divisions_cache
+
     def _lattice_fail(self, message: str):
         raise _error(self.program, self.program, f"seeded lattice hash rewrite: {message}")
 
@@ -10345,6 +10403,10 @@ class _Emitter:
             PERLIN_LATTICE_KEY: ("hash3", "grad3", "noise3D", 3),
             CELL3D_LATTICE_KEY: ("hash3", None, "cellNoise3D", 3),
         }[key]
+        if noise_name not in functions:
+            # A static define removed the lattice noise (perlin at DIMENSIONS 2):
+            # its hash and gradient helpers are unreachable, so no call changes.
+            return
         hash_function = functions.get(hash_name)
         if hash_function is None or len(hash_function.parameters) != 1 or not hash_function.body:
             self._lattice_fail(f"{hash_name} changed")

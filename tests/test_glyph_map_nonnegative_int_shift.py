@@ -416,11 +416,16 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
         # measures the same milestone under the new emitter. Derived from a
         # measured regeneration of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
+        # Re-frozen 2026-10-19: every projected manifest records the live
+        # src/effects/snow.cpp SHA-256 in the filter/snow:snow custom_adapter
+        # route, and the authority 7f47340 snow port changed that file
+        # (ecc1cf53... -> 454d3194...). With the old source hash substituted,
+        # each projection reproduces its previous frozen digest exactly.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
                 "01b0f3f2f675c1404dfb395395c63f3fb29779092d03647caf1e2bf930e4b57d",
             "src/typed_generated/typed_manifest.json":
-                "b7f8f7a5e85ebd46ed3fb91d5044f05b7567aa71ba29abe04474242497be21de",
+                "4f8e5321a46f09a876b1cc839680fc069cbb13adffbc80868d74e3eda378e2d9",
             "include/noisemaker/generated/catalog.hpp":
                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }
@@ -428,7 +433,7 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
             "src/typed_generated/typed_slice.cpp":
                 "fa1ba14e5985a086836297e3922ef0256bf8fc75663fb42075794863dfe34b8d",
             "src/typed_generated/typed_manifest.json":
-                "55f1c5cffc570d689fe4c0c82313e7168c0dfdb4b6f67057f2b6eea76f75e1fc",
+                "66d108e790cbc8ef263ce368c3332934c4d00efbdd798049fdb62fef2606a5c3",
             "include/noisemaker/generated/catalog.hpp":
                 "e1e42ad869ed3095a2fe263d36cc5ca59d45939044d3fa8bc1beaa2f5fb10888",
         }

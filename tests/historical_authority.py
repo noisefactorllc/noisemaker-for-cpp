@@ -318,6 +318,8 @@ def historical_authority(spec: dict):
             emit_typed_cpp, "_DOUBLE_CUBEMAP_BASIS_SOURCES", {}))
         stack.enter_context(mock.patch.object(emit_typed_cpp, "OSD_GLYPH_INDEX_TRUNCATES", False))
         stack.enter_context(mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False))
+        # The frozen milestones predate every authority 7f47340 lowering.
+        stack.enter_context(emit_typed_cpp.authority_before_7f47340())
         stack.enter_context(mock.patch.object(pathlib.Path, "read_text", historical_read_text))
         stack.enter_context(mock.patch.object(
             check_corpus, "REVISION", corpus_census.HISTORICAL_REVISION))

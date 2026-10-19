@@ -59,9 +59,11 @@ class SpookyTickerGeneratorEmitterTests(unittest.TestCase):
             program, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=source_hash,
             spooky_ticker_frontend_profile=PROFILE)
-        rendered = emit_typed_cpp.render_typed_cpp(
-            program, KEY, source_hash,
-            spooky_ticker_frontend_profile=PROFILE)
+        # Authority 5e93c23c hashed with the murmur-style hash_mix body.
+        with emit_typed_cpp.authority_before_7f47340():
+            rendered = emit_typed_cpp.render_typed_cpp(
+                program, KEY, source_hash,
+                spooky_ticker_frontend_profile=PROFILE)
         self.assertIn("std::array<std::int32_t, 80>", rendered)
         self.assertIn("glsl::detail::js_shift_right", rendered)
         self.assertIn("glsl::detail::js_bitwise_and", rendered)
@@ -88,6 +90,18 @@ class SpookyTickerGeneratorEmitterTests(unittest.TestCase):
         for name in ("rowIdx", "localY", "shadowLocalY", "gx", "gy",
                      "cellX", "localX", "h"):
             self.assertIn(f"[[maybe_unused]] double {name} =", rendered)
+        # Authority 7f47340 returns hashUint(v) from hash_mix and truncates
+        # its integer divisions with Math.trunc.
+        current = emit_typed_cpp.render_typed_cpp(
+            program, KEY, source_hash,
+            spooky_ticker_frontend_profile=PROFILE)
+        self.assertEqual(0, current.count("glsl::detail::js_umul("))
+        self.assertEqual(2, current.count("[[nodiscard]] double hash_mix("))
+        self.assertEqual(1, current.count(
+            "return static_cast<double>(noisemaker::hash_uint32("
+            "static_cast<std::uint32_t>(glsl::detail::js_to_int32(v))));"))
+        self.assertIn("[[maybe_unused]] double gx = std::trunc(", current)
+        self.assertIn("[[maybe_unused]] double rowIdx = std::trunc(", current)
 
     def test_generator_rejects_missing_spooky_ticker_profile(self):
         source_hash, program = _program()

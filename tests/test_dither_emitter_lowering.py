@@ -86,7 +86,9 @@ class DitherEmitterLoweringTests(unittest.TestCase):
             dither_frontend_profile=dither.PROFILE)
         self.assertIn("std::array<glsl::Vec3, 18> errRow", rendered)
         self.assertIn("glsl::detail::js_to_int32", rendered)
-        self.assertIn("sample_nearest_bottom_left", rendered)
+        # Authority 7f47340 selects the texel as the GPU does (sampler.js).
+        self.assertIn("sample_texture_bottom_left", rendered)
+        self.assertNotIn("sample_nearest_bottom_left", rendered)
         self.assertIn("texel_fetch_bottom_left", rendered)
         self.assertIn("bindings.get<glsl::Vec2>(\"tileOffset\")", rendered)
         self.assertIn("bindings.get<std::int32_t>(\"ditherType\")", rendered)

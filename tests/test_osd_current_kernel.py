@@ -141,7 +141,8 @@ class OsdHistoricalKernelTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(source).hexdigest(), entry["raw_sha256"])
         program = analyze_program(parse_program(source.decode(), KEY, {}), KEY)
         with mock.patch.object(emit_typed_cpp, "OSD_GLYPH_INDEX_TRUNCATES", False), \
-                mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False):
+                mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False), \
+                emit_typed_cpp.authority_before_7f47340():
             rendered = render_typed_cpp(program, KEY, entry["raw_sha256"], "typed_93",
                                        "bind_filter_osd_osd", osd_frontend_profile="osd-frontend-admission-v1")
         self.assertEqual(block, (rendered + "\n").encode())

@@ -113,9 +113,12 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
             program, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=RAW_SHA256,
             edge_bvec3_contour_profile=PROFILE)
-        rendered = emit_typed_cpp.render_typed_cpp(
-            program, KEY, RAW_SHA256, "edge_probe", "bind_edge_probe",
-            edge_bvec3_contour_profile=PROFILE)
+        # Authority 5e93c23c stored each lane in order, reading the updated
+        # vector for the next lane.
+        with emit_typed_cpp.authority_before_7f47340():
+            rendered = emit_typed_cpp.render_typed_cpp(
+                program, KEY, RAW_SHA256, "edge_probe", "bind_edge_probe",
+                edge_bvec3_contour_profile=PROFILE)
         self.assertEqual(2, rendered.count("glsl::BVec3 "))
         self.assertEqual(1, rendered.count("glsl::BVec3("))
         self.assertEqual(1, rendered.count("glsl::greaterThanEqual("))
@@ -134,6 +137,20 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
         self.assertNotIn(
             "centerSample = glsl::Vec3(glsl::FloatExpr<3>(glsl::dot(",
             rendered)
+        # Authority 7f47340 (vector-writes.js) reads every lane value before
+        # it stores any lane.
+        current = emit_typed_cpp.render_typed_cpp(
+            program, KEY, RAW_SHA256, "edge_probe", "bind_edge_probe",
+            edge_bvec3_contour_profile=PROFILE)
+        staged = tuple(
+            f"const double cpu_vector_write_{lane} = "
+            "static_cast<double>(glsl::dot(centerSample, LUMA));"
+            for lane in range(3)) + tuple(
+            f"glsl::set_swizzle<{lane}>(centerSample, cpu_vector_write_{lane});"
+            for lane in range(3))
+        self.assertIn(("\n        ").join(staged), current)
+        for store in stores:
+            self.assertNotIn(store, current)
 
     def test_center_splat_mutations_fail_after_coarse_refreeze(self):
         profile = _profile()
@@ -474,11 +491,16 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
         # measures the same milestone under the new emitter. Derived from a
         # measured regeneration of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
+        # Re-frozen 2026-10-19: every projected manifest records the live
+        # src/effects/snow.cpp SHA-256 in the filter/snow:snow custom_adapter
+        # route, and the authority 7f47340 snow port changed that file
+        # (ecc1cf53... -> 454d3194...). With the old source hash substituted,
+        # each projection reproduces its previous frozen digest exactly.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
                 "761f9b59548fc92eadaf9b2d97fdd6e51a4ca66ddb6a2d12bb4331321f9c1952",
             "src/typed_generated/typed_manifest.json":
-                "7b55e493ae1e8c33ccceef346a84432ed577c331de9803a60850cd80555623de",
+                "a8a808400cb627db2d878524c106bfde3df1f89e886a39fe06928974b71d20fa",
             "include/noisemaker/generated/catalog.hpp":
                 "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
         }
@@ -486,7 +508,7 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
             "src/typed_generated/typed_slice.cpp":
                 "01b0f3f2f675c1404dfb395395c63f3fb29779092d03647caf1e2bf930e4b57d",
             "src/typed_generated/typed_manifest.json":
-                "b7f8f7a5e85ebd46ed3fb91d5044f05b7567aa71ba29abe04474242497be21de",
+                "4f8e5321a46f09a876b1cc839680fc069cbb13adffbc80868d74e3eda378e2d9",
             "include/noisemaker/generated/catalog.hpp":
                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }

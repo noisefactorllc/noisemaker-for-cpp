@@ -673,20 +673,25 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
         # measures the same milestone under the new emitter. Derived from a
         # measured regeneration of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
+        # Re-frozen 2026-10-19: every projected manifest records the live
+        # src/effects/snow.cpp SHA-256 in the filter/snow:snow custom_adapter
+        # route, and the authority 7f47340 snow port changed that file
+        # (ecc1cf53... -> 454d3194...). With the old source hash substituted,
+        # each projection reproduces its previous frozen digest exactly.
         expected_hashes = {
             "live180": {
                 "src/typed_generated/typed_slice.cpp": "946af18c35612c8e80d2cc4e8f96c0ddc9bb1e97dedf7d900d5180a067425bb9",
-                "src/typed_generated/typed_manifest.json": "df2dd265d7b4c2ad4a594071a391f9ac8b10720a3c5741dfb9edaab78d0b5abf",
+                "src/typed_generated/typed_manifest.json": "d124156f7d9f0833e0d4211e1dd784523769b8ebb4079499eac1b0976ad24862",
                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
                 "src/typed_generated/typed_slice.cpp": "761f9b59548fc92eadaf9b2d97fdd6e51a4ca66ddb6a2d12bb4331321f9c1952",
-                "src/typed_generated/typed_manifest.json": "7b55e493ae1e8c33ccceef346a84432ed577c331de9803a60850cd80555623de",
+                "src/typed_generated/typed_manifest.json": "a8a808400cb627db2d878524c106bfde3df1f89e886a39fe06928974b71d20fa",
                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
                 "src/typed_generated/typed_slice.cpp": "01b0f3f2f675c1404dfb395395c63f3fb29779092d03647caf1e2bf930e4b57d",
-                "src/typed_generated/typed_manifest.json": "b7f8f7a5e85ebd46ed3fb91d5044f05b7567aa71ba29abe04474242497be21de",
+                "src/typed_generated/typed_manifest.json": "4f8e5321a46f09a876b1cc839680fc069cbb13adffbc80868d74e3eda378e2d9",
                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }

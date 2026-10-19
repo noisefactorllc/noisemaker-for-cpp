@@ -276,7 +276,8 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
             rendered)
 
     def test_frozen_fixture_reproduces_exact_authenticated_emission(self):
-        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False):
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False), \
+                emit_typed_cpp.authority_before_7f47340():
             emitted = emit_typed_cpp.render_typed_cpp(
                 _analyzed(), KEY, RAW_SHA256, "typed_gradient_historical",
                 "bind_synth_gradient_gradient",

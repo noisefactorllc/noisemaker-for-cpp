@@ -157,7 +157,8 @@ class ReverbCopyProfileTests(unittest.TestCase):
         # historical whole-TU SHA256 3f7c1644dc966f4f401e523ca0ea830d1ddc2e4372263e8710120930f2176b4c.
         self.assertEqual(hashlib.sha256(block).hexdigest(),
                          "16dc34f337bd054d056e19e165561c3df9cb811c2387b9454acb954ccb497d77")
-        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False):
+        with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False), \
+                emit_typed_cpp.authority_before_7f47340():
             regenerated = render_typed_cpp(self.program(), KEY, RAW_SHA256,
                                           "typed_125", "bind_filter_reverb_reverb")
         self.assertEqual(block, (regenerated + "\n").encode())

@@ -71,7 +71,9 @@ def _names(expression: TypedExpression | None, out: list[tuple[str, object]]) ->
 
 class _Classifier:
     def __init__(self, program: TypedProgram) -> None:
-        self.defines = frozenset(item.name for item in program.preprocessor_defines)
+        names = (getattr(item, "name", None) or (item[0] if isinstance(item, tuple) and item else None)
+                 for item in program.preprocessor_defines)
+        self.defines = frozenset(name for name in names if isinstance(name, str))
         self.globals: dict[str, tuple[object, TypedExpression | None]] = {}
         for declaration in program.declarations:
             self.globals[declaration.symbol.name] = (declaration.symbol, declaration.initializer)
