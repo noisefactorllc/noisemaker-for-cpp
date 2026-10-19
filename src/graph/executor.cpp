@@ -3795,8 +3795,11 @@ struct GroupIterationBundle {
           destinations.push_back({pass.outputs[slot].second, format});
         }
         GroupStepRouteContext route_context{&state, &group_resources, &empty_surface, &arena};
+        // CPU 7f47340 (renderer.js MRT branches): upstream binds the canvas
+        // size as `resolution` to every pass; the pixel loop still covers the
+        // state-sized MRT destinations.
         const BindingMaterializationContext binding_context{
-            &iteration_inputs, &definition, mrt_width, mrt_height,
+            &iteration_inputs, &definition, iteration_inputs.width, iteration_inputs.height,
             &lookup_group_step_route, &route_context};
         try {
           preflight_pass_abi(state.effective_step, admission, pass, binding_context);
@@ -4131,7 +4134,21 @@ struct GroupPublishResult {
     group_resources.store("global_accum", std::move(accum));
   }
 
-  const auto owner_state_size = group_owner_state_size(*owner_step, group.step_indices.size());
+  // renderer.js groupOwnerStateSize: a particle group's owner is its
+  // pointsEmit step (the step declaring global_xyz), which an animated input
+  // generator may precede (CPU 7f47340); otherwise the first step.
+  const EffectStep* state_owner = owner_step;
+  for (const auto index : group.step_indices) {
+    const auto* candidate = std::get_if<EffectStep>(&chain.steps[index]);
+    if (candidate == nullptr) continue;
+    const auto& textures = plan.effects[candidate->snapshot_index].definition.textures;
+    if (std::any_of(textures.begin(), textures.end(),
+                    [](const auto& texture) { return texture.name == "global_xyz"; })) {
+      state_owner = candidate;
+      break;
+    }
+  }
+  const auto owner_state_size = group_owner_state_size(*state_owner, group.step_indices.size());
 
   std::vector<GroupStepState> step_states;
   step_states.reserve(group.step_indices.size());
@@ -4145,7 +4162,7 @@ struct GroupPublishResult {
     const auto& snapshot = plan.effects[step->snapshot_index];
     GroupStepState state;
     state.snapshot = &snapshot;
-    state.raw_step = (position > 0U && owner_state_size.has_value() &&
+    state.raw_step = (step != state_owner && owner_state_size.has_value() &&
                       parameter(*step, "stateSize") != nullptr)
                          ? apply_owner_state_size_override(*step, *owner_state_size)
                          : *step;
@@ -4732,8 +4749,10 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                 }
                 destinations.push_back({route, format});
               }
+              // CPU 7f47340: the canvas size binds as `resolution`; the pixel
+              // loop still covers the MRT destinations.
               const BindingMaterializationContext binding_context{
-                  &inputs, &snapshot.definition, mrt_width, mrt_height,
+                  &inputs, &snapshot.definition, inputs.width, inputs.height,
                   &lookup_resolved_sampler_route, &resolved};
               preflight_pass_abi(step, admission, pass, binding_context);
               auto bindings = materialize_uniform_bindings(step, admission, pass,

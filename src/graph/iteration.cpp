@@ -53,6 +53,19 @@ namespace {
   return nullptr;
 }
 
+// iteration.js isAnimatedImageGenerator: an image generator that is not
+// iterated itself and whose own `speed` parameter is present and not 0.
+[[nodiscard]] bool is_animated_image_generator(const ExecutionPlan& plan,
+                                               const EffectStep& step) {
+  const auto& definition = definition_of(plan, step);
+  if (definition.kind != "generator" || definition.domain != "image" || definition.iterated) {
+    return false;
+  }
+  const auto* speed = parameter_of(step, "speed");
+  if (speed == nullptr) return false;
+  return speed->kind != PlanValue::Kind::number || speed->number != 0.0;
+}
+
 }  // namespace
 
 bool is_particle_state_name(std::string_view name) noexcept {
@@ -149,6 +162,22 @@ std::vector<IterationGroup> compute_iteration_groups(
     // whatever's open and opens a brand-new particle group it owns.
     if (declares_xyz(definition)) {
       close_open_group();
+      // The authority renders the whole chain every frame, and pointsEmit
+      // colors each agent it spawns from its input at that frame's time, so
+      // an animated image generator that feeds the group re-runs with it,
+      // once per iteration (CPU 7f47340).
+      const auto* emit_count = parameter_of(effect_step, "iterationCount");
+      if (emit_count != nullptr && emit_count->kind == PlanValue::Kind::number &&
+          emit_count->number > 0.0 && !groups.empty() &&
+          groups.back().step_indices.size() == 1U && !groups.back().iterated) {
+        const auto previous_index = groups.back().step_indices.front();
+        const auto* previous = std::get_if<EffectStep>(&chain.steps[previous_index]);
+        if (previous != nullptr && is_animated_image_generator(plan, *previous)) {
+          groups.pop_back();
+          open_group = IterationGroup{{previous_index, index}, definition.iterated, false};
+          continue;
+        }
+      }
       open_group = IterationGroup{{index}, definition.iterated, false};
       continue;
     }
