@@ -2423,23 +2423,23 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
 {
   "schema": "noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1",
   "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
-  "cpu_revision": "4307ca9f26fc415e4fc5e75227d429d35cc741cd",
+  "cpu_revision": "7f473400ac744025d46221bf527b43c1b5c1ef4e",
   "authority": {
-    "ledgerEntries": 784,
+    "ledgerEntries": 891,
     "packageSha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
     "packageLockSha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
     "sourceLockSha256": "594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c",
-    "behavioralLockSha256": "9c94d458d9b0bb388e6bfacb9adfc816ad9d73b0753b025dbb2e0babbc750801",
-    "behavioralFileCount": 95,
+    "behavioralLockSha256": "6716656e0d81e23960dffc626d56f7f558abdd0bd4c53fd4eb555f7fa63dd608",
+    "behavioralFileCount": 98,
     "upstreamRevision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
     "upstreamSourceDigest": "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf"
   },
   "provenance": {
-    "node": "v26.0.0",
+    "node": "v26.9.0",
     "public_api": "kernelFactories.get(key)",
     "canonical_identity": true,
     "adapter_entries_absent": true,
-    "canonical_kernels_sha256": "de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863",
+    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
     "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
     "adapter_index_sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
   },
@@ -2469,7 +2469,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
       "normalized_source_sha256": "6586c49b079a3b0f4aa3538c8e735e70db088ff2e5d2ea1037e9e9c5486fdf52",
       "defines": {},
       "canonical_factory_name": "canonicalFactory10",
-      "canonical_factory_to_string_sha256": "d71a3cee0afc687ea4802da7dc4e9b47de7afab05bfffc887064bede8b328785",
+      "canonical_factory_to_string_sha256": "546c336776f6d7880b8e2b1de3f952aeb973ab6e3ef734e4d1f6838152365f3c",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "bindings": [
@@ -2516,7 +2516,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
       "normalized_source_sha256": "1c157e7f3dc7c9c122cc185812cd2988a98a52024055a482265bded7561a0860",
       "defines": {},
       "canonical_factory_name": "canonicalFactory114",
-      "canonical_factory_to_string_sha256": "a3f5dbe69fe147663be1db8df4f3cd3a18e76e433051479541da4083437c48fb",
+      "canonical_factory_to_string_sha256": "402542188071fc997a7f68b56f0b9d1f113a41c789e7e9b0122d4ff9ccf979e9",
       "public_factory_is_canonical_identity": true,
       "adapter_entry_absent": true,
       "bindings": [
@@ -2692,7 +2692,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+        "f32_sha256": "a087ad282540f33e599335978a1c7b5229b14d2d507b48a6ad969c55d5ed93cd",
         "rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802",
         "probes": [
           {
@@ -2720,13 +2720,13 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
             ],
             "values": [
               0.8320554494857788,
-              -0.03533375635743141,
+              -0.035333797335624695,
               0.6403173804283142,
               0.32258063554763794
             ],
             "f32_bits_le": [
               "0x3f550196",
-              "0xbd10ba21",
+              "0xbd10ba2c",
               "0x3f23ebd7",
               "0x3ea5294a"
             ]
@@ -2755,13 +2755,13 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               6
             ],
             "values": [
-              0.27572640776634216,
+              0.2757263779640198,
               0.7082647085189819,
               0.7019503116607666,
               0.9677419066429138
             ],
             "f32_bits_le": [
-              "0x3e8d2c03",
+              "0x3e8d2c02",
               "0x3f3550d6",
               "0x3f33b304",
               "0x3f77bdef"
@@ -2932,7 +2932,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+        "f32_sha256": "a723bbc79f4e0ff32450154b6f19c57fc5bae96bb16b68759b4e67123f82419e",
         "rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44",
         "probes": [
           {
@@ -3172,7 +3172,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+        "f32_sha256": "10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457",
         "rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e",
         "probes": [
           {
@@ -3181,15 +3181,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               0
             ],
             "values": [
-              0.6850000619888306,
-              0.002858077874407172,
-              0.6850000619888306,
+              0.684999942779541,
+              0.002858002670109272,
+              0.684999942779541,
               0.8064516186714172
             ],
             "f32_bits_le": [
-              "0x3f2f5c2a",
-              "0x3b3b4e97",
-              "0x3f2f5c2a",
+              "0x3f2f5c28",
+              "0x3b3b4d54",
+              "0x3f2f5c28",
               "0x3f4e739d"
             ]
           },
@@ -3199,15 +3199,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               0
             ],
             "values": [
-              0.6850000619888306,
-              0.2682092487812042,
-              -0.20142285525798798,
+              0.684999942779541,
+              0.26820918917655945,
+              -0.20142292976379395,
               0.6774193644523621
             ],
             "f32_bits_le": [
-              "0x3f2f5c2a",
-              "0x3e8952b9",
-              "0xbe4e41cb",
+              "0x3f2f5c28",
+              "0x3e8952b7",
+              "0xbe4e41d0",
               "0x3f2d6b5b"
             ]
           },
@@ -3235,15 +3235,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               8
             ],
             "values": [
-              0.037344757467508316,
-              0.57487952709198,
-              0.6850000619888306,
+              0.03734468296170235,
+              0.5748794078826904,
+              0.684999942779541,
               0.9032257795333862
             ],
             "f32_bits_le": [
-              "0x3d18f6d1",
-              "0x3f132b4e",
-              "0x3f2f5c2a",
+              "0x3d18f6bd",
+              "0x3f132b4c",
+              "0x3f2f5c28",
               "0x3f6739ce"
             ]
           },
@@ -3412,7 +3412,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
         ]
       },
       "output": {
-        "f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+        "f32_sha256": "b17c94ba76f68de72fdc3fc6ecf0c31bdd3bfd2e68045c97c3dd9d72215a8c38",
         "rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128",
         "probes": [
           {
@@ -3440,14 +3440,14 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
             ],
             "values": [
               0.5585117936134338,
-              1.0470999479293823,
-              0.6930673122406006,
+              1.0471000671386719,
+              0.6930673718452454,
               0.7096773982048035
             ],
             "f32_bits_le": [
               "0x3f0efaa1",
-              "0x3f86075f",
-              "0x3f316cdc",
+              "0x3f860760",
+              "0x3f316cdd",
               "0x3f35ad6b"
             ]
           },
@@ -3475,15 +3475,15 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
               5
             ],
             "values": [
-              0.3405013680458069,
+              0.34050142765045166,
               1.1292191743850708,
-              0.8924411535263062,
+              0.8924412131309509,
               0.774193525314331
             ],
             "f32_bits_le": [
-              "0x3eae5632",
+              "0x3eae5634",
               "0x3f908a41",
-              "0x3f647706",
+              "0x3f647707",
               "0x3f46318c"
             ]
           },
@@ -3982,8 +3982,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 53,
           "different_f32_lanes": 15,
           "different_rgba8_bytes": 15,
-          "max_absolute_f32_difference": 0.4094259738922119,
-          "candidate_f32_sha256": "b8dc08c248c9d85f8f7348e655bfd4396d42bf9245da9123fca4c3f5e6cbd14e",
+          "max_absolute_f32_difference": 0.4094259887933731,
+          "candidate_f32_sha256": "cd5a7aa564882a003cb8d3e7f1a793d9929c1c48599d569d16d85f67a1ece409",
           "candidate_rgba8_sha256": "6038e09b7ff3f89555a8dc83541e3285bffdd379382d0ba3dd34ec67e7615ae9"
         },
         {
@@ -3994,7 +3994,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 20,
           "different_rgba8_bytes": 20,
           "max_absolute_f32_difference": 0.3784855604171753,
-          "candidate_f32_sha256": "e7d16ef9b36e49ff96dba624090a46e5e613e236c15d5f2f1aec210391d3b470",
+          "candidate_f32_sha256": "672481c78adaccbb4399090a4ad6a33d40f2f376db218f23326817b9267974e0",
           "candidate_rgba8_sha256": "e73ccb6a497e02de8120a6fc35e79f27ae4e66e7875fa261cf3aabf1cc0588fb"
         },
         {
@@ -4005,7 +4005,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_f32_sha256": "10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457",
           "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
@@ -4016,7 +4016,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_f32_sha256": "b17c94ba76f68de72fdc3fc6ecf0c31bdd3bfd2e68045c97c3dd9d72215a8c38",
           "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
@@ -4038,7 +4038,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 10,
           "different_rgba8_bytes": 10,
           "max_absolute_f32_difference": 0.3377598524093628,
-          "candidate_f32_sha256": "b2f457a927bf262d292b9910bd234da07ae81f2fb4a3b444edced126c7d8331d",
+          "candidate_f32_sha256": "569284b176de3afca97b0ed652da096535d81650f919ed0e3992e4e70683b0aa",
           "candidate_rgba8_sha256": "947b41e56a4a8490d301ee8d3fbbe47fc16652d68aeffcfd7fc39468b1009954"
         },
         {
@@ -4049,7 +4049,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 24,
           "different_rgba8_bytes": 24,
           "max_absolute_f32_difference": 0.2353825569152832,
-          "candidate_f32_sha256": "e148528abd49f01fadaf813be80894e954fd32f90c86469491c898bfc00ac902",
+          "candidate_f32_sha256": "ff2c59ca7a2126c794f03a45b81321a57ce27530c5e4384cefa1d24aa4403ed1",
           "candidate_rgba8_sha256": "19c6a11cd0b474a171de0b8b39f79e70991cb0b13a191eb2efa12169092c283b"
         },
         {
@@ -4060,7 +4060,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_f32_sha256": "10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457",
           "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
@@ -4071,7 +4071,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_f32_sha256": "b17c94ba76f68de72fdc3fc6ecf0c31bdd3bfd2e68045c97c3dd9d72215a8c38",
           "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
@@ -4092,8 +4092,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 44,
           "different_f32_lanes": 13,
           "different_rgba8_bytes": 13,
-          "max_absolute_f32_difference": 0.2998542785644531,
-          "candidate_f32_sha256": "c213a8e001d21dfac231aefcbc31ac478131cf4b717bc90472b77852b1310f35",
+          "max_absolute_f32_difference": 0.2998542934656143,
+          "candidate_f32_sha256": "2e17fcefccb3a9c9f41c1c4af6998c55641937bdeb9403939fcb404f09669bae",
           "candidate_rgba8_sha256": "bebf8ef1ea23e3cbfe7bf2cecd59a778d3759e63b39930506dfc5c9fca07850e"
         },
         {
@@ -4104,7 +4104,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 20,
           "different_rgba8_bytes": 20,
           "max_absolute_f32_difference": 0.3005109429359436,
-          "candidate_f32_sha256": "22b551495c6eb6b1bd509113b270932a5301e04fc0031c20bccb5e5e5a12528b",
+          "candidate_f32_sha256": "788410f5e572fab38b3999dc31312cbdfff3435e97e9ed6795e28d0a2cf5ea30",
           "candidate_rgba8_sha256": "32e26a4718ed730897e0616774f07738ccaeabf02024c309ef5b018748171e48"
         },
         {
@@ -4115,7 +4115,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_f32_sha256": "10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457",
           "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
@@ -4126,7 +4126,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_f32_sha256": "b17c94ba76f68de72fdc3fc6ecf0c31bdd3bfd2e68045c97c3dd9d72215a8c38",
           "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
@@ -4147,8 +4147,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 628,
           "different_f32_lanes": 175,
           "different_rgba8_bytes": 173,
-          "max_absolute_f32_difference": 0.9934459589421749,
-          "candidate_f32_sha256": "65575b5cb9c26246d26970d69832cee7e9cddb8d05e2631f15bbdabb6365c168",
+          "max_absolute_f32_difference": 0.9934459179639816,
+          "candidate_f32_sha256": "6862e7ff3d521fdffdda66678a1b298974fa0b3ed8f74146bb326ba2d1d7ddad",
           "candidate_rgba8_sha256": "1d31c32e1c1398d2f3324289cede7567f8188aa666a07ad0b379549efe94ff9d"
         },
         {
@@ -4158,7 +4158,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 823,
           "different_f32_lanes": 231,
           "different_rgba8_bytes": 228,
-          "max_absolute_f32_difference": 0.9683239832520485,
+          "max_absolute_f32_difference": 0.9683239758014679,
           "candidate_f32_sha256": "3318651867258d9a5b152b02ac24251e786cfb635f2215f0d5d1bb9031936ecb",
           "candidate_rgba8_sha256": "524ff99287d315fe0978587dd1b480470eaed253ed8cd51873bf77abd721c91d"
         },
@@ -4170,7 +4170,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_f32_sha256": "10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457",
           "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
@@ -4181,7 +4181,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb",
+          "candidate_f32_sha256": "b17c94ba76f68de72fdc3fc6ecf0c31bdd3bfd2e68045c97c3dd9d72215a8c38",
           "candidate_rgba8_sha256": "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128"
         }
       ]
@@ -4203,7 +4203,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_f32_sha256": "a087ad282540f33e599335978a1c7b5229b14d2d507b48a6ad969c55d5ed93cd",
           "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
@@ -4214,7 +4214,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+          "candidate_f32_sha256": "a723bbc79f4e0ff32450154b6f19c57fc5bae96bb16b68759b4e67123f82419e",
           "candidate_rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44"
         },
         {
@@ -4225,7 +4225,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 110,
           "different_rgba8_bytes": 100,
           "max_absolute_f32_difference": 0.5970435291528702,
-          "candidate_f32_sha256": "8a7f58305e39f946d452dbbec243aa33765a2cdfe9186901e1713f8ebe15c213",
+          "candidate_f32_sha256": "5a400e9a419de90f21ca463ab22b61a36bbbf82f9a44606cb2b845439956f69a",
           "candidate_rgba8_sha256": "0f11a48f51dc06948a5fd7159ca8b8a815f8a2d9af4ee85e487ccbf03fd768d0"
         },
         {
@@ -4235,8 +4235,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 578,
           "different_f32_lanes": 180,
           "different_rgba8_bytes": 172,
-          "max_absolute_f32_difference": 0.6858431994915009,
-          "candidate_f32_sha256": "a76de770fee982a4d6af76ffc4cb64fced6997c1610bb59b0bd444b34fa9ab94",
+          "max_absolute_f32_difference": 0.6858431696891785,
+          "candidate_f32_sha256": "5f10b1fb551f9ac6816c3ec12e428fd72cc66a4d8ccc2e01506db0b1de1d5614",
           "candidate_rgba8_sha256": "76f4a0208995835d9c6b038d9af23e9dd9369af3c1ce8359aabb846a574860f4"
         }
       ]
@@ -4258,7 +4258,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_f32_sha256": "a087ad282540f33e599335978a1c7b5229b14d2d507b48a6ad969c55d5ed93cd",
           "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
@@ -4269,7 +4269,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+          "candidate_f32_sha256": "a723bbc79f4e0ff32450154b6f19c57fc5bae96bb16b68759b4e67123f82419e",
           "candidate_rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44"
         },
         {
@@ -4280,7 +4280,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 112,
           "different_rgba8_bytes": 100,
           "max_absolute_f32_difference": 0.5789856761693954,
-          "candidate_f32_sha256": "beb92c261f3b21f444525b3c5401744488f86a23b9048dffe405c66a9097de58",
+          "candidate_f32_sha256": "1b7640ede08e35e4c0a365d695766a7d87e423e39d47d09aeccedd3d05de939d",
           "candidate_rgba8_sha256": "04e202307d5698882e042431abd73b79d7b583ee693c09c980a0ecad7fd7c8b1"
         },
         {
@@ -4291,7 +4291,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 175,
           "different_rgba8_bytes": 164,
           "max_absolute_f32_difference": 0.6856675744056702,
-          "candidate_f32_sha256": "cebfdd310306cfbfdd51f8d58023886e08a6aff41df57b0427c7b0b6b0c7d0e8",
+          "candidate_f32_sha256": "159fddce70189af22cb91b1608eda5c5d4ac533d29e270d7fbf9114c042f7e0b",
           "candidate_rgba8_sha256": "7ea4c94a41e694c626952509fbe2a290d809a5cadf6fbde74392511cafc48d83"
         }
       ]
@@ -4313,7 +4313,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_f32_sha256": "a087ad282540f33e599335978a1c7b5229b14d2d507b48a6ad969c55d5ed93cd",
           "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
@@ -4324,7 +4324,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334",
+          "candidate_f32_sha256": "a723bbc79f4e0ff32450154b6f19c57fc5bae96bb16b68759b4e67123f82419e",
           "candidate_rgba8_sha256": "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44"
         },
         {
@@ -4334,8 +4334,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 467,
           "different_f32_lanes": 128,
           "different_rgba8_bytes": 125,
-          "max_absolute_f32_difference": 0.8812537640333176,
-          "candidate_f32_sha256": "eb4ae7d80dea4967944a77f2263ca463016dd27c9febddeffb0232d2606c547c",
+          "max_absolute_f32_difference": 0.881253719329834,
+          "candidate_f32_sha256": "662b962f7ff436ee28c3cf3294b192b243fd4579831874d99af9fbec930f863c",
           "candidate_rgba8_sha256": "9e2f2f8a5e56da4e823f0a8cd6ef330283727ede882c2cc8728ec6f259878cea"
         },
         {
@@ -4346,7 +4346,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 216,
           "different_rgba8_bytes": 198,
           "max_absolute_f32_difference": 0.8997443616390228,
-          "candidate_f32_sha256": "d6a642cea1bafbc9c1e5c1823c7025157cb22bad7a41b21911f704e12d1312ba",
+          "candidate_f32_sha256": "396fac441dceab09a3293a4edcf12e8fca94d84037709c239cacd47fb1c54d1e",
           "candidate_rgba8_sha256": "4c41c8cae31d6298bb8aceb98495de7f182842ac100dd18519165017893c9d50"
         }
       ]
@@ -4368,7 +4368,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0",
+          "candidate_f32_sha256": "a087ad282540f33e599335978a1c7b5229b14d2d507b48a6ad969c55d5ed93cd",
           "candidate_rgba8_sha256": "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802"
         },
         {
@@ -4379,7 +4379,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 206,
           "different_rgba8_bytes": 206,
           "max_absolute_f32_difference": 0.5070086717605591,
-          "candidate_f32_sha256": "11349b2c956369c92680e8aa811c6a6878aa0f1a0033b13faee1c1ac39f50f59",
+          "candidate_f32_sha256": "b1c8d5cc429ca2565f6cc2df2f4e1ba81525af6dba15487e99f3cee4228f6172",
           "candidate_rgba8_sha256": "a86d421409ad45d79eb2e97d668939e8e6f95dc39a852b76b3f3d1bcf2230fd3"
         },
         {
@@ -4390,7 +4390,7 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_lanes": 0,
           "different_rgba8_bytes": 0,
           "max_absolute_f32_difference": 0,
-          "candidate_f32_sha256": "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf",
+          "candidate_f32_sha256": "10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457",
           "candidate_rgba8_sha256": "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e"
         },
         {
@@ -4400,8 +4400,8 @@ constexpr std::string_view kTask25OracleTableJson = R"TASK25(
           "different_f32_bytes": 439,
           "different_f32_lanes": 139,
           "different_rgba8_bytes": 132,
-          "max_absolute_f32_difference": 0.6768161654472351,
-          "candidate_f32_sha256": "2ff0a3acc938ce3b71339667db11005bfb775cb3ad600ddb4ae7ad7e0cd69cbe",
+          "max_absolute_f32_difference": 0.6768161505460739,
+          "candidate_f32_sha256": "31b35264e73713a5a3fce15bdb0fe8ce3b184fe0a0123d8ba3e1d63871b793a7",
           "candidate_rgba8_sha256": "2fb40c27458368e19171153601d745bf1f462c039ed9ba712adb104dc5ba13d6"
         }
       ]
@@ -4538,22 +4538,22 @@ constexpr std::array<Task25NativeCase, 6> kTask25NativeCases{{
    {0x00000000U, 0x00000000U}, {0x41300000U, 0x40e00000U}, 0x3e400000U,
    {0x3e2e147bU, 0x3ed1eb85U, 0x3f3ae148U, 0x41b80000U, 0xc2080000U, 0xc23c0000U, 0x41f80000U, 0x42860000U, 0x42900000U, 0x423c0000U, 0x42a60000U, 0x41980000U, 0x42740000U}, {3U, 0U, 0U}, {false, false},
    "210954ec361387bc3773ff94559c99bef7ff3fb355cfe5203971e15d19e27d27", {0, 0, 0x3e46731aU, 0x3e8c08c1U, 0x3ea4bafeU, 0x3eb5ad6bU, 10, 0, 0x3dde4379U, 0x3f6e7ee8U, 0x3f630f95U, 0x3ec6318cU, 0, 6, 0x3f7c07f0U, 0x3f0c08c1U, 0x3f630f95U, 0x3f14a529U, 10, 6, 0x3f663399U, 0x3e750f51U, 0x3f011cf0U, 0x3f1ce73aU, 5, 3, 0x3d5e4379U, 0x3e834835U, 0x3f630f95U, 0x3ef7bdefU},
-   "fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0", "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802", {0U, 0U, 0x3f550196U, 0x3f550196U, 0x3e8a0087U, 0x3f3def7cU, 10U, 0U, 0x3f550196U, 0xbd10ba21U, 0x3f23ebd7U, 0x3ea5294aU, 0U, 6U, 0x3e48a9e2U, 0x3e76b4b2U, 0x3edf03ffU, 0x3f25294aU, 10U, 6U, 0x3e8d2c03U, 0x3f3550d6U, 0x3f33b304U, 0x3f77bdefU, 5U, 3U, 0xbb844196U, 0x3e89c276U, 0x3f800000U, 0x3ef7bdefU}, 308U, 0U},
+   "a087ad282540f33e599335978a1c7b5229b14d2d507b48a6ad969c55d5ed93cd", "e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802", {0U, 0U, 0x3f550196U, 0x3f550196U, 0x3e8a0087U, 0x3f3def7cU, 10U, 0U, 0x3f550196U, 0xbd10ba2cU, 0x3f23ebd7U, 0x3ea5294aU, 0U, 6U, 0x3e48a9e2U, 0x3e76b4b2U, 0x3edf03ffU, 0x3f25294aU, 10U, 6U, 0x3e8d2c02U, 0x3f3550d6U, 0x3f33b304U, 0x3f77bdefU, 5U, 3U, 0xbb844196U, 0x3e89c276U, 0x3f800000U, 0x3ef7bdefU}, 308U, 0U},
   {1U, "lens-chromatic-alpha-modulated", "classicNoisedeck/lensDistortion:lensDistortion", true, 10U, 8U, 2U,
    {0x00000000U, 0x00000000U}, {0x41200000U, 0x41000000U}, 0x3ee00000U,
    {0x3f4a3d71U, 0x3e051eb8U, 0x3ebd70a4U, 0x42640000U, 0x42240000U, 0x42800000U, 0xc1e00000U, 0x422c0000U, 0x42b60000U, 0x43550000U, 0x42380000U, 0xc1d80000U, 0x42100000U}, {7U, 0U, 1U}, {true, true},
    "91e2a51cb2076cbfcafab4a722dbc82e35f0e218a8d8ee214c1f288f20fced5a", {0, 0, 0x3e96d25bU, 0x3ef0af0bU, 0x3f175fb9U, 0x3ec6318cU, 9, 0, 0x3f682fa1U, 0x3f773f74U, 0x3f20473cU, 0x3f6f7bdfU, 0, 7, 0x3e6e23b9U, 0x3e14c94dU, 0x3eebf718U, 0x3f46318cU, 9, 7, 0x3f584f61U, 0x3f241a42U, 0x3efdc61fU, 0x3f14a529U, 5, 4, 0x3e92da4bU, 0x3f520d21U, 0x3eebf718U, 0x3f2d6b5bU},
-   "873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334", "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44", {0U, 0U, 0x3f86460fU, 0x3f057e8cU, 0x3f119f39U, 0x3f6f7bdfU, 9U, 0U, 0x3f474bbbU, 0x3eb9cf69U, 0x3f016e23U, 0x3f11eb85U, 0U, 7U, 0x3f82a286U, 0x3ed8534eU, 0x3effa8faU, 0x3f14a529U, 9U, 7U, 0x3f365cefU, 0x3e8b1b16U, 0x3ee2bf35U, 0x3f46318cU, 5U, 4U, 0x3f16714bU, 0x3e819466U, 0x3e8a4b74U, 0x3f2d6b5bU}, 320U, 0U},
+   "a723bbc79f4e0ff32450154b6f19c57fc5bae96bb16b68759b4e67123f82419e", "0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44", {0U, 0U, 0x3f86460fU, 0x3f057e8cU, 0x3f119f39U, 0x3f6f7bdfU, 9U, 0U, 0x3f474bbbU, 0x3eb9cf69U, 0x3f016e23U, 0x3f11eb85U, 0U, 7U, 0x3f82a286U, 0x3ed8534eU, 0x3effa8faU, 0x3f14a529U, 9U, 7U, 0x3f365cefU, 0x3e8b1b16U, 0x3ee2bf35U, 0x3f46318cU, 5U, 4U, 0x3f16714bU, 0x3e819466U, 0x3e8a4b74U, 0x3f2d6b5bU}, 320U, 0U},
   {2U, "lens-prismatic-add-static", "classicNoisedeck/lensDistortion:lensDistortion", true, 9U, 9U, 3U,
    {0x00000000U, 0x00000000U}, {0x41100000U, 0x41100000U}, 0x3e900000U,
    {0x3e9eb852U, 0x3f2b851fU, 0x3de147aeU, 0x42180000U, 0xc27c0000U, 0xc2a20000U, 0x42580000U, 0x429e0000U, 0x427c0000U, 0x43010000U, 0x428e0000U, 0x42300000U, 0x42940000U}, {1U, 1U, 0U}, {true, false},
    "017988560354955a89ae63fe2318a5506ea89daf34d68c6d28556fe038a1da49", {0, 0, 0x3eca6b2aU, 0x3f2aaaabU, 0x3f5c61f3U, 0x3ed6b5adU, 8, 0, 0x3f388ee2U, 0x3d0c08c1U, 0x3ebafdc6U, 0x3f3def7cU, 0, 8, 0x3eee23b9U, 0x3f359b5aU, 0x3d0e7835U, 0x3f77bdefU, 8, 8, 0x3f4a6b2aU, 0x3d9d89d9U, 0x3ef9525dU, 0x3f0c6319U, 4, 4, 0x3dce633aU, 0x3f5acdadU, 0x3e4ccccdU, 0x3ef7bdefU},
-   "dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf", "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e", {0U, 0U, 0x3f2f5c2aU, 0x3b3b4e97U, 0x3f2f5c2aU, 0x3f4e739dU, 8U, 0U, 0x3f2f5c2aU, 0x3e8952b9U, 0xbe4e41cbU, 0x3f2d6b5bU, 0U, 8U, 0x3f2f5c28U, 0x3f09b150U, 0x3e4d5135U, 0x3ecabddeU, 8U, 8U, 0x3d18f6d1U, 0x3f132b4eU, 0x3f2f5c2aU, 0x3f6739ceU, 4U, 4U, 0x3e4dd67bU, 0x3f800000U, 0x3dea2ad4U, 0x3ef7bdefU}, 324U, 0U},
+   "10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457", "41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e", {0U, 0U, 0x3f2f5c28U, 0x3b3b4d54U, 0x3f2f5c28U, 0x3f4e739dU, 8U, 0U, 0x3f2f5c28U, 0x3e8952b7U, 0xbe4e41d0U, 0x3f2d6b5bU, 0U, 8U, 0x3f2f5c28U, 0x3f09b150U, 0x3e4d5135U, 0x3ecabddeU, 8U, 8U, 0x3d18f6bdU, 0x3f132b4cU, 0x3f2f5c28U, 0x3f6739ceU, 4U, 4U, 0x3e4dd67bU, 0x3f800000U, 0x3dea2ad4U, 0x3ef7bdefU}, 324U, 0U},
   {3U, "lens-prismatic-alpha-modulated", "classicNoisedeck/lensDistortion:lensDistortion", true, 12U, 6U, 4U,
    {0x00000000U, 0x00000000U}, {0x41400000U, 0x40c00000U}, 0x3f180000U,
    {0x3e6b851fU, 0x3f63d70aU, 0x3f07ae14U, 0x428a0000U, 0x42680000U, 0x42980000U, 0xc2740000U, 0x41e00000U, 0x42a80000U, 0x43968000U, 0x42680000U, 0xc2500000U, 0x423c0000U}, {9U, 1U, 1U}, {false, true},
    "1d2ba8321e80ef094bc02fab7732adee51ef23d079aa2f6a086a8634b6aa9a3a", {0, 0, 0x3efe03f8U, 0x3f5cfdd0U, 0x3e3afdc6U, 0x3ee739ceU, 11, 0, 0x3f329acaU, 0x3f37cb7dU, 0x3ea92ebfU, 0x3f35ad6bU, 0, 5, 0x3e2ea2bbU, 0x3f44ec4fU, 0x3efdc61fU, 0x3f042108U, 11, 5, 0x3ebe82faU, 0x3f1fb9fcU, 0x3f24bafeU, 0x3f46318cU, 6, 3, 0x3f24b693U, 0x3d2f0af1U, 0x3ea92ebfU, 0x3f4e739dU},
-   "5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb", "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128", {0U, 0U, 0x3eca0236U, 0x3f95cb8bU, 0x3ef3705aU, 0x3f30a3d7U, 11U, 0U, 0x3f0efaa1U, 0x3f86075fU, 0x3f316cdcU, 0x3f35ad6bU, 0U, 5U, 0x3ef5d215U, 0x3f8b2019U, 0x3ef9e81fU, 0x3f30a3d7U, 11U, 5U, 0x3eae5632U, 0x3f908a41U, 0x3f647706U, 0x3f46318cU, 6U, 3U, 0x3e27a1e1U, 0x3f381430U, 0x3ec60762U, 0x3f4e739dU}, 288U, 0U},
+   "b17c94ba76f68de72fdc3fc6ecf0c31bdd3bfd2e68045c97c3dd9d72215a8c38", "7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128", {0U, 0U, 0x3eca0236U, 0x3f95cb8bU, 0x3ef3705aU, 0x3f30a3d7U, 11U, 0U, 0x3f0efaa1U, 0x3f860760U, 0x3f316cddU, 0x3f35ad6bU, 0U, 5U, 0x3ef5d215U, 0x3f8b2019U, 0x3ef9e81fU, 0x3f30a3d7U, 11U, 5U, 0x3eae5634U, 0x3f908a41U, 0x3f647707U, 0x3f46318cU, 6U, 3U, 0x3e27a1e1U, 0x3f381430U, 0x3ec60762U, 0x3f4e739dU}, 288U, 0U},
   {4U, "prism-static-origin-tile", "filter/prismaticAberration:prismaticAberration", false, 10U, 7U, 5U,
    {0x00000000U, 0x00000000U}, {0x41200000U, 0x40e00000U}, 0x3eb00000U,
    {0x429a0000U, 0x42920000U, 0x42ac0000U, 0x41e80000U, 0x42880000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U}, {0U, 0U, 0U}, {false, false},

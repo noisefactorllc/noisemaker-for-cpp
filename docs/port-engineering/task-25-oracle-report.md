@@ -10,10 +10,10 @@ Both public dispatch entries are the exact canonical factory objects and have no
 
 | Case | Program | Size | Tile / full | Output F32 SHA-256 | Output RGBA8 SHA-256 |
 | --- | --- | --- | --- | --- | --- |
-| lens-chromatic-add-static | classicNoisedeck/lensDistortion:lensDistortion | 11x7 | 0,0 / 11,7 | `fb74b10789d2122fc427a34ed815e93d4b7cb54bd1725133914b3503423aaba0` | `e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802` |
-| lens-chromatic-alpha-modulated | classicNoisedeck/lensDistortion:lensDistortion | 10x8 | 0,0 / 10,8 | `873573bfebe53e084eb0d5284726f76a6f4cb53de4389b4fb958abbde7abe334` | `0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44` |
-| lens-prismatic-add-static | classicNoisedeck/lensDistortion:lensDistortion | 9x9 | 0,0 / 9,9 | `dd624cf2f85a25b8d297bf873adf962bde53bb4501b275a898b467ca67002ddf` | `41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e` |
-| lens-prismatic-alpha-modulated | classicNoisedeck/lensDistortion:lensDistortion | 12x6 | 0,0 / 12,6 | `5cd41f723817e3ee0081b08555ff39a028095850ade88aa2cf9cfd6ecc877fcb` | `7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128` |
+| lens-chromatic-add-static | classicNoisedeck/lensDistortion:lensDistortion | 11x7 | 0,0 / 11,7 | `a087ad282540f33e599335978a1c7b5229b14d2d507b48a6ad969c55d5ed93cd` | `e6e053c2e814c3cee1247c38efc4fcb9b5156466d60eca4b6c5abb6cc6e39802` |
+| lens-chromatic-alpha-modulated | classicNoisedeck/lensDistortion:lensDistortion | 10x8 | 0,0 / 10,8 | `a723bbc79f4e0ff32450154b6f19c57fc5bae96bb16b68759b4e67123f82419e` | `0b5772269e73a6f1f8356e7da0e1cf1e6d37118f513ad42d573a34c0c8d3ef44` |
+| lens-prismatic-add-static | classicNoisedeck/lensDistortion:lensDistortion | 9x9 | 0,0 / 9,9 | `10adbf5bb052ac0d5594d1a69aa4f036af64d44644e73fa6b8e4a906402f0457` | `41e931e36d29bcd626482148d6570f33621625cf6c6d7709bc78bb5ae55fd89e` |
+| lens-prismatic-alpha-modulated | classicNoisedeck/lensDistortion:lensDistortion | 12x6 | 0,0 / 12,6 | `b17c94ba76f68de72fdc3fc6ecf0c31bdd3bfd2e68045c97c3dd9d72215a8c38` | `7a362c18ea18a079899752f491874e1ab1d85afaae745b2746cd9a87ae25f128` |
 | prism-static-origin-tile | filter/prismaticAberration:prismaticAberration | 10x7 | 0,0 / 10,7 | `daad9591d01855520a052fd2d89ed2e9ed32da2d93421a041e40d58b5389daff` | `5f73c9a1151a312569107b68abd705555f7d2c5540c8e3ea44abd7891a9a3640` |
 | prism-modulated-offset-tile | filter/prismaticAberration:prismaticAberration | 9x6 | 4,3 / 17,13 | `dbc929af7ba49e768bd39a0188e0f9b9426581ba564c856e6289531304c8b216` | `5f141b94b43d85418de325137173a181d705f50574f4d1ca78e01972a1044447` |
 

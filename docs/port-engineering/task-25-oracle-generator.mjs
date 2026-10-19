@@ -22,7 +22,7 @@ const corpusRevision = EXPECTED.upstreamRevision
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
 const adapterIndexPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
-const canonicalSha256 = 'de04e9370d3e946afea3420ffe7cb10fd4e8395677bf89e3fe0b960ee0048863'
+const canonicalSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
 const catalogSha256 = 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'
 const adapterIndexSha256 = 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'
 const f = Math.fround
@@ -45,7 +45,7 @@ const programs = {
     normalizedBytes: 7723,
     normalizedSha256: '6586c49b079a3b0f4aa3538c8e735e70db088ff2e5d2ea1037e9e9c5486fdf52',
     factoryName: 'canonicalFactory10',
-    factorySha256: 'd71a3cee0afc687ea4802da7dc4e9b47de7afab05bfffc887064bede8b328785',
+    factorySha256: '546c336776f6d7880b8e2b1de3f952aeb973ab6e3ef734e4d1f6838152365f3c',
     bindings: [
       'inputTex:sampler2D@1/S1', 'resolution:vec2@2', 'tileOffset:vec2@3', 'fullResolution:vec2@4', 'time:float@5',
       'aspectLens:bool@6', 'shape:int@7', 'tint:vec3@8', 'alpha:float@9', 'vignetteAmt:float@10', 'distortion:float@11',
@@ -61,7 +61,7 @@ const programs = {
     normalizedBytes: 3907,
     normalizedSha256: '1c157e7f3dc7c9c122cc185812cd2988a98a52024055a482265bded7561a0860',
     factoryName: 'canonicalFactory114',
-    factorySha256: 'a3f5dbe69fe147663be1db8df4f3cd3a18e76e433051479541da4083437c48fb',
+    factorySha256: '402542188071fc997a7f68b56f0b9d1f113a41c789e7e9b0122d4ff9ccf979e9',
     bindings: [
       'inputTex:sampler2D@1/S1', 'resolution:vec2@2', 'tileOffset:vec2@3', 'fullResolution:vec2@4', 'time:float@5',
       'aberrationAmt:float@6', 'hueRotation:float@7', 'hueRange:float@8', 'modulate:bool@9', 'saturation:float@10',
@@ -255,7 +255,7 @@ function buildData() {
   })
 
   return {
-    schema: 'noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '4307ca9f26fc415e4fc5e75227d429d35cc741cd', authority: EXPECTED,
+    schema: 'noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', authority: EXPECTED,
     provenance: { node: process.version, public_api: 'kernelFactories.get(key)', canonical_identity: true, adapter_entries_absent: true, canonical_kernels_sha256: canonicalSha256, public_catalog_sha256: catalogSha256, adapter_index_sha256: adapterIndexSha256 },
     profile: { name: 'literal-vec3-lane-index-v1', keys: Object.values(programs).map(p => p.key).sort(), selected_source_sites: 11, direct_plain_assignment_lvalues: 6, reads: 5, lane_incidence_0_1_2: [7, 3, 1], dynamic_or_generic_vector_index_capability: false },
     programs: Object.fromEntries(Object.entries(programs).map(([name, p]) => [name, { key: p.key, source: p.source, raw_source_bytes: p.rawBytes, raw_source_sha256: p.rawSha256, normalized_source_bytes: p.normalizedBytes, normalized_source_sha256: p.normalizedSha256, defines: {}, canonical_factory_name: p.factoryName, canonical_factory_to_string_sha256: p.factorySha256, public_factory_is_canonical_identity: true, adapter_entry_absent: true, bindings: p.bindings, resources: name === 'lens' ? { samplers: 1, ordinary_uniforms: 20, outputs: 1, uses_texture: true, uses_derivatives: false, static_texture_sites: 3, dynamic_texture_calls_per_pixel: 3, texture_size_calls_per_pixel: 0 } : { samplers: 1, ordinary_uniforms: 10, outputs: 1, uses_texture: true, uses_derivatives: false, static_texture_sites: 3, dynamic_texture_calls_per_pixel: 3, texture_size_calls_per_pixel: 1 } }])),
