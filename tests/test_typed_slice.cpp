@@ -1746,9 +1746,13 @@ void populate_task14_bindings(noisemaker::glsl::Bindings& bindings,
   } else if (fixture.key == "synth/osc2d:osc2d") {
     uniform("resolution", noisemaker::glsl::Vec2(9.0f, 7.0f));
     uniform("tileOffset", fixture.tile_offset); uniform("fullResolution", fixture.full_resolution);
-    // createCanonicalBindings derives aspect from fullResolution (NaN for 0 / 0).
-    uniform("aspect", static_cast<float>(static_cast<double>(fixture.full_resolution[0]) /
-                                         static_cast<double>(fixture.full_resolution[1])));
+    // createCanonicalBindings derives aspect from fullResolution. For 0 / 0 the
+    // authority capture holds the default quiet NaN 0x7fc00000; x86-64 division
+    // yields 0xffc00000, so the captured bits are bound on every architecture.
+    const double aspect_quotient = static_cast<double>(fixture.full_resolution[0]) /
+                                   static_cast<double>(fixture.full_resolution[1]);
+    uniform("aspect", std::isnan(aspect_quotient) ? std::numeric_limits<float>::quiet_NaN()
+                                                  : static_cast<float>(aspect_quotient));
     uniform("time", fixture.time);
     uniform("oscType", fixture.integers[0]); uniform("frequency", fixture.integers[1]);
     uniform("speed", fixture.values[0]); uniform("rotation", fixture.values[1]);
