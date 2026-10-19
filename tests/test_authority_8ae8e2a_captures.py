@@ -81,11 +81,11 @@ class Authority8ae8e2aCaptureTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "0ff8b1e3a2892b3330ecefa3d5101ee74a6c13131efee5c7baf0ccf18a425bb3",
-                "expected.json": "b26ff5b77c9701eae0c56cd50728d7ca96b1e9d87d9f0f7bb6de86467cc07fe6"}.items():
+                "expected.json": "1be9c1ff27186334758fa88ab95c45c015453cf4d87055546bb19f6530d65f46"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest, name)
         cases, expected = _load()
-        self.assertEqual("4307ca9f26fc415e4fc5e75227d429d35cc741cd", expected["cpu_revision"])
-        self.assertEqual(6, len(expected["source_hashes"]))
+        self.assertEqual("7f473400ac744025d46221bf527b43c1b5c1ef4e", expected["cpu_revision"])
+        self.assertEqual(9, len(expected["source_hashes"]))
         self.assertEqual(
             {"classicNoisedeck/coalesce:coalesce", "classicNoisedeck/refract:refract",
              "classicNoisedeck/lensDistortion:lensDistortion", "classicNoisedeck/colorLab:colorLab",
