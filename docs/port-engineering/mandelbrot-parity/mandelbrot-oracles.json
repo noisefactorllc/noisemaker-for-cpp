@@ -197,7 +197,7 @@
         },
         {
           "relative_path": "src/effects/definition.js",
-          "sha256": "e90ff977ceb766d4701c61e81de2b6e5656456ea799cfdf674d64c26336ed886"
+          "sha256": "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"
         },
         {
           "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -221,7 +221,7 @@
         },
         {
           "relative_path": "src/runtime/automation.js",
-          "sha256": "957c4299a6e1376e2161dc32c6fe49adebdedc1ae177f4011278ee4eddb54e7e"
+          "sha256": "7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f"
         },
         {
           "relative_path": "src/runtime/pass-runner.js",
@@ -239,7 +239,7 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/mandelbrot-parity/mandelbrot_oracle_generator.mjs",
-      "sha256": "693ad6dddd78eab89533abcd2607fafb5b4ba869435dd58ff9e4209a6bd55fc9"
+      "sha256": "25ba18d39c0600d2c5b8ceb42308f00989adbfdc16bf7e0b0df5f67842aeabdf"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_mandelbrot_native_oracle_include.py"
