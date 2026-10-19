@@ -37,7 +37,9 @@ EXIT_REFUSED = 4
 # double quote, which is exactly the byte the record has to escape.
 QUOTED_REFUSALS = {
     "parser-expected-token": ("let a = solid(1 2)\n", 'Expected ")"'),
-    "lexer-unexpected-brace": ("solid{\n", 'Unexpected character "{"'),
+    # `{` is punctuation since the authority's subchain blocks, so the lexer
+    # case uses a character the authority's tokenizer still rejects.
+    "lexer-unexpected-at": ("solid@\n", 'Unexpected character "@"'),
     "lexer-unexpected-tilde": ("let a = solid(); ~\n", 'Unexpected character "~"'),
 }
 
