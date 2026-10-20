@@ -433,7 +433,7 @@ void pixel(const KernelState& base, const glsl::PixelContext& ctx, Vec4& out) no
 BoundKernel bind_crt(const glsl::Bindings& b) {
   auto state = std::make_shared<State>();
   State& s = *state;
-  s.input = &b.texture("inputTex");
+  s.input = &b.texture_or_black("inputTex");
   const glsl::Vec2 resolution = b.get<glsl::Vec2>("resolution");
   const glsl::Vec2 tile_offset = b.get<glsl::Vec2>("tileOffset");
   s.tile_offset_x = tile_offset[0];

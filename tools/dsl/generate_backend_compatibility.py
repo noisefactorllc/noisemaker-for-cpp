@@ -726,12 +726,10 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
             unresolved.append({"name": name, "reason": "malformed typed declaration"})
             continue
         if name in sampler_names:
-            source = "resource" if name in input_map else ("external_texture" if effect.get("externalTexture") else None)
+            source = "resource" if name in input_map else ("external_texture" if effect.get("externalTexture") else "transparent_black")
             item = {"name": name, "type": "sampler2D", "cpp_type": "const Surface&", "source": source,
                     "resource": input_map.get(name)}
             samplers.append(item)
-            if source is None:
-                unresolved.append({"name": name, "reason": "sampler has no resource source"})
             continue
         mapped = uniform_map.get(name, name)
         if mapped in params or mapped in aliases or name in params or name in param_by_uniform or name in param_by_color_mode_uniform:
@@ -1004,16 +1002,13 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
             # resources from different passes (physarum's passthrough program
             # reads the pheromone state from its copy pass and the user input
             # from its passthrough pass). Remap each sampler's resource through
-            # this pass's inputs; a sampler the pass does not feed is a
-            # generation defect, not a silent route carry-over.
+            # this pass's inputs. An omitted sampler reads transparent black.
             binding_samplers = []
             for sampler in samplers:
                 inputs_map = pass_item.get("inputs", {})
-                if sampler["name"] not in inputs_map:
-                    raise CompatibilityError(
-                        f"{key}: binding pass {pass_item.get('name')} does not feed "
-                        f"sampler {sampler['name']}")
-                binding_samplers.append({**sampler, "resource": inputs_map[sampler["name"]]})
+                name = sampler["name"]
+                source = "resource" if name in inputs_map else ("external_texture" if effect.get("externalTexture") else "transparent_black")
+                binding_samplers.append({**sampler, "source": source, "resource": inputs_map.get(name)})
             bindings.append({
                 "pass_index": index, "pass_name": pass_item.get("name"),
                 "samplers": binding_samplers,
@@ -1662,6 +1657,29 @@ _BINDING_SOURCES = frozenset({
 })
 
 
+def _validate_sampler_sources(samplers: Any, inputs: Any) -> None:
+    if not isinstance(samplers, list) or not isinstance(inputs, dict):
+        raise CompatibilityError("sampler ABI route is invalid")
+    names: set[str] = set()
+    for sampler in samplers:
+        if (not isinstance(sampler, dict)
+                or set(sampler) != {"name", "type", "cpp_type", "source", "resource"}
+                or not isinstance(sampler["name"], str) or not sampler["name"]
+                or sampler["name"] in names or sampler["type"] != "sampler2D"
+                or sampler["cpp_type"] != "const Surface&"):
+            raise CompatibilityError("sampler ABI route is invalid")
+        name = sampler["name"]
+        names.add(name)
+        if sampler["source"] == "transparent_black":
+            valid = name not in inputs and sampler["resource"] is None
+        else:
+            valid = (sampler["source"] == "resource" and name in inputs
+                     and isinstance(sampler["resource"], str) and bool(sampler["resource"])
+                     and sampler["resource"] == inputs[name])
+        if not valid:
+            raise CompatibilityError("sampler ABI route is invalid")
+
+
 def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[str, str] | None = None,
                       repository: pathlib.Path = ROOT,
                       factory_evidence: dict[str, Any] | None = None,
@@ -1843,14 +1861,29 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
                 row.get("status") != "incompatible" or {"code": "unsupported_draw_mode",
                                                        "detail": row["draw_mode"]} not in row["reasons"]):
             raise CompatibilityError("unsupported draw mode or dimensionality")
-        for binding in [*row["uniforms"], *row["samplers"]]:
+        if row.get("status") == "compatible":
+            authority = row.get("authority_pass")
+            _validate_sampler_sources(row["samplers"], authority.get("inputs") if isinstance(authority, dict) else None)
+            for binding in row.get("binding_outputs", []):
+                reference = next((item for item in references
+                                  if item["program_key"] == row["program_key"]
+                                  and item["pass_index"] == binding.get("pass_index")
+                                  and item["pass_name"] == binding.get("pass_name")), None)
+                if reference is None:
+                    raise CompatibilityError("sampler binding pass is missing")
+                _validate_sampler_sources(binding.get("samplers"), reference["authority_pass"]["inputs"])
+        for binding in row["uniforms"]:
             if not isinstance(binding, dict):
                 raise CompatibilityError("unclassified binding in ABI")
-            # An unclassified binding is admissible evidence only on an
-            # incompatible row whose reasons name that exact binding.
+            # Unclassified bindings must name their incompatible-row reason.
             if binding.get("source") not in _BINDING_SOURCES and (
                     binding.get("source") is not None or row.get("status") != "incompatible"
                     or {"code": "unclassified_binding", "detail": binding.get("name")} not in reasons):
+                raise CompatibilityError("unclassified binding in ABI")
+        for binding in row["samplers"]:
+            if not isinstance(binding, dict) or (binding.get("source") not in _BINDING_SOURCES | {"transparent_black"}
+                    and (binding.get("source") is not None or row.get("status") != "incompatible"
+                         or {"code": "unclassified_binding", "detail": binding.get("name")} not in reasons)):
                 raise CompatibilityError("unclassified binding in ABI")
         output_abi = row.get("output_abi")
         outputs = row.get("outputs")

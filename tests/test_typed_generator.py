@@ -8251,7 +8251,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "439b0d5c5f8ad9b5b46ae6a0556905ea148e4f1bae5c2b8738aae14c0421d6d9",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "e86e34b457a1f6c684c8d0705b03e468c246684737fa5a10d8004872a6051e2a",
+                "cd5adbb7912e9ae7aa7d99d427e0751a34d490f0b0ba06361e88b6a11ca8458a",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8260,7 +8260,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "a7b3bafa1dd7411f3ff77e6dbea18e528bfe9f76157ac5faf1f1168005aa9fd2",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "609898c30e66d1d0faa5fea5558b6f5749fc705d6e2a7a0e1949781d566e2e8f",
+                "21bb19a3e79206ca2f16779af8d7d8c2bee07e8e73e19f009731a9f275124993",
             "include/noisemaker/generated/catalog.hpp":
                 "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
         }
@@ -8388,7 +8388,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "a132a10c8ea70580678f1143861155491375795b87525363dd0b64db4823242a",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "222b5329a1f1b4b41c50135fdc9071aa5901a4c3274ef106319bec8f80509b60",
+                "9d7456d7f7110b715ebf3f6ab65f2d3b5883e84b3f38d8facab77c09d7409f98",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8397,7 +8397,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "439b0d5c5f8ad9b5b46ae6a0556905ea148e4f1bae5c2b8738aae14c0421d6d9",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "e86e34b457a1f6c684c8d0705b03e468c246684737fa5a10d8004872a6051e2a",
+                "cd5adbb7912e9ae7aa7d99d427e0751a34d490f0b0ba06361e88b6a11ca8458a",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8526,7 +8526,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "d2bea2ad2ae5ebb517db31701aa43ed4b6dc69330a844acfcc6717b42b52a3a0",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "ecddf1307c41cce60776ae3a91de873dbaa9442bbbe4a7d71446db3950b52ac8",
+                "533a21af42fb9a12c7f0536862ee8e3a19d0ef6e0e9df09b0e1433dcc244e558",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -8535,7 +8535,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "a132a10c8ea70580678f1143861155491375795b87525363dd0b64db4823242a",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "222b5329a1f1b4b41c50135fdc9071aa5901a4c3274ef106319bec8f80509b60",
+                "9d7456d7f7110b715ebf3f6ab65f2d3b5883e84b3f38d8facab77c09d7409f98",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8662,7 +8662,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "9873428846e1d18d15d01fe1dafe22e6aa0a1c3f23d99b7ca58de6c259b5615f",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "d1077a363c24635506f629d6ab3c2766a4296c0b56fce17c6e1ed7f191ea6e6d",
+                "4a77ec9cac753ab9edab3170aec96a4f2d85f57a3c5470ed8583fa0190aa91a2",
             "include/noisemaker/generated/catalog.hpp":
                 "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
         }
@@ -8671,7 +8671,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 "d2bea2ad2ae5ebb517db31701aa43ed4b6dc69330a844acfcc6717b42b52a3a0",
             "src/typed_generated/typed_manifest.json":
                 # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-                "ecddf1307c41cce60776ae3a91de873dbaa9442bbbe4a7d71446db3950b52ac8",
+                "533a21af42fb9a12c7f0536862ee8e3a19d0ef6e0e9df09b0e1433dcc244e558",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -11667,7 +11667,7 @@ synth/subdivide:subdivide""".splitlines())
         # 7f47340 regenerates the current-authority captures and binds the
         # canonical full-resolution aspect in the Polygon, Pattern and Osc2D fixtures.
         self.assertEqual(
-            "fb3c2037e7ea06054660217303541c381a8343984cf0fbecbe3580ff89f9ce4b",
+            "72ad8cd1573dd94d9aa4d66487aad705f6a2915b078a65c3b811aa253ac10430",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -20254,7 +20254,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         "src/typed_generated/typed_manifest.json": (
             525837,
             # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-            "7f5deab36f803e4efd2cfedfe8a4e675712e07206661231ca269d80ad9995182"),
+            "17f5f8adf70217001151a0a2092d6cadb1bba6426b2b45914d1451b9883d2ba8"),
         "include/noisemaker/generated/catalog.hpp": (
             17919,
             "c0a37f0c625ba0a2feaa8c9193cbfdf5a81bea2f8bf52e06f92890f38fb8a76d"),
@@ -20980,7 +20980,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         "src/typed_generated/typed_manifest.json": (
             528955,
             # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-            "b62df228e799ecae5e85c9111a560d5c46dec62b14d295212254b480bcd8610e"),
+            "0aa7d427017201788873569e99f4f169866dca4e73772ba9133a5008fbb2ddbf"),
         "include/noisemaker/generated/catalog.hpp": (
             18001,
             "84df05fade5267b58a4569f57e1fce65907ced14e799d55d3036f620472b2a65"),
@@ -22207,7 +22207,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         "src/typed_generated/typed_manifest.json": (
             531600,
             # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-            "e2ff8305f36cfd2442e10f4ec80a061f06c428a070b06508447bf1a2bb001da7"),
+            "a4c7a301fcf94793c1e4b27bd81147beb9126b053196859e8d6a7f205c2033ed"),
         "include/noisemaker/generated/catalog.hpp": (
             18092,
             "88eabb05a709bf85c91186cdbc3bf9a546339b0c1c2d009971c3a9313c6b4f64"),
@@ -22866,11 +22866,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3872703,
-                "d2598f68009542c146ce9c69527ea39ff00081d4023279f1b7aa12bb282c6779"),
+                3876524,
+                "cfb8e991c2e081156c0dbe322713773c061ba91c78d2ab53abbb5f4bd4e44ae8"),
             "src/typed_generated/typed_manifest.json": (
                 926813,
-                "e6855f35dddfd41b590711fce021dc0c38fb1bc0536146ef7f34874377d4c5f4"),
+                "0a3297216afd15aa5aa20c397e1479fb94ae321724ab3616e2a4041a9c77a31d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23072,7 +23072,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         "src/typed_generated/typed_manifest.json": (
             535233,
             # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-            "ff71dd0e0590d551ba72b04551b867e7a7f182311ce469e642128f8a76fc7839"),
+            "abc6c95b5ba12a6ba36ed82d4efe49ae386bad271ab3bf470c005d9309c05764"),
         "include/noisemaker/generated/catalog.hpp": (
             18197,
             "3a1ea13b5080947064ca559f2723cde386f6b4c154d9f0ced82e87d592e673a3"),
@@ -23655,11 +23655,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3872703,
-                "d2598f68009542c146ce9c69527ea39ff00081d4023279f1b7aa12bb282c6779"),
+                3876524,
+                "cfb8e991c2e081156c0dbe322713773c061ba91c78d2ab53abbb5f4bd4e44ae8"),
             "src/typed_generated/typed_manifest.json": (
                 926813,
-                "e6855f35dddfd41b590711fce021dc0c38fb1bc0536146ef7f34874377d4c5f4"),
+                "0a3297216afd15aa5aa20c397e1479fb94ae321724ab3616e2a4041a9c77a31d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24429,11 +24429,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3872703,
-                "d2598f68009542c146ce9c69527ea39ff00081d4023279f1b7aa12bb282c6779"),
+                3876524,
+                "cfb8e991c2e081156c0dbe322713773c061ba91c78d2ab53abbb5f4bd4e44ae8"),
             "src/typed_generated/typed_manifest.json": (
                 926813,
-                "e6855f35dddfd41b590711fce021dc0c38fb1bc0536146ef7f34874377d4c5f4"),
+                "0a3297216afd15aa5aa20c397e1479fb94ae321724ab3616e2a4041a9c77a31d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24472,7 +24472,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         "src/typed_generated/typed_manifest.json": (
             538586,
             # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-            "ede8196bd4c524bbec9e5dfac68d33ce849205ec1d3f42cfba6482b9f4cec6f8"),
+            "40721456fc93c470e4135ff88e6a5b16dc34b479ba3efa54c076682c0b1adc9d"),
         "include/noisemaker/generated/catalog.hpp": (
             18294,
             "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
@@ -24969,11 +24969,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3872703,
-                "d2598f68009542c146ce9c69527ea39ff00081d4023279f1b7aa12bb282c6779"),
+                3876524,
+                "cfb8e991c2e081156c0dbe322713773c061ba91c78d2ab53abbb5f4bd4e44ae8"),
             "src/typed_generated/typed_manifest.json": (
                 926813,
-                "e6855f35dddfd41b590711fce021dc0c38fb1bc0536146ef7f34874377d4c5f4"),
+                "0a3297216afd15aa5aa20c397e1479fb94ae321724ab3616e2a4041a9c77a31d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25012,7 +25012,7 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         "src/typed_generated/typed_manifest.json": (
             542085,
             # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-            "047654b20020e54dd6935a97b81ae29e9cdc3dcf2ba041fe50d44143bbcda6eb"),
+            "4cddee54d8e748b859bf11a08ecf575ddcaf267568cd71c288f069c2708dcf65"),
         "include/noisemaker/generated/catalog.hpp": (
             18391,
             "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
@@ -25573,11 +25573,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 42755,
                 "4353d00ef79907d9a53fb6bb846add2de62ae70690452887b73028b2b1fd9082"),
             "src/typed_generated/typed_slice.cpp": (
-                3872703,
-                "d2598f68009542c146ce9c69527ea39ff00081d4023279f1b7aa12bb282c6779"),
+                3876524,
+                "cfb8e991c2e081156c0dbe322713773c061ba91c78d2ab53abbb5f4bd4e44ae8"),
             "src/typed_generated/typed_manifest.json": (
                 926813,
-                "e6855f35dddfd41b590711fce021dc0c38fb1bc0536146ef7f34874377d4c5f4"),
+                "0a3297216afd15aa5aa20c397e1479fb94ae321724ab3616e2a4041a9c77a31d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25619,7 +25619,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         "src/typed_generated/typed_manifest.json": (
             544674,
             # Re-frozen 2026-10-19: the snow custom_adapter route records the live src/effects/snow.cpp SHA-256.
-            "479d1bae64b166f83f2b4aa9cea685f0ab22a0cec480674951ab7b0de42e08f7"),
+            "5f4f01005f3e7ca837e11e381fcca22f5785a38211dde4e0f061875a73be5e55"),
         "include/noisemaker/generated/catalog.hpp": (
             18476,
             "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),
@@ -26829,7 +26829,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertIn("double seed_value", cpp)
         self.assertIn('bindings.get_number("seed")', cpp)
         self.assertIn("static_cast<double>(state.seed)", cpp)
-        self.assertIn("std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);", cpp)
+        self.assertIn("std::int32_t z = std::trunc((static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize)));", cpp)
         from unittest import mock
         with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False), \
                 emit_typed_cpp.authority_before_7f47340():
@@ -28127,6 +28127,75 @@ class HashPrecisionFenceTests(unittest.TestCase):
         self.assertIn("points/dla:initGrid", fenced)
         self.assertGreaterEqual(len(fenced), 13)
 
+
+
+class SamplerMetadataBindingTests(unittest.TestCase):
+    @staticmethod
+    def _program(source):
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        return analyze_program(parse_program(source, "sampler-metadata"),
+                               "sampler-metadata")
+
+    def test_pixel_reads_default_only_the_sampler_without_size_queries(self):
+        program = self._program("""
+            uniform sampler2D pixels;
+            uniform sampler2D dimensions;
+            uniform sampler2D texels;
+            out vec4 fragColor;
+            void main() {
+                ivec2 size = textureSize(dimensions, 0);
+                fragColor = texture(pixels, vec2(size)) + texelFetch(texels, ivec2(0), 0);
+            }
+        """)
+        body = emit_typed_cpp.render_typed_cpp(
+            program, program.key, "sampler-metadata-source")
+        self.assertIn('bindings.texture_or_black("pixels")', body)
+        self.assertIn('bindings.texture_or_black("texels")', body)
+        self.assertIn('bindings.texture("dimensions")', body)
+        self.assertNotIn('bindings.texture_or_black("dimensions")', body)
+
+        with emit_typed_cpp.authority_before_7f47340():
+            historical = emit_typed_cpp.render_typed_cpp(
+                program, program.key, "sampler-metadata-source")
+        self.assertIn('bindings.texture("pixels")', historical)
+        self.assertIn('bindings.texture("texels")', historical)
+        self.assertNotIn('texture_or_black', historical)
+
+    def test_sampler_parameters_propagate_size_dependencies_through_calls(self):
+        program = self._program("""
+            uniform sampler2D pixels;
+            uniform sampler2D dimensions;
+            out vec4 fragColor;
+            ivec2 measure(sampler2D measured, sampler2D unused) {
+                return textureSize(measured, 0);
+            }
+            ivec2 forward(sampler2D first, sampler2D second) {
+                return measure(second, first);
+            }
+            void main() {
+                fragColor = texture(pixels, vec2(forward(pixels, dimensions)));
+            }
+        """)
+        self.assertEqual({"dimensions"},
+                         emit_typed_cpp._samplers_requiring_metadata(program))
+
+    def test_conditional_size_queries_preserve_native_required_bindings(self):
+        program = self._program("""
+            uniform sampler2D measured;
+            uniform sampler2D pixels;
+            uniform bool querySize;
+            out vec4 fragColor;
+            void main() {
+                vec2 uv = vec2(0.0);
+                if (querySize) uv = vec2(textureSize(measured, 0));
+                fragColor = texture(pixels, uv);
+            }
+        """)
+        body = emit_typed_cpp.render_typed_cpp(
+            program, program.key, "sampler-metadata-source")
+        self.assertIn('bindings.texture("measured")', body)
+        self.assertIn('bindings.texture_or_black("pixels")', body)
 
 if __name__ == "__main__":
     unittest.main()

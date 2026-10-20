@@ -404,6 +404,39 @@ TEST(effect_registry_accepts_every_repaired_dither_palette) {
   }
 }
 
+TEST(effect_registry_resolves_declared_float_rotation_choices) {
+  EffectRegistry registry(noisemaker::effects::effect_catalog());
+  const std::array<std::pair<const char*, const char*>, 5> effects{{
+      {"filter", "palette"}, {"filter", "historicPalette"},
+      {"filter", "tetraColorArray"}, {"filter", "tetraCosine"},
+      {"filter3d", "palette3d"}}};
+  const std::array<std::pair<const char*, double>, 3> choices{{
+      {"none", 0.0}, {"fwd", 1.0}, {"back", -1.0}}};
+  for (const auto& [name_space, function] : effects) {
+    const auto* effect = registry.get(name_space, function);
+    REQUIRE(effect != nullptr);
+    for (const auto& [name, expected] : choices) {
+      const auto named = registry.normalize(
+          *effect, {{"rotation", PlanValue::string_value(name)}});
+      const auto numeric = registry.normalize(
+          *effect, {{"rotation", PlanValue::number_value(expected)}});
+      const auto rotation = [](const auto& arguments) -> const PlanValue& {
+        const auto found = std::find_if(arguments.values.begin(), arguments.values.end(),
+            [](const auto& argument) { return argument.name == "rotation"; });
+        REQUIRE(found != arguments.values.end());
+        return found->value;
+      };
+      REQUIRE(rotation(named).kind == PlanValue::Kind::number);
+      REQUIRE(rotation(named).number == expected);
+      REQUIRE(rotation(named).number == rotation(numeric).number);
+    }
+    REQUIRE_THROWS_AS(registry.normalize(
+        *effect, {{"rotation", PlanValue::string_value("unknown")}}), std::invalid_argument);
+    REQUIRE_THROWS_AS(registry.normalize(
+        *effect, {{"rotation", PlanValue::boolean_value(true)}}), std::invalid_argument);
+  }
+}
+
 TEST(dither_palette_endpoints_match_repaired_cpu_authority_and_repeat) {
   // Captured from immutable CPU 26d6f42be38da7172f602373e844f85a8155356f.
   // White/black nearest palette colors at threshold +/-0.5, 3x2 pixels.

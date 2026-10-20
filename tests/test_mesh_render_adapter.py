@@ -98,7 +98,7 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
     def test_capture_has_immutable_cpu_provenance(self):
         expected = json.loads(capture_path().read_text())
-        self.assertEqual(expected["cpu_revision"], "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6")
+        self.assertEqual(expected["cpu_revision"], "2e751f4c09154bd67e5d83f50d2185425aba0c1a")
         self.assertEqual(expected["source_hashes"], {
             "src/effects/cpu/mesh-render.js": "ea9480452c59bcc51aa33fa0e699368b3dcadc6c629569a3b0fa7142186ee499",
             "src/runtime/external-input.js": "705f8f27b29e6ddc2334eb1e9af6ad57004063d848ea3bee9356626218c12757",
@@ -140,20 +140,30 @@ class MeshRenderAuthorityTests(unittest.TestCase):
         self.assertEqual(result.stdout.encode(), capture_path().read_bytes())
 
     def test_reference_rejects_modified_cpu_before_import(self):
-        with tempfile.TemporaryDirectory(prefix="mesh-render-forgery-") as raw:
-            root = pathlib.Path(raw)
-            source = root / "src/effects/cpu/mesh-render.js"
-            source.parent.mkdir(parents=True)
-            source.write_text("throw new Error('untrusted module executed');\n")
-            result = subprocess.run(["node", str(FIXTURE / "reference.mjs"), str(root),
-                                     str(FIXTURE / "cases.json")], text=True, capture_output=True)
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn("CPU source hash mismatch: src/effects/cpu/mesh-render.js", result.stderr)
-            self.assertNotIn("Error: untrusted module executed", result.stderr)
+        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        paths = ["src/effects/cpu/mesh-render.js"]
+        if configured:
+            paths.append("src/runtime/external-input.js")
+        for path in paths:
+            with self.subTest(path=path), tempfile.TemporaryDirectory(
+                    prefix="mesh-render-forgery-") as raw:
+                root = pathlib.Path(raw)
+                if path == "src/runtime/external-input.js":
+                    adapter = root / paths[0]
+                    adapter.parent.mkdir(parents=True)
+                    adapter.write_bytes((pathlib.Path(configured) / paths[0]).read_bytes())
+                source = root / path
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_text("throw new Error('untrusted module executed');\n")
+                result = subprocess.run(["node", str(FIXTURE / "reference.mjs"), str(root),
+                                         str(FIXTURE / "cases.json")], text=True, capture_output=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(f"CPU source hash mismatch: {path}", result.stderr)
+                self.assertNotIn("Error: untrusted module executed", result.stderr)
 
 
 FIXTURE_HASHES = {
     "cases.json": "161358e3d0bfb3bcb2798d05ff5c2c681982d369441726256d265458b8c65830",
-    "expected.json": "17014839d04d8c050b573b4d50234045b9c0370014ae2e96eacfe062913ed6e5",
-    "expected_linux_x86_64_node26.json": "b7f038d2df88bdb16cc29563a27e1dcadd2a74360839a9ef3c64da2f49f280a4",
+    "expected.json": "962ebf15d1abd50dbd0ff0d020f717feaf85568751a244d513dadd9df9f5e30e",
+    "expected_linux_x86_64_node26.json": "a91ece7b75d911acfe18b184afb836a6beb24b8bba930d92195950c1e0eaec99",
 }

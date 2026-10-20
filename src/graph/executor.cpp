@@ -2220,7 +2220,9 @@ constexpr std::array<std::pair<std::string_view, std::string_view>, 5> kRawCompa
         abi.cpp_type, step, admission, abi.name);
   }
   if (abi.source_name == "resolution") {
-    return materialize_plan_value(PlanValue::array_value({PlanValue::number_value(static_cast<double>(context.destination_width)), PlanValue::number_value(static_cast<double>(context.destination_height))}), abi.cpp_type, step, admission, abi.name);
+    const auto width = admission.outputs.size() > 1U ? inputs.width : context.destination_width;
+    const auto height = admission.outputs.size() > 1U ? inputs.height : context.destination_height;
+    return materialize_plan_value(PlanValue::array_value({PlanValue::number_value(static_cast<double>(width)), PlanValue::number_value(static_cast<double>(height))}), abi.cpp_type, step, admission, abi.name);
   }
   if (abi.source_name == "renderScale") return materialize_plan_value(PlanValue::number_value(1.0), abi.cpp_type, step, admission, abi.name);
   // `time`/`deltaTime` are createCanonicalBindings' `f32(time)` /
@@ -3177,13 +3179,16 @@ void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
                                     [&](const auto& candidate) {
                                       return candidate.first == sampler.name;
                                     });
+    const bool unbound = sampler.source == "transparent_black";
     if (sampler.name.empty() || !sampler_names.insert(sampler.name).second ||
-        input == pass.inputs.end() || sampler.resource != input->second ||
-        sampler.resource.empty() || sampler.source != "resource" ||
+        (unbound ? (input != pass.inputs.end() || !sampler.resource.empty()) :
+         (input == pass.inputs.end() || sampler.resource != input->second ||
+          sampler.resource.empty() || sampler.source != "resource")) ||
         !sampler.source_name.empty()) {
       throw binding_error(step, admission, GraphErrorCode::missing_binding,
                           "sampler ABI route is invalid");
     }
+    if (unbound) continue;
     if (direct_mesh_resource(admission, sampler.resource)) {
       if (context.inputs == nullptr) {
         throw binding_error(step, admission, GraphErrorCode::missing_resource,
@@ -3260,7 +3265,8 @@ void materialize_sampler_bindings(
     const effects::PassDefinition& pass) {
   (void)pass;
   if (context.lookup_surface == nullptr) {
-    if (!admission.samplers.empty()) {
+    if (std::any_of(admission.samplers.begin(), admission.samplers.end(),
+                    [](const auto& sampler) { return sampler.source != "transparent_black"; })) {
       throw binding_error(step, admission, GraphErrorCode::missing_resource,
                           "sampler lookup is missing");
     }
@@ -3269,7 +3275,7 @@ void materialize_sampler_bindings(
   for (const auto& sampler : admission.samplers) {
     // The whole-pass CPU adapter reads these exact authenticated inputs from
     // MeshData. Their route/type ABI and presence were checked in preflight.
-    if (direct_mesh_resource(admission, sampler.resource)) continue;
+    if (sampler.source == "transparent_black" || direct_mesh_resource(admission, sampler.resource)) continue;
     const auto* surface = context.lookup_surface(context.lookup_context,
                                                   sampler.resource);
     if (surface == nullptr) {
@@ -4800,7 +4806,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             borrowed.clear();
           };
           for (const auto& sampler : admission.samplers) {
-            if (direct_mesh_resource(admission, sampler.resource)) continue;
+            if (sampler.source == "transparent_black" || direct_mesh_resource(admission, sampler.resource)) continue;
             const auto route = resolve_route(sampler.resource);
             if (route.surface == nullptr) {
               release_borrowed();

@@ -443,5 +443,95 @@
       "requireExecutable": false
     },
     "sourceSha256": "e39c1cda7e6e5807f47b62d2d5f17e5674918c1acd2a2a0eec1c7cc595c67d78"
-  }
+  },
+    {
+      "name": "let-statement-reassignment",
+      "registryMode": "catalog_records",
+      "sourceName": "let-statement-reassignment.dsl",
+      "source": "search synth\nlet x = 10\nnoise(scaleX: x).write(o0)\nlet x = 90\nnoise(scaleX: x).write(o1)\nrender(o1)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "0737f19109e1d087f3447e2fc699db0f9ab1658155efc73efb86721b018b8191"
+    },
+    {
+      "name": "let-pending-inline",
+      "registryMode": "catalog_records",
+      "sourceName": "let-pending-inline.dsl",
+      "source": "search synth, mixer\nnoise().blendMode(tex: noise(scaleX: x)).write(o0)\nlet x = 20\nrender(o0)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "0b3cd80de60e5b98f54b736691c199ae993df8ad46fd4aefabd1c71ec71bd61c"
+    },
+    {
+      "name": "let-forward-cached",
+      "registryMode": "catalog_records",
+      "sourceName": "let-forward-cached.dsl",
+      "source": "search synth\nlet a = b + 1\nlet b = 5\nnoise(scaleX: a).write(o0)\nlet b = 90\nnoise(scaleX: a).write(o1)\nrender(o1)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "98f91a3ac69110103082df6b59973005e6d242e8a08f495565c599ea20c2e52b"
+    },
+    {
+      "name": "let-bare-forward",
+      "registryMode": "catalog_records",
+      "sourceName": "let-bare-forward.dsl",
+      "source": "search synth\nlet a = b\nlet b = 5\nnoise().write(o0)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "72aca3cd28553c1dd97ae550f6953169e0e2603d7562be6b7c3a73abec9604ae"
+    },
+    {
+      "name": "let-bare-trailing",
+      "registryMode": "catalog_records",
+      "sourceName": "let-bare-trailing.dsl",
+      "source": "search synth\nnoise().write(o0)\nlet a = b\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "b195564c386b874bbcfd5f3647bef651b55b78b014c9f4d43588bf7845ebb169"
+    },
+    {
+      "name": "let-forward-oscillator",
+      "registryMode": "catalog_records",
+      "sourceName": "let-forward-oscillator.dsl",
+      "source": "search synth\nlet outer = osc(type: oscKind.sine, speed: inner)\nlet inner = osc(type: oscKind.tri, speed: 2)\nnoise(scaleX: outer).write(o0)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "059934d35114a81e054aa2e71c99ad773ba4a5d92526fcf1a8f6234d9da2d43c"
+    },
+    {
+      "name": "let-cycle-expression",
+      "registryMode": "catalog_records",
+      "sourceName": "let-cycle-expression.dsl",
+      "source": "search synth\nlet a = b + 1\nlet b = a + 1\nnoise(scaleX: a).write(o0)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "1fcaa6e056a8253724f1b65350c61190d619fab3b0688cdfe5b027063cea73e2"
+    },
+    {
+      "name": "let-cycle-oscillator",
+      "registryMode": "catalog_records",
+      "sourceName": "let-cycle-oscillator.dsl",
+      "source": "search synth\nlet a = osc(speed: b)\nlet b = osc(speed: a)\nnoise(scaleX: a).write(o0)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "ce0352bb610144385ec0c628d4176c7bc540596111f945eb9fef5c4bac75a60d"
+    },
+    {
+      "name": "let-partial-reassignment",
+      "registryMode": "catalog_records",
+      "sourceName": "let-partial-reassignment.dsl",
+      "source": "search synth\nlet p = noise(scaleX: x)\nlet q = p\nlet x = 10\nq().write(o0)\nlet x = 90\np().write(o1)\n",
+      "options": {
+        "requireExecutable": false
+      },
+      "sourceSha256": "182a981e1fbd478db24a21b122bce26965b9418c1e14db7cef14e47e4ee249cb"
+    }
 ]

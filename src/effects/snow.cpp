@@ -122,12 +122,8 @@ void pixel(const KernelState& base, const glsl::PixelContext& ctx, Vec4& out) no
   const auto& s = static_cast<const State&>(base);
   const double x = static_cast<double>(ctx.frag_coord[0]);
   const double y = static_cast<double>(ctx.frag_coord[1]);
-  // `shaderX | 0` / `shaderY | 0` in snow.js's texelOffset: ToInt32
-  // truncates toward zero. fragCoord is always a small non-negative
-  // pixel-center float here, so a plain truncating cast agrees with
-  // ToInt32 bit for bit.
-  const Rgba texel = texel_fetch_bottom_left(*s.input_tex, static_cast<int>(x),
-                                             static_cast<int>(y));
+  const Rgba texel = texel_fetch_bottom_left(*s.input_tex, glsl::detail::js_to_int32(x),
+                                             glsl::detail::js_to_int32(y));
 
   const double alpha = clamp01(s.alpha);
   if (alpha == 0.0) {

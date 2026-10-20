@@ -6,6 +6,7 @@
 #include "noisemaker/effects/snow.hpp"
 #include "noisemaker/graph/executor.hpp"
 #include "noisemaker/renderer.hpp"
+#include "noisemaker/sampler.hpp"
 
 #include <algorithm>
 #include <array>
@@ -295,12 +296,16 @@ TEST(graph_mesh_loader_samples_the_empty_mesh_without_data_and_preserves_default
   REQUIRE(empty.pass_count() == 1U);
   const auto lanes = empty.surface().data();
   REQUIRE(std::vector<float>(lanes.begin(), lanes.end()) == std::vector<float>({0.5F, 0.5F, 0.5F, 1.0F}));
+  REQUIRE(!opts.mesh_data.has_value());
   opts.mesh_data.emplace();
   REQUIRE(opts.mesh_data->tex_width == 256U);
   REQUIRE(opts.mesh_data->tex_height == 256U);
   opts.mesh_data->position_data.resize(256U * 256U * 4U);
   opts.mesh_data->normal_data.resize(256U * 256U * 4U);
-  REQUIRE(renderer.render(source, opts).pass_count() == 1U);
+  const auto supplied = renderer.render(source, opts);
+  REQUIRE(supplied.pass_count() == 1U);
+  REQUIRE(std::equal(supplied.surface().data().begin(), supplied.surface().data().end(),
+                     empty.surface().data().begin(), empty.surface().data().end()));
   opts.mesh_data->tex_width = 0U;
   REQUIRE_THROWS_AS(renderer.render(source, opts), GraphError);
   opts.mesh_data->tex_width = 256U;
@@ -558,6 +563,66 @@ TEST(graph_executor_renders_mnca_with_unused_authority_inputs) {
     const auto result = renderer.render(source, options(9U, 6U));
     REQUIRE(result.pass_count() == static_cast<std::size_t>(iterations) * 2U);
     REQUIRE(rgba8_sha256(result) == expected);
+  }
+}
+
+TEST(graph_sampler_unfed_abi_materializes_transparent_black) {
+  Renderer renderer;
+  auto plan = renderer.compile("search synth, filter\nsolid().invert().write(o0)\nrender(o0)\n");
+  const auto& snapshot = snapshot_for(plan, "filter/invert");
+  const auto& step = effect_step(plan, "filter/invert");
+  auto admission = snapshot.admissions[0];
+  auto pass = snapshot.definition.passes[0];
+  REQUIRE(admission.samplers.size() == 1U);
+  pass.inputs.clear();
+  admission.authority_pass.inputs.clear();
+  admission.samplers[0].source = "transparent_black";
+  admission.samplers[0].resource.clear();
+  const auto inputs = options(9U, 6U);
+  const BindingMaterializationContext context{
+      &inputs, &snapshot.definition, inputs.width, inputs.height};
+  preflight_pass_abi(step, admission, pass, context);
+  glsl::Bindings bindings;
+  materialize_sampler_bindings(bindings, admission, context, step, pass);
+  const auto pixel = sample_texture_bottom_left(
+      bindings.texture_or_black(admission.samplers[0].name), 0.5F, 0.5F);
+  for (std::size_t channel = 0; channel < 4U; ++channel) REQUIRE(pixel[channel] == 0.0F);
+
+  const auto expect_rejected = [&](auto&& mutate) {
+    auto forged = admission;
+    mutate(forged);
+    try {
+      preflight_pass_abi(step, forged, pass, context);
+      REQUIRE(false);
+    } catch (const GraphError& error) {
+      REQUIRE(error.code() == GraphErrorCode::missing_binding);
+      REQUIRE(error.detail() == "sampler ABI route is invalid");
+    }
+  };
+  expect_rejected([](PassAdmission& value) { value.samplers[0].resource = "inputTex"; });
+  expect_rejected([](PassAdmission& value) { value.samplers[0].source = "forged"; });
+  expect_rejected([](PassAdmission& value) { value.samplers[0].source_name = "forged"; });
+  pass.inputs.emplace_back(admission.samplers[0].name, "inputTex");
+  admission.authority_pass.inputs = pass.inputs;
+  expect_rejected([](PassAdmission&) {});
+}
+
+TEST(graph_sampler_bound_abi_still_requires_a_surface) {
+  Renderer renderer;
+  auto plan = renderer.compile("search synth, filter\nsolid().invert().write(o0)\nrender(o0)\n");
+  const auto& snapshot = snapshot_for(plan, "filter/invert");
+  const auto& step = effect_step(plan, "filter/invert");
+  const auto inputs = options(9U, 6U);
+  const BindingMaterializationContext context{
+      &inputs, &snapshot.definition, inputs.width, inputs.height};
+  glsl::Bindings bindings;
+  try {
+    materialize_sampler_bindings(bindings, snapshot.admissions[0], context,
+                                 step, snapshot.definition.passes[0]);
+    REQUIRE(false);
+  } catch (const GraphError& error) {
+    REQUIRE(error.code() == GraphErrorCode::missing_resource);
+    REQUIRE(error.detail() == "sampler lookup is missing");
   }
 }
 

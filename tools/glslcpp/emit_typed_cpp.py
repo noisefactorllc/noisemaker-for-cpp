@@ -53,6 +53,7 @@ HASH_PRECISION_FENCE_INCLUDES_SCATTER = True
 # the sites that frontend/metal_division.py selects. Historical
 # reconstructions turn this off to regenerate the float64 `/`.
 CURRENT_AUTHORITY_METAL_DIVISION = True
+CURRENT_AUTHORITY_NUMBER_STORAGE = True
 # Programs whose authority runtime is a hand-written adapter
 # (src/effects/adapters/index.js) that never runs the transpiled kernel, so
 # none of their divisions is a `$runtime.fdiv` site. classicNoisedeck/bitEffects
@@ -150,11 +151,19 @@ _CURRENT_REWRITE_SOURCES = {
     "synth3d/cellularAutomata3d:simulate": "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a",
     "synth3d/reactionDiffusion3d:simulate": "23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17",
 }
+_PIXELSORT_SAMPLE_SOURCES = {
+    "filter/pixelSort:computeRank": "6ce61bb5cb69bb22ac51f48603d5b40755b1e3f700acad1bc685a1e8a4dea6a4",
+    "filter/pixelSort:findBrightest": "c94b2ccb8882c7713b66f78b0e14d1bdaaa6786a6814cf60ef6daa4a244782ae",
+    "filter/pixelSort:gatherSorted": "a45eb039bae3e7b0a5f804de68c441092b6b7826b594c4aa5221c22a6c7b1386",
+}
+CURRENT_AUTHORITY_UNBOUND_PIXEL_READS = True
+
 # Every lowering added by the 7f47340 sync, including the hydraulic hash2
 # repair. Historical reconstructions turn all of them off.
 AUTHORITY_7F47340_FLAGS = (
     "HASH_PRECISION_FENCE_INCLUDES_SCATTER",
     "CURRENT_AUTHORITY_METAL_DIVISION",
+    "CURRENT_AUTHORITY_NUMBER_STORAGE",
     "CURRENT_AUTHORITY_GPU_NEAREST_TEXEL",
     "CURRENT_AUTHORITY_SPOOKY_TICKER_UINT_HASH",
     "CURRENT_AUTHORITY_STAGED_VECTOR_WRITES",
@@ -167,6 +176,7 @@ AUTHORITY_7F47340_FLAGS = (
     "CURRENT_AUTHORITY_CRT_ADAPTER",
     "CURRENT_AUTHORITY_HYDRAULIC_UINT_HASH2",
     "CURRENT_AUTHORITY_F32_COLOR_ADAPTERS",
+    "CURRENT_AUTHORITY_UNBOUND_PIXEL_READS",
 )
 
 
@@ -193,6 +203,7 @@ from .frontend.loop_proof import (
     COUNTED_FOR_V1_MAX_TRIP_COUNT,
     SOURCE_GLOBAL_LITERAL_INT_CAPABILITY, SOURCE_GLOBAL_LITERAL_INT_KEYS,
     attach_counted_loop_proofs, clear_counted_loop_proofs,
+    _walk_expression, _walk_statement_expressions,
     authenticate_source_global_literal_int,
     rebuild_authenticated_counted_loop_proofs, summarize_counted_loop_proofs)
 from .frontend.local_counter_proof import (
@@ -1270,6 +1281,45 @@ _FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION = frozenset({
 })
 
 
+def _samplers_requiring_metadata(program: TypedProgram) -> set[str]:
+    # The authority defaults pixel reads only. A textureSize dependency keeps
+    # the native binder's existing required-sampler contract, including when
+    # the source query is conditional.
+    expressions = tuple(
+        node for function in program.functions for statement in function.body
+        for node in _walk_statement_expressions(statement)) + tuple(
+        node for declaration in program.declarations
+        if declaration.initializer is not None
+        for node in _walk_expression(declaration.initializer))
+
+    def sampler_symbols(expression: TypedExpression) -> set[int]:
+        return {node.symbol_id for node in _walk_expression(expression)
+                if node.kind == "id" and node.type.kind == "sampler"
+                and node.symbol_id is not None}
+
+    required = set()
+    for expression in expressions:
+        if (expression.kind == "builtin" and expression.callee == "textureSize"
+                and expression.children):
+            required.update(sampler_symbols(expression.children[0]))
+    functions = {function.signature.id: function for function in program.functions}
+    while True:
+        previous = required.copy()
+        for expression in expressions:
+            function = functions.get(expression.signature_id)
+            if expression.kind != "call" or function is None:
+                continue
+            for parameter, argument in zip(function.parameters, expression.children):
+                if parameter.id in required:
+                    required.update(sampler_symbols(argument))
+        if required == previous:
+            break
+    return {declaration.symbol.name for declaration in program.declarations
+            if declaration.symbol.storage == "uniform"
+            and declaration.symbol.type.kind == "sampler"
+            and declaration.symbol.id in required}
+
+
 @dataclass(slots=True)
 class _Emitter:
     program: TypedProgram
@@ -2111,6 +2161,190 @@ class _Emitter:
     metal_divisions_cache: MetalDivisionSites | None = field(init=False, default=None)
     emitted_metal_divisions: list[TypedExpression] = field(
         init=False, default_factory=list)
+
+    number_symbols: set[int] = field(init=False, default_factory=set)
+    number_truncated: set[int] = field(init=False, default_factory=set)
+    number_cast_scopes: set[int] = field(init=False, default_factory=set)
+    number_cast_divisions: set[int] = field(init=False, default_factory=set)
+    number_pixel_samples: dict[int, tuple[TypedExpression, ...]] = field(init=False, default_factory=dict)
+
+    @property
+    def _number_storage_enabled(self) -> bool:
+        return (CURRENT_AUTHORITY_NUMBER_STORAGE
+                and self.program.key not in AUTHORITY_ADAPTER_PROGRAMS)
+
+    def _number_expression(self, value: TypedExpression) -> bool:
+        if not self._number_storage_enabled:
+            return False
+        if id(value) in self.number_pixel_samples:
+            return False
+        if id(value) in self.number_cast_scopes:
+            return value.type.display() == "uint"
+        if value.kind == "construct" and value.type.display() in {"int", "uint"}:
+            return False
+        if value.kind == "id":
+            return value.symbol_id in self.number_symbols
+        if value.kind in {"call", "index"}:
+            return False
+        if ((value.kind == "binary" and value.operator in {"&", "|", "^", "<<", ">>"})
+                or (value.kind == "unary" and value.operator == "~")):
+            return False
+        if (value.kind == "binary" and value.operator == "/"
+                and value.type.display() in {"int", "uint"}):
+            return id(value) not in self.number_truncated
+        return any(self._number_expression(child) for child in value.children)
+
+    number_integer_names: set[str] = field(init=False, default_factory=set)
+
+    def _number_plain_division(self, value):
+        return value.kind == "binary" and value.operator == "/" and value not in self.metal_divisions
+
+    def _number_groups(self, value):
+        source = self.program.source
+        start, end = value.span.start, value.span.end
+        count = 0
+        while True:
+            left, right = start - 1, end
+            while left >= 0 and source[left].isspace(): left -= 1
+            while right < len(source) and source[right].isspace(): right += 1
+            if left < 0 or right == len(source) or source[left] != "(" or source[right] != ")":
+                return count
+            prefix = source[:left].rstrip()
+            if prefix and (prefix[-1].isalnum() or prefix[-1] in "_]"):
+                return count
+            count += 1
+            start, end = left, right + 1
+
+    def _number_text(self, value):
+        kind = value.kind
+        if kind == "id": result = value.symbol.name
+        elif kind == "literal": result = str(value.literal)
+        elif kind == "swizzle" and len(value.member) == 1:
+            result = self._number_text(value.children[0]) + "[" + str("xyzw".index(value.member.translate(str.maketrans("rgba", "xyzw")))) + "]"
+        elif kind == "index": result = self._number_text(value.children[0]) + "[" + self._number_text(value.children[1]) + "]"
+        elif (kind == "construct" and len(value.children) == 1 and value.type.display() == "float"
+              and (value.children[0].kind == "id"
+                   or (value.children[0].kind == "swizzle" and len(value.children[0].member) == 1
+                       and value.children[0].children[0].kind == "id"))):
+            result = "(" + self._number_text(value.children[0]) + ")"
+        elif kind == "construct" and len(value.children) == 1 and value.type.display() in {"int", "uint"}:
+            result = self._number_text(value.children[0]) + "|0"
+        elif kind == "binary":
+            result = self._number_text(value.children[0]) + " " + value.operator + " " + self._number_text(value.children[1])
+        elif kind == "conditional":
+            result = self._number_text(value.children[0]) + " ? " + self._number_text(value.children[1]) + " : " + self._number_text(value.children[2])
+        else:
+            result = self.program.source[value.span.start:value.span.end].strip()
+            result = re.sub(r"\bfloat\(([A-Za-z_]\w*)\)", r"(\1)", result)
+            result = re.sub(r"\bint\(([A-Za-z_]\w*)\)", r"\1|0", result)
+        return "(" * self._number_groups(value) + result + ")" * self._number_groups(value)
+
+    def _number_trailing_integer_cast(self, value):
+        if value.kind != "binary" or value.operator != "/" or value in self.metal_divisions:
+            return False
+        right = value.children[1]
+        if (right.kind != "construct" or right.type.display() not in {"int", "uint"}
+                or len(right.children) != 1 or right.children[0].kind != "id"
+                or self._number_groups(right)):
+            return False
+        return re.match(r"\s*(?:[+\-*/%^]|<<|>>)", self.program.source[right.span.end:]) is None
+
+    def _restore_number_declaration(self, declaration):
+        value = declaration.children[0]
+        if self._number_groups(value):
+            return
+        if self._number_plain_division(value):
+            left, right = map(self._number_text, value.children)
+            if (right in self.number_integer_names
+                    and ((left in self.number_integer_names and left != right)
+                         or re.fullmatch(r"[A-Za-z_$]\w*\[\d+\]", left))):
+                self.number_truncated.add(id(value))
+        elif value.kind == "conditional" and declaration.symbol.name in self.number_integer_names:
+            branches = value.children[1:]
+            if all(self._number_plain_division(branch) and not self._number_groups(branch)
+                   and self._number_text(branch.children[1]) in self.number_integer_names
+                   and (self._number_text(branch.children[0]) in self.number_integer_names
+                        or re.fullmatch(r"\([^()]*\)", self._number_text(branch.children[0]))) for branch in branches):
+                self.number_truncated.update(map(id, branches))
+
+    def _analyze_number_storage(self) -> None:
+        nodes = []
+        pixel_source = _PIXELSORT_SAMPLE_SOURCES.get(self.program.key)
+        if pixel_source is not None and (
+                self.source_hash != pixel_source
+                or hashlib.sha256(self.program.raw_source.encode("utf-8")).hexdigest() != pixel_source
+                or self.program.raw_source.count("int sampleX = (s * width) / NUM_SAMPLES;") != 1):
+            raise _error(self.program, self.program, "PixelSort sample source changed")
+        for pattern in (r"\buniform\s+int\s+([A-Za-z_$]\w*)",
+                        r"\bint\s+([A-Za-z_$]\w*)\s*(?:=|;)",
+                        r"\bivec[234]\s+([A-Za-z_$]\w*)",
+                        r"\bint\s+([A-Za-z_$]\w*)\s*(?:,|\))"):
+            self.number_integer_names.update(re.findall(pattern, self.program.raw_source))
+
+        def walk(node, parents=()):
+            nodes.append(node)
+            if self._number_trailing_integer_cast(node):
+                self.number_cast_divisions.add(id(node))
+                scope = node
+                for parent in reversed(parents):
+                    if (self._number_groups(scope) or parent.kind != "binary"
+                            or parent.operator not in {"+", "-", "*", "/", "%"}
+                            or parent.type.display() not in {"int", "uint", "float"}
+                            or parent.children[-1] is not scope):
+                        break
+                    scope = parent
+                self.number_cast_scopes.add(id(scope))
+            for child in node.children:
+                walk(child, (*parents, node))
+
+        def statement(item):
+            for value in item.expressions:
+                walk(value)
+                if value.kind != "declaration" or not value.children:
+                    continue
+                self._restore_number_declaration(value)
+                initializer = value.children[0]
+                if pixel_source is not None and value.symbol.name == "sampleX":
+                    if (value.type.display() != "int" or initializer.kind != "binary"
+                            or initializer.operator != "/" or len(initializer.children) != 2):
+                        raise _error(self.program, value, "PixelSort sample quotient changed")
+                    product, divisor = initializer.children
+                    if (product.kind != "binary" or product.operator != "*"
+                            or len(product.children) != 2 or divisor.kind != "id"
+                            or divisor.symbol.name != "NUM_SAMPLES"
+                            or any(child.kind != "id" or child.type.display() != "int"
+                                   or child.symbol.name != name
+                                   for child, name in zip(product.children, ("s", "width")))):
+                        raise _error(self.program, value, "PixelSort sample operands changed")
+                    self.number_pixel_samples[id(initializer)] = (*product.children, divisor)
+                if (self.program.key.startswith("render/pointsBillboardRender:")
+                        and value.symbol.name in {"start", "mid"}):
+                    stack = [initializer]
+                    while stack:
+                        node = stack.pop()
+                        stack.extend(node.children)
+                        if node.kind == "binary" and node.operator == "/":
+                            self.number_truncated.add(id(node))
+            for child in item.children:
+                statement(child)
+
+        for function in self.program.functions:
+            for item in function.body:
+                statement(item)
+        if pixel_source is not None and len(self.number_pixel_samples) != 1:
+            raise _error(self.program, self.program, "PixelSort sample declaration changed")
+        local_ids = {node.symbol_id for node in nodes if node.kind == "declaration"}
+        changed = True
+        while changed:
+            previous = self.number_symbols.copy()
+            for node in nodes:
+                if node.kind in {"declaration", "assign"} and node.children:
+                    target = node if node.kind == "declaration" else node.children[0]
+                    value = node.children[0] if node.kind == "declaration" else node.children[1]
+                    if (target.type.display() in {"int", "uint"} and target.symbol_id in local_ids
+                            and self._number_expression(value)):
+                        self.number_symbols.add(target.symbol_id)
+            changed = previous != self.number_symbols
 
     def __post_init__(self) -> None:
         if (CURRENT_AUTHORITY_EXTRUDE_REWRITE and self.program.key == EXTRUDE_KEY
@@ -5665,6 +5899,8 @@ class _Emitter:
         self._validate_fixed_affine_centers13()
         self._validate_source_globals()
         self._compute_double_vector_classification()
+        if self._number_storage_enabled:
+            self._analyze_number_storage()
 
     def _cpu_iso_distance_double(self) -> bool:
         return (self.program.key == "render/renderLandscape3d:landscape"
@@ -7760,7 +7996,17 @@ class _Emitter:
                     "authenticated Emboss materialization emitted out of order")
             self.emitted_emboss_materialization_divisions.append(value)
 
-    def expression(self, value: TypedExpression) -> str:
+    def expression(self, value: TypedExpression, *, _number_cast: bool = True) -> str:
+        if self._number_storage_enabled and id(value) in self.number_pixel_samples:
+            sample, width, count = (f"static_cast<double>({self.expression(item)})"
+                                    for item in self.number_pixel_samples[id(value)])
+            return ("glsl::detail::js_to_int32(glsl::floor("
+                    f"static_cast<double>(noisemaker::f32({sample} * {width})) / "
+                    f"static_cast<double>(noisemaker::f32({count}))))")
+        if (self._number_storage_enabled and _number_cast
+                and id(value) in self.number_cast_scopes):
+            return ("glsl::detail::js_to_int32(static_cast<double>("
+                    + self.expression(value, _number_cast=False) + "))")
         local_proof = self.local_vec4_proof
         if local_proof is not None and any(value is node for node in local_proof.conditional_stores):
             if any(value is node for node in self.emitted_local_vec4_nodes):
@@ -9166,6 +9412,19 @@ class _Emitter:
                 return (
                     f"(static_cast<double>({left}) / "
                     f"static_cast<double>({right}))")
+            if (self._number_storage_enabled and value.operator == "/"
+                    and value.type.display() in {"int", "uint"}):
+                denominator = right
+                cast = value.children[1]
+                if id(value) in self.number_cast_divisions:
+                    denominator = self.expression(cast.children[0])
+                elif (cast.kind == "construct" and cast.type.display() == "uint"
+                      and len(cast.children) == 1 and cast.children[0].kind == "id"):
+                    denominator = ("glsl::detail::js_to_int32(static_cast<double>("
+                                   + self.expression(cast.children[0]) + "))")
+                quotient = f"(static_cast<double>({left}) / static_cast<double>({denominator}))"
+                return (f"std::trunc({quotient})" if id(value) in self.number_truncated
+                        else quotient)
             if value.operator == "%":
                 testpattern = self.authorized_testpattern_proof
                 if (testpattern is not None
@@ -9214,6 +9473,10 @@ class _Emitter:
                         f"static_cast<double>({right}))")
                 if any(value is item for item in self.authorized_vec_scalar_modulos):
                     self.emitted_vec_scalar_modulos.append(value)
+                if (self._number_storage_enabled and value.type.display() in {"int", "uint"}
+                        and self._number_expression(value)):
+                    return (f"std::fmod(static_cast<double>({left}), "
+                            f"static_cast<double>({right}))")
                 return f"glsl::integer_mod({left}, {right})"
             # JavaScript canonical kernels retain scalar arithmetic in Number
             # precision until the typed local/assignment/builtin boundary. The
@@ -9329,6 +9592,10 @@ class _Emitter:
             return f"({condition} ? {yes} : {no})"
         if value.kind in {"builtin", "call"}:
             arguments = [self.expression(x) for x in value.children]
+            if (value.kind == "builtin" and value.callee in {"min", "max", "clamp"}
+                    and all(child.type.display() in {"int", "uint", "float"} for child in value.children)
+                    and self._number_expression(value)):
+                arguments = [f"static_cast<double>({argument})" for argument in arguments]
             if (value.kind == "call" and value.callee == "hash4"
                     and self.program.key == "synth3d/noise3d:precompute"
                     and self.authorized_hash_scalar_uint_xors
@@ -10665,7 +10932,7 @@ class _Emitter:
                 or cast.children[0].kind != "id" or cast.children[0].symbol is None
                 or cast.children[0].symbol.name != "seed"):
             return None
-        return (f"static_cast<double>(noisemaker::f32(static_cast<double>({self.expression(cast)}) * "
+        return (f"static_cast<double>(noisemaker::f32(static_cast<double>({self.expression(cast.children[0])}) * "
                 f"static_cast<double>({self.expression(factor)})))")
 
     @staticmethod
@@ -11389,6 +11656,8 @@ class _Emitter:
                     # `_double_vector_expression`.
                     if declaration.symbol_id in self.double_vector_local_symbol_ids:
                         declaration_type = self._double_vector_type(declaration.type.display())
+                if declaration.symbol_id in self.number_symbols:
+                    declaration_type = "double"
                 if self._testpattern_digit_extraction_declaration(declaration):
                     declaration_type = "double"
                 if (self.program.key == "synth3d/noise3d:precompute"
@@ -14417,13 +14686,23 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
             lines.append(
                 '  const auto data = bindings.get<glsl::RemapUniformData>("data");')
             remap_data_argument = "data"
+        metadata_samplers = _samplers_requiring_metadata(self.program)
+        if contract is not None:
+            if contract.kind in {"texture-size-lanes", "texture-tile-reduction"}:
+                metadata_samplers.add(contract.input_surface_name)
+            elif contract.kind == "volume-atlas-size":
+                metadata_samplers.update({"volumeCache", "analyticalGeo"})
         arguments = []
         for symbol in uniforms:
             if (symbol.type.kind == "sampler" and contract is not None
                     and contract.kind == "texture-size-lanes"
                     and symbol.name == contract.input_surface_name):
                 arguments.append(f"&{symbol.name}")
-            elif symbol.type.kind == "sampler": arguments.append(f"&bindings.texture(\"{symbol.name}\")")
+            elif symbol.type.kind == "sampler":
+                lookup = ("texture_or_black"
+                          if CURRENT_AUTHORITY_UNBOUND_PIXEL_READS
+                          and symbol.name not in metadata_samplers else "texture")
+                arguments.append(f'&bindings.{lookup}("{symbol.name}")')
             elif contract is not None and symbol.name == contract.uniform_name:
                 if contract.kind == "blur-radius" and symbol.type.display() == "int":
                     arguments.append(f"static_cast<std::int32_t>({contract.uniform_name})")

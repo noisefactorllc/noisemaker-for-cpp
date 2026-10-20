@@ -140,6 +140,67 @@ const noisemaker::graph::PlanValue& param_value(const noisemaker::graph::EffectS
 }
 }  // namespace
 
+TEST(dsl_compiler_lets_follow_statement_order_and_reassignment) {
+  const auto plan = catalog_plan("search synth\nlet x = 10\nnoise(scaleX: x).write(o0)\nlet x = 90\nnoise(scaleX: x).write(o1)\nrender(o1)\n");
+  REQUIRE(param_value(effect_step(plan.chains[0], 0), "scaleX").number == 10.0);
+  REQUIRE(param_value(effect_step(plan.chains[1], 0), "scaleX").number == 90.0);
+}
+
+TEST(dsl_compiler_lets_reject_pending_reads_in_inline_chains) {
+  try {
+    static_cast<void>(catalog_plan("search synth, mixer\nnoise().blendMode(tex: noise(scaleX: x)).write(o0)\nlet x = 20\nrender(o0)\n"));
+    REQUIRE(false);
+  } catch (const noisemaker::dsl::DslError& error) {
+    REQUIRE(std::string(error.what()).find("Variable used before assignment: 'x'") != std::string::npos);
+    REQUIRE(error.line == 2);
+  }
+}
+
+TEST(dsl_compiler_lets_resolve_forward_expressions_once_at_first_use) {
+  const auto plan = catalog_plan("search synth\nlet a = b + 1\nlet b = 5\nnoise(scaleX: a).write(o0)\nlet b = 90\nnoise(scaleX: a).write(o1)\nrender(o1)\n");
+  REQUIRE(param_value(effect_step(plan.chains[0], 0), "scaleX").number == 6.0);
+  REQUIRE(param_value(effect_step(plan.chains[1], 0), "scaleX").number == 6.0);
+}
+
+TEST(dsl_compiler_lets_reject_unresolved_bare_names_at_declaration) {
+  for (const auto& source : {"search synth\nlet a = b\nlet b = 5\nnoise().write(o0)\n", "search synth\nnoise().write(o0)\nlet a = b\n"}) {
+    try {
+      static_cast<void>(catalog_plan(source));
+      REQUIRE(false);
+    } catch (const noisemaker::dsl::DslError& error) {
+      REQUIRE(std::string(error.what()).find("Variable used before assignment: 'b'") != std::string::npos);
+    }
+  }
+}
+
+TEST(dsl_compiler_lets_resolve_nested_oscillator_forward_references) {
+  const auto plan = catalog_plan("search synth\nlet outer = osc(type: oscKind.sine, speed: inner)\nlet inner = osc(type: oscKind.tri, speed: 2)\nnoise(scaleX: outer).write(o0)\n");
+  const auto& outer = param_value(effect_step(plan.chains[0], 0), "scaleX");
+  REQUIRE(outer.kind == noisemaker::graph::PlanValue::Kind::oscillator);
+  REQUIRE(outer.number == 0.0);
+  REQUIRE(outer.array.at(2).kind == noisemaker::graph::PlanValue::Kind::oscillator);
+  REQUIRE(outer.array.at(2).number == 1.0);
+  REQUIRE(outer.array.at(2).array.at(2).number == 2.0);
+}
+
+TEST(dsl_compiler_lets_report_cycles_through_arithmetic_and_oscillators) {
+  for (const auto& source : {"search synth\nlet a = b + 1\nlet b = a + 1\nnoise(scaleX: a).write(o0)\n", "search synth\nlet a = osc(speed: b)\nlet b = osc(speed: a)\nnoise(scaleX: a).write(o0)\n"}) {
+    try {
+      static_cast<void>(catalog_plan(source));
+      REQUIRE(false);
+    } catch (const noisemaker::dsl::DslError& error) {
+      REQUIRE(std::string(error.what()).find("Automation cycle detected: a -> b -> a") != std::string::npos);
+      REQUIRE(error.line == 3);
+    }
+  }
+}
+
+TEST(dsl_compiler_lets_resolve_partial_arguments_at_each_call) {
+  const auto plan = catalog_plan("search synth\nlet p = noise(scaleX: x)\nlet q = p\nlet x = 10\nq().write(o0)\nlet x = 90\np().write(o1)\n");
+  REQUIRE(param_value(effect_step(plan.chains[0], 0), "scaleX").number == 10.0);
+  REQUIRE(param_value(effect_step(plan.chains[1], 0), "scaleX").number == 90.0);
+}
+
 TEST(dsl_compiler_flattens_a_subchain_into_its_chain) {
   const auto plan = catalog_plan("search synth, filter\nnoise(seed: 1).subchain(name: \"look\", id: \"a\") { .invert() .posterize(levels: 4) }.write(o0)\nrender(o0)\n");
   REQUIRE(plan.chains.size() == 1);

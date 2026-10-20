@@ -160,6 +160,7 @@ struct Binding {
   std::string name;
   std::variant<Value, Call> value;
   SourceLocation loc{};
+  std::size_t plan_index = 0;
 };
 
 struct Program {

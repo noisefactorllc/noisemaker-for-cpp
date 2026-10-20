@@ -1,4 +1,4 @@
-import {authenticateCpuRoot} from '../../../tools/dsl/corpus_authority.mjs';
+import {authenticate3ccCpuRoot} from '../../../tools/dsl/corpus_authority.mjs';
 import {readFile, lstat, mkdtemp, mkdir, writeFile, rm} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve, dirname} from 'node:path';
@@ -30,7 +30,7 @@ try {
     await mkdir(dirname(resolve(scratch, name)), {recursive: true});
     await writeFile(resolve(scratch, name), bytes);
   }
-  authenticateCpuRoot(cpuRoot);
+  authenticate3ccCpuRoot(cpuRoot);
   const {canonicalKernelFactories} = await import(pathToFileURL(resolve(scratch, 'src/effects/generated/canonical-kernels.js')));
   const {bindGlslKernel} = await import(pathToFileURL(resolve(scratch, 'src/csl/glsl-runtime.js')));
   const {Surface} = await import(pathToFileURL(resolve(scratch, 'src/runtime/surface.js')));

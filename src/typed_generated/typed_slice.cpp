@@ -5048,7 +5048,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_10
 
 BoundKernel bind_classicNoisedeck_kaleido_kaleido(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_10::State>(bindings.get<std::int32_t>("DIRECTION"), bindings.get<std::int32_t>("KERNEL"), bindings.get<std::int32_t>("LOOP_OFFSET"), bindings.get<std::int32_t>("METRIC"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("wrap"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("loopScale"), bindings.get_number("kaleido"), bindings.get_number("effectWidth"));
+  const auto state = std::make_shared<typed_10::State>(bindings.get<std::int32_t>("DIRECTION"), bindings.get<std::int32_t>("KERNEL"), bindings.get<std::int32_t>("LOOP_OFFSET"), bindings.get<std::int32_t>("METRIC"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("wrap"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("loopScale"), bindings.get_number("kaleido"), bindings.get_number("effectWidth"));
   (void)bindings;
   return BoundKernel(state, &typed_10::pixel);
 }
@@ -5329,7 +5329,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_11
 
 BoundKernel bind_classicNoisedeck_lensDistortion_lensDistortion(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_11::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("shape"), bindings.get<glsl::DVec3>("tint"), bindings.get_number("alpha"), bindings.get_number("vignetteAmt"), bindings.get_number("distortion"), bindings.get_number("speed"), bindings.get_number("loopScale"), bindings.get_number("aberration"), bindings.get_number("hueRotation"), bindings.get_number("hueRange"), bindings.get<std::int32_t>("mode"), bindings.get<bool>("modulate"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("saturation"), bindings.get_number("passthru"));
+  const auto state = std::make_shared<typed_11::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("shape"), bindings.get<glsl::DVec3>("tint"), bindings.get_number("alpha"), bindings.get_number("vignetteAmt"), bindings.get_number("distortion"), bindings.get_number("speed"), bindings.get_number("loopScale"), bindings.get_number("aberration"), bindings.get_number("hueRotation"), bindings.get_number("hueRange"), bindings.get<std::int32_t>("mode"), bindings.get<bool>("modulate"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("saturation"), bindings.get_number("passthru"));
   (void)bindings;
   return BoundKernel(state, &typed_11::pixel);
 }
@@ -7712,7 +7712,7 @@ struct State final : KernelState {
         d = (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
         if ((state.LOOP_OFFSET >= std::int32_t(40)) && (state.LOOP_OFFSET <= std::int32_t(80))) {
-          [[maybe_unused]] std::int32_t sides = (state.LOOP_OFFSET / std::int32_t(10));
+          [[maybe_unused]] double sides = (static_cast<double>(state.LOOP_OFFSET) / static_cast<double>(std::int32_t(10)));
           d = shape(state, context, st, sides, (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
         } else {
           if (state.LOOP_OFFSET == std::int32_t(200)) {
@@ -7725,8 +7725,8 @@ struct State final : KernelState {
                 return (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(sineNoise(state, context, st, freq)));
               } else {
                 if ((state.LOOP_OFFSET >= std::int32_t(300)) && (state.LOOP_OFFSET <= std::int32_t(370))) {
-                  [[maybe_unused]] std::int32_t idx = ((state.LOOP_OFFSET - std::int32_t(300)) / std::int32_t(10));
-                  [[maybe_unused]] std::int32_t interp = ((idx <= std::int32_t(6)) ? idx : (idx + std::int32_t(3)));
+                  [[maybe_unused]] double idx = (static_cast<double>((state.LOOP_OFFSET - std::int32_t(300))) / static_cast<double>(std::int32_t(10)));
+                  [[maybe_unused]] double interp = ((idx <= std::int32_t(6)) ? idx : (idx + std::int32_t(3)));
                   d = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(value(state, context, st, freq, interp)));
                 } else {
                   if (state.LOOP_OFFSET == std::int32_t(400)) {
@@ -8616,7 +8616,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_17
 
 BoundKernel bind_classicNoisedeck_shapes3d_shapes3d(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_17::State>(bindings.get<std::int32_t>("BLEND_MODE"), bindings.get<std::int32_t>("SHAPE_A"), bindings.get<std::int32_t>("SHAPE_B"), bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("shapeAScale"), bindings.get_number("shapeBScale"), bindings.get_number("shapeAThickness"), bindings.get_number("shapeBThickness"), bindings.get_number("smoothness"), bindings.get_number("spin"), bindings.get_number("flip"), bindings.get_number("spinSpeed"), bindings.get_number("flipSpeed"), bindings.get<bool>("repetition"), bindings.get<std::int32_t>("animation"), bindings.get_number("flythroughSpeed"), bindings.get_number("spacing"), bindings.get_number("cameraDist"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("weight"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_17::State>(bindings.get<std::int32_t>("BLEND_MODE"), bindings.get<std::int32_t>("SHAPE_A"), bindings.get<std::int32_t>("SHAPE_B"), bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("shapeAScale"), bindings.get_number("shapeBScale"), bindings.get_number("shapeAThickness"), bindings.get_number("shapeBThickness"), bindings.get_number("smoothness"), bindings.get_number("spin"), bindings.get_number("flip"), bindings.get_number("spinSpeed"), bindings.get_number("flipSpeed"), bindings.get<bool>("repetition"), bindings.get<std::int32_t>("animation"), bindings.get_number("flythroughSpeed"), bindings.get_number("spacing"), bindings.get_number("cameraDist"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("weight"), &bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_17::pixel);
 }
@@ -8909,7 +8909,7 @@ struct State final : KernelState {
         return (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>(glsl::metal_divide(static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))), static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
         if ((loopOffset >= std::int32_t(40)) && (loopOffset <= std::int32_t(120))) {
-          [[maybe_unused]] std::int32_t sides = (loopOffset / std::int32_t(10));
+          [[maybe_unused]] double sides = (static_cast<double>(loopOffset) / static_cast<double>(std::int32_t(10)));
           return shape(state, context, st, sides, (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
         } else {
           if (loopOffset == std::int32_t(200)) {
@@ -8919,8 +8919,8 @@ struct State final : KernelState {
               return (static_cast<double>((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
             } else {
               if ((loopOffset >= std::int32_t(300)) && (loopOffset <= std::int32_t(380))) {
-                [[maybe_unused]] std::int32_t idx = ((loopOffset - std::int32_t(300)) / std::int32_t(10));
-                [[maybe_unused]] std::int32_t interp = ((idx <= std::int32_t(6)) ? idx : (idx + std::int32_t(3)));
+                [[maybe_unused]] double idx = (static_cast<double>((loopOffset - std::int32_t(300))) / static_cast<double>(std::int32_t(10)));
+                [[maybe_unused]] double interp = ((idx <= std::int32_t(6)) ? idx : (idx + std::int32_t(3)));
                 [[maybe_unused]] double f = ((loopOffset == std::int32_t(300)) ? map(state, context, freq, static_cast<float>(1.0), static_cast<float>(6.0), static_cast<float>(1.0), static_cast<float>(20.0)) : freq);
                 return (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(value(state, context, (st + seed), f, interp, speed)));
               } else {
@@ -9638,7 +9638,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_21
 
 BoundKernel bind_filter_bloom_brightPass(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_21::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get_number("threshold"), bindings.get_number("softKnee"));
+  const auto state = std::make_shared<typed_21::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), bindings.get_number("threshold"), bindings.get_number("softKnee"));
   (void)bindings;
   return BoundKernel(state, &typed_21::pixel);
 }
@@ -9683,7 +9683,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_22
 
 BoundKernel bind_filter_bloom_composite(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_22::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("bloomTex"), bindings.get_number("intensity"), bindings.get<glsl::DVec3>("tint"));
+  const auto state = std::make_shared<typed_22::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), &bindings.texture_or_black("bloomTex"), bindings.get_number("intensity"), bindings.get<glsl::DVec3>("tint"));
   (void)bindings;
   return BoundKernel(state, &typed_22::pixel);
 }
@@ -9974,7 +9974,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_26
 
 BoundKernel bind_filter_bulge_bulge(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_26::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("strength"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("wrap"), bindings.get_number("rotation"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_26::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("strength"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("wrap"), bindings.get_number("rotation"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_26::pixel, true);
 }
@@ -10022,7 +10022,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_27
 
 BoundKernel bind_filter_celShading_celShadingBlend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_27::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("colorTex"), &bindings.texture("edgeTex"), bindings.get<glsl::DVec3>("edgeColor"), bindings.get_number("mixAmount"));
+  const auto state = std::make_shared<typed_27::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture_or_black("colorTex"), &bindings.texture_or_black("edgeTex"), bindings.get<glsl::DVec3>("edgeColor"), bindings.get_number("mixAmount"));
   (void)bindings;
   return BoundKernel(state, &typed_27::pixel);
 }
@@ -10442,7 +10442,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_33
 
 BoundKernel bind_filter_chrome_chBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_33::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_33::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_33::pixel);
 }
@@ -10494,7 +10494,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_34
 
 BoundKernel bind_filter_chrome_chBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_34::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_34::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_34::pixel);
 }
@@ -10553,7 +10553,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_35
 
 BoundKernel bind_filter_chrome_chMap(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_35::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"), bindings.get_number("distortion"));
+  const auto state = std::make_shared<typed_35::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"), bindings.get_number("distortion"));
   (void)bindings;
   return BoundKernel(state, &typed_35::pixel);
 }
@@ -10777,7 +10777,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_38
 
 BoundKernel bind_filter_convolutionFeedback_cfBlend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_38::State>(&bindings.texture("inputTex"), &bindings.texture("feedbackTex"), bindings.get_number("intensity"), bindings.get<bool>("resetState"));
+  const auto state = std::make_shared<typed_38::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("feedbackTex"), bindings.get_number("intensity"), bindings.get<bool>("resetState"));
   (void)bindings;
   return BoundKernel(state, &typed_38::pixel);
 }
@@ -11255,7 +11255,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_42
 
 BoundKernel bind_filter_craquelure_craquelure(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_42::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("spacing"), bindings.get_number("depth"), bindings.get_number("brightness"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_42::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("spacing"), bindings.get_number("depth"), bindings.get_number("brightness"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_42::pixel);
 }
@@ -11754,7 +11754,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_43
 
 BoundKernel bind_filter_crt_crt(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_43::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("speed"), bindings.get<std::int32_t>("seed"), bindings.get_number("alpha"), bindings.get_number("renderScale"));
+  const auto state = std::make_shared<typed_43::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("speed"), bindings.get<std::int32_t>("seed"), bindings.get_number("alpha"), bindings.get_number("renderScale"));
   (void)bindings;
   return BoundKernel(state, &typed_43::pixel);
 }
@@ -12067,7 +12067,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_44
 
 BoundKernel bind_filter_degauss_degauss(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_44::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("displacement"), bindings.get_number("speed"), bindings.get<std::int32_t>("seed"), bindings.get_number("direction"));
+  const auto state = std::make_shared<typed_44::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("displacement"), bindings.get_number("speed"), bindings.get<std::int32_t>("seed"), bindings.get_number("direction"));
   (void)bindings;
   return BoundKernel(state, &typed_44::pixel);
 }
@@ -12179,7 +12179,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_46
 
 BoundKernel bind_filter_directionalBlur_directionalBlur(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_46::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("angle"), bindings.get_number("blurDistance"));
+  const auto state = std::make_shared<typed_46::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("angle"), bindings.get_number("blurDistance"));
   (void)bindings;
   return BoundKernel(state, &typed_46::pixel);
 }
@@ -13070,7 +13070,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_50
 
 BoundKernel bind_filter_extrude_extrude(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_50::State>(bindings.get<std::int32_t>("DEPTH_SOURCE"), bindings.get<std::int32_t>("EXTRUDE_TYPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("size"), bindings.get_number("depth"), bindings.get<bool>("solidFront"));
+  const auto state = std::make_shared<typed_50::State>(bindings.get<std::int32_t>("DEPTH_SOURCE"), bindings.get<std::int32_t>("EXTRUDE_TYPE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("size"), bindings.get_number("depth"), bindings.get<bool>("solidFront"));
   (void)bindings;
   return BoundKernel(state, &typed_50::pixel);
 }
@@ -13447,7 +13447,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_52
 
 BoundKernel bind_filter_feedback_feedback(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_52::State>(&bindings.texture("inputTex"), &bindings.texture("selfTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get_number("scaleAmt"), bindings.get_number("rotation"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("mixAmt"), bindings.get_number("hueRotation"), bindings.get_number("intensity"), bindings.get_number("distortion"), bindings.get_number("aberration"), bindings.get_number("refractAAmt"), bindings.get_number("refractBAmt"), bindings.get_number("refractADir"), bindings.get_number("refractBDir"), bindings.get<bool>("resetState"));
+  const auto state = std::make_shared<typed_52::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("selfTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get_number("scaleAmt"), bindings.get_number("rotation"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("mixAmt"), bindings.get_number("hueRotation"), bindings.get_number("intensity"), bindings.get_number("distortion"), bindings.get_number("aberration"), bindings.get_number("refractAAmt"), bindings.get_number("refractBAmt"), bindings.get_number("refractADir"), bindings.get_number("refractBDir"), bindings.get<bool>("resetState"));
   (void)bindings;
   return BoundKernel(state, &typed_52::pixel);
 }
@@ -13488,7 +13488,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_53
 
 BoundKernel bind_filter_fibers_fibersBlend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_53::State>(&bindings.texture("inputTex"), &bindings.texture("overlayTex"), bindings.get_number("alpha"));
+  const auto state = std::make_shared<typed_53::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("overlayTex"), bindings.get_number("alpha"));
   (void)bindings;
   return BoundKernel(state, &typed_53::pixel);
 }
@@ -13757,7 +13757,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_55
 
 BoundKernel bind_filter_fxaa_fxaa(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_55::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("strength"), bindings.get_number("sharpness"), bindings.get_number("threshold"));
+  const auto state = std::make_shared<typed_55::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("strength"), bindings.get_number("sharpness"), bindings.get_number("threshold"));
   (void)bindings;
   return BoundKernel(state, &typed_55::pixel);
 }
@@ -14297,7 +14297,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_58
 
 BoundKernel bind_filter_grade_creative(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_58::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get_number("vibrance"), bindings.get_number("fadedFilm"), bindings.get<glsl::DVec3>("shadowTint"), bindings.get<glsl::DVec3>("highlightTint"), bindings.get_number("splitToneBalance"));
+  const auto state = std::make_shared<typed_58::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), bindings.get_number("vibrance"), bindings.get_number("fadedFilm"), bindings.get<glsl::DVec3>("shadowTint"), bindings.get<glsl::DVec3>("highlightTint"), bindings.get_number("splitToneBalance"));
   (void)bindings;
   return BoundKernel(state, &typed_58::pixel);
 }
@@ -14459,7 +14459,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_59
 
 BoundKernel bind_filter_grade_hslSecondary(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_59::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("hslEnable"), bindings.get_number("hslHueCenter"), bindings.get_number("hslHueRange"), bindings.get_number("hslSatMin"), bindings.get_number("hslSatMax"), bindings.get_number("hslLumMin"), bindings.get_number("hslLumMax"), bindings.get_number("hslFeather"), bindings.get_number("hslHueShift"), bindings.get_number("hslSatAdjust"), bindings.get_number("hslLumAdjust"));
+  const auto state = std::make_shared<typed_59::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), bindings.get<std::int32_t>("hslEnable"), bindings.get_number("hslHueCenter"), bindings.get_number("hslHueRange"), bindings.get_number("hslSatMin"), bindings.get_number("hslSatMax"), bindings.get_number("hslLumMin"), bindings.get_number("hslLumMax"), bindings.get_number("hslFeather"), bindings.get_number("hslHueShift"), bindings.get_number("hslSatAdjust"), bindings.get_number("hslLumAdjust"));
   (void)bindings;
   return BoundKernel(state, &typed_59::pixel);
 }
@@ -14934,7 +14934,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_60
 
 BoundKernel bind_filter_grade_lut(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_60::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("preset"), bindings.get_number("alpha"));
+  const auto state = std::make_shared<typed_60::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), bindings.get<std::int32_t>("preset"), bindings.get_number("alpha"));
   (void)bindings;
   return BoundKernel(state, &typed_60::pixel);
 }
@@ -15111,7 +15111,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_61
 
 BoundKernel bind_filter_grade_primary(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_61::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get_number("temperature"), bindings.get_number("tint"), bindings.get_number("exposure"), bindings.get_number("contrast"), bindings.get_number("highlights"), bindings.get_number("shadows"), bindings.get_number("whites"), bindings.get_number("blacks"), bindings.get_number("saturation"), bindings.get_number("curveShadows"), bindings.get_number("curveMidtones"), bindings.get_number("curveHighlights"));
+  const auto state = std::make_shared<typed_61::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), bindings.get_number("temperature"), bindings.get_number("tint"), bindings.get_number("exposure"), bindings.get_number("contrast"), bindings.get_number("highlights"), bindings.get_number("shadows"), bindings.get_number("whites"), bindings.get_number("blacks"), bindings.get_number("saturation"), bindings.get_number("curveShadows"), bindings.get_number("curveMidtones"), bindings.get_number("curveHighlights"));
   (void)bindings;
   return BoundKernel(state, &typed_61::pixel);
 }
@@ -15356,7 +15356,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_63
 
 BoundKernel bind_filter_grade_wheels(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_63::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<glsl::DVec3>("wheelShadows"), bindings.get<glsl::DVec3>("wheelMidtones"), bindings.get<glsl::DVec3>("wheelHighlights"), bindings.get_number("wheelBalance"));
+  const auto state = std::make_shared<typed_63::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::DVec3>("wheelShadows"), bindings.get<glsl::DVec3>("wheelMidtones"), bindings.get<glsl::DVec3>("wheelHighlights"), bindings.get_number("wheelBalance"));
   (void)bindings;
   return BoundKernel(state, &typed_63::pixel);
 }
@@ -15564,7 +15564,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_64
 
 BoundKernel bind_filter_grain_grain(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_64::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("alpha"), bindings.get_number("time"), bindings.get_number("pause"));
+  const auto state = std::make_shared<typed_64::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("alpha"), bindings.get_number("time"), bindings.get_number("pause"));
   (void)bindings;
   return BoundKernel(state, &typed_64::pixel);
 }
@@ -15931,7 +15931,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_66
 
 BoundKernel bind_filter_halftone_halftone(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_66::State>(bindings.get<std::int32_t>("MODE"), bindings.get<std::int32_t>("PATTERN"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("frequency"), bindings.get_number("cyanAngle"), bindings.get_number("magentaAngle"), bindings.get_number("yellowAngle"), bindings.get_number("blackAngle"), bindings.get_number("monoAngle"), bindings.get_number("sharpness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"), bindings.get_or<bool>("__cpuColorHasAlpha_inkColor", false), bindings.get_or<double>("__cpuColorAlpha_inkColor", 0.0), bindings.get_or<bool>("__cpuColorHasAlpha_paperColor", false), bindings.get_or<double>("__cpuColorAlpha_paperColor", 0.0));
+  const auto state = std::make_shared<typed_66::State>(bindings.get<std::int32_t>("MODE"), bindings.get<std::int32_t>("PATTERN"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("frequency"), bindings.get_number("cyanAngle"), bindings.get_number("magentaAngle"), bindings.get_number("yellowAngle"), bindings.get_number("blackAngle"), bindings.get_number("monoAngle"), bindings.get_number("sharpness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"), bindings.get_or<bool>("__cpuColorHasAlpha_inkColor", false), bindings.get_or<double>("__cpuColorAlpha_inkColor", 0.0), bindings.get_or<bool>("__cpuColorHasAlpha_paperColor", false), bindings.get_or<double>("__cpuColorAlpha_paperColor", 0.0));
   (void)bindings;
   return BoundKernel(state, &typed_66::pixel, true);
 }
@@ -16122,7 +16122,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_67
 
 BoundKernel bind_filter_hatch_hatch(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_67::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("strokeLength"), bindings.get<std::int32_t>("direction"), bindings.get_number("balance"), bindings.get_number("pressure"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
+  const auto state = std::make_shared<typed_67::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("strokeLength"), bindings.get<std::int32_t>("direction"), bindings.get_number("balance"), bindings.get_number("pressure"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_67::pixel);
 }
@@ -16174,7 +16174,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_68
 
 BoundKernel bind_filter_highPass_hpBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_68::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_68::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_68::pixel);
 }
@@ -16226,7 +16226,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_69
 
 BoundKernel bind_filter_highPass_hpBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_69::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_69::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_69::pixel);
 }
@@ -16274,7 +16274,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_70
 
 BoundKernel bind_filter_highPass_hpCombine(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_70::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<bool>("mono"));
+  const auto state = std::make_shared<typed_70::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<bool>("mono"));
   (void)bindings;
   return BoundKernel(state, &typed_70::pixel);
 }
@@ -16712,7 +16712,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_74
 
 BoundKernel bind_filter_lensFlare_lensFlare(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_74::State>(bindings.get<std::int32_t>("LENS_TYPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("brightness"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<glsl::DVec3>("tint"));
+  const auto state = std::make_shared<typed_74::State>(bindings.get<std::int32_t>("LENS_TYPE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("brightness"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<glsl::DVec3>("tint"));
   (void)bindings;
   return BoundKernel(state, &typed_74::pixel);
 }
@@ -16840,7 +16840,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_75
 
 BoundKernel bind_filter_lensWarp_lensWarp(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_75::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("displacement"), bindings.get_number("speed"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_75::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("displacement"), bindings.get_number("speed"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_75::pixel, true);
 }
@@ -17558,7 +17558,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_80
 
 BoundKernel bind_filter_morphology_morphA(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_80::State>(bindings.get<std::int32_t>("SHAPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_80::State>(bindings.get<std::int32_t>("SHAPE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_80::pixel);
 }
@@ -17613,7 +17613,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_81
 
 BoundKernel bind_filter_morphology_morphB(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_81::State>(bindings.get<std::int32_t>("SHAPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_81::State>(bindings.get<std::int32_t>("SHAPE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_81::pixel);
 }
@@ -17761,7 +17761,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_82
 
 BoundKernel bind_filter_mosaicTiles_mosaicTiles(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_82::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("tileSize"), bindings.get_number("groutWidth"), bindings.get_number("relief"), bindings.get_number("maxOffset"), bindings.get<std::int32_t>("gapFill"), bindings.get<glsl::DVec3>("backgroundColor"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_82::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("tileSize"), bindings.get_number("groutWidth"), bindings.get_number("relief"), bindings.get_number("maxOffset"), bindings.get<std::int32_t>("gapFill"), bindings.get<glsl::DVec3>("backgroundColor"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_82::pixel);
 }
@@ -17843,7 +17843,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_84
 
 BoundKernel bind_filter_motionBlur_motionBlur(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_84::State>(&bindings.texture("inputTex"), &bindings.texture("selfTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("amount"), bindings.get<bool>("resetState"));
+  const auto state = std::make_shared<typed_84::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("selfTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("amount"), bindings.get<bool>("resetState"));
   (void)bindings;
   return BoundKernel(state, &typed_84::pixel);
 }
@@ -18057,7 +18057,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_86
 
 BoundKernel bind_filter_normalize_apply(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_86::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("statsTex"));
+  const auto state = std::make_shared<typed_86::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), &bindings.texture_or_black("statsTex"));
   (void)bindings;
   return BoundKernel(state, &typed_86::pixel);
 }
@@ -18379,7 +18379,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_90
 
 BoundKernel bind_filter_octaveWarp_octaveWarp(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_90::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("frequency"), bindings.get_number("octaves"), bindings.get_number("displacement"), bindings.get_number("speed"), bindings.get_number("wrap"), bindings.get_number("seed"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_90::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("frequency"), bindings.get_number("octaves"), bindings.get_number("displacement"), bindings.get_number("speed"), bindings.get_number("wrap"), bindings.get_number("seed"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_90::pixel, true);
 }
@@ -18741,7 +18741,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_92
 
 BoundKernel bind_filter_oilPaint_oilPost(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_92::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("flatTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("size"), bindings.get_number("detail"), bindings.get_number("textureAmount"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_92::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), &bindings.texture_or_black("flatTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("size"), bindings.get_number("detail"), bindings.get_number("textureAmount"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_92::pixel);
 }
@@ -18828,8 +18828,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 globalCoord = (coord + glsl::IVec2(state.tileOffset));
   [[maybe_unused]] glsl::Vec4 texel = fetch_texel(*state.inputTex, coord);
   [[maybe_unused]] double blend_alpha = glsl::clamp(state.alpha, static_cast<float>(0.0), static_cast<float>(1.0));
-  [[maybe_unused]] std::int32_t scanlineStep = glsl::component_max((iScale / BASE_SCALE), std::int32_t(1));
-  [[maybe_unused]] double scanline = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.03)) * static_cast<double>(blend_alpha))) * static_cast<double>(float(glsl::detail::js_bitwise_and((glsl::swizzle<1>(globalCoord) / scanlineStep), std::int32_t(1)))))));
+  [[maybe_unused]] double scanlineStep = glsl::component_max(static_cast<double>((static_cast<double>(iScale) / static_cast<double>(BASE_SCALE))), static_cast<double>(std::int32_t(1)));
+  [[maybe_unused]] double scanline = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.03)) * static_cast<double>(blend_alpha))) * static_cast<double>(float(glsl::detail::js_bitwise_and((static_cast<double>(glsl::swizzle<1>(globalCoord)) / static_cast<double>(scanlineStep)), std::int32_t(1)))))));
   [[maybe_unused]] glsl::Vec3 base_rgb = (glsl::swizzle<0, 1, 2>(texel) * scanline);
   if (blend_alpha <= static_cast<float>(0.0)) {
     output = glsl::Vec4(glsl::Vec4(base_rgb, glsl::swizzle<3>(texel)));
@@ -18951,7 +18951,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_94
 
 BoundKernel bind_filter_outline_outlineBlend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_94::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("edgesTexture"), bindings.get_number("invert"));
+  const auto state = std::make_shared<typed_94::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture_or_black("edgesTexture"), bindings.get_number("invert"));
   (void)bindings;
   return BoundKernel(state, &typed_94::pixel);
 }
@@ -19519,7 +19519,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_99
 
 BoundKernel bind_filter_patchwork_patchwork(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_99::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("squareSize"), bindings.get_number("relief"), bindings.get_number("lightAngle"));
+  const auto state = std::make_shared<typed_99::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("squareSize"), bindings.get_number("relief"), bindings.get_number("lightAngle"));
   (void)bindings;
   return BoundKernel(state, &typed_99::pixel);
 }
@@ -19571,7 +19571,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_100
 
 BoundKernel bind_filter_photocopy_pcBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_100::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
+  const auto state = std::make_shared<typed_100::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
   (void)bindings;
   return BoundKernel(state, &typed_100::pixel);
 }
@@ -19623,7 +19623,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_101
 
 BoundKernel bind_filter_photocopy_pcBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_101::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
+  const auto state = std::make_shared<typed_101::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
   (void)bindings;
   return BoundKernel(state, &typed_101::pixel);
 }
@@ -19686,7 +19686,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_102
 
 BoundKernel bind_filter_photocopy_pcCombine(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_102::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("darkness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
+  const auto state = std::make_shared<typed_102::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("darkness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_102::pixel);
 }
@@ -19778,7 +19778,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_103
 
 BoundKernel bind_filter_pinch_pinch(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_103::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("strength"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("wrap"), bindings.get_number("rotation"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_103::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("strength"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("wrap"), bindings.get_number("rotation"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_103::pixel, true);
 }
@@ -19816,7 +19816,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] std::int32_t NUM_SAMPLES = std::int32_t(32);
   [[maybe_unused]] std::int32_t brighterCount = std::int32_t(0);
   for ([[maybe_unused]] std::int32_t s = std::int32_t(0); (s < NUM_SAMPLES); ++s) {
-    [[maybe_unused]] std::int32_t sampleX = ((s * width) / NUM_SAMPLES);
+    [[maybe_unused]] std::int32_t sampleX = glsl::detail::js_to_int32(glsl::floor(static_cast<double>(noisemaker::f32(static_cast<double>(s) * static_cast<double>(width))) / static_cast<double>(noisemaker::f32(static_cast<double>(NUM_SAMPLES)))));
     if (sampleX == x) {
       continue;
     }
@@ -19917,7 +19917,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_105
 
 BoundKernel bind_filter_pixelSort_finalize(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_105::State>(&bindings.texture("inputTex"), &bindings.texture("originalTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("angled"), bindings.get<bool>("darkest"), bindings.get_number("wrap"), bindings.get_number("alpha"));
+  const auto state = std::make_shared<typed_105::State>(&bindings.texture("inputTex"), &bindings.texture_or_black("originalTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("angled"), bindings.get<bool>("darkest"), bindings.get_number("wrap"), bindings.get_number("alpha"));
   (void)bindings;
   return BoundKernel(state, &typed_105::pixel);
 }
@@ -19954,7 +19954,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double maxLum = static_cast<float>(-1.0);
   [[maybe_unused]] std::int32_t brightestX = std::int32_t(0);
   for ([[maybe_unused]] std::int32_t s = std::int32_t(0); (s < NUM_SAMPLES); ++s) {
-    [[maybe_unused]] std::int32_t sampleX = ((s * width) / NUM_SAMPLES);
+    [[maybe_unused]] std::int32_t sampleX = glsl::detail::js_to_int32(glsl::floor(static_cast<double>(noisemaker::f32(static_cast<double>(s) * static_cast<double>(width))) / static_cast<double>(noisemaker::f32(static_cast<double>(NUM_SAMPLES)))));
     [[maybe_unused]] double lum = glsl::swizzle<0>(fetch_texel(*state.lumTex, glsl::IVec2(sampleX, y)));
     if (lum > maxLum) {
       maxLum = lum;
@@ -20010,7 +20010,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double bestDiff = static_cast<float>(2.0);
   [[maybe_unused]] std::int32_t bestX = x;
   for ([[maybe_unused]] std::int32_t s = std::int32_t(0); (s < NUM_SAMPLES); ++s) {
-    [[maybe_unused]] std::int32_t sampleX = ((s * width) / NUM_SAMPLES);
+    [[maybe_unused]] std::int32_t sampleX = glsl::detail::js_to_int32(glsl::floor(static_cast<double>(noisemaker::f32(static_cast<double>(s) * static_cast<double>(width))) / static_cast<double>(noisemaker::f32(static_cast<double>(NUM_SAMPLES)))));
     [[maybe_unused]] glsl::Vec4 rankData = fetch_texel(*state.rankTex, glsl::IVec2(sampleX, y));
     [[maybe_unused]] double pixelRank = glsl::swizzle<0>(rankData);
     [[maybe_unused]] double diff = glsl::abs((static_cast<double>(pixelRank) - static_cast<double>(targetRank)));
@@ -20025,7 +20025,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_107
 
 BoundKernel bind_filter_pixelSort_gatherSorted(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_107::State>(&bindings.texture("preparedTex"), &bindings.texture("rankTex"), &bindings.texture("brightestTex"));
+  const auto state = std::make_shared<typed_107::State>(&bindings.texture("preparedTex"), &bindings.texture_or_black("rankTex"), &bindings.texture_or_black("brightestTex"));
   (void)bindings;
   return BoundKernel(state, &typed_107::pixel);
 }
@@ -20261,7 +20261,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_111
 
 BoundKernel bind_filter_plasticWrap_pwBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_111::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
+  const auto state = std::make_shared<typed_111::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
   (void)bindings;
   return BoundKernel(state, &typed_111::pixel);
 }
@@ -20313,7 +20313,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_112
 
 BoundKernel bind_filter_plasticWrap_pwBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_112::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
+  const auto state = std::make_shared<typed_112::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
   (void)bindings;
   return BoundKernel(state, &typed_112::pixel);
 }
@@ -20388,7 +20388,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_113
 
 BoundKernel bind_filter_plasticWrap_pwSpec(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_113::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("highlight"), bindings.get_number("smoothness"), bindings.get<glsl::DVec3>("lightDirection"));
+  const auto state = std::make_shared<typed_113::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("highlight"), bindings.get_number("smoothness"), bindings.get<glsl::DVec3>("lightDirection"));
   (void)bindings;
   return BoundKernel(state, &typed_113::pixel);
 }
@@ -20591,7 +20591,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_115
 
 BoundKernel bind_filter_pondRipples_pondRipples(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_115::State>(bindings.get<std::int32_t>("STYLE"), bindings.get<std::int32_t>("WRAP"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("amount"), bindings.get<std::int32_t>("ridges"), bindings.get<std::int32_t>("speed"), bindings.get_number("time"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_115::State>(bindings.get<std::int32_t>("STYLE"), bindings.get<std::int32_t>("WRAP"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("amount"), bindings.get<std::int32_t>("ridges"), bindings.get<std::int32_t>("speed"), bindings.get_number("time"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_115::pixel, true);
 }
@@ -20952,7 +20952,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_118
 
 BoundKernel bind_filter_reindex_nmReindexApply(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_118::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::Vec2>("resolution"), &bindings.texture("inputTex"), &bindings.texture("statsTex"), bindings.get_number("uDisplacement"));
+  const auto state = std::make_shared<typed_118::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::Vec2>("resolution"), &bindings.texture("inputTex"), &bindings.texture_or_black("statsTex"), bindings.get_number("uDisplacement"));
   (void)bindings;
   return BoundKernel(state, &typed_118::pixel);
 }
@@ -20990,7 +20990,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     return;
   }
   [[maybe_unused]] glsl::IVec2 statsTexSize = texture_size(*state.statsTex);
-  [[maybe_unused]] glsl::IVec2 tileCount = glsl::IVec2((((glsl::swizzle<0>(statsTexSize) + TILE_SIZE) - std::int32_t(1)) / TILE_SIZE), (((glsl::swizzle<1>(statsTexSize) + TILE_SIZE) - std::int32_t(1)) / TILE_SIZE));
+  [[maybe_unused]] glsl::IVec2 tileCount = glsl::IVec2((static_cast<double>(((glsl::swizzle<0>(statsTexSize) + TILE_SIZE) - std::int32_t(1))) / static_cast<double>(TILE_SIZE)), (static_cast<double>(((glsl::swizzle<1>(statsTexSize) + TILE_SIZE) - std::int32_t(1))) / static_cast<double>(TILE_SIZE)));
   [[maybe_unused]] double globalMin = F32_MAX;
   [[maybe_unused]] double globalMax = F32_MIN;
   for ([[maybe_unused]] std::int32_t ty = std::int32_t(0); (ty < MAX_TILE_DIM); ++ty) {
@@ -21172,7 +21172,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_121
 
 BoundKernel bind_filter_relief_rlBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_121::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_121::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_121::pixel);
 }
@@ -21225,7 +21225,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_122
 
 BoundKernel bind_filter_relief_rlBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_122::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_122::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_122::pixel);
 }
@@ -21332,7 +21332,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_123
 
 BoundKernel bind_filter_relief_rlShade(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_123::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("detail"), bindings.get_number("lightAngle"), bindings.get_number("balance"), bindings.get_number("graininess"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
+  const auto state = std::make_shared<typed_123::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), &bindings.texture_or_black("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("detail"), bindings.get_number("lightAngle"), bindings.get_number("balance"), bindings.get_number("graininess"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_123::pixel);
 }
@@ -21668,7 +21668,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_128
 
 BoundKernel bind_filter_scale_scale(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_128::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scaleX"), bindings.get_number("scaleY"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<std::int32_t>("wrap"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_128::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scaleX"), bindings.get_number("scaleY"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<std::int32_t>("wrap"), &bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_128::pixel);
 }
@@ -22052,7 +22052,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   if (state.MODE == std::int32_t(4)) {
     hashCoord = glsl::Vec2(glsl::Vec2((glsl::floor((globalCoord / static_cast<float>(3.0))) * static_cast<float>(3.0))));
   }
-  [[maybe_unused]] glsl::Vec2 rnd = glsl::Vec2((hash22(state, context, (hashCoord + static_cast<double>(noisemaker::f32(static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(101.7)))))) - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 rnd = glsl::Vec2((hash22(state, context, (hashCoord + static_cast<double>(noisemaker::f32(static_cast<double>(state.seed) * static_cast<double>(static_cast<float>(101.7)))))) - static_cast<float>(0.5)));
   [[maybe_unused]] glsl::Vec2 offset = ((rnd * static_cast<float>(2.0)) * state.radius);
   if (state.MODE == std::int32_t(3)) {
     [[maybe_unused]] glsl::Vec2 grad = lumGradient(state, context, uv);
@@ -22083,7 +22083,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_130
 
 BoundKernel bind_filter_scatter_scatterJitter(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_130::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("radius"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_130::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("radius"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_130::pixel);
 }
@@ -22133,7 +22133,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_131
 
 BoundKernel bind_filter_scatter_scatterSmooth(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_131::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_131::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_131::pixel);
 }
@@ -22174,7 +22174,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_132
 
 BoundKernel bind_filter_scratches_scratchesBlend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_132::State>(&bindings.texture("inputTex"), &bindings.texture("overlayTex"), bindings.get_number("alpha"));
+  const auto state = std::make_shared<typed_132::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("overlayTex"), bindings.get_number("alpha"));
   (void)bindings;
   return BoundKernel(state, &typed_132::pixel);
 }
@@ -22789,7 +22789,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_139
 
 BoundKernel bind_filter_smooth_smoothBlend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_139::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("edgeTex"), bindings.get<std::int32_t>("smoothType"), bindings.get_number("strength"), bindings.get_number("threshold"), bindings.get_number("radius"), bindings.get<std::int32_t>("samples"), bindings.get<std::int32_t>("searchSteps"));
+  const auto state = std::make_shared<typed_139::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture_or_black("edgeTex"), bindings.get<std::int32_t>("smoothType"), bindings.get_number("strength"), bindings.get_number("threshold"), bindings.get_number("radius"), bindings.get<std::int32_t>("samples"), bindings.get<std::int32_t>("searchSteps"));
   (void)bindings;
   return BoundKernel(state, &typed_139::pixel);
 }
@@ -23009,7 +23009,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_142
 
 BoundKernel bind_filter_snow_snow(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_142::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("alpha"), bindings.get_number("time"), bindings.get_number("pause"), bindings.get_number("density"));
+  const auto state = std::make_shared<typed_142::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("alpha"), bindings.get_number("time"), bindings.get_number("pause"), bindings.get_number("density"));
   (void)bindings;
   return BoundKernel(state, &typed_142::pixel);
 }
@@ -23352,7 +23352,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_145
 
 BoundKernel bind_filter_spinBlur_spinBlur(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_145::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("amount"), bindings.get_number("centerX"), bindings.get_number("centerY"));
+  const auto state = std::make_shared<typed_145::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("amount"), bindings.get_number("centerX"), bindings.get_number("centerY"));
   (void)bindings;
   return BoundKernel(state, &typed_145::pixel);
 }
@@ -23447,7 +23447,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_146
 
 BoundKernel bind_filter_spiral_spiral(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_146::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("strength"), bindings.get<std::int32_t>("speed"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("wrap"), bindings.get_number("rotation"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_146::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("strength"), bindings.get<std::int32_t>("speed"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("wrap"), bindings.get_number("rotation"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_146::pixel, true);
 }
@@ -23608,7 +23608,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_148
 
 BoundKernel bind_filter_stamp_stBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_148::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_148::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_148::pixel);
 }
@@ -23660,7 +23660,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_149
 
 BoundKernel bind_filter_stamp_stBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_149::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_149::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_149::pixel);
 }
@@ -23750,7 +23750,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_150
 
 BoundKernel bind_filter_stamp_stThreshold(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_150::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("balance"), bindings.get_number("roughness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
+  const auto state = std::make_shared<typed_150::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("balance"), bindings.get_number("roughness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_150::pixel, true);
 }
@@ -23952,7 +23952,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_152
 
 BoundKernel bind_filter_stipple_stipple(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_152::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("cellSize"), bindings.get_number("grainSize"), bindings.get_number("density"), bindings.get<glsl::DVec3>("paperColor"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_152::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("cellSize"), bindings.get_number("grainSize"), bindings.get_number("density"), bindings.get<glsl::DVec3>("paperColor"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_152::pixel, true);
 }
@@ -24057,7 +24057,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_154
 
 BoundKernel bind_filter_strokes_stkPost(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_154::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("smearTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("sharpness"));
+  const auto state = std::make_shared<typed_154::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), &bindings.texture_or_black("smearTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("sharpness"));
   (void)bindings;
   return BoundKernel(state, &typed_154::pixel);
 }
@@ -24302,7 +24302,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_155
 
 BoundKernel bind_filter_strokes_stkSmear(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_155::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("strokeLength"), bindings.get_number("balance"), bindings.get_number("intensity"));
+  const auto state = std::make_shared<typed_155::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("strokeLength"), bindings.get_number("balance"), bindings.get_number("intensity"));
   (void)bindings;
   return BoundKernel(state, &typed_155::pixel);
 }
@@ -24417,7 +24417,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_157
 
 BoundKernel bind_filter_temporalAberration_temporalAberration(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_157::State>(&bindings.texture("inputTex"), &bindings.texture("h1"), &bindings.texture("h2"), &bindings.texture("h3"), &bindings.texture("h4"), &bindings.texture("h5"), &bindings.texture("h6"), &bindings.texture("h7"), &bindings.texture("h8"), bindings.get_number("redDelay"), bindings.get_number("greenDelay"), bindings.get_number("blueDelay"));
+  const auto state = std::make_shared<typed_157::State>(&bindings.texture("inputTex"), &bindings.texture_or_black("h1"), &bindings.texture_or_black("h2"), &bindings.texture_or_black("h3"), &bindings.texture_or_black("h4"), &bindings.texture_or_black("h5"), &bindings.texture_or_black("h6"), &bindings.texture_or_black("h7"), &bindings.texture_or_black("h8"), bindings.get_number("redDelay"), bindings.get_number("greenDelay"), bindings.get_number("blueDelay"));
   (void)bindings;
   return BoundKernel(state, &typed_157::pixel);
 }
@@ -24989,7 +24989,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_160
 
 BoundKernel bind_filter_text_text(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_160::State>(&bindings.texture("inputTex"), &bindings.texture("textTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::DVec3>("matteColor"), bindings.get_number("matteOpacity"));
+  const auto state = std::make_shared<typed_160::State>(&bindings.texture("inputTex"), &bindings.texture_or_black("textTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::DVec3>("matteColor"), bindings.get_number("matteOpacity"));
   (void)bindings;
   return BoundKernel(state, &typed_160::pixel);
 }
@@ -25557,7 +25557,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_163
 
 BoundKernel bind_filter_tile_tile(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_163::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("symmetry"), bindings.get_number("scale"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("angle"), bindings.get_number("repeat"), bindings.get<bool>("aspectLens"));
+  const auto state = std::make_shared<typed_163::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture_or_black("inputTex"), bindings.get<std::int32_t>("symmetry"), bindings.get_number("scale"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("angle"), bindings.get_number("repeat"), bindings.get<bool>("aspectLens"));
   (void)bindings;
   return BoundKernel(state, &typed_163::pixel);
 }
@@ -25882,7 +25882,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_167
 
 BoundKernel bind_filter_unsharpMask_usmBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_167::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_167::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_167::pixel);
 }
@@ -25933,7 +25933,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_168
 
 BoundKernel bind_filter_unsharpMask_usmBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_168::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_168::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_168::pixel);
 }
@@ -25979,7 +25979,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_169
 
 BoundKernel bind_filter_unsharpMask_usmCombine(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_169::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("amount"), bindings.get_number("threshold"));
+  const auto state = std::make_shared<typed_169::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("amount"), bindings.get_number("threshold"));
   (void)bindings;
   return BoundKernel(state, &typed_169::pixel);
 }
@@ -26262,7 +26262,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_172
 
 BoundKernel bind_filter_warp_warp(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_172::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("strength"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("speed"), bindings.get<std::int32_t>("wrap"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_172::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("strength"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("speed"), bindings.get<std::int32_t>("wrap"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_172::pixel, true);
 }
@@ -26348,7 +26348,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_173
 
 BoundKernel bind_filter_watercolor_wcComposite(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_173::State>(&bindings.texture("inputTex"), &bindings.texture("simplifiedTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("shadowIntensity"), bindings.get_number("paperTexture"));
+  const auto state = std::make_shared<typed_173::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("simplifiedTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("shadowIntensity"), bindings.get_number("paperTexture"));
   (void)bindings;
   return BoundKernel(state, &typed_173::pixel);
 }
@@ -26384,7 +26384,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_174
 
 BoundKernel bind_filter_watercolor_wcSeed(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_174::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_174::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_174::pixel);
 }
@@ -26469,7 +26469,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_175
 
 BoundKernel bind_filter_watercolor_wcSimplify(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_175::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
+  const auto state = std::make_shared<typed_175::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("detail"));
   (void)bindings;
   return BoundKernel(state, &typed_175::pixel);
 }
@@ -26673,7 +26673,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_177
 
 BoundKernel bind_filter_wind_wind(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_177::State>(bindings.get<std::int32_t>("METHOD"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<std::int32_t>("direction"), bindings.get_number("strength"), bindings.get_number("threshold"));
+  const auto state = std::make_shared<typed_177::State>(bindings.get<std::int32_t>("METHOD"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<std::int32_t>("direction"), bindings.get_number("strength"), bindings.get_number("threshold"));
   (void)bindings;
   return BoundKernel(state, &typed_177::pixel);
 }
@@ -26787,7 +26787,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_178
 
 BoundKernel bind_filter_wobble_wobble(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_178::State>(&bindings.texture("inputTex"), bindings.get_number("time"), bindings.get_number("speed"), bindings.get_number("range"), bindings.get_number("wrap"));
+  const auto state = std::make_shared<typed_178::State>(&bindings.texture_or_black("inputTex"), bindings.get_number("time"), bindings.get_number("speed"), bindings.get_number("range"), bindings.get_number("wrap"));
   (void)bindings;
   return BoundKernel(state, &typed_178::pixel);
 }
@@ -27029,8 +27029,8 @@ struct State final : KernelState {
             return (static_cast<double>(baseRotRand) * static_cast<double>(TAU));
           } else {
             if (state.BEHAVIOR == std::int32_t(5)) {
-              [[maybe_unused]] std::int32_t quarterSize = glsl::component_max(std::int32_t(1), (totalAgents / std::int32_t(4)));
-              [[maybe_unused]] std::int32_t band = (agentIndex / quarterSize);
+              [[maybe_unused]] double quarterSize = glsl::component_max(static_cast<double>(std::int32_t(1)), static_cast<double>((static_cast<double>(totalAgents) / static_cast<double>(std::int32_t(4)))));
+              [[maybe_unused]] std::int32_t band = std::trunc((static_cast<double>(agentIndex) / static_cast<double>(quarterSize)));
               if (band <= std::int32_t(0)) {
                 return baseHeading;
               } else {
@@ -27225,7 +27225,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_182
 
 BoundKernelMrt bind_filter3d_flow3d_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_182::State>(bindings.get<std::int32_t>("BEHAVIOR"), &bindings.texture("stateTex1"), &bindings.texture("stateTex2"), &bindings.texture("stateTex3"), &bindings.texture("mixerTex"), bindings.get_number("stride"), bindings.get_number("strideDeviation"), bindings.get_number("kink"), bindings.get_number("time"), bindings.get_number("lifetime"), bindings.get_number("density"), bindings.get<std::int32_t>("volumeSize"));
+  const auto state = std::make_shared<typed_182::State>(bindings.get<std::int32_t>("BEHAVIOR"), &bindings.texture("stateTex1"), &bindings.texture_or_black("stateTex2"), &bindings.texture_or_black("stateTex3"), &bindings.texture_or_black("mixerTex"), bindings.get_number("stride"), bindings.get_number("strideDeviation"), bindings.get_number("kink"), bindings.get_number("time"), bindings.get_number("lifetime"), bindings.get_number("density"), bindings.get<std::int32_t>("volumeSize"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_182::pixel, 3U);
 }
@@ -27269,7 +27269,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_183
 
 BoundKernel bind_filter3d_flow3d_blend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_183::State>(&bindings.texture("mixerTex"), &bindings.texture("trailTex"), bindings.get_number("inputIntensity"));
+  const auto state = std::make_shared<typed_183::State>(&bindings.texture_or_black("mixerTex"), &bindings.texture("trailTex"), bindings.get_number("inputIntensity"));
   (void)bindings;
   return BoundKernel(state, &typed_183::pixel);
 }
@@ -27556,7 +27556,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_187
 
 BoundKernel bind_mixer_alphaMask_alphaMask(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_187::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), &bindings.texture("baseTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("mixAmt"), bindings.get<bool>("maskMode"));
+  const auto state = std::make_shared<typed_187::State>(&bindings.texture("inputTex"), &bindings.texture_or_black("tex"), &bindings.texture_or_black("baseTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("mixAmt"), bindings.get<bool>("maskMode"));
   (void)bindings;
   return BoundKernel(state, &typed_187::pixel);
 }
@@ -28050,7 +28050,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_191
 
 BoundKernel bind_mixer_centerMask_centerMask(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_191::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("shape"), bindings.get_number("power"), bindings.get_number("hardness"), bindings.get<std::int32_t>("blendMode"));
+  const auto state = std::make_shared<typed_191::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("shape"), bindings.get_number("power"), bindings.get_number("hardness"), bindings.get<std::int32_t>("blendMode"));
   (void)bindings;
   return BoundKernel(state, &typed_191::pixel);
 }
@@ -28338,7 +28338,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_193
 
 BoundKernel bind_mixer_distortion_distortion(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_193::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("mode"), bindings.get<std::int32_t>("mapSource"), bindings.get_number("intensity"), bindings.get<std::int32_t>("wrap"), bindings.get_number("smoothing"), bindings.get_number("aberration"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_193::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("mode"), bindings.get<std::int32_t>("mapSource"), bindings.get_number("intensity"), bindings.get<std::int32_t>("wrap"), bindings.get_number("smoothing"), bindings.get_number("aberration"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_193::pixel, true);
 }
@@ -28551,7 +28551,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_195
 
 BoundKernel bind_mixer_mashup_mashup(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_195::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("source"), &bindings.texture("layer0_tex"), &bindings.texture("layer1_tex"), &bindings.texture("layer2_tex"), &bindings.texture("layer3_tex"), &bindings.texture("layer4_tex"), &bindings.texture("layer5_tex"), &bindings.texture("layer6_tex"), &bindings.texture("layer7_tex"), bindings.get<std::int32_t>("layers"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("layer0_active"), bindings.get<std::int32_t>("layer1_active"), bindings.get<std::int32_t>("layer2_active"), bindings.get<std::int32_t>("layer3_active"), bindings.get<std::int32_t>("layer4_active"), bindings.get<std::int32_t>("layer5_active"), bindings.get<std::int32_t>("layer6_active"), bindings.get<std::int32_t>("layer7_active"));
+  const auto state = std::make_shared<typed_195::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture_or_black("source"), &bindings.texture_or_black("layer0_tex"), &bindings.texture_or_black("layer1_tex"), &bindings.texture_or_black("layer2_tex"), &bindings.texture_or_black("layer3_tex"), &bindings.texture_or_black("layer4_tex"), &bindings.texture_or_black("layer5_tex"), &bindings.texture_or_black("layer6_tex"), &bindings.texture_or_black("layer7_tex"), bindings.get<std::int32_t>("layers"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("layer0_active"), bindings.get<std::int32_t>("layer1_active"), bindings.get<std::int32_t>("layer2_active"), bindings.get<std::int32_t>("layer3_active"), bindings.get<std::int32_t>("layer4_active"), bindings.get<std::int32_t>("layer5_active"), bindings.get<std::int32_t>("layer6_active"), bindings.get<std::int32_t>("layer7_active"));
   (void)bindings;
   return BoundKernel(state, &typed_195::pixel);
 }
@@ -29296,7 +29296,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_201
 
 BoundKernel bind_mixer_uvRemap_uvRemap(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_201::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("mapSource"), bindings.get<std::int32_t>("channel"), bindings.get_number("scale"), bindings.get_number("offset"), bindings.get<std::int32_t>("wrap"));
+  const auto state = std::make_shared<typed_201::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("mapSource"), bindings.get<std::int32_t>("channel"), bindings.get_number("scale"), bindings.get_number("offset"), bindings.get<std::int32_t>("wrap"));
   (void)bindings;
   return BoundKernel(state, &typed_201::pixel);
 }
@@ -29475,7 +29475,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_202
 
 BoundKernelMrt bind_points_attractor_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_202::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("attractor"), bindings.get_number("speed"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"));
+  const auto state = std::make_shared<typed_202::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("attractor"), bindings.get_number("speed"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_202::pixel, 3U);
 }
@@ -29511,7 +29511,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_203
 
 BoundKernel bind_points_attractor_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_203::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_203::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_203::pixel);
 }
@@ -29680,7 +29680,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_204
 
 BoundKernelMrt bind_points_buddhabrot_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_204::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("maxIter"), bindings.get<std::int32_t>("minIter"), bindings.get<std::int32_t>("mode"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get_number("zoom"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"));
+  const auto state = std::make_shared<typed_204::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("maxIter"), bindings.get<std::int32_t>("minIter"), bindings.get<std::int32_t>("mode"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get_number("zoom"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_204::pixel, 3U);
 }
@@ -29716,7 +29716,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_205
 
 BoundKernel bind_points_buddhabrot_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_205::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_205::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_205::pixel);
 }
@@ -29772,7 +29772,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_206
 
 BoundKernel bind_points_buddhabrot_zWrite(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_206::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), &bindings.texture("xyzTex"), &bindings.texture("velTex"));
+  const auto state = std::make_shared<typed_206::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), &bindings.texture_or_black("xyzTex"), &bindings.texture_or_black("velTex"));
   (void)bindings;
   return BoundKernel(state, &typed_206::pixel);
 }
@@ -29941,7 +29941,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_207
 
 BoundKernelMrt bind_points_dla_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_207::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("frame"), bindings.get_number("stride"), bindings.get_number("inputWeight"), bindings.get_number("attrition"), bindings.get<std::int32_t>("stateSize"), bindings.get<bool>("resetState"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"), &bindings.texture("gridTex"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_207::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("frame"), bindings.get_number("stride"), bindings.get_number("inputWeight"), bindings.get_number("attrition"), bindings.get<std::int32_t>("stateSize"), bindings.get<bool>("resetState"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"), &bindings.texture("gridTex"), &bindings.texture("inputTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_207::pixel, 3U);
 }
@@ -29977,7 +29977,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_208
 
 BoundKernel bind_points_dla_copyGrid(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_208::State>(&bindings.texture("gridTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_208::State>(&bindings.texture_or_black("gridTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_208::pixel);
 }
@@ -30045,7 +30045,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_209
 
 BoundKernel bind_points_dla_initGrid(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_209::State>(&bindings.texture("gridTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("frame"), bindings.get_number("decay"), bindings.get_number("anchorDensity"), bindings.get<bool>("resetState"));
+  const auto state = std::make_shared<typed_209::State>(&bindings.texture_or_black("gridTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("frame"), bindings.get_number("decay"), bindings.get_number("anchorDensity"), bindings.get<bool>("resetState"));
   (void)bindings;
   return BoundKernel(state, &typed_209::pixel);
 }
@@ -30090,7 +30090,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_210
 
 BoundKernel bind_points_dla_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_210::State>(&bindings.texture("inputTex"), &bindings.texture("gridTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("matteOpacity"));
+  const auto state = std::make_shared<typed_210::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("gridTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("matteOpacity"));
   (void)bindings;
   return BoundKernel(state, &typed_210::pixel);
 }
@@ -30249,7 +30249,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         [[maybe_unused]] std::uint32_t sampleSeed = (((cellSeed * std::uint32_t(31)) + glsl::detail::glsl_uint_cast(s)) + glsl::detail::float_to_uint32((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(10.0)))));
         [[maybe_unused]] std::int32_t sampleIdx = glsl::detail::glsl_int_cast(glsl::integer_mod(noisemaker::hash_uint32_lcg(sampleSeed), glsl::detail::glsl_uint_cast(totalBoids)));
         [[maybe_unused]] std::int32_t sx = glsl::integer_mod(sampleIdx, glsl::swizzle<0>(stateSize));
-        [[maybe_unused]] std::int32_t sy = (sampleIdx / glsl::swizzle<0>(stateSize));
+        [[maybe_unused]] double sy = (static_cast<double>(sampleIdx) / static_cast<double>(glsl::swizzle<0>(stateSize)));
         if ((sx == glsl::swizzle<0>(coord)) && (sy == glsl::swizzle<1>(coord))) {
           continue;
         }
@@ -30364,7 +30364,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_211
 
 BoundKernelMrt bind_points_flock_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_211::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("separation"), bindings.get_number("alignment"), bindings.get_number("cohesion"), bindings.get_number("perceptionRadius"), bindings.get_number("separationRadius"), bindings.get_number("maxSpeed"), bindings.get_number("maxForce"), bindings.get<std::int32_t>("boundaryMode"), bindings.get_number("wallMargin"), bindings.get_number("noiseWeight"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"));
+  const auto state = std::make_shared<typed_211::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("separation"), bindings.get_number("alignment"), bindings.get_number("cohesion"), bindings.get_number("perceptionRadius"), bindings.get_number("separationRadius"), bindings.get_number("maxSpeed"), bindings.get_number("maxForce"), bindings.get<std::int32_t>("boundaryMode"), bindings.get_number("wallMargin"), bindings.get_number("noiseWeight"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_211::pixel, 3U);
 }
@@ -30400,7 +30400,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_212
 
 BoundKernel bind_points_flock_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_212::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_212::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_212::pixel);
 }
@@ -30463,8 +30463,8 @@ struct State final : KernelState {
             return (static_cast<double>(rotRand) * static_cast<double>(TAU));
           } else {
             if (behaviorMode == std::int32_t(5)) {
-              [[maybe_unused]] std::int32_t quarterSize = glsl::component_max(std::int32_t(1), (totalAgents / std::int32_t(4)));
-              [[maybe_unused]] std::int32_t band = (agentIndex / quarterSize);
+              [[maybe_unused]] double quarterSize = glsl::component_max(static_cast<double>(std::int32_t(1)), static_cast<double>((static_cast<double>(totalAgents) / static_cast<double>(std::int32_t(4)))));
+              [[maybe_unused]] std::int32_t band = std::trunc((static_cast<double>(agentIndex) / static_cast<double>(quarterSize)));
               if (band <= std::int32_t(0)) {
                 return baseHeading;
               } else {
@@ -30586,7 +30586,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_213
 
 BoundKernelMrt bind_points_flow_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_213::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("stride"), bindings.get_number("strideDeviation"), bindings.get_number("kink"), bindings.get_number("quantize"), bindings.get_number("inputWeight"), bindings.get_number("behavior"), &bindings.texture("inputTex"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"));
+  const auto state = std::make_shared<typed_213::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("stride"), bindings.get_number("strideDeviation"), bindings.get_number("kink"), bindings.get_number("quantize"), bindings.get_number("inputWeight"), bindings.get_number("behavior"), &bindings.texture("inputTex"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_213::pixel, 3U);
 }
@@ -30622,7 +30622,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_214
 
 BoundKernel bind_points_flow_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_214::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_214::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_214::pixel);
 }
@@ -30672,7 +30672,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_215
 
 BoundKernelMrt bind_points_heightGrid_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_215::State>(&bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("heightTex"), &bindings.texture("diffuseTex"), bindings.get_number("gridScale"), bindings.get_number("heightScale"), bindings.get_number("heightOffset"));
+  const auto state = std::make_shared<typed_215::State>(&bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("heightTex"), &bindings.texture_or_black("diffuseTex"), bindings.get_number("gridScale"), bindings.get_number("heightScale"), bindings.get_number("heightOffset"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_215::pixel, 3U);
 }
@@ -30708,7 +30708,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_216
 
 BoundKernel bind_points_heightGrid_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_216::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_216::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_216::pixel);
 }
@@ -30899,7 +30899,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_217
 
 BoundKernelMrt bind_points_hydraulic_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_217::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("stride"), bindings.get_number("quantize"), bindings.get_number("inverse"), bindings.get_number("inputWeight"), &bindings.texture("inputTex"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"));
+  const auto state = std::make_shared<typed_217::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("stride"), bindings.get_number("quantize"), bindings.get_number("inverse"), bindings.get_number("inputWeight"), &bindings.texture_or_black("inputTex"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_217::pixel, 3U);
 }
@@ -30935,7 +30935,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_218
 
 BoundKernel bind_points_hydraulic_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_218::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_218::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_218::pixel);
 }
@@ -31030,7 +31030,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_219
 
 BoundKernelMrt bind_points_lenia_agentField(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_219::State>(&bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"), &bindings.texture("fieldTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("muG"), bindings.get_number("sigmaG"), bindings.get_number("repulsion"), bindings.get_number("dt"));
+  const auto state = std::make_shared<typed_219::State>(&bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"), &bindings.texture("fieldTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("muG"), bindings.get_number("sigmaG"), bindings.get_number("repulsion"), bindings.get_number("dt"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_219::pixel, 3U);
 }
@@ -31174,7 +31174,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_222
 
 BoundKernel bind_points_lenia_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_222::State>(&bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_222::State>(&bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_222::pixel);
 }
@@ -31370,7 +31370,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
         [[maybe_unused]] std::uint32_t sampleSeed = (((cellSeed * std::uint32_t(31)) + glsl::detail::glsl_uint_cast(s)) + glsl::detail::float_to_uint32((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(7.0)))));
         [[maybe_unused]] std::int32_t sampleIdx = glsl::detail::glsl_int_cast(glsl::integer_mod(noisemaker::hash_uint32_lcg(sampleSeed), glsl::detail::glsl_uint_cast(totalParticles)));
         [[maybe_unused]] std::int32_t sx = glsl::integer_mod(sampleIdx, glsl::swizzle<0>(stateSize));
-        [[maybe_unused]] std::int32_t sy = (sampleIdx / glsl::swizzle<0>(stateSize));
+        [[maybe_unused]] double sy = (static_cast<double>(sampleIdx) / static_cast<double>(glsl::swizzle<0>(stateSize)));
         if ((sx == glsl::swizzle<0>(coord)) && (sy == glsl::swizzle<1>(coord))) {
           continue;
         }
@@ -31449,7 +31449,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_223
 
 BoundKernelMrt bind_points_life_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_223::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("typeCount"), bindings.get_number("attractionScale"), bindings.get_number("repulsionScale"), bindings.get_number("minRadius"), bindings.get_number("maxRadius"), bindings.get_number("maxSpeed"), bindings.get_number("friction"), bindings.get<std::int32_t>("boundaryMode"), bindings.get_number("matrixSeed"), bindings.get<bool>("symmetricForces"), bindings.get<bool>("useTypeColor"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"), &bindings.texture("dataTex"), &bindings.texture("forceMatrix"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_223::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("typeCount"), bindings.get_number("attractionScale"), bindings.get_number("repulsionScale"), bindings.get_number("minRadius"), bindings.get_number("maxRadius"), bindings.get_number("maxSpeed"), bindings.get_number("friction"), bindings.get<std::int32_t>("boundaryMode"), bindings.get_number("matrixSeed"), bindings.get<bool>("symmetricForces"), bindings.get<bool>("useTypeColor"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"), &bindings.texture_or_black("dataTex"), &bindings.texture_or_black("forceMatrix"), &bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_223::pixel, 4U);
 }
@@ -31553,7 +31553,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_225
 
 BoundKernel bind_points_life_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_225::State>(&bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_225::State>(&bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_225::pixel);
 }
@@ -31696,7 +31696,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_226
 
 BoundKernelMrt bind_points_physarum_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_226::State>(&bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"), &bindings.texture("trailTex"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("moveSpeed"), bindings.get_number("turnSpeed"), bindings.get_number("sensorAngle"), bindings.get_number("sensorDistance"), bindings.get_number("inputWeight"));
+  const auto state = std::make_shared<typed_226::State>(&bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"), &bindings.texture_or_black("trailTex"), &bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("moveSpeed"), bindings.get_number("turnSpeed"), bindings.get_number("sensorAngle"), bindings.get_number("sensorDistance"), bindings.get_number("inputWeight"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_226::pixel, 3U);
 }
@@ -31740,7 +31740,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_227
 
 BoundKernel bind_points_physarum_diffuse(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_227::State>(&bindings.texture("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("decay"), bindings.get<bool>("resetState"));
+  const auto state = std::make_shared<typed_227::State>(&bindings.texture_or_black("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("decay"), bindings.get<bool>("resetState"));
   (void)bindings;
   return BoundKernel(state, &typed_227::pixel);
 }
@@ -31775,7 +31775,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_228
 
 BoundKernel bind_points_physarum_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_228::State>(&bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_228::State>(&bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_228::pixel);
 }
@@ -31906,7 +31906,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_229
 
 BoundKernelMrt bind_points_physical_agent(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_229::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("gravity"), bindings.get_number("wind"), bindings.get_number("energy"), bindings.get_number("drag"), bindings.get_number("deviation"), bindings.get_number("wander"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"));
+  const auto state = std::make_shared<typed_229::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get_number("gravity"), bindings.get_number("wind"), bindings.get_number("energy"), bindings.get_number("drag"), bindings.get_number("deviation"), bindings.get_number("wander"), &bindings.texture("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_229::pixel, 3U);
 }
@@ -31942,7 +31942,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_230
 
 BoundKernel bind_points_physical_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_230::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_230::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_230::pixel);
 }
@@ -31988,7 +31988,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_231
 
 BoundKernel bind_render_loopBegin_loopBegin(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_231::State>(&bindings.texture("inputTex"), &bindings.texture("accumTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("alpha"), bindings.get_number("intensity"));
+  const auto state = std::make_shared<typed_231::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("accumTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("alpha"), bindings.get_number("intensity"));
   (void)bindings;
   return BoundKernel(state, &typed_231::pixel);
 }
@@ -32165,7 +32165,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_235
 
 BoundKernel bind_render_pointsBillboardRender_blend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_235::State>(&bindings.texture("inputTex"), &bindings.texture("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("inputIntensity"), bindings.get<std::int32_t>("blendMode"));
+  const auto state = std::make_shared<typed_235::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("inputIntensity"), bindings.get<std::int32_t>("blendMode"));
   (void)bindings;
   return BoundKernel(state, &typed_235::pixel);
 }
@@ -32235,7 +32235,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_237
 
 BoundKernel bind_render_pointsBillboardRender_copy(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_237::State>(&bindings.texture("sourceTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_237::State>(&bindings.texture_or_black("sourceTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_237::pixel);
 }
@@ -32319,7 +32319,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec2 keyAt([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t index, [[maybe_unused]] std::int32_t width) noexcept {
-  return glsl::swizzle<0, 1>(fetch_texel(*state.orderTex, glsl::IVec2(glsl::integer_mod(index, width), (index / width))));
+  return glsl::swizzle<0, 1>(fetch_texel(*state.orderTex, glsl::IVec2(glsl::integer_mod(index, width), (static_cast<double>(index) / static_cast<double>(width)))));
 }
 
 void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
@@ -32334,14 +32334,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     output = glsl::Vec4(fetch_texel(*state.orderTex, coord));
     return;
   }
-  [[maybe_unused]] std::int32_t start = ((index / (std::int32_t(2) * state.runLength)) * (std::int32_t(2) * state.runLength));
+  [[maybe_unused]] std::int32_t start = (std::trunc((static_cast<double>(index) / static_cast<double>((std::int32_t(2) * state.runLength)))) * (std::int32_t(2) * state.runLength));
   [[maybe_unused]] std::int32_t lengthA = glsl::component_min(state.runLength, (count - start));
   [[maybe_unused]] std::int32_t lengthB = glsl::component_min(state.runLength, ((count - start) - lengthA));
   [[maybe_unused]] std::int32_t diagonal = (index - start);
   [[maybe_unused]] std::int32_t low = glsl::component_max(std::int32_t(0), (diagonal - lengthB));
   [[maybe_unused]] std::int32_t high = glsl::component_min(diagonal, lengthA);
   for ([[maybe_unused]] std::int32_t step = std::int32_t(0); ((step < std::int32_t(22)) && (low < high)); ++step) {
-    [[maybe_unused]] std::int32_t mid = ((low + high) / std::int32_t(2));
+    [[maybe_unused]] std::int32_t mid = std::trunc((static_cast<double>((low + high)) / static_cast<double>(std::int32_t(2))));
     [[maybe_unused]] std::int32_t other = (diagonal - mid);
     if (((mid < lengthA) && (other > std::int32_t(0))) && before(state, context, keyAt(state, context, (start + mid), glsl::swizzle<0>(dims)), keyAt(state, context, (((start + lengthA) + other) - std::int32_t(1)), glsl::swizzle<0>(dims)))) {
       low = (mid + std::int32_t(1));
@@ -32415,7 +32415,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_240
 
 BoundKernel bind_render_pointsBillboardRender_diffuse(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_240::State>(&bindings.texture("trailTex"), &bindings.texture("defocusTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("intensity"), bindings.get_number("aperture"), bindings.get<std::int32_t>("viewMode"), bindings.get<std::int32_t>("blendMode"));
+  const auto state = std::make_shared<typed_240::State>(&bindings.texture_or_black("trailTex"), &bindings.texture("defocusTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("intensity"), bindings.get_number("aperture"), bindings.get<std::int32_t>("viewMode"), bindings.get<std::int32_t>("blendMode"));
   (void)bindings;
   return BoundKernel(state, &typed_240::pixel);
 }
@@ -32491,7 +32491,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_241
 
 BoundKernel bind_render_pointsBillboardRender_spriteMean(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_241::State>(&bindings.texture("tilesTex"), bindings.get<std::int32_t>("shapeMode"), bindings.get_number("aperture"), bindings.get<std::int32_t>("viewMode"));
+  const auto state = std::make_shared<typed_241::State>(&bindings.texture_or_black("tilesTex"), bindings.get<std::int32_t>("shapeMode"), bindings.get_number("aperture"), bindings.get<std::int32_t>("viewMode"));
   (void)bindings;
   return BoundKernel(state, &typed_241::pixel);
 }
@@ -32691,7 +32691,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_243
 
 BoundKernelMrt bind_render_pointsEmit_init(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_243::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("stateSize"), bindings.get<std::int32_t>("layoutMode"), bindings.get_number("attrition"), bindings.get<bool>("resetState"), &bindings.texture("xyzTex"), &bindings.texture("velTex"), &bindings.texture("rgbaTex"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_243::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("stateSize"), bindings.get<std::int32_t>("layoutMode"), bindings.get_number("attrition"), bindings.get<bool>("resetState"), &bindings.texture_or_black("xyzTex"), &bindings.texture_or_black("velTex"), &bindings.texture_or_black("rgbaTex"), &bindings.texture("inputTex"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_243::pixel, 3U);
 }
@@ -32727,7 +32727,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_244
 
 BoundKernel bind_render_pointsEmit_passthrough(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_244::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_244::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_244::pixel);
 }
@@ -32773,7 +32773,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_245
 
 BoundKernel bind_render_pointsRender_blend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_245::State>(&bindings.texture("inputTex"), &bindings.texture("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("inputIntensity"), bindings.get_number("matteOpacity"));
+  const auto state = std::make_shared<typed_245::State>(&bindings.texture_or_black("inputTex"), &bindings.texture_or_black("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("inputIntensity"), bindings.get_number("matteOpacity"));
   (void)bindings;
   return BoundKernel(state, &typed_245::pixel);
 }
@@ -32809,7 +32809,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_246
 
 BoundKernel bind_render_pointsRender_copy(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_246::State>(&bindings.texture("sourceTex"), bindings.get<glsl::Vec2>("resolution"));
+  const auto state = std::make_shared<typed_246::State>(&bindings.texture_or_black("sourceTex"), bindings.get<glsl::Vec2>("resolution"));
   (void)bindings;
   return BoundKernel(state, &typed_246::pixel);
 }
@@ -32848,7 +32848,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_247
 
 BoundKernel bind_render_pointsRender_diffuse(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_247::State>(&bindings.texture("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("intensity"));
+  const auto state = std::make_shared<typed_247::State>(&bindings.texture_or_black("trailTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("intensity"));
   (void)bindings;
   return BoundKernel(state, &typed_247::pixel);
 }
@@ -33208,7 +33208,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_248
 
 BoundKernelMrt bind_render_render3d_render3d(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_248::State>(bindings.get<std::int32_t>("FILTERING"), bindings.get<bool>("INVERT"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("threshold"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("orbitSpeed"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture("volumeCache"));
+  const auto state = std::make_shared<typed_248::State>(bindings.get<std::int32_t>("FILTERING"), bindings.get<bool>("INVERT"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("threshold"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("orbitSpeed"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture_or_black("volumeCache"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_248::pixel, 2U);
 }
@@ -33559,7 +33559,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_249
 
 BoundKernelMrt bind_render_renderCubemap3d_renderCubemap3d(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_249::State>(bindings.get<std::int32_t>("FILTERING"), bindings.get<bool>("INVERT"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("threshold"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::DMat3>("cubeBasis"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture("volumeCache"));
+  const auto state = std::make_shared<typed_249::State>(bindings.get<std::int32_t>("FILTERING"), bindings.get<bool>("INVERT"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("threshold"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::DMat3>("cubeBasis"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture_or_black("volumeCache"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_249::pixel, 2U);
 }
@@ -33679,7 +33679,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_250
 
 BoundKernelMrt bind_render_renderCubemapSurface_renderCubemapSurface(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_250::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::DMat3>("cubeBasis"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture("volumeCache"), bindings.get_number("density"), bindings.get_number("absorption"), bindings.get_number("emission"));
+  const auto state = std::make_shared<typed_250::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::DMat3>("cubeBasis"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture_or_black("volumeCache"), bindings.get_number("density"), bindings.get_number("absorption"), bindings.get_number("emission"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_250::pixel, 2U);
 }
@@ -34386,7 +34386,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_252
 
 BoundKernelMrt bind_render_renderLit3d_renderLit3d(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_252::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("threshold"), bindings.get<std::int32_t>("invert"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("shape"), bindings.get<std::int32_t>("orbitSpeed"), bindings.get<glsl::DVec3>("cameraPosition"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture("volumeCache"), bindings.get<glsl::DVec3>("lightDirection"), bindings.get<glsl::DVec3>("diffuseColor"), bindings.get_number("diffuseIntensity"), bindings.get<glsl::DVec3>("specularColor"), bindings.get_number("specularIntensity"), bindings.get_number("shininess"), bindings.get<glsl::DVec3>("ambientColor"), bindings.get_number("rimIntensity"), bindings.get_number("rimPower"));
+  const auto state = std::make_shared<typed_252::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("threshold"), bindings.get<std::int32_t>("invert"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("shape"), bindings.get<std::int32_t>("orbitSpeed"), bindings.get<glsl::DVec3>("cameraPosition"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), &bindings.texture_or_black("volumeCache"), bindings.get<glsl::DVec3>("lightDirection"), bindings.get<glsl::DVec3>("diffuseColor"), bindings.get_number("diffuseIntensity"), bindings.get<glsl::DVec3>("specularColor"), bindings.get_number("specularIntensity"), bindings.get_number("shininess"), bindings.get<glsl::DVec3>("ambientColor"), bindings.get_number("rimIntensity"), bindings.get_number("rimPower"));
   (void)bindings;
   return BoundKernelMrt(state, &typed_252::pixel, 2U);
 }
@@ -34861,7 +34861,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_255
 
 BoundKernel bind_synth_cellularAutomata_ca(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_255::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), bindings.get<std::int32_t>("smoothing"), &bindings.texture("prevFrameTex"));
+  const auto state = std::make_shared<typed_255::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), bindings.get<std::int32_t>("smoothing"), &bindings.texture_or_black("prevFrameTex"));
   (void)bindings;
   return BoundKernel(state, &typed_255::pixel);
 }
@@ -35095,7 +35095,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_256
 
 BoundKernel bind_synth_cellularAutomata_caFb(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_256::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), bindings.get<std::int32_t>("frame"), &bindings.texture("bufTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("ruleIndex"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get<bool>("useCustom"), bindings.get<std::int32_t>("source"));
+  const auto state = std::make_shared<typed_256::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), bindings.get<std::int32_t>("frame"), &bindings.texture("bufTex"), &bindings.texture_or_black("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("ruleIndex"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get<bool>("useCustom"), bindings.get<std::int32_t>("source"));
   (void)bindings;
   return BoundKernel(state, &typed_256::pixel);
 }
@@ -37066,7 +37066,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_264
 
 BoundKernel bind_synth_mnca_mnca(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_264::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), bindings.get<std::int32_t>("smoothing"), &bindings.texture("prevFrameTex"));
+  const auto state = std::make_shared<typed_264::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), bindings.get<std::int32_t>("smoothing"), &bindings.texture_or_black("prevFrameTex"));
   (void)bindings;
   return BoundKernel(state, &typed_264::pixel);
 }
@@ -37243,7 +37243,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_265
 
 BoundKernel bind_synth_mnca_mncaFb(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_265::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), &bindings.texture("bufTex"), &bindings.texture("seedTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get_number("n1v1"), bindings.get_number("n1v2"), bindings.get_number("n1v3"), bindings.get_number("n1v4"), bindings.get_number("n2v1"), bindings.get_number("n2v2"), bindings.get_number("n1r1"), bindings.get_number("n1r2"), bindings.get_number("n1r3"), bindings.get_number("n1r4"), bindings.get_number("n2r1"), bindings.get_number("n2r2"));
+  const auto state = std::make_shared<typed_265::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), &bindings.texture("bufTex"), &bindings.texture_or_black("seedTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get_number("n1v1"), bindings.get_number("n1v2"), bindings.get_number("n1v3"), bindings.get_number("n1v4"), bindings.get_number("n2v1"), bindings.get_number("n2v2"), bindings.get_number("n1r1"), bindings.get_number("n1r2"), bindings.get_number("n1r3"), bindings.get_number("n1r4"), bindings.get_number("n2r1"), bindings.get_number("n2r2"));
   (void)bindings;
   return BoundKernel(state, &typed_265::pixel);
 }
@@ -37439,7 +37439,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_267
 
 BoundKernel bind_synth_navierStokes_ns(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_267::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("inputIntensity"), &bindings.texture("fbTex"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_267::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("inputIntensity"), &bindings.texture("fbTex"), &bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_267::pixel);
 }
@@ -37616,7 +37616,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_270
 
 BoundKernel bind_synth_navierStokes_nsGradient(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_270::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("velTex"), &bindings.texture("pressureTex"));
+  const auto state = std::make_shared<typed_270::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("velTex"), &bindings.texture_or_black("pressureTex"));
   (void)bindings;
   return BoundKernel(state, &typed_270::pixel);
 }
@@ -37920,7 +37920,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_273
 
 BoundKernel bind_synth_navierStokes_nsSplat(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_273::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("inputForce"), bindings.get_number("inputDye"), bindings.get<bool>("resetState"), &bindings.texture("bufTex"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_273::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("inputForce"), bindings.get_number("inputDye"), bindings.get<bool>("resetState"), &bindings.texture("bufTex"), &bindings.texture_or_black("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_273::pixel);
 }
@@ -39829,7 +39829,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_280
 
 BoundKernel bind_synth_reactionDiffusion_rd(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_280::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("smoothing"), bindings.get_number("inputIntensity"));
+  const auto state = std::make_shared<typed_280::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), &bindings.texture_or_black("inputTex"), bindings.get<std::int32_t>("smoothing"), bindings.get_number("inputIntensity"));
   (void)bindings;
   return BoundKernel(state, &typed_280::pixel);
 }
@@ -40047,7 +40047,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_281
 
 BoundKernel bind_synth_reactionDiffusion_rdFb(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_281::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), &bindings.texture("bufTex"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("sourceF"), bindings.get<std::int32_t>("sourceK"), bindings.get<std::int32_t>("sourceR1"), bindings.get<std::int32_t>("sourceR2"), bindings.get_number("zoom"), &bindings.texture("inputTex"), bindings.get<bool>("resetState"));
+  const auto state = std::make_shared<typed_281::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), &bindings.texture("bufTex"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("sourceF"), bindings.get<std::int32_t>("sourceK"), bindings.get<std::int32_t>("sourceR1"), bindings.get<std::int32_t>("sourceR2"), bindings.get_number("zoom"), &bindings.texture_or_black("inputTex"), bindings.get<bool>("resetState"));
   (void)bindings;
   return BoundKernel(state, &typed_281::pixel);
 }
@@ -40178,7 +40178,7 @@ BoundKernel bind_synth_roll_roll(const glsl::Bindings& bindings) {
   if (!std::isfinite(fullResolution[1]) || fullResolution[1] < 1.0F) {
     throw glsl::KernelBindingError("synth/roll:roll fullResolution.y must be finite and at least 1");
   }
-  const auto state = std::make_shared<typed_284::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), fullResolution, bindings.get_number("time"), bindings.get_number("deltaTime"), bindings.get<glsl::DVec3>("lineColor"), bindings.get_number("gain"), bindings.get_number("speed"), bindings.get_number("midiClockCount"), &bindings.texture("feedbackTex"), &bindings.texture("noteGridTex"));
+  const auto state = std::make_shared<typed_284::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), fullResolution, bindings.get_number("time"), bindings.get_number("deltaTime"), bindings.get<glsl::DVec3>("lineColor"), bindings.get_number("gain"), bindings.get_number("speed"), bindings.get_number("midiClockCount"), &bindings.texture_or_black("feedbackTex"), &bindings.texture_or_black("noteGridTex"));
   (void)bindings;
   return BoundKernel(state, &typed_284::pixel);
 }
@@ -40785,7 +40785,7 @@ struct State final : KernelState {
       return shape(state, context, frame, st, std::int32_t(3), (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
     } else {
       if ((loopOffset >= std::int32_t(40)) && (loopOffset <= std::int32_t(120))) {
-        [[maybe_unused]] std::int32_t sides = (loopOffset / std::int32_t(10));
+        [[maybe_unused]] double sides = (static_cast<double>(loopOffset) / static_cast<double>(std::int32_t(10)));
         return shape(state, context, frame, st, sides, (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
       } else {
         if (loopOffset == std::int32_t(30)) {
@@ -40798,8 +40798,8 @@ struct State final : KernelState {
               return (static_cast<double>((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
             } else {
               if ((loopOffset >= std::int32_t(300)) && (loopOffset <= std::int32_t(380))) {
-                [[maybe_unused]] std::int32_t idx = ((loopOffset - std::int32_t(300)) / std::int32_t(10));
-                [[maybe_unused]] std::int32_t interp = ((idx <= std::int32_t(6)) ? idx : (idx + std::int32_t(3)));
+                [[maybe_unused]] double idx = (static_cast<double>((loopOffset - std::int32_t(300))) / static_cast<double>(std::int32_t(10)));
+                [[maybe_unused]] double interp = ((idx <= std::int32_t(6)) ? idx : (idx + std::int32_t(3)));
                 [[maybe_unused]] double f = ((loopOffset == std::int32_t(300)) ? map(state, context, frame, freq, static_cast<float>(1.0), static_cast<float>(6.0), static_cast<float>(1.0), static_cast<float>(20.0)) : freq);
                 return (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(value(state, context, frame, (st + seedVal), f, interp, speed)));
               } else {
@@ -41455,7 +41455,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_290
 
 BoundKernel bind_synth_subdivide_subdivide(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_290::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("mode"), bindings.get_number("depth"), bindings.get_number("density"), bindings.get_number("seed"), bindings.get_number("fill"), bindings.get_number("outline"), bindings.get_number("inputMix"), bindings.get_number("wrap"), bindings.get_number("time"), bindings.get_number("speed"));
+  const auto state = std::make_shared<typed_290::State>(&bindings.texture_or_black("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("mode"), bindings.get_number("depth"), bindings.get_number("density"), bindings.get_number("seed"), bindings.get_number("fill"), bindings.get_number("outline"), bindings.get_number("inputMix"), bindings.get_number("wrap"), bindings.get_number("time"), bindings.get_number("speed"));
   (void)bindings;
   return BoundKernel(state, &typed_290::pixel);
 }
@@ -41749,7 +41749,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] std::int32_t x = glsl::swizzle<0>(pixelCoord);
   [[maybe_unused]] std::int32_t y = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
-  [[maybe_unused]] std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);
+  [[maybe_unused]] std::int32_t z = std::trunc((static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize)));
   if (((x >= volSize) || (y >= volSize)) || (z >= volSize)) {
     fragColor = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
@@ -41984,7 +41984,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] std::int32_t x = glsl::swizzle<0>(pixelCoord);
   [[maybe_unused]] std::int32_t y = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
-  [[maybe_unused]] std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);
+  [[maybe_unused]] std::int32_t z = std::trunc((static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize)));
   [[maybe_unused]] glsl::IVec3 voxel = glsl::IVec3(x, y, z);
   if (((x >= volSize) || (y >= volSize)) || (z >= volSize)) {
     output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
@@ -42057,7 +42057,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_293
 
 BoundKernel bind_synth3d_cellularAutomata3d_simulate(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_293::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("ruleIndex"), bindings.get<std::int32_t>("neighborMode"), bindings.get_number("speed"), bindings.get_number("density"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
+  const auto state = std::make_shared<typed_293::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("ruleIndex"), bindings.get<std::int32_t>("neighborMode"), bindings.get_number("speed"), bindings.get_number("density"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture_or_black("stateTex"), &bindings.texture_or_black("seedTex"));
   (void)bindings;
   return BoundKernel(state, &typed_293::pixel);
 }
@@ -42309,7 +42309,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] std::int32_t vx = glsl::swizzle<0>(pixelCoord);
   [[maybe_unused]] std::int32_t vy = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
-  [[maybe_unused]] std::int32_t vz = (glsl::swizzle<1>(pixelCoord) / volSize);
+  [[maybe_unused]] std::int32_t vz = std::trunc((static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize)));
   if (((vx >= volSize) || (vy >= volSize)) || (vz >= volSize)) {
     fragColor = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
@@ -42550,7 +42550,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] std::int32_t x = glsl::swizzle<0>(pixelCoord);
   [[maybe_unused]] std::int32_t y = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
-  [[maybe_unused]] std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);
+  [[maybe_unused]] std::int32_t z = std::trunc((static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize)));
   if (((x >= volSize) || (y >= volSize)) || (z >= volSize)) {
     fragColor = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
@@ -42637,7 +42637,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::Vec4& fragColor = outputs[0];
   glsl::Vec4& geoOut = outputs[1];
   [[maybe_unused]] glsl::IVec2 atlas = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
-  [[maybe_unused]] glsl::IVec3 p = glsl::IVec3(glsl::swizzle<0>(atlas), glsl::integer_mod(glsl::swizzle<1>(atlas), state.volumeSize), (glsl::swizzle<1>(atlas) / state.volumeSize));
+  [[maybe_unused]] glsl::IVec3 p = glsl::IVec3(glsl::swizzle<0>(atlas), glsl::integer_mod(glsl::swizzle<1>(atlas), state.volumeSize), (static_cast<double>(glsl::swizzle<1>(atlas)) / static_cast<double>(state.volumeSize)));
   [[maybe_unused]] double occupied = density(state, context, p);
   fragColor = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
   geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(1.0), static_cast<float>(0.5), static_cast<float>(0.0)));
@@ -42802,7 +42802,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] std::int32_t x = glsl::swizzle<0>(pixelCoord);
   [[maybe_unused]] std::int32_t y = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
-  [[maybe_unused]] std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);
+  [[maybe_unused]] std::int32_t z = std::trunc((static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize)));
   if (((x >= volSize) || (y >= volSize)) || (z >= volSize)) {
     fragColor = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
     geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
@@ -42924,7 +42924,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] std::int32_t x = glsl::swizzle<0>(pixelCoord);
   [[maybe_unused]] std::int32_t y = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
-  [[maybe_unused]] std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);
+  [[maybe_unused]] std::int32_t z = std::trunc((static_cast<double>(glsl::swizzle<1>(pixelCoord)) / static_cast<double>(volSize)));
   [[maybe_unused]] glsl::IVec3 voxel = glsl::IVec3(x, y, z);
   if (((x >= volSize) || (y >= volSize)) || (z >= volSize)) {
     output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
@@ -42938,8 +42938,8 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     a = static_cast<float>(1.0);
     b = static_cast<float>(0.0);
     if (state.resetState) {
-      [[maybe_unused]] std::int32_t start = glsl::component_max(std::int32_t(0), ((volSize / std::int32_t(2)) - std::int32_t(2)));
-      [[maybe_unused]] std::int32_t end = glsl::component_min((volSize - std::int32_t(1)), (start + std::int32_t(3)));
+      [[maybe_unused]] double start = glsl::component_max(static_cast<double>(std::int32_t(0)), static_cast<double>(((static_cast<double>(volSize) / static_cast<double>(std::int32_t(2))) - std::int32_t(2))));
+      [[maybe_unused]] double end = glsl::component_min(static_cast<double>((volSize - std::int32_t(1))), static_cast<double>((start + std::int32_t(3))));
       [[maybe_unused]] bool inCenterCube = ((((((x >= start) && (x <= end)) && (y >= start)) && (y <= end)) && (z >= start)) && (z <= end));
       b = (inCenterCube ? static_cast<float>(1.0) : static_cast<float>(0.0));
     } else {
@@ -42986,7 +42986,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_298
 
 BoundKernel bind_synth3d_reactionDiffusion3d_simulate(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_298::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
+  const auto state = std::make_shared<typed_298::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture_or_black("stateTex"), &bindings.texture_or_black("seedTex"));
   (void)bindings;
   return BoundKernel(state, &typed_298::pixel);
 }
@@ -43184,7 +43184,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] std::int32_t x = glsl::detail::glsl_int_cast(glsl::swizzle<0>(context.frag_coord));
   [[maybe_unused]] std::int32_t yAtlas = glsl::detail::glsl_int_cast(glsl::swizzle<1>(context.frag_coord));
   [[maybe_unused]] std::int32_t y = glsl::integer_mod(yAtlas, volSize);
-  [[maybe_unused]] std::int32_t z = (yAtlas / volSize);
+  [[maybe_unused]] std::int32_t z = std::trunc((static_cast<double>(yAtlas) / static_cast<double>(volSize)));
   [[maybe_unused]] glsl::Vec3 p = glsl::metal_divide(glsl::FloatExpr<3>(float(x), float(y), float(z)), (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0))));
   [[maybe_unused]] double lf1 = map(state, context, state.loopAScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(1.0));
   [[maybe_unused]] double lf2 = map(state, context, state.loopBScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(1.0));

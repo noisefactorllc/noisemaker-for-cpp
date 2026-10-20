@@ -110,11 +110,16 @@ TEST(mesh_whole_pass_controls_fail_closed_and_missing_mesh_data_draws_the_empty_
   // zero-filled 256x256 mesh, so no triangle draws over the clear pass.
   auto missing = options;
   missing.mesh_data.reset();
+  const BindingMaterializationContext empty_context{&missing, &definition, 9U, 7U};
+  preflight_pass_abi(step, admission, definition.passes[1], empty_context);
   auto zero = options;
   zero.mesh_data = MeshData{256U, 256U, std::vector<float>(256U * 256U * 4U, 0.0F),
                             std::vector<float>(256U * 256U * 4U, 0.0F)};
   const auto empty = renderer.render(plan, missing);
   const auto explicit_zero = renderer.render(plan, zero);
+  REQUIRE(!missing.mesh_data.has_value());
+  REQUIRE(std::equal(explicit_zero.surface().data().begin(), explicit_zero.surface().data().end(),
+                     empty.surface().data().begin(), empty.surface().data().end()));
   const auto bytes = empty.to_rgba8();
   REQUIRE(empty.pass_count() == 3U);
   REQUIRE(bytes == explicit_zero.to_rgba8());
@@ -124,6 +129,8 @@ TEST(mesh_whole_pass_controls_fail_closed_and_missing_mesh_data_draws_the_empty_
     REQUIRE(bytes[pixel * 4U + 2U] == 38U);
     REQUIRE(bytes[pixel * 4U + 3U] == 255U);
   }
+  const BindingMaterializationContext invalid_context{nullptr, &definition, 9U, 7U};
+  REQUIRE_THROWS_AS(preflight_pass_abi(step, admission, definition.passes[1], invalid_context), GraphError);
 }
 
 TEST(mesh_whole_pass_external_mesh_dimensions_and_routes_fail_before_allocation) {
@@ -148,15 +155,18 @@ TEST(mesh_whole_pass_external_mesh_dimensions_and_routes_fail_before_allocation)
   }
   for (const auto name : {"global_mesh0_positions", "global_mesh0_normals"}) {
     for (const bool seed : {false, true}) {
-      auto options = mesh_options();
-      if (seed) options.seed_surfaces.push_back({name, Surface(1U, 1U)});
-      else options.external_textures.push_back({name, Surface(1U, 1U)});
-      try {
-        (void)renderer.render(plan, options);
-        REQUIRE(false);
-      } catch (const GraphError& error) {
-        REQUIRE(error.code() == GraphErrorCode::duplicate_output);
-        REQUIRE(error.detail() == "duplicate mesh data route");
+      for (const bool loaded : {false, true}) {
+        auto options = mesh_options();
+        if (!loaded) options.mesh_data.reset();
+        if (seed) options.seed_surfaces.push_back({name, Surface(1U, 1U)});
+        else options.external_textures.push_back({name, Surface(1U, 1U)});
+        try {
+          (void)renderer.render(plan, options);
+          REQUIRE(false);
+        } catch (const GraphError& error) {
+          REQUIRE(error.code() == GraphErrorCode::duplicate_output);
+          REQUIRE(error.detail() == "duplicate mesh data route");
+        }
       }
     }
   }

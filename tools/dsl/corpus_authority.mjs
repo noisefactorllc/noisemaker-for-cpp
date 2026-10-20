@@ -12,14 +12,23 @@ import { pathToFileURL } from 'node:url'
 export const AUTHORITY_LEDGER_ENV = 'NOISEMAKER_CPU_AUTHORITY_LEDGER'
 
 export const EXPECTED = Object.freeze({
+  ledgerEntries: 895,
+  packageSha256: 'cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21',
+  packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
+  sourceLockSha256: '594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c',
+  behavioralLockSha256: '4c4bf24c0472c4be2c4a423028d080b94bccd51db5d7e18700302f727f9822b2',
+  behavioralFileCount: 98,
+  upstreamRevision: '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d',
+  upstreamSourceDigest: '7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf',
+})
+
+const FROZEN_KERNEL_EXPECTED = Object.freeze({
   ledgerEntries: 893,
   packageSha256: 'cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21',
   packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
   sourceLockSha256: '594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c',
   behavioralLockSha256: '30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b',
   behavioralFileCount: 98,
-  upstreamRevision: '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d',
-  upstreamSourceDigest: '7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf',
 })
 
 export function sha256(bytes) { return crypto.createHash('sha256').update(bytes).digest('hex') }
@@ -80,10 +89,10 @@ export function resolveAuthorityLedger(root, explicit = null) {
   throw new Error(`no oracle ledger for CPU authority ${root}: pass one explicitly or set ${AUTHORITY_LEDGER_ENV}`)
 }
 
-function verifyLedger(root, ledgerArg) {
+function verifyLedger(root, ledgerArg, expected) {
   const ledger = realFile(resolveAuthorityLedger(root, ledgerArg).path, 'oracle ledger')
   const lines = fs.readFileSync(ledger, 'utf8').split(/\r?\n/).filter(Boolean)
-  if (lines.length !== EXPECTED.ledgerEntries) throw new Error(`oracle ledger entry count mismatch: expected ${EXPECTED.ledgerEntries}, received ${lines.length}`)
+  if (lines.length !== expected.ledgerEntries) throw new Error(`oracle ledger entry count mismatch: expected ${expected.ledgerEntries}, received ${lines.length}`)
   for (const line of lines) {
     const match = line.match(/^([0-9a-f]{64})  (.+)$/)
     if (!match) throw new Error('oracle ledger has a malformed entry')
@@ -93,19 +102,27 @@ function verifyLedger(root, ledgerArg) {
   }
 }
 
-export function authenticateCpuRoot(rootArg, ledgerArg = null) {
+function authenticateRoot(rootArg, ledgerArg, expected) {
   if (!rootArg || !path.isAbsolute(path.resolve(rootArg))) throw new Error('CPU authority root must be given explicitly')
   const root = realRoot(rootArg)
   const packagePath = realFile(path.join(root, 'package.json'), 'CPU package.json')
   const lockPath = realFile(path.join(root, 'package-lock.json'), 'CPU package-lock.json')
   const sourceLockPath = realFile(path.join(root, 'scripts/upstream/source-lock.js'), 'CPU source-lock.js')
-  if (sha256(fs.readFileSync(packagePath)) !== EXPECTED.packageSha256) throw new Error('CPU package.json sha256 mismatch')
-  if (sha256(fs.readFileSync(lockPath)) !== EXPECTED.packageLockSha256) throw new Error('CPU package-lock.json sha256 mismatch')
-  if (sha256(fs.readFileSync(sourceLockPath)) !== EXPECTED.sourceLockSha256) throw new Error('CPU source-lock.js sha256 mismatch')
+  if (sha256(fs.readFileSync(packagePath)) !== expected.packageSha256) throw new Error('CPU package.json sha256 mismatch')
+  if (sha256(fs.readFileSync(lockPath)) !== expected.packageLockSha256) throw new Error('CPU package-lock.json sha256 mismatch')
+  if (sha256(fs.readFileSync(sourceLockPath)) !== expected.sourceLockSha256) throw new Error('CPU source-lock.js sha256 mismatch')
   const behavioral = behavioralDigest(root)
-  if (behavioral.files.length !== EXPECTED.behavioralFileCount || behavioral.digest !== EXPECTED.behavioralLockSha256) throw new Error('CPU behavioral lock mismatch')
-  verifyLedger(root, ledgerArg)
+  if (behavioral.files.length !== expected.behavioralFileCount || behavioral.digest !== expected.behavioralLockSha256) throw new Error('CPU behavioral lock mismatch')
+  verifyLedger(root, ledgerArg, expected)
   return root
+}
+
+export function authenticateCpuRoot(rootArg, ledgerArg = null) {
+  return authenticateRoot(rootArg, ledgerArg, EXPECTED)
+}
+
+export function authenticate3ccCpuRoot(rootArg, ledgerArg = null) {
+  return authenticateRoot(rootArg, ledgerArg, FROZEN_KERNEL_EXPECTED)
 }
 
 export async function importCpu(rootArg, ledgerArg = null) {

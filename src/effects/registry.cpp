@@ -132,10 +132,16 @@ void required_binding_array(const Value& value, const std::string& context, bool
     } else if (context.find(".samplers") != std::string::npos) {
       nonempty_string(required_field(item.object, "name", ValueKind::string, context), context + ".name");
       if (required_field(item.object, "type", ValueKind::string, context).string != "sampler2D" ||
-          required_field(item.object, "cpp_type", ValueKind::string, context).string != "const Surface&" ||
-          required_field(item.object, "source", ValueKind::string, context).string != "resource")
+          required_field(item.object, "cpp_type", ValueKind::string, context).string != "const Surface&")
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": sampler ABI");
-      nonempty_string(required_field(item.object, "resource", ValueKind::string, context), context + ".resource");
+      const auto& source = required_field(item.object, "source", ValueKind::string, context).string;
+      if (source == "resource") {
+        nonempty_string(required_field(item.object, "resource", ValueKind::string, context), context + ".resource");
+      } else if (source == "transparent_black") {
+        required_field(item.object, "resource", ValueKind::null_value, context);
+      } else {
+        throw std::invalid_argument("Malformed compatible compatibility row " + context + ": sampler ABI");
+      }
     } else {
       nonempty_string(required_field(item.object, "name", ValueKind::string, context), context + ".name");
       const auto& type = required_field(item.object, "type", ValueKind::string, context);
@@ -201,7 +207,7 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
       exact_object(item.object, {"pass_index", "pass_name", "samplers", "outputs", "extent"}, context + ".binding_outputs");
       // Input routes are per-binding too (a multi-bound program reads
       // different resources from different passes); everything else about a
-      // sampler -- name, type, source, cpp_type -- is a program fact and must
+      // sampler -- name, type, cpp_type -- is a program fact and must
       // match the row exactly.
       // Pointer probes rather than reference bindings: gcc's
       // -Wdangling-reference false-positives on template functions that
@@ -214,12 +220,12 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding samplers");
       if (binding_samplers->array.size() != row_samplers->array.size())
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler count");
+      required_binding_array(*binding_samplers, context + ".binding_outputs.samplers", false);
       for (std::size_t slot = 0; slot < binding_samplers->array.size(); ++slot) {
         if (binding_samplers->array[slot].kind != ValueKind::object || row_samplers->array[slot].kind != ValueKind::object)
           throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler entry");
         if (string_field(binding_samplers->array[slot].object, "name") != string_field(row_samplers->array[slot].object, "name") ||
             string_field(binding_samplers->array[slot].object, "type") != string_field(row_samplers->array[slot].object, "type") ||
-            string_field(binding_samplers->array[slot].object, "source") != string_field(row_samplers->array[slot].object, "source") ||
             string_field(binding_samplers->array[slot].object, "cpp_type") != string_field(row_samplers->array[slot].object, "cpp_type"))
           throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding sampler ABI");
       }
@@ -422,7 +428,22 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   sha256_field(required_field(route, "source_sha256", ValueKind::string, context + ".factory.route"), context + ".factory.route.source_sha256");
 }
 
+void validate_sampler_sources(const Value& samplers, const PassDefinition& pass,
+                             const std::string& program_key) {
+  for (const auto& sampler : samplers.array) {
+    const auto input = std::find_if(pass.inputs.begin(), pass.inputs.end(), [&](const auto& candidate) {
+      return candidate.first == string_field(sampler.object, "name");
+    });
+    const bool unbound = string_field(sampler.object, "source") == "transparent_black";
+    if (unbound ? input != pass.inputs.end() :
+        (input == pass.inputs.end() || input->second != string_field(sampler.object, "resource")))
+      throw std::invalid_argument("Canonical sampler source does not match catalog: " + program_key);
+  }
+}
+
 void validate_authority_pass(const ProgramCompatibility& row, const PassDefinition& pass) {
+  if (row.program_key != mesh_contract::route.program_key)
+    validate_sampler_sources(*field(row.raw, "samplers"), pass, row.program_key);
   const auto* raw = field(row.raw, "authority_pass");
   if (raw == nullptr || raw->kind != ValueKind::object) throw std::invalid_argument("Canonical authority pass is missing: " + row.program_key);
   std::vector<std::pair<std::string, Value>> inputs;
@@ -895,12 +916,12 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d" ||
-      provenance_.generated_payload_sha256 != "7073298d6073c49820c62a98a6a0bd2603183c1a9a319c6e044897bf5758cd70" ||
+      provenance_.generated_payload_sha256 != "81a293c6c92034ae6afc921148e35c1c9feb5d21bbefdc682d3c5c12bf2831c8" ||
       provenance_.normalized_record_stream_sha256 != "03b0c42537995616cf4ff032900d82693c249d2a826fe1eb0317caefec28ab0b" ||
-      provenance_.compatibility_sha256 != "420c46e988375a6e4a0cc218a182d1f2c5c107f5d4b22d873237b35146a5fad6" ||
-      provenance_.cpu_behavioral_lock != "30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b" ||
+      provenance_.compatibility_sha256 != "ec0d667bed4f82406e6f30461471ef41fbab17366dcd25c768611d46fdd9d3ff" ||
+      provenance_.cpu_behavioral_lock != "4c4bf24c0472c4be2c4a423028d080b94bccd51db5d7e18700302f727f9822b2" ||
       provenance_.cpu_behavioral_file_count != 98 ||
-      provenance_.cpu_revision != "30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b" ||
+      provenance_.cpu_revision != "4c4bf24c0472c4be2c4a423028d080b94bccd51db5d7e18700302f727f9822b2" ||
       provenance_.source_lock_sha256 != "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf" ||
       provenance_.cpu_package_sha256 != "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
@@ -966,6 +987,7 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
         if (binding_pass.name != field(item.object, "pass_name")->string ||
             binding_pass.program != row.program)
           throw std::invalid_argument("Canonical compatibility binding does not join catalog: " + row.program_key);
+        validate_sampler_sources(*field(item.object, "samplers"), binding_pass, row.program_key);
       }
       const auto& first = binding_outputs->array.front();
       if (static_cast<std::size_t>(field(first.object, "pass_index")->number) != pass_index)

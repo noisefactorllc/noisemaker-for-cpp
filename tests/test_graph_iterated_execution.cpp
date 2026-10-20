@@ -4,6 +4,8 @@
 #include "noisemaker/graph/iteration.hpp"
 #include "noisemaker/renderer.hpp"
 
+#include <bit>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -367,4 +369,110 @@ TEST(iterated_reaction_diffusion_does_not_multiply_pass_repeats_by_group_iterati
             (count == 0 ? "13a74e7dc8897b6489f66b39e0e4505a4e46a943f3635b5b0c68bbe571b682cf"
                         : "e3d8af7a10e82d756fa8ec9570b39f663ae8a5baba7b32f00f379cd73797905d"));
   }
+}
+
+namespace {
+void require_render_followon_cpu(std::string_view source, std::size_t passes,
+                                std::string_view f32_hash, std::string_view rgba8_hash) {
+  noisemaker::Renderer renderer;
+  const auto result = renderer.render(source, options(9U, 7U, 0.375, 13.0));
+  REQUIRE(result.width() == 9U);
+  REQUIRE(result.height() == 7U);
+  REQUIRE(result.pass_count() == passes);
+  std::string raw;
+  raw.reserve(result.surface().data().size() * 4U);
+  for (const float value : result.surface().data()) {
+    const auto word = std::bit_cast<std::uint32_t>(value);
+    for (unsigned shift = 0U; shift < 32U; shift += 8U)
+      raw.push_back(static_cast<char>((word >> shift) & 0xffU));
+  }
+  REQUIRE(noisemaker::graph::detail::sha256(raw) == f32_hash);
+  const auto rgba8 = result.to_rgba8();
+  REQUIRE(noisemaker::graph::detail::sha256(std::string_view(
+      reinterpret_cast<const char*>(rgba8.data()), rgba8.size())) == rgba8_hash);
+}
+}  // namespace
+
+TEST(graph_render_followon_volume_mrt_canvas_matches_cpu) {
+  require_render_followon_cpu(
+      "search synth3d, render\nnoise3d(volumeSize: 4, seed: 7).render3d().write(o0)\nrender(o0)\n",
+      2U,
+      "9d995d4bf7ce7c069b977793a46e4b19ad2e3243069c2032edd9edf68c637f55",
+      "6748ee26e285f1af4d742013571a61c3c3afde96570f959791452de26e43c7a2");
+}
+
+TEST(graph_render_followon_particle_mrt_canvas_matches_cpu) {
+  require_render_followon_cpu(
+      "search synth, render\ngradient().pointsEmit(stateSize: x64, layout: grid, seed: 7, iterationCount: 1).pointsRender().write(o0)\nrender(o0)\n",
+      7U,
+      "a9b8015387d6f984bc6d0077f6235e27e7f56df30a954d51a633c7c76b2da099",
+      "37d22ab2dd8d9d23ebd2f8f4aca6868e79a6a8d355c8a1330e19849a32cc4adb");
+}
+
+TEST(graph_render_followon_animated_particle_input_matches_cpu) {
+  require_render_followon_cpu(
+      "search synth, render\nperlin(speed: 3, seed: 7).pointsEmit(stateSize: x64, layout: grid, seed: 7, attrition: 1, iterationCount: 3).pointsRender().write(o0)\nrender(o0)\n",
+      21U,
+      "abefbab45323e8db85ebcd0bed1f1362318a0485009f55cca8b9e27677bdceb2",
+      "dc6a17c9570845b5667fe6faa1361f05e471f5ab033213aec9b26acc0aab8849");
+}
+
+TEST(graph_render_followon_static_particle_input_matches_cpu) {
+  require_render_followon_cpu(
+      "search synth, render\nperlin(speed: 0, seed: 7).pointsEmit(stateSize: x64, layout: grid, seed: 7, attrition: 1, iterationCount: 3).pointsRender().write(o0)\nrender(o0)\n",
+      19U,
+      "abefbab45323e8db85ebcd0bed1f1362318a0485009f55cca8b9e27677bdceb2",
+      "dc6a17c9570845b5667fe6faa1361f05e471f5ab033213aec9b26acc0aab8849");
+}
+
+TEST(graph_render_followon_zero_particle_iterations_matches_cpu) {
+  require_render_followon_cpu(
+      "search synth, render\nperlin(speed: 3, seed: 7).pointsEmit(stateSize: x64, layout: grid, seed: 7, iterationCount: 0).pointsRender().write(o0)\nrender(o0)\n",
+      1U,
+      "99517881ec21d2342638cf4cc94fb2bfe69f33dd6f72a66a41050206b12b2582",
+      "424ce4d74dcf9790cb346dab06a9eb8befe40070299b6d3a1abb37d2eaab05ef");
+}
+
+TEST(graph_render_followon_animated_group_owner_state_matches_cpu) {
+  require_render_followon_cpu(
+      "search synth, points, render\nperlin(speed: 3, seed: 7).pointsEmit(stateSize: x64, layout: grid, seed: 7, iterationCount: 1).life(stateSize: 128, iterationCount: 1).pointsRender(density: 1, intensity: 10, inputIntensity: 10).write(o0)\nrender(o0)\n",
+      10U,
+      "65f663d25a3964304de36ba8b1b7e28ed6c4b3a95f73edc3f47bd846e9e8e839",
+      "fd82355d68966e5b433f33c03374485a921bcece6e233cae2820280204b76e26");
+}
+
+TEST(graph_render_followon_named_mrt_resolution_keeps_canvas_and_pixel_extents_distinct) {
+  Renderer renderer;
+  auto plan = renderer.compile(
+      "search synth, synth3d, render\n"
+      "gradient().pointsEmit(stateSize: x64, iterationCount: 1).write(o0)\n"
+      "noise3d(volumeSize: 4).render3d().write(o1)\nrender(o0)\n");
+  const auto inputs = options(9U, 7U, 0.375, 13.0);
+  for (const auto& item : std::vector<std::pair<std::string_view, std::pair<std::size_t, std::size_t>>>{
+           {"render/pointsEmit", {64U, 64U}}, {"render/render3d", {4U, 16U}}}) {
+    const auto& snapshot = snapshot_for(plan, item.first);
+    const auto& step = effect_step(plan, item.first);
+    const auto& pass = snapshot.definition.passes.front();
+    const auto& admission = snapshot.admissions.front();
+    REQUIRE(admission.outputs.size() > 1U);
+    const BindingMaterializationContext context{
+        &inputs, &snapshot.definition, item.second.first, item.second.second};
+    const auto bindings = materialize_uniform_bindings(step, admission, pass, context);
+    const auto resolution = bindings.get_or<noisemaker::glsl::Vec2>(
+        "resolution", noisemaker::glsl::Vec2(-1.0f));
+    REQUIRE(noisemaker::float_bits_to_uint(resolution[0]) == 0x41100000U);
+    REQUIRE(noisemaker::float_bits_to_uint(resolution[1]) == 0x40e00000U);
+    REQUIRE(context.destination_width == item.second.first);
+    REQUIRE(context.destination_height == item.second.second);
+  }
+  const auto& snapshot = snapshot_for(plan, "synth/gradient");
+  const auto& step = effect_step(plan, "synth/gradient");
+  const BindingMaterializationContext single_context{&inputs, &snapshot.definition, 5U, 3U};
+  const auto single = materialize_uniform_bindings(
+      step, snapshot.admissions.front(), snapshot.definition.passes.front(), single_context);
+  REQUIRE(snapshot.admissions.front().outputs.size() == 1U);
+  const auto resolution = single.get_or<noisemaker::glsl::Vec2>(
+      "resolution", noisemaker::glsl::Vec2(-1.0f));
+  REQUIRE(resolution[0] == 5.0f);
+  REQUIRE(resolution[1] == 3.0f);
 }

@@ -72,6 +72,149 @@
 
 namespace {
 
+struct SamplerMetadataFixture {
+  std::string_view program_key;
+  std::string_view sampler_name;
+};
+
+// These fixtures preserve native requirements where the source queries sampler
+// dimensions or its canonical adapter reads surface fields. Conditional queries
+// retain their existing strict bind contract.
+constexpr std::array<SamplerMetadataFixture, 100> kSamplerMetadataFixtures{{
+    {"classicNoisedeck/cellNoise:cellNoise", "tex"},
+    {"classicNoisedeck/cellRefract:cellRefract", "inputTex"},
+    {"classicNoisedeck/coalesce:coalesce", "inputTex"},
+    {"classicNoisedeck/coalesce:coalesce", "tex"},
+    {"classicNoisedeck/colorLab:colorLab", "inputTex"},
+    {"classicNoisedeck/composite:composite", "inputTex"},
+    {"classicNoisedeck/composite:composite", "tex"},
+    {"classicNoisedeck/effects:effects", "inputTex"},
+    {"classicNoisedeck/glitch:glitch", "inputTex"},
+    {"classicNoisedeck/refract:refract", "inputTex"},
+    {"classicNoisedeck/shapeMixer:shapeMixer", "inputTex"},
+    {"classicNoisedeck/shapeMixer:shapeMixer", "tex"},
+    {"classicNoisedeck/splat:splat", "inputTex"},
+    {"filter/bloom:ntapGather", "inputTex"},
+    {"filter/blur:blurH", "inputTex"},
+    {"filter/blur:blurV", "inputTex"},
+    {"filter/celShading:celShadingColor", "inputTex"},
+    {"filter/celShading:celShadingEdges", "colorTex"},
+    {"filter/clouds:clouds", "inputTex"},
+    {"filter/corrupt:corrupt", "inputTex"},
+    {"filter/dither:dither", "inputTex"},
+    {"filter/edge:edge", "inputTex"},
+    {"filter/emboss:emboss", "inputTex"},
+    {"filter/flipMirror:flipMirror", "inputTex"},
+    {"filter/glyphMap:glyphMap", "inputTex"},
+    {"filter/grade:vignette", "inputTex"},
+    {"filter/historicPalette:historicPalette", "inputTex"},
+    {"filter/invert:inv", "inputTex"},
+    {"filter/lens:lens", "inputTex"},
+    {"filter/lightLeak:lightLeak", "inputTex"},
+    {"filter/lighting:lighting", "heightMap"},
+    {"filter/lighting:lighting", "inputTex"},
+    {"filter/lowPoly:lowPoly", "inputTex"},
+    {"filter/median:median", "inputTex"},
+    {"filter/normalMap:normalMap", "inputTex"},
+    {"filter/normalize:reduce", "inputTex"},
+    {"filter/normalize:reduceMinmax", "inputTex"},
+    {"filter/normalize:statsFinal", "inputTex"},
+    {"filter/osd:osd", "inputTex"},
+    {"filter/outline:outlineBlend", "inputTex"},
+    {"filter/outline:outlineSobel", "valueTexture"},
+    {"filter/outline:outlineValueMap", "inputTex"},
+    {"filter/palette:palette", "inputTex"},
+    {"filter/parallax:parallax", "heightMap"},
+    {"filter/parallax:parallax", "inputTex"},
+    {"filter/pixelSort:computeRank", "lumTex"},
+    {"filter/pixelSort:finalize", "inputTex"},
+    {"filter/pixelSort:findBrightest", "lumTex"},
+    {"filter/pixelSort:gatherSorted", "preparedTex"},
+    {"filter/pixelSort:luminance", "inputTex"},
+    {"filter/pixelSort:prepare", "inputTex"},
+    {"filter/polar:polar", "inputTex"},
+    {"filter/posterize:posterize", "inputTex"},
+    {"filter/prismaticAberration:prismaticAberration", "inputTex"},
+    {"filter/reindex:nmReindexApply", "inputTex"},
+    {"filter/reindex:nmReindexApply", "statsTex"},
+    {"filter/repeat:repeat", "inputTex"},
+    {"filter/reverb:reverb", "inputTex"},
+    {"filter/rotate:rot", "inputTex"},
+    {"filter/scanlineError:scanlineError", "inputTex"},
+    {"filter/scroll:scroll", "inputTex"},
+    {"filter/sharpen:sharpen", "inputTex"},
+    {"filter/skew:skew", "inputTex"},
+    {"filter/smooth:smoothEdge", "inputTex"},
+    {"filter/smoothstep:smoothstep", "inputTex"},
+    {"filter/sobel:sobel", "inputTex"},
+    {"filter/spatter:spatter", "inputTex"},
+    {"filter/spookyTicker:spookyTicker", "inputTex"},
+    {"filter/step:step", "inputTex"},
+    {"filter/strayHair:strayHairBlend", "inputTex"},
+    {"filter/strayHair:strayHairBlend", "overlayTex"},
+    {"filter/tetraColorArray:tetraColorArray", "inputTex"},
+    {"filter/tetraCosine:tetraCosine", "inputTex"},
+    {"filter/texture:texture", "inputTex"},
+    {"filter/threshold:thresh", "inputTex"},
+    {"filter/tint:colorize", "inputTex"},
+    {"filter/translate:translate", "inputTex"},
+    {"filter/tunnel:tunnel", "inputTex"},
+    {"filter/vaseline:upsample", "inputTex"},
+    {"filter/waves:waves", "inputTex"},
+    {"filter/wormhole:blend", "accumTex"},
+    {"filter/wormhole:blend", "inputTex"},
+    {"mixer/blendMode:blendMode", "inputTex"},
+    {"mixer/blendMode:blendMode", "tex"},
+    {"mixer/cellSplit:cellSplit", "inputTex"},
+    {"mixer/cellSplit:cellSplit", "tex"},
+    {"mixer/channelCombine:channelCombine", "bTex"},
+    {"mixer/channelCombine:channelCombine", "gTex"},
+    {"mixer/channelCombine:channelCombine", "rTex"},
+    {"mixer/focusBlur:focusBlur", "inputTex"},
+    {"mixer/focusBlur:focusBlur", "tex"},
+    {"mixer/patternMix:patternMix", "inputTex"},
+    {"mixer/patternMix:patternMix", "tex"},
+    {"mixer/shadow:shadow", "inputTex"},
+    {"mixer/shadow:shadow", "tex"},
+    {"mixer/shapeMask:shapeMask", "inputTex"},
+    {"mixer/shapeMask:shapeMask", "tex"},
+    {"mixer/split:split", "inputTex"},
+    {"mixer/split:split", "tex"},
+    {"synth/media:mediaInput", "imageTex"},
+}};
+
+template <typename Factory>
+void require_sampler_omission_contract(
+    Factory factory, const noisemaker::glsl::Bindings& omitted,
+    std::string_view sampler_name, std::string_view program_key) {
+  const bool requires_metadata = std::any_of(
+      kSamplerMetadataFixtures.begin(), kSamplerMetadataFixtures.end(),
+      [&](const SamplerMetadataFixture& fixture) {
+        return fixture.program_key == program_key && fixture.sampler_name == sampler_name;
+      });
+  if (requires_metadata) {
+    REQUIRE_THROWS_AS(factory(omitted), noisemaker::glsl::KernelBindingError);
+  } else {
+    const noisemaker::Surface zero(1U, 1U);
+    auto explicit_zero = omitted;
+    explicit_zero.set_texture(std::string(sampler_name), zero);
+    const auto actual = noisemaker::run_pass(factory(omitted), 2U, 2U);
+    const auto expected = noisemaker::run_pass(factory(explicit_zero), 2U, 2U);
+    REQUIRE(actual.width() == expected.width());
+    REQUIRE(actual.height() == expected.height());
+    REQUIRE(actual.data().size() == expected.data().size());
+    for (std::size_t lane = 0; lane < actual.data().size(); ++lane) {
+      REQUIRE(noisemaker::float_bits_to_uint(actual.data()[lane]) ==
+              noisemaker::float_bits_to_uint(expected.data()[lane]));
+    }
+    REQUIRE(actual.to_rgba8() == expected.to_rgba8());
+  }
+  auto wrong_category = omitted;
+  wrong_category.set_uniform(std::string(sampler_name), 1.0);
+  REQUIRE_THROWS_AS(factory(wrong_category), noisemaker::glsl::KernelBindingError);
+}
+
+
 void require_rgba8(const noisemaker::Surface& surface,
                    const std::array<std::uint8_t, 4>& expected) {
   const auto actual = surface.to_rgba8();
@@ -641,8 +784,11 @@ TEST(generated_invert_linear_width_three_matches_js_exact_bits_and_nearest_defau
 
 TEST(generated_factories_reject_missing_sampler_and_wrong_uniform_alternatives_at_bind_time) {
   noisemaker::glsl::Bindings missing_sampler;
-  REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_invert(missing_sampler),
-                    noisemaker::glsl::KernelBindingError);
+  require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_invert( values);
+        },
+        missing_sampler, "inputTex", "filter/invert:inv");
 
   noisemaker::glsl::Bindings wrong_uniform;
   wrong_uniform.set_uniform("color", 0.25f);
@@ -867,9 +1013,17 @@ TEST(typed_task22_crt_binding_abi_is_exact) {
       std::string_view{"seed"}, std::string_view{"alpha"},
       std::string_view{"renderScale"}};
   for (const std::string_view name : names) {
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_crt_crt(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_crt_crt( values);
+        },
+        bindings(name, ""), name, "filter/crt:crt");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_crt_crt(
                           bindings(name, "")),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_crt_crt(
                           bindings("", name)),
                       noisemaker::glsl::KernelBindingError);
@@ -922,9 +1076,17 @@ TEST(typed_task21_degauss_binding_abi_is_exact) {
       std::string_view{"speed"}, std::string_view{"seed"},
       std::string_view{"direction"}};
   for (const std::string_view name : names) {
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_degauss_degauss(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_degauss_degauss( values);
+        },
+        bindings(name, ""), name, "filter/degauss:degauss");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_degauss_degauss(
                           bindings(name, "")),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_degauss_degauss(
                           bindings("", name)),
                       noisemaker::glsl::KernelBindingError);
@@ -1150,8 +1312,16 @@ TEST(task17_factories_require_exact_bindings_and_ignore_unrelated_entries) {
         "tileOffset", "fullResolution", "inputTex", "amount", "renderScale", "alpha"};
     const std::size_t count = sobel ? names.size() : names.size() - 1U;
     for (std::size_t index = 0; index < count; ++index) {
+      if (names[index] == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return bind(sobel, values);
+        },
+        bindings(sobel, names[index], ""), names[index], sobel ? "filter/sobel:sobel" : "filter/sharpen:sharpen");
+    } else {
       REQUIRE_THROWS_AS(bind(sobel, bindings(sobel, names[index], "")),
                         noisemaker::glsl::KernelBindingError);
+    }
       REQUIRE_THROWS_AS(bind(sobel, bindings(sobel, "", names[index])),
                         noisemaker::glsl::KernelBindingError);
     }
@@ -1227,8 +1397,16 @@ TEST(task18_factories_require_every_exact_binding_and_ignore_unrelated_entries) 
         std::string_view{"thickness"}, std::string_view{"renderScale"}};
     const auto& names = outline ? outline_names : cel_names;
     for (const std::string_view name : names) {
+      if (name == "colorTex" || name == "valueTexture") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return bind(outline, values);
+        },
+        bindings(outline, name, ""), name, outline ? "filter/outline:outlineSobel" : "filter/celShading:celShadingEdges");
+    } else {
       REQUIRE_THROWS_AS(bind(outline, bindings(outline, name, "")),
                         noisemaker::glsl::KernelBindingError);
+    }
       REQUIRE_THROWS_AS(bind(outline, bindings(outline, "", name)),
                         noisemaker::glsl::KernelBindingError);
     }
@@ -1295,10 +1473,18 @@ TEST(task19_refract_requires_all_eleven_exact_bindings_and_ignores_unrelated_ent
       std::string_view{"blendMode"}, std::string_view{"mixAmt"},
       std::string_view{"wrap"}};
   for (const std::string_view name : names) {
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_classicNoisedeck_refract_refract( values);
+        },
+        bindings(name, ""), name, "classicNoisedeck/refract:refract");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_classicNoisedeck_refract_refract(
             bindings(name, "")),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_classicNoisedeck_refract_refract(
             bindings("", name)),
@@ -1339,9 +1525,11 @@ TEST(typed_task16_compute_rank_requires_only_lum_tex_and_ignores_extras) {
   const noisemaker::Surface source = noisemaker::Surface::from_rgba8(
       1U, 1U, std::array<std::uint8_t, 4>{128U, 64U, 32U, 255U});
   noisemaker::glsl::Bindings missing;
-  REQUIRE_THROWS_AS(noisemaker::generated::bind(
-                        "filter/pixelSort:computeRank", missing),
-                    noisemaker::glsl::KernelBindingError);
+  require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( "filter/pixelSort:computeRank", values);
+        },
+        missing, "lumTex", "filter/pixelSort:computeRank");
   noisemaker::glsl::Bindings wrong;
   wrong.set_uniform("lumTex", 0.5);
   REQUIRE_THROWS_AS(noisemaker::generated::bind(
@@ -1977,10 +2165,18 @@ TEST(typed_task23_binding_abis_are_exact_strokes_binds_mode_and_wind_binds_metho
     const noisemaker::Surface input = task23_input(fixture.width, fixture.height);
     for (const std::string_view binding :
          task23_runtime_binding_names(fixture.program)) {
-      REQUIRE_THROWS_AS(
+      if (binding == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return task23_bind(fixture, values);
+        },
+        task23_bindings(fixture, input, false, binding, {}), binding, fixture.key);
+      } else {
+        REQUIRE_THROWS_AS(
           task23_bind(fixture,
                       task23_bindings(fixture, input, false, binding, {})),
           noisemaker::glsl::KernelBindingError);
+      }
       REQUIRE_THROWS_AS(
           task23_bind(fixture,
                       task23_bindings(fixture, input, false, {}, binding)),
@@ -2258,10 +2454,11 @@ TEST(typed_task24_gather_sorted_binding_abi_is_exactly_three_samplers) {
   for (const std::string_view name :
        {std::string_view{"preparedTex"}, std::string_view{"rankTex"},
         std::string_view{"brightestTex"}}) {
-    REQUIRE_THROWS_AS(
-        noisemaker::generated::bind_filter_pixelSort_gatherSorted(
-            task24_bindings(inputs, name)),
-        noisemaker::glsl::KernelBindingError);
+    require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_pixelSort_gatherSorted( values);
+        },
+        task24_bindings(inputs, name), name, "filter/pixelSort:gatherSorted");
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_pixelSort_gatherSorted(
             task24_bindings(inputs, {}, name)),
@@ -4834,14 +5031,30 @@ TEST(typed_task25_lens_and_prismatic_binding_abis_reject_every_missing_or_wrong_
         ? std::span<const std::string_view>(kTask25LensRequiredBindings)
         : std::span<const std::string_view>(kTask25PrismRequiredBindings);
     for (const std::string_view name : required) {
+      if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return task25_direct_bind( fixture, values);
+        },
+        task25_bindings(fixture, input, name), name, fixture.key);
+    } else {
       REQUIRE_THROWS_AS(
           task25_direct_bind(
               fixture, task25_bindings(fixture, input, name)),
           noisemaker::glsl::KernelBindingError);
+    }
+      if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( fixture.key, values);
+        },
+        task25_bindings(fixture, input, name), name, fixture.key);
+    } else {
       REQUIRE_THROWS_AS(
           noisemaker::generated::bind(
               fixture.key, task25_bindings(fixture, input, name)),
           noisemaker::glsl::KernelBindingError);
+    }
       REQUIRE_THROWS_AS(
           task25_direct_bind(
               fixture, task25_bindings(fixture, input, {}, name)),
@@ -8411,11 +8624,27 @@ TEST(typed_task26_binding_abi_rejects_every_missing_or_wrong_input_and_accepts_e
   constexpr std::array<std::string_view, 5> required{
       "tileOffset", "fullResolution", "inputTex", "smoothType", "threshold"};
   for (const std::string_view name : required) {
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_smooth_smoothEdge(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_smooth_smoothEdge( values);
+        },
+        task26_bindings(fixture, input, name), name, "filter/smooth:smoothEdge");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_smooth_smoothEdge(
         task26_bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(
+    }
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( "filter/smooth:smoothEdge", values);
+        },
+        task26_bindings(fixture, input, name), name, "filter/smooth:smoothEdge");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(
         "filter/smooth:smoothEdge", task26_bindings(fixture, input, name)),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_smooth_smoothEdge(
         task26_bindings(fixture, input, {}, name)), noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind(
@@ -8757,7 +8986,15 @@ TEST(typed_task28_matrix_table_executes_six_distinct_fail_closed_modes){
 TEST(typed_task28_rotate_public_oracles_are_exact_repeatable_finite_and_nonmutating){
   for(const auto& item:kTask28NativeCases){auto input=task28_input(item),input2=task28_input(item),direct_input=task28_input(item);const auto original=task23_float_bytes(input);REQUIRE(task23_hex(task23_sha256(original))==item.input_hash);const auto a=noisemaker::run_pass(noisemaker::generated::bind("filter/rotate:rot",task28_bindings(item,input)),item.width,item.height);const auto b=noisemaker::run_pass(noisemaker::generated::bind_filter_rotate_rot(task28_bindings(item,input2)),item.width,item.height);const auto c=noisemaker::run_pass(noisemaker::generated::bind_filter_rotate_rot(task28_bindings(item,direct_input)),item.width,item.height);REQUIRE(a.width()==item.width);REQUIRE(a.height()==item.height);REQUIRE(task23_float_bytes(a)==task23_float_bytes(b));REQUIRE(task23_float_bytes(a)==task23_float_bytes(c));REQUIRE(task23_float_bytes(input)==original);REQUIRE(task23_float_bytes(input2)==original);REQUIRE(task23_float_bytes(direct_input)==original);REQUIRE(task23_hex(task23_sha256(task23_float_bytes(a)))==item.f32_hash);REQUIRE(task23_hex(task23_sha256(a.to_rgba8()))==item.rgba8_hash);std::size_t finite=0U;for(float value:a.data())if(std::isfinite(value))++finite;REQUIRE(finite==item.finite_lanes);for(std::size_t p=0;p<5U;++p){const std::size_t x=item.probes[p*6U],y=item.probes[p*6U+1U],offset=(y*item.width+x)*4U;for(std::size_t lane=0;lane<4U;++lane)REQUIRE(noisemaker::float_bits_to_uint(a.data()[offset+lane])==item.probes[p*6U+2U+lane]);}}
 }
-TEST(typed_task28_rotate_binding_abi_rejects_every_missing_and_wrong_input){for(std::string_view name:std::array<std::string_view,5>{"inputTex","rotation","wrap","speed","time"}){const auto input=task28_input(kTask28NativeCases[0]);REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_rotate_rot(task28_bindings(kTask28NativeCases[0],input,name)),noisemaker::glsl::KernelBindingError);REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_rotate_rot(task28_bindings(kTask28NativeCases[0],input,{},name)),noisemaker::glsl::KernelBindingError);}}
+TEST(typed_task28_rotate_binding_abi_rejects_every_missing_and_wrong_input){for(std::string_view name:std::array<std::string_view,5>{"inputTex","rotation","wrap","speed","time"}){const auto input=task28_input(kTask28NativeCases[0]);if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_rotate_rot( values);
+        },
+        task28_bindings(kTask28NativeCases[0],input,name), name, "filter/rotate:rot");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_rotate_rot(task28_bindings(kTask28NativeCases[0],input,name)),noisemaker::glsl::KernelBindingError);
+    }REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_rotate_rot(task28_bindings(kTask28NativeCases[0],input,{},name)),noisemaker::glsl::KernelBindingError);}}
 
 // TASK29_NATIVE_ORACLE_TABLE_BEGIN
 struct Task29Case { std::string_view name; std::size_t width,height; std::uint32_t phase_a,phase_b; float focal,aperture,bias; std::int32_t depth; std::array<float,2> tile,full; bool alias; std::string_view f32_hash,rgba_hash; std::array<std::uint32_t,30> probes; std::size_t finite; };
@@ -8913,10 +9150,18 @@ TEST(typed_task29_focus_blur_binding_abi_rejects_every_missing_and_wrong_input) 
   const auto input = task29_surface(6U, 5U, 0U);
   const auto tex = task29_surface(6U, 5U, 1U);
   for (std::string_view name : names) {
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex" || name == "tex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_mixer_focusBlur_focusBlur( values);
+        },
+        task29_bindings(kTask29Cases[0], input, tex, name), name, "mixer/focusBlur:focusBlur");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_mixer_focusBlur_focusBlur(
             task29_bindings(kTask29Cases[0], input, tex, name)),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_mixer_focusBlur_focusBlur(
             task29_bindings(kTask29Cases[0], input, tex, {}, name)),
@@ -9712,18 +9957,34 @@ TEST(typed_task30_extrude_binding_abi_rejects_every_missing_and_wrong_input_and_
   const auto& fixture = kTask30NativeCases[0];
   const auto input = task30_surface(fixture.width, fixture.height, fixture.phase);
   for (std::string_view name : names) {
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_extrude_extrude( values);
+        },
+        task30_bindings(fixture, input, name), name, "filter/extrude:extrude");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_extrude_extrude(
             task30_bindings(fixture, input, name)),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_extrude_extrude(
             task30_bindings(fixture, input, {}, name)),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/extrude:extrude", values);
+        },
+        task30_bindings(fixture, input, name), name, "filter/extrude:extrude");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind("filter/extrude:extrude",
                                     task30_bindings(fixture, input, name)),
         noisemaker::glsl::KernelBindingError);
+    }
   }
   auto with_extras = task30_bindings(fixture, input);
   with_extras.set_uniform("unrelated", true);
@@ -12546,9 +12807,11 @@ TEST(typed_stats_runtime_loop_binding_and_pass_contract) {
         noisemaker::glsl::KernelBindingError);
   }
   noisemaker::glsl::Bindings missing;
-  REQUIRE_THROWS_AS(
-      noisemaker::generated::bind_filter_normalize_statsFinal(missing),
-      noisemaker::glsl::KernelBindingError);
+  require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_normalize_statsFinal( values);
+        },
+        missing, "inputTex", "filter/normalize:statsFinal");
   missing.set_uniform("inputTex", std::int32_t{1});
   REQUIRE_THROWS_AS(
       noisemaker::generated::bind_filter_normalize_statsFinal(missing),
@@ -13148,19 +13411,35 @@ TEST(typed_grain_binding_abi_rejects_every_missing_and_wrong_input_and_accepts_e
       "inputTex", "resolution", "tileOffset", "fullResolution",
       "renderScale", "alpha", "time", "pause"};
   for (const std::string_view name : names) {
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_grain_grain( values);
+        },
+        grain_runtime_bindings(fixture, input, name), name, "filter/grain:grain");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_grain_grain(
             grain_runtime_bindings(fixture, input, name)),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_grain_grain(
             grain_runtime_bindings(fixture, input, {}, name)),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( "filter/grain:grain", values);
+        },
+        grain_runtime_bindings(fixture, input, name), name, "filter/grain:grain");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind(
             "filter/grain:grain",
             grain_runtime_bindings(fixture, input, name)),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind(
             "filter/grain:grain",
@@ -13774,18 +14053,34 @@ TEST(typed_scanline_error_binding_abi_is_complete_and_accepts_unrelated_entries)
       "inputTex", "tileOffset", "fullResolution", "speed", "timeOffset",
       "distortion", "noise", "mode", "time", "renderScale"};
   for (const std::string_view name : names) {
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_scanlineError_scanlineError( values);
+        },
+        scanline_runtime_bindings(fixture, input, name), name, "filter/scanlineError:scanlineError");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_scanlineError_scanlineError(
             scanline_runtime_bindings(fixture, input, name)),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_scanlineError_scanlineError(
             scanline_runtime_bindings(fixture, input, {}, name)),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/scanlineError:scanlineError", values);
+        },
+        scanline_runtime_bindings(fixture, input, name), name, "filter/scanlineError:scanlineError");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind("filter/scanlineError:scanlineError",
             scanline_runtime_bindings(fixture, input, name)),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind("filter/scanlineError:scanlineError",
             scanline_runtime_bindings(fixture, input, {}, name)),
@@ -14285,15 +14580,31 @@ TEST(typed_glyph_map_binding_abi_is_complete_and_accepts_extras) {
         input, {0, 0}, {19, 15}, 1, 16, 1, 1, name);
     const auto wrong = glyph_bindings(
         input, {0, 0}, {19, 15}, 1, 16, 1, 1, {}, name);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_glyphMap_glyphMap( values);
+        },
+        missing, name, "filter/glyphMap:glyphMap");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_glyphMap_glyphMap(missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_glyphMap_glyphMap(wrong),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/glyphMap:glyphMap", values);
+        },
+        missing, name, "filter/glyphMap:glyphMap");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind("filter/glyphMap:glyphMap", missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind("filter/glyphMap:glyphMap", wrong),
         noisemaker::glsl::KernelBindingError);
@@ -14572,12 +14883,28 @@ void require_binding_abi() {
   for (const auto name : names) {
     const auto missing = bindings_for(fixture, input, name);
     const auto wrong = bindings_for(fixture, input, {}, name);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_dither_dither(missing),
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_dither_dither( values);
+        },
+        missing, name, "filter/dither:dither");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_dither_dither(missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_dither_dither(wrong),
                       noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/dither:dither", missing),
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/dither:dither", values);
+        },
+        missing, name, "filter/dither:dither");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/dither:dither", missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/dither:dither", wrong),
                       noisemaker::glsl::KernelBindingError);
   }
@@ -15292,12 +15619,28 @@ TEST(typed_edge_binding_abi_rejects_every_missing_and_wrong_input_and_accepts_ex
   for (const std::string_view name : names) {
     const auto missing = edge_bindings(fixture, input, name);
     const auto wrong = edge_bindings(fixture, input, {}, name);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_edge_edge(missing),
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_edge_edge( values);
+        },
+        missing, name, "filter/edge:edge");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_edge_edge(missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_edge_edge(wrong),
                       noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/edge:edge", missing),
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/edge:edge", values);
+        },
+        missing, name, "filter/edge:edge");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/edge:edge", missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/edge:edge", wrong),
                       noisemaker::glsl::KernelBindingError);
   }
@@ -15621,15 +15964,31 @@ TEST(typed_glitch_binding_abi_rejects_all_fifteen_missing_and_wrong_inputs) {
   for (const std::string_view name : names) {
     const auto missing = glitch_bindings(fixture, input, name);
     const auto wrong = glitch_bindings(fixture, input, {}, name);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_classicNoisedeck_glitch_glitch( values);
+        },
+        missing, name, "classicNoisedeck/glitch:glitch");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_classicNoisedeck_glitch_glitch(missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_classicNoisedeck_glitch_glitch(wrong),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("classicNoisedeck/glitch:glitch", values);
+        },
+        missing, name, "classicNoisedeck/glitch:glitch");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind("classicNoisedeck/glitch:glitch", missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind("classicNoisedeck/glitch:glitch", wrong),
         noisemaker::glsl::KernelBindingError);
@@ -16005,15 +16364,31 @@ TEST(typed_emboss_binding_abi_and_catalog_are_exact) {
   for (const std::string_view name : names) {
     const auto missing = emboss_bindings(fixture, input, name);
     const auto wrong = emboss_bindings(fixture, input, {}, name);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_emboss_emboss( values);
+        },
+        missing, name, "filter/emboss:emboss");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_emboss_emboss(missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_emboss_emboss(wrong),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/emboss:emboss", values);
+        },
+        missing, name, "filter/emboss:emboss");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind("filter/emboss:emboss", missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind("filter/emboss:emboss", wrong),
         noisemaker::glsl::KernelBindingError);
@@ -16583,13 +16958,21 @@ TEST(typed_shape_mixer_binding_abi_and_catalog_are_exact) {
     const auto missing = shape_mixer_bindings(fixture, input_a, input_b, name);
     const auto wrong =
         shape_mixer_bindings(fixture, input_a, input_b, {}, name);
-    shape_mixer_require_binding_error(
+    if (name == "inputTex" || name == "tex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_classicNoisedeck_shapeMixer_shapeMixer( values);
+        },
+        missing, name, "classicNoisedeck/shapeMixer:shapeMixer");
+    } else {
+      shape_mixer_require_binding_error(
         [&] {
           static_cast<void>(
               noisemaker::generated::bind_classicNoisedeck_shapeMixer_shapeMixer(
                   missing));
         },
         name);
+    }
     shape_mixer_require_binding_error(
         [&] {
           static_cast<void>(
@@ -16597,12 +16980,20 @@ TEST(typed_shape_mixer_binding_abi_and_catalog_are_exact) {
                   wrong));
         },
         name);
-    shape_mixer_require_binding_error(
+    if (name == "inputTex" || name == "tex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( "classicNoisedeck/shapeMixer:shapeMixer", values);
+        },
+        missing, name, "classicNoisedeck/shapeMixer:shapeMixer");
+    } else {
+      shape_mixer_require_binding_error(
         [&] {
           static_cast<void>(noisemaker::generated::bind(
               "classicNoisedeck/shapeMixer:shapeMixer", missing));
         },
         name);
+    }
     shape_mixer_require_binding_error(
         [&] {
           static_cast<void>(noisemaker::generated::bind(
@@ -19684,24 +20075,40 @@ TEST(typed_normalmap185_binding_abi_and_catalog_are_exact) {
     variant.wrong = name;
     const auto missing = normalmap185_bindings(fixture, input, omit);
     const auto wrong = normalmap185_bindings(fixture, input, variant);
-    normalmap185_require_binding_error(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_normalMap_normalMap(values);
+        },
+        missing, name, "filter/normalMap:normalMap");
+    } else {
+      normalmap185_require_binding_error(
         [&] {
           static_cast<void>(
               noisemaker::generated::bind_filter_normalMap_normalMap(missing));
         },
         name);
+    }
     normalmap185_require_binding_error(
         [&] {
           static_cast<void>(
               noisemaker::generated::bind_filter_normalMap_normalMap(wrong));
         },
         name);
-    normalmap185_require_binding_error(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( "filter/normalMap:normalMap", values);
+        },
+        missing, name, "filter/normalMap:normalMap");
+    } else {
+      normalmap185_require_binding_error(
         [&] {
           static_cast<void>(noisemaker::generated::bind(
               "filter/normalMap:normalMap", missing));
         },
         name);
+    }
     normalmap185_require_binding_error(
         [&] {
           static_cast<void>(
@@ -21154,8 +21561,8 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
   REQUIRE(std::string_view("uniform binding 'seedOffset' is missing")
               .find("seed") != std::string_view::npos);
 
-  // Omit each of the fifteen frozen parameter bindings and supply one wrong variant;
-  // both binders must fail closed naming the binding.
+  // Missing samplers match explicit zero textures. Both binders reject wrong
+  // categories and missing uniforms with the binding name.
   for (const std::string_view name : names) {
     Cellrefract186Overrides omit;
     omit.missing = name;
@@ -21165,13 +21572,21 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
         cellrefract186_bindings(fixture, input, vectors, omit);
     const auto wrong = cellrefract186_bindings(fixture, input, vectors,
                                                variant);
-    cellrefract186_require_binding_error(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_classicNoisedeck_cellRefract_cellRefract(values);
+        },
+        missing, name, "classicNoisedeck/cellRefract:cellRefract");
+    } else {
+      cellrefract186_require_binding_error(
         [&] {
           static_cast<void>(
               noisemaker::generated::
                   bind_classicNoisedeck_cellRefract_cellRefract(missing));
         },
         name);
+    }
     cellrefract186_require_binding_error(
         [&] {
           static_cast<void>(
@@ -21179,12 +21594,20 @@ TEST(typed_cellrefract186_binding_abi_and_catalog_are_exact) {
                   bind_classicNoisedeck_cellRefract_cellRefract(wrong));
         },
         name);
-    cellrefract186_require_binding_error(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( "classicNoisedeck/cellRefract:cellRefract", values);
+        },
+        missing, name, "classicNoisedeck/cellRefract:cellRefract");
+    } else {
+      cellrefract186_require_binding_error(
         [&] {
           static_cast<void>(noisemaker::generated::bind(
               "classicNoisedeck/cellRefract:cellRefract", missing));
         },
         name);
+    }
     cellrefract186_require_binding_error(
         [&] {
           static_cast<void>(noisemaker::generated::bind(
@@ -22487,8 +22910,8 @@ TEST(typed_wobble189_binding_abi_and_catalog_are_exact) {
   REQUIRE(std::string_view("uniform binding 'timeScale' is missing")
               .find("time") != std::string_view::npos);
 
-  // Omit each of the five bindings and supply one wrong variant each; both
-  // binders must fail closed naming the binding.
+  // Missing samplers match explicit zero textures. Both binders reject wrong
+  // categories and missing uniforms with the binding name.
   for (const std::string_view name : names) {
     Wobble189Overrides omit;
     omit.missing = name;
@@ -22496,24 +22919,40 @@ TEST(typed_wobble189_binding_abi_and_catalog_are_exact) {
     variant.wrong = name;
     const auto missing = wobble189_bindings(fixture, input, omit);
     const auto wrong = wobble189_bindings(fixture, input, variant);
-    wobble189_require_binding_error(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_wobble_wobble(values);
+        },
+        missing, name, "filter/wobble:wobble");
+    } else {
+      wobble189_require_binding_error(
         [&] {
           static_cast<void>(
               noisemaker::generated::bind_filter_wobble_wobble(missing));
         },
         name);
+    }
     wobble189_require_binding_error(
         [&] {
           static_cast<void>(
               noisemaker::generated::bind_filter_wobble_wobble(wrong));
         },
         name);
-    wobble189_require_binding_error(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/wobble:wobble", values);
+        },
+        missing, name, "filter/wobble:wobble");
+    } else {
+      wobble189_require_binding_error(
         [&] {
           static_cast<void>(
               noisemaker::generated::bind("filter/wobble:wobble", missing));
         },
         name);
+    }
     wobble189_require_binding_error(
         [&] {
           static_cast<void>(
@@ -22988,8 +23427,7 @@ TEST(typed_parallax190_binding_abi_and_catalog_are_exact) {
     if (entry.key == "filter/parallax:parallax") bound = true;
   REQUIRE(bound);
 
-  // Omitting any binding must fail rather than silently default: run the
-  // smallest case with each binding withheld in turn.
+  // Missing samplers match explicit zero textures. Missing uniforms still fail.
   const auto& fixture = parallax190_oracle::kCases[0];
   const noisemaker::Surface input =
       parallax190_surface(fixture.input_words, fixture.input_width, fixture.input_height);
@@ -23006,6 +23444,18 @@ TEST(typed_parallax190_binding_abi_and_catalog_are_exact) {
     if (omitted != "direction")
       bindings.set_uniform("direction", noisemaker::glsl::DVec3(0.6, -0.3, 0.75));
     if (omitted != "pivot") bindings.set_uniform("pivot", 0.35);
+    if (omitted == "inputTex" || omitted == "heightMap") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_parallax_parallax(values);
+        },
+        bindings, omitted, "filter/parallax:parallax");
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/parallax:parallax", values);
+        },
+        bindings, omitted, "filter/parallax:parallax");
+    } else {
     bool threw = false;
     try {
       const noisemaker::Surface ignored = noisemaker::run_pass(
@@ -23016,6 +23466,7 @@ TEST(typed_parallax190_binding_abi_and_catalog_are_exact) {
       threw = true;
     }
     REQUIRE(threw);
+    }
   }
 }
 
@@ -23490,10 +23941,26 @@ void shared_native_integration_require_abi() {
                                                         row.binding_name);
     const auto wrong = shared_native_kaleido_bindings(kaleido_fixture, kaleido_input,
                                                       {}, &row);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido(missing),
+    if (row.binding_name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido( values);
+        },
+        missing, row.binding_name, "classicNoisedeck/kaleido:kaleido");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido(missing),
                       noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(kaleido187_oracle::kProgramKey, missing),
+    }
+    if (row.binding_name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(kaleido187_oracle::kProgramKey, values);
+        },
+        missing, row.binding_name, kaleido187_oracle::kProgramKey);
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(kaleido187_oracle::kProgramKey, missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_kaleido_kaleido(wrong),
                       noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind(kaleido187_oracle::kProgramKey, wrong),
@@ -23559,10 +24026,26 @@ void shared_native_integration_require_abi() {
                                                         row.binding);
     const auto wrong = shared_native_effects_bindings(effects_fixture, effects_input,
                                                       {}, &row);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_effects_effects(missing),
+    if (row.binding == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_classicNoisedeck_effects_effects( values);
+        },
+        missing, row.binding, "classicNoisedeck/effects:effects");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_effects_effects(missing),
                       noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(effects188_oracle::kProgramKey, missing),
+    }
+    if (row.binding == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(effects188_oracle::kProgramKey, values);
+        },
+        missing, row.binding, effects188_oracle::kProgramKey);
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(effects188_oracle::kProgramKey, missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_effects_effects(wrong),
                       noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind(effects188_oracle::kProgramKey, wrong),
@@ -23827,12 +24310,28 @@ void lightleak_native_integration_require_binding_abi() {
   for (const auto& binding : lightleak192_oracle::kBindingAbi) {
     const auto missing = lightleak_bindings(fixture, input, binding.name);
     const auto wrong = lightleak_bindings(fixture, input, {}, &binding);
-    REQUIRE_THROWS_AS(
+    if (binding.name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_lightLeak_lightLeak( values);
+        },
+        missing, binding.name, "filter/lightLeak:lightLeak");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_lightLeak_lightLeak(missing),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    }
+    if (binding.name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(lightleak192_oracle::kProgramKey, values);
+        },
+        missing, binding.name, lightleak192_oracle::kProgramKey);
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind(lightleak192_oracle::kProgramKey, missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind_filter_lightLeak_lightLeak(wrong),
         noisemaker::glsl::KernelBindingError);
@@ -26007,8 +26506,24 @@ void texture_native_integration_require_binding_abi() {
   for (const std::string_view name : names) {
     const auto missing = texture_bindings(fixture, controls, input, name);
     const auto wrong = texture_bindings(fixture, controls, input, {}, name);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/texture:texture", missing), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_texture_texture(missing), noisemaker::glsl::KernelBindingError);
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/texture:texture", values);
+        },
+        missing, name, "filter/texture:texture");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/texture:texture", missing), noisemaker::glsl::KernelBindingError);
+    }
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_texture_texture( values);
+        },
+        missing, name, "filter/texture:texture");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_texture_texture(missing), noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/texture:texture", wrong), noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_texture_texture(wrong), noisemaker::glsl::KernelBindingError);
   }
@@ -26362,12 +26877,28 @@ void distortion_native_integration_require_binding_abi() {
   for (const std::string_view name : names) {
     const auto missing = distortion_bindings(fixture, controls, input_tex, tex, name);
     const auto wrong = distortion_bindings(fixture, controls, input_tex, tex, {}, name);
-    REQUIRE_THROWS_AS(
+    if (name == "inputTex" || name == "tex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(distortion_oracle::kProgramKey, values);
+        },
+        missing, name, distortion_oracle::kProgramKey);
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind(distortion_oracle::kProgramKey, missing),
         noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(
+    }
+    if (name == "inputTex" || name == "tex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_mixer_distortion_distortion( values);
+        },
+        missing, name, "mixer/distortion:distortion");
+    } else {
+      REQUIRE_THROWS_AS(
         noisemaker::generated::bind_mixer_distortion_distortion(missing),
         noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(
         noisemaker::generated::bind(distortion_oracle::kProgramKey, wrong),
         noisemaker::glsl::KernelBindingError);
@@ -26757,7 +27288,17 @@ void remap_native_integration_require_binding_abi() {
       "zone3_tex", "zone4_tex", "zone5_tex", "zone6_tex", "zone7_tex"};
   for (const auto& name : required_names) {
     const auto missing = remap_bindings(fixture, input, zone1_input, name);
-    REQUIRE_THROWS_AS(noisemaker::effects::bind_remap(missing), noisemaker::glsl::KernelBindingError);
+    if (name == "zone0_tex" || name == "zone1_tex" || name == "zone2_tex" ||
+        name == "zone3_tex" || name == "zone4_tex" || name == "zone5_tex" ||
+        name == "zone6_tex" || name == "zone7_tex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::effects::bind_remap( values);
+        },
+        missing, name, "synth/remap:remap");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::effects::bind_remap(missing), noisemaker::glsl::KernelBindingError);
+    }
     const auto wrong = remap_bindings(fixture, input, zone1_input, {}, name);
     REQUIRE_THROWS_AS(noisemaker::effects::bind_remap(wrong), noisemaker::glsl::KernelBindingError);
   }
@@ -27438,10 +27979,26 @@ void osd_native_integration_require_binding_abi() {
   for (const std::string_view name : names) {
     const auto missing = osd_bindings(fixture, controls, input, name);
     const auto wrong = osd_bindings(fixture, controls, input, {}, name);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/osd:osd", missing),
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/osd:osd", values);
+        },
+        missing, name, "filter/osd:osd");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/osd:osd", missing),
                       noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_osd_osd(missing),
+    }
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_osd_osd( values);
+        },
+        missing, name, "filter/osd:osd");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_osd_osd(missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/osd:osd", wrong),
                       noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_osd_osd(wrong),
@@ -27799,8 +28356,24 @@ TEST(typed_historic_palette_native_binding_abi_catalog_and_mutation_metadata) {
   const auto& fixture = historic_palette_oracle::kCases.front();
   auto input = historic_palette_native::input_surface(fixture);
   for (const auto name : names) {
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(historic_palette_oracle::kProgramKey, historic_palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_historicPalette_historicPalette(historic_palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(historic_palette_oracle::kProgramKey, values);
+        },
+        historic_palette_native::bindings(fixture, input, name), name, historic_palette_oracle::kProgramKey);
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(historic_palette_oracle::kProgramKey, historic_palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
+    }
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_historicPalette_historicPalette( values);
+        },
+        historic_palette_native::bindings(fixture, input, name), name, "filter/historicPalette:historicPalette");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_historicPalette_historicPalette(historic_palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind(historic_palette_oracle::kProgramKey, historic_palette_native::bindings(fixture, input, {}, name)), noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_historicPalette_historicPalette(historic_palette_native::bindings(fixture, input, {}, name)), noisemaker::glsl::KernelBindingError);
   }
@@ -27883,8 +28456,24 @@ TEST(typed_palette_native_binding_abi_catalog_and_mutation_metadata) {
   const auto& fixture = noisemaker_palette_oracle::kCases.front();
   auto input = palette_native::input_surface(fixture);
   for (const auto name : names) {
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(noisemaker_palette_oracle::kProgramKey, palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_palette_palette(palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(noisemaker_palette_oracle::kProgramKey, values);
+        },
+        palette_native::bindings(fixture, input, name), name, noisemaker_palette_oracle::kProgramKey);
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(noisemaker_palette_oracle::kProgramKey, palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
+    }
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_palette_palette( values);
+        },
+        palette_native::bindings(fixture, input, name), name, "filter/palette:palette");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_palette_palette(palette_native::bindings(fixture, input, name)), noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind(noisemaker_palette_oracle::kProgramKey, palette_native::bindings(fixture, input, {}, name)), noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_palette_palette(palette_native::bindings(fixture, input, {}, name)), noisemaker::glsl::KernelBindingError);
   }
@@ -28200,8 +28789,24 @@ TEST(typed_color_lab_native_binding_abi_catalog_and_mutation_metadata) {
   const auto c = color_lab_native::controls(fixture.name);
   auto input = color_lab_native::input_surface(fixture);
   for (const auto name : names) {
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(noisemaker_color_lab_oracle::kProgramKey, color_lab_native::bindings(fixture, c, input, name)), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_colorLab_colorLab(color_lab_native::bindings(fixture, c, input, name)), noisemaker::glsl::KernelBindingError);
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(noisemaker_color_lab_oracle::kProgramKey, values);
+        },
+        color_lab_native::bindings(fixture, c, input, name), name, noisemaker_color_lab_oracle::kProgramKey);
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(noisemaker_color_lab_oracle::kProgramKey, color_lab_native::bindings(fixture, c, input, name)), noisemaker::glsl::KernelBindingError);
+    }
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_classicNoisedeck_colorLab_colorLab( values);
+        },
+        color_lab_native::bindings(fixture, c, input, name), name, "classicNoisedeck/colorLab:colorLab");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_colorLab_colorLab(color_lab_native::bindings(fixture, c, input, name)), noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind(noisemaker_color_lab_oracle::kProgramKey, color_lab_native::bindings(fixture, c, input, {}, name)), noisemaker::glsl::KernelBindingError);
     REQUIRE_THROWS_AS(noisemaker::generated::bind_classicNoisedeck_colorLab_colorLab(color_lab_native::bindings(fixture, c, input, {}, name)), noisemaker::glsl::KernelBindingError);
   }
@@ -28468,13 +29073,29 @@ TEST(typed_spooky_ticker_native_binding_abi_catalog_and_mutation_metadata) {
   const auto& fixture = noisemaker_spooky_ticker_oracle::kCases.front();
   auto input = spooky_ticker_native::input_surface(fixture);
   for (const auto name : names) {
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind( "filter/spookyTicker:spookyTicker", values);
+        },
+        spooky_ticker_native::bindings(fixture, input, name), name, "filter/spookyTicker:spookyTicker");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(
                           "filter/spookyTicker:spookyTicker",
                           spooky_ticker_native::bindings(fixture, input, name)),
                       noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_spookyTicker_spookyTicker(
+    }
+    if (name == "inputTex") {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_spookyTicker_spookyTicker( values);
+        },
+        spooky_ticker_native::bindings(fixture, input, name), name, "filter/spookyTicker:spookyTicker");
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_spookyTicker_spookyTicker(
                           spooky_ticker_native::bindings(fixture, input, name)),
                       noisemaker::glsl::KernelBindingError);
+    }
     REQUIRE_THROWS_AS(noisemaker::generated::bind(
                           "filter/spookyTicker:spookyTicker",
                           spooky_ticker_native::bindings(fixture, input, {}, name)),
@@ -28701,10 +29322,16 @@ void median_native_integration_require_binding_abi() {
   const auto missing_threshold = median_native::bindings(fixture, input, "threshold");
   const auto wrong_input = median_native::bindings(fixture, input, {}, "inputTex");
   const auto wrong_threshold = median_native::bindings(fixture, input, {}, "threshold");
-  REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/median:median", missing_input),
-                    noisemaker::glsl::KernelBindingError);
-  REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_median_median(missing_input),
-                    noisemaker::glsl::KernelBindingError);
+  require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/median:median", values);
+        },
+        missing_input, "inputTex", "filter/median:median");
+  require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind_filter_median_median( values);
+        },
+        missing_input, "inputTex", "filter/median:median");
   REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/median:median", missing_threshold),
                     noisemaker::glsl::KernelBindingError);
   REQUIRE_THROWS_AS(noisemaker::generated::bind_filter_median_median(missing_threshold),

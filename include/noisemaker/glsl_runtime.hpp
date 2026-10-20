@@ -244,6 +244,7 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> component_max(double 
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> clamp(const Vec<N,float>& x,double low,double high) { Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=noisemaker::f32(clamp(static_cast<double>(x[i]),low,high));return result; }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> mix(const Vec<N,float>& a,const Vec<N,float>& b,double amount) { Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=noisemaker::f32(static_cast<double>(a[i])*(1.0-amount)+static_cast<double>(b[i])*amount);return result; }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> mix(const Vec<N,float>& a,const Vec<N,float>& b,float amount) { return mix(a,b,static_cast<double>(amount)); }
+template <std::size_t N, std::integral I> [[nodiscard]] inline Vec<N,float> mix(const Vec<N,float>& a,const Vec<N,float>& b,I amount) { return mix(a,b,static_cast<double>(amount)); }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> step(double edge,const Vec<N,float>& x) { Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=static_cast<double>(x[i])<edge?0.0f:1.0f;return result; }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> smoothstep(double edge0,double edge1,const Vec<N,float>& x) { Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=noisemaker::f32(smoothstep(edge0,edge1,static_cast<double>(x[i])));return result; }
 
@@ -471,7 +472,10 @@ class Bindings {
   template <class T> [[nodiscard]] T get(std::string_view name) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())throw KernelBindingError("uniform binding '"+std::string(name)+"' is missing");if(const auto* value=std::get_if<T>(&found->second);value!=nullptr)return *value;throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
   template <class T> [[nodiscard]] T get_or(std::string_view name,const T& fallback) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())return fallback;if(const auto* value=std::get_if<T>(&found->second);value!=nullptr)return *value;throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
   [[nodiscard]] double get_number(std::string_view name) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())throw KernelBindingError("uniform binding '"+std::string(name)+"' is missing");if(const auto* value=std::get_if<double>(&found->second);value!=nullptr)return *value;if(const auto* value=std::get_if<float>(&found->second);value!=nullptr)return static_cast<double>(*value);throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
+  // Metadata queries and adapters that access surface fields require a binding.
   [[nodiscard]] const noisemaker::Surface& texture(std::string_view name) const;
+  // GLSL pixel reads default an absent sampler to immutable transparent black.
+  [[nodiscard]] const noisemaker::Surface& texture_or_black(std::string_view name) const;
  private:
   std::unordered_map<std::string,UniformValue> uniforms_;
   std::unordered_map<std::string,const noisemaker::Surface*> textures_;

@@ -65,5 +65,18 @@ float fract(double x) noexcept { return noisemaker::f32(x-std::floor(x)); }
 double round(double x) noexcept { return noisemaker::glsl_round(x); }
 void Bindings::set_uniform(std::string name,UniformValue value) { if(name.empty())throw KernelBindingError("uniform binding name must not be empty");uniforms_.insert_or_assign(std::move(name),std::move(value)); }
 void Bindings::set_texture(std::string name,const noisemaker::Surface& surface) { if(name.empty())throw KernelBindingError("sampler binding name must not be empty");textures_.insert_or_assign(std::move(name),&surface); }
-const noisemaker::Surface& Bindings::texture(std::string_view name) const { const auto found=textures_.find(std::string(name));if(found==textures_.end())throw KernelBindingError("sampler binding '"+std::string(name)+"' is missing");return *found->second; }
+const noisemaker::Surface& Bindings::texture(std::string_view name) const {
+  const auto found = textures_.find(std::string(name));
+  if (found == textures_.end())
+    throw KernelBindingError("sampler binding '" + std::string(name) + "' is missing");
+  return *found->second;
+}
+const noisemaker::Surface& Bindings::texture_or_black(std::string_view name) const {
+  const auto found = textures_.find(std::string(name));
+  if (found != textures_.end()) return *found->second;
+  if (uniforms_.contains(std::string(name)))
+    throw KernelBindingError("sampler binding '" + std::string(name) + "' is missing");
+  static const noisemaker::Surface transparent_black(1, 1);
+  return transparent_black;
+}
 }  // namespace noisemaker::glsl

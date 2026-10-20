@@ -500,7 +500,7 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
             "src/typed_generated/typed_slice.cpp":
                 "761f9b59548fc92eadaf9b2d97fdd6e51a4ca66ddb6a2d12bb4331321f9c1952",
             "src/typed_generated/typed_manifest.json":
-                "a8a808400cb627db2d878524c106bfde3df1f89e886a39fe06928974b71d20fa",
+                "cc0e9981382e5a9634d38bf203bcf44b69fd43afba2064f49bfd00c096004b41",
             "include/noisemaker/generated/catalog.hpp":
                 "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
         }
@@ -508,7 +508,7 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
             "src/typed_generated/typed_slice.cpp":
                 "01b0f3f2f675c1404dfb395395c63f3fb29779092d03647caf1e2bf930e4b57d",
             "src/typed_generated/typed_manifest.json":
-                "4f8e5321a46f09a876b1cc839680fc069cbb13adffbc80868d74e3eda378e2d9",
+                "62e5d67a0b8f08d5ce922c766da3732929423b380f4c16dc1391c52a677f7117",
             "include/noisemaker/generated/catalog.hpp":
                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }

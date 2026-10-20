@@ -267,7 +267,7 @@ BoundKernel bind_remap(const glsl::Bindings& b) {
       zs.verts[static_cast<std::size_t>(pair)] =
           b.get_or<DVec4>(prefix + "v" + std::to_string(pair), DVec4(0.0, 0.0, 0.0, 0.0));
     }
-    zs.texture = &b.texture(prefix + "tex");
+    zs.texture = &b.texture_or_black(prefix + "tex");
   }
   return BoundKernel(state, &pixel);
 }

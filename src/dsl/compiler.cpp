@@ -317,10 +317,14 @@ struct ResolvedArgument { std::optional<std::string> name; PlanValue value; Sour
 
 // The authority's `let` bindings: a partial keeps its call unresolved (its
 // arguments resolve where it is called), an alias names an effect function,
-// and a value binding holds an evaluated value.
+// and a value binding resolves its expression at its first use.
 struct Partial { Call call; };
 struct Alias { std::string name; };
-using InternalBinding = std::variant<PlanValue, Partial, Alias>;
+struct LazyValue {
+  std::variant<Value, Call> expression;
+  std::optional<PlanValue> value;
+};
+using InternalBinding = std::variant<LazyValue, Partial, Alias>;
 
 // The authority's CompileScope: the bindings of a program plus the compiler of
 // chain arguments. A chain in an argument compiles to its own chain that writes
@@ -331,6 +335,7 @@ struct Scope {
   std::vector<std::string> search;
   std::vector<graph::InlineChain>* pending = nullptr;
   std::size_t inline_count = 0;
+  std::vector<std::string> pending_names;
   ExecutionPlan* plan = nullptr;
   SourceLocation first_unavailable{};
   bool have_unavailable = false;
@@ -340,7 +345,8 @@ struct Scope {
   throw DslError(std::move(message), loc);
 }
 
-PlanValue evaluate(const Value& value, Scope& scope, int osc_depth = 0);
+PlanValue evaluate(const Value& value, Scope& scope, int osc_depth = 0,
+                   const std::vector<std::string>& resolving = {});
 ExecutionChain compile_chain(const Chain& chain, Scope& scope, bool inline_chain);
 
 // Mirrors upstream std_enums.js oscKind (sine..noise2d; noise/noise1d alias kind
@@ -364,7 +370,8 @@ PlanValue ignore_input(const Call& call) {
 // select by name, every field takes the upstream default, min/max clamp into
 // [0, 1], fields may nest osc(), and the type resolves from an integer 0-6 or an
 // oscKind name (bare or oscKind-qualified).
-PlanValue compile_oscillator(const Call& call, Scope& scope, int depth) {
+PlanValue compile_oscillator(const Call& call, Scope& scope, int depth,
+                             const std::vector<std::string>& resolving = {}) {
   if (depth > kMaxAutomationDepth) {
     value_error("Automation nesting exceeds the maximum depth of " + std::to_string(kMaxAutomationDepth), call.loc);
   }
@@ -386,7 +393,7 @@ PlanValue compile_oscillator(const Call& call, Scope& scope, int depth) {
 
   int osc_type = 0;
   if (fields[0] != nullptr) {
-    const PlanValue raw = evaluate(*fields[0], scope, depth + 1);
+    const PlanValue raw = evaluate(*fields[0], scope, depth + 1, resolving);
     if (raw.kind == PlanValue::Kind::number) {
       if (!(std::isfinite(raw.number) && raw.number == std::trunc(raw.number) && raw.number >= 0 &&
             raw.number <= 6)) {
@@ -410,7 +417,7 @@ PlanValue compile_oscillator(const Call& call, Scope& scope, int depth) {
 
   const auto number_field = [&](std::size_t index, std::string_view name, double fallback, bool clamp) {
     if (fields[index] == nullptr) return PlanValue::number_value(fallback);
-    const PlanValue value = evaluate(*fields[index], scope, depth + 1);
+    const PlanValue value = evaluate(*fields[index], scope, depth + 1, resolving);
     if (value.kind == PlanValue::Kind::null_value) return PlanValue::number_value(fallback);
     if (value.kind == PlanValue::Kind::oscillator) return value;
     if (value.kind == PlanValue::Kind::boolean) return PlanValue::number_value(value.boolean ? 1.0 : 0.0);
@@ -435,7 +442,8 @@ PlanValue compile_inline_chain(const Chain& chain, Scope& scope) {
   return PlanValue::surface_value(SurfaceReference::named(surface, 0, chain.loc));
 }
 
-PlanValue evaluate(const Value& value, Scope& scope, int osc_depth) {
+PlanValue evaluate(const Value& value, Scope& scope, int osc_depth,
+                   const std::vector<std::string>& resolving) {
   switch (value.kind) {
     case Value::Kind::number: return PlanValue::number_value(value.number());
     case Value::Kind::string: return PlanValue::string_value(value.string_value());
@@ -452,39 +460,58 @@ PlanValue evaluate(const Value& value, Scope& scope, int osc_depth) {
     case Value::Kind::array: {
       std::vector<PlanValue> values;
       values.reserve(value.array_value().values.size());
-      for (const auto& item : value.array_value().values) values.push_back(evaluate(item, scope, osc_depth));
+      for (const auto& item : value.array_value().values) values.push_back(evaluate(item, scope, osc_depth, resolving));
       return PlanValue::array_value(std::move(values));
     }
     case Value::Kind::call: {
       if (unsupported_input_name(value.call().name)) return ignore_input(value.call());
-      if (value.call().name == "osc") return compile_oscillator(value.call(), scope, osc_depth);
+      if (value.call().name == "osc") return compile_oscillator(value.call(), scope, osc_depth, resolving);
       value_error("Unsupported DSL value Call \"" + value.call().name + "\"", value.loc);
     }
     case Value::Kind::identifier: {
       const auto& identifier = value.identifier_value();
       const auto found = scope.bindings.find(identifier.name);
-      if (found == scope.bindings.end()) return PlanValue::string_value(identifier.name);
+      if (found == scope.bindings.end()) {
+        if (std::find(scope.pending_names.begin(), scope.pending_names.end(), identifier.name) != scope.pending_names.end()) {
+          value_error("Variable used before assignment: '" + identifier.name + "'", value.loc);
+        }
+        return PlanValue::string_value(identifier.name);
+      }
       if (std::holds_alternative<Partial>(found->second)) value_error("Effect partial \"" + identifier.name + "\" cannot be used as a value", value.loc);
       // An effect alias used as a value stays the effect's bare name.
       if (const auto* alias = std::get_if<Alias>(&found->second)) return PlanValue::string_value(alias->name);
-      return std::get<PlanValue>(found->second);
+      auto& binding = std::get<LazyValue>(found->second);
+      if (binding.value.has_value()) return *binding.value;
+      if (std::find(resolving.begin(), resolving.end(), identifier.name) != resolving.end()) {
+        std::string message = "Automation cycle detected: ";
+        for (const auto& name : resolving) message += name + " -> ";
+        value_error(message + identifier.name, value.loc);
+      }
+      auto next = resolving;
+      next.push_back(identifier.name);
+      if (const auto* call = std::get_if<Call>(&binding.expression)) {
+        binding.value = call->name == "osc" ? compile_oscillator(*call, scope, osc_depth, next) : ignore_input(*call);
+      } else {
+        binding.value = evaluate(std::get<Value>(binding.expression), scope, osc_depth, next);
+      }
+      return *binding.value;
     }
     case Value::Kind::vector: {
       std::vector<PlanValue> values;
-      for (const auto& item : value.vector().values) values.push_back(evaluate(item, scope));
+      for (const auto& item : value.vector().values) values.push_back(evaluate(item, scope, 0, resolving));
       bool numeric = values.size() == value.vector().width;
       for (const auto& item : values) numeric = numeric && item.kind == PlanValue::Kind::number;
       if (!numeric) value_error("vec" + std::to_string(value.vector().width) + " requires " + std::to_string(value.vector().width) + " numeric values", value.loc);
       return PlanValue::array_value(std::move(values));
     }
     case Value::Kind::unary: {
-      const PlanValue operand = evaluate(*value.unary().argument, scope);
+      const PlanValue operand = evaluate(*value.unary().argument, scope, 0, resolving);
       if (operand.kind != PlanValue::Kind::number) value_error("Unary arithmetic requires a number", value.loc);
       return PlanValue::number_value(value.unary().operator_token == '-' ? -operand.number : operand.number);
     }
     case Value::Kind::binary: {
-      const PlanValue left = evaluate(*value.binary().left, scope);
-      const PlanValue right = evaluate(*value.binary().right, scope);
+      const PlanValue left = evaluate(*value.binary().left, scope, 0, resolving);
+      const PlanValue right = evaluate(*value.binary().right, scope, 0, resolving);
       if (left.kind != PlanValue::Kind::number || right.kind != PlanValue::Kind::number) value_error("Arithmetic requires numeric values", value.loc);
       switch (value.binary().operator_token) {
         case '+': return PlanValue::number_value(left.number + right.number);
@@ -779,6 +806,29 @@ std::optional<InternalBinding> alias_binding(const Value& value, const Scope& sc
   return std::nullopt;
 }
 
+void declare_binding(const Binding& binding, Scope& scope) {
+  if (const auto* call = std::get_if<Call>(&binding.value)) {
+    if (call->name != "osc" && !unsupported_input_name(call->name)) {
+      scope.bindings.insert_or_assign(binding.name, Partial{*call});
+      return;
+    }
+  } else {
+    const auto& value = std::get<Value>(binding.value);
+    if (auto alias = alias_binding(value, scope); alias.has_value()) {
+      scope.bindings.insert_or_assign(binding.name, std::move(*alias));
+      return;
+    }
+    if (value.kind == Value::Kind::identifier) {
+      const auto& name = value.identifier_value().name;
+      if (name.find('.') == std::string::npos && scope.bindings.find(name) == scope.bindings.end() &&
+          scope.registry->resolve(name, scope.search) == nullptr) {
+        value_error("Variable used before assignment: '" + name + "'", value.loc);
+      }
+    }
+  }
+  scope.bindings.insert_or_assign(binding.name, LazyValue{binding.value, std::nullopt});
+}
+
 }  // namespace
 
 ExecutionPlan compile(std::string_view source, const effects::EffectRegistry& registry,
@@ -798,23 +848,12 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
   scope.registry = &registry;
   scope.search = program.search;
   scope.plan = &plan;
-  for (const auto& binding : program.bindings) {
-    if (scope.bindings.find(binding.name) != scope.bindings.end()) throw DslError("Duplicate binding \"" + binding.name + "\"", binding.loc);
-    if (std::holds_alternative<Call>(binding.value) && std::get<Call>(binding.value).name == "osc") {
-      // `let name = osc(...)` binds an automation value, not an effect partial.
-      scope.bindings.emplace(binding.name, compile_oscillator(std::get<Call>(binding.value), scope, 0));
-    } else if (std::holds_alternative<Call>(binding.value) && unsupported_input_name(std::get<Call>(binding.value).name)) {
-      scope.bindings.emplace(binding.name, ignore_input(std::get<Call>(binding.value)));
-    } else if (std::holds_alternative<Call>(binding.value)) {
-      // A partial keeps its call unresolved. Its arguments resolve where it is
-      // called, as upstream's validator substitutes a symbol at each use.
-      scope.bindings.emplace(binding.name, Partial{std::get<Call>(binding.value)});
-    } else if (auto alias = alias_binding(std::get<Value>(binding.value), scope); alias.has_value()) {
-      scope.bindings.emplace(binding.name, std::move(*alias));
-    } else {
-      scope.bindings.emplace(binding.name, evaluate(std::get<Value>(binding.value), scope));
+  std::size_t next_binding = 0;
+  const auto declare_through = [&](std::size_t chain_index) {
+    while (next_binding < program.bindings.size() && program.bindings[next_binding].plan_index <= chain_index) {
+      declare_binding(program.bindings[next_binding++], scope);
     }
-  }
+  };
 
   plan.search = program.search;
   plan.require_executable = options.require_executable;
@@ -842,7 +881,16 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
                             provenance.counts.incomplete_definitions};
   plan.provenance.source_name = program.loc.source_name;
 
-  for (const auto& source_chain : program.chains) plan.chains.push_back(compile_chain(source_chain, scope, false));
+  for (std::size_t chain_index = 0; chain_index < program.chains.size(); ++chain_index) {
+    declare_through(chain_index);
+    scope.pending_names.clear();
+    for (std::size_t index = next_binding; index < program.bindings.size(); ++index) {
+      scope.pending_names.push_back(program.bindings[index].name);
+    }
+    plan.chains.push_back(compile_chain(program.chains[chain_index], scope, false));
+    scope.pending_names.clear();
+  }
+  declare_through(std::numeric_limits<std::size_t>::max());
   SurfaceReference last_written;
   for (const auto& chain : plan.chains) {
     for (const auto& step : chain.steps) if (const auto* write = std::get_if<graph::WriteStep>(&step)) last_written = write->surface;

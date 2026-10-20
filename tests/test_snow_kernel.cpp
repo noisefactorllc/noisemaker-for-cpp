@@ -1,5 +1,7 @@
 #include "test_harness.hpp"
 
+#include <array>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -92,4 +94,44 @@ TEST(snow_kernel_never_binds_resolution_or_tile_offset) {
   const auto kernel = noisemaker::effects::bind_snow(bindings);
   const Surface rendered = noisemaker::run_pass(kernel, 3U, 3U, 0.0F, 0.0F, 0U, 0.0F);
   REQUIRE(rendered.data().size() == 3U * 3U * 4U);
+}
+
+TEST(cpu_adapter_sync_snow_fetches_use_javascript_int32_coercion) {
+  struct FetchCase { std::array<std::uint32_t,2> coordinates; std::array<std::uint32_t,4> output; };
+  constexpr std::array<FetchCase,5> fetch_cases = {{
+  FetchCase{{0x7fc00000u,0x7fc00000u},{0x3ea5294au,0x3ec1bad0u,0x3df9c190u,0x3e124925u}},
+  FetchCase{{0x7f800000u,0xff800000u},{0x3ea5294au,0x3ec1bad0u,0x3df9c190u,0x3e124925u}},
+  FetchCase{{0x4f800000u,0x4f800000u},{0x3ea5294au,0x3ec1bad0u,0x3df9c190u,0x3e124925u}},
+  FetchCase{{0xbff33333u,0x3ff33333u},{0x3e25294au,0x3e41bad0u,0x3f0f9c19u,0x3f124925u}},
+  FetchCase{{0x7149f2cau,0xf149f2cau},{0x3ea5294au,0x3ec1bad0u,0x3df9c190u,0x3e124925u}},
+  }};
+  std::vector<float> data;
+  for (std::size_t i = 0; i < 12U; ++i) {
+    const auto x = i % 4U;
+    const auto y = i / 4U;
+    data.insert(data.end(), {
+        static_cast<float>(static_cast<double>((3U*x+5U*y)%31U)/31.0),
+        static_cast<float>(static_cast<double>((11U*x+7U*y)%37U)/37.0),
+        static_cast<float>(static_cast<double>((17U*x+23U*y)%41U)/41.0),
+        static_cast<float>(static_cast<double>(i%7U)/7.0)});
+  }
+  const Surface input(4U, 3U, data);
+  Bindings bindings;
+  bindings.set_texture("inputTex", input);
+  bindings.set_uniform("alpha", 0.0);
+  bindings.set_uniform("time", 0.25);
+  bindings.set_uniform("pause", 0.0);
+  bindings.set_uniform("density", 75.0);
+  const auto kernel = noisemaker::effects::bind_snow(bindings);
+  for (const auto& fixture : fetch_cases) {
+    noisemaker::glsl::PixelContext context;
+    context.frag_coord = noisemaker::glsl::Vec4(
+        std::bit_cast<float>(fixture.coordinates[0]),
+        std::bit_cast<float>(fixture.coordinates[1]), 0.0F, 1.0F);
+    noisemaker::glsl::Vec4 out;
+    kernel.run_pixel(context, out);
+    for (std::size_t lane = 0; lane < 4U; ++lane) {
+      REQUIRE(std::bit_cast<std::uint32_t>(out[lane]) == fixture.output[lane]);
+    }
+  }
 }

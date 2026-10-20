@@ -1,13 +1,16 @@
 #include "test_harness.hpp"
 
 #include <array>
+#include <bit>
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
 #include <type_traits>
 
 #include "noisemaker/glsl_runtime.hpp"
+#include "noisemaker/sampler.hpp"
 
 namespace {
 template <class Left, class Right>
@@ -435,14 +438,45 @@ TEST(glsl_bindings_preserve_number_uniforms_and_widen_legacy_float_bindings) {
                           "uniform binding 'wrong'");
 }
 
-TEST(glsl_bindings_store_nonowning_texture_references_and_report_missing_samplers) {
+TEST(glsl_bindings_store_nonowning_texture_references_and_reject_empty_names) {
   using namespace noisemaker::glsl;
   noisemaker::Surface surface(1, 1);
   Bindings bindings;
   bindings.set_texture("input", surface);
   REQUIRE(std::addressof(bindings.texture("input")) == std::addressof(surface));
-  require_binding_message([&] { static_cast<void>(bindings.texture("missing")); }, "sampler binding 'missing'");
   require_binding_message([&] { bindings.set_texture("", surface); }, "sampler");
+}
+
+TEST(glsl_bindings_texture_metadata_requires_a_bound_surface) {
+  const noisemaker::glsl::Bindings missing;
+  bool rejected = false;
+  try {
+    static_cast<void>(missing.texture("inputTex"));
+  } catch (const noisemaker::glsl::KernelBindingError& error) {
+    rejected = true;
+    REQUIRE(std::string_view(error.what()) == "sampler binding 'inputTex' is missing");
+  }
+  REQUIRE(rejected);
+  const noisemaker::Surface surface(2U, 3U);
+  noisemaker::glsl::Bindings bound;
+  bound.set_texture("inputTex", surface);
+  REQUIRE(&bound.texture("inputTex") == &surface);
+}
+
+TEST(glsl_bindings_samplers_reject_present_uniform_values) {
+  noisemaker::glsl::Bindings bindings;
+  bindings.set_uniform("inputTex", 1.0);
+  REQUIRE_THROWS_AS(bindings.texture("inputTex"), noisemaker::glsl::KernelBindingError);
+  REQUIRE_THROWS_AS(bindings.texture_or_black("inputTex"), noisemaker::glsl::KernelBindingError);
+}
+
+TEST(glsl_bindings_unbound_samplers_read_transparent_black) {
+  const noisemaker::glsl::Bindings bindings;
+  const auto& surface = bindings.texture_or_black("unbound");
+  for (const auto& sample : {noisemaker::sample_texture_bottom_left(surface, 0.25f, 0.75f),
+                             noisemaker::texel_fetch_bottom_left(surface, 0, 0)}) {
+    for (const float component : sample) REQUIRE(component == 0.0f);
+  }
 }
 
 TEST(glsl_pixel_context_defaults_to_zero) {
@@ -497,4 +531,42 @@ TEST(glsl_tanh_vec3_and_wide_mod_match_glsl_semantics) {
   REQUIRE((mod(Vec3(-1.0f, -289.0f, -290.0f), 289.0) == Vec3(288.0f, 0.0f, 288.0f)));
   REQUIRE((mod(Vec4(-1.0f, -2.0f, 3.0f, -289.0f), 289.0) ==
            Vec4(288.0f, 287.0f, 3.0f, 0.0f)));
+}
+
+TEST(cpu_mix_signed_integer_selector_keeps_number_precision) {
+  using namespace noisemaker::glsl;
+  const Vec4 x(std::bit_cast<float>(1065353217U), std::bit_cast<float>(1051372203U), -0.75f, 0.125f);
+  const Vec4 y(std::bit_cast<float>(1065353219U), std::bit_cast<float>(1051372204U), 0.625f, -0.25f);
+  constexpr std::array<std::int32_t, 5> selectors{0, 1, -1, 16777217, 2147483647};
+  constexpr std::array<std::array<std::uint32_t, 4>, 5> expected{{
+    {1065353217U, 1051372203U, 3208642560U, 1040187392U},
+    {1065353219U, 1051372204U, 1059061760U, 3196059648U},
+    {1065353214U, 1051372202U, 3221749760U, 1056964608U},
+    {1084227585U, 1062557014U, 1269825536U, 3401580544U},
+    {1140867072U, 1115728555U, 1328545792U, 3460300800U},
+  }};
+  for (std::size_t index = 0; index < selectors.size(); ++index) {
+    const auto actual = mix(x, y, selectors[index]);
+    for (std::size_t lane = 0; lane < 4U; ++lane) {
+      REQUIRE(std::bit_cast<std::uint32_t>(actual[lane]) == expected[index][lane]);
+    }
+  }
+  const auto narrow = mix(Vec2(x[0], x[1]), Vec2(y[0], y[1]), std::int32_t{16777217});
+  const auto triple = mix(Vec3(x[0], x[1], x[2]), Vec3(y[0], y[1], y[2]), std::int32_t{-1});
+  REQUIRE(std::bit_cast<std::uint32_t>(narrow[0]) == 1084227585U);
+  REQUIRE(std::bit_cast<std::uint32_t>(narrow[1]) == 1062557014U);
+  REQUIRE(std::bit_cast<std::uint32_t>(triple[2]) == 3221749760U);
+  REQUIRE(std::bit_cast<std::uint32_t>(mix(x, y, 16777217.0)[0]) == 1084227585U);
+  REQUIRE(std::bit_cast<std::uint32_t>(mix(x, y, static_cast<float>(16777217))[0]) == 1084227584U);
+}
+
+TEST(cpu_mix_unsigned_integer_selector_keeps_number_precision) {
+  using namespace noisemaker::glsl;
+  const Vec4 x(std::bit_cast<float>(1065353217U), std::bit_cast<float>(1051372203U), -0.75f, 0.125f);
+  const Vec4 y(std::bit_cast<float>(1065353219U), std::bit_cast<float>(1051372204U), 0.625f, -0.25f);
+  const auto actual = mix(x, y, std::uint32_t{4294967295U});
+  constexpr std::array<std::uint32_t, 4> expected{1149247488U, 1124095317U, 1336934400U, 3468689408U};
+  for (std::size_t lane = 0; lane < 4U; ++lane) {
+    REQUIRE(std::bit_cast<std::uint32_t>(actual[lane]) == expected[lane]);
+  }
 }

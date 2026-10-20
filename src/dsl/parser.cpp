@@ -36,7 +36,9 @@ class Parser {
     while (!at_end()) {
       if (match(";")) continue;
       if (match("let")) {
-        result.bindings.push_back(binding(previous()));
+        auto declared = binding(previous());
+        declared.plan_index = result.chains.size();
+        result.bindings.push_back(std::move(declared));
       } else if (match("render")) {
         if (result.render.has_value()) {
           throw DslError("Program may only declare one render surface", location(previous()));

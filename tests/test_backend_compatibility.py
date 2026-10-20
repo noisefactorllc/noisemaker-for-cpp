@@ -28,6 +28,62 @@ SHADER_GIT = pathlib.Path(SHADER_ENV or "/nonexistent")
 MANIFEST = ROOT / "src/effects/generated/backend_compatibility.json"
 
 
+class UnboundSamplerCompatibilityTests(unittest.TestCase):
+    def test_persisted_unfed_sampler_is_validated_against_its_pass(self) -> None:
+        document = json.loads(MANIFEST.read_text())
+        key = "filter/blur:blurH"
+        rows = [row for section in ("canonical_programs", "fragments")
+                for row in document[section] if row["program_key"] == key]
+        self.assertEqual(2, len(rows))
+        name = rows[0]["samplers"][0]["name"]
+        for row in rows:
+            row["samplers"][0].update(source="transparent_black", resource=None)
+            del row["authority_pass"]["inputs"][name]
+        for row in document["reference_passes"]:
+            if row["program_key"] == key:
+                del row["authority_pass"]["inputs"][name]
+        typed = generator._authenticated_typed_manifest(ROOT)
+        evidence = generator._factory_evidence(
+            ROOT, {row["program_key"]: row for row in typed["programs"]},
+            {row["program_key"]: row for row in document["canonical_programs"]})
+        generator.validate_document(document, factory_evidence=evidence)
+        for mutation in ({"resource": "forged"}, {"source": "forged"},
+                         {"type": "float"}, {"cpp_type": "float"}):
+            with self.subTest(mutation=mutation):
+                forged = copy.deepcopy(document)
+                for section in ("canonical_programs", "fragments"):
+                    row = next(row for row in forged[section] if row["program_key"] == key)
+                    row["samplers"][0].update(mutation)
+                with self.assertRaises(generator.CompatibilityError):
+                    generator.validate_document(forged, factory_evidence=evidence)
+        rows[0]["authority_pass"]["inputs"][name] = "requiredTex"
+        with self.assertRaises(generator.CompatibilityError):
+            generator.validate_document(document, factory_evidence=evidence)
+
+    def test_unfed_sampler_has_an_explicit_black_source(self) -> None:
+        typed = {"program_key": "fixture/unbound:main", "typed_abi": {
+            "uniforms": [{"name": "inputTex", "type": "sampler2D"}],
+            "samplers": ["inputTex"],
+        }}
+        abi, uniforms, samplers = generator._binding_abi({}, {"inputs": {}}, typed)
+        self.assertEqual({"unresolved": []}, abi)
+        self.assertEqual([], uniforms)
+        self.assertEqual([{"name": "inputTex", "type": "sampler2D",
+                           "cpp_type": "const Surface&", "source": "transparent_black",
+                           "resource": None}], samplers)
+
+    def test_fed_sampler_preserves_its_required_resource(self) -> None:
+        typed = {"program_key": "fixture/bound:main", "typed_abi": {
+            "uniforms": [{"name": "inputTex", "type": "sampler2D"}],
+            "samplers": ["inputTex"],
+        }}
+        abi, _, samplers = generator._binding_abi(
+            {}, {"inputs": {"inputTex": "requiredTex"}}, typed)
+        self.assertEqual({"unresolved": []}, abi)
+        self.assertEqual("resource", samplers[0]["source"])
+        self.assertEqual("requiredTex", samplers[0]["resource"])
+
+
 class BackendCompatibilityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

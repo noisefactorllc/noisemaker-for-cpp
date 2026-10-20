@@ -451,3 +451,66 @@ TEST(group_resource_map_release_all_except_empty_retains_nothing) {
   REQUIRE(released.size() == 1U);
   REQUIRE(map.empty());
 }
+
+TEST(compute_iteration_groups_repeats_only_animated_image_inputs_before_positive_particles) {
+  struct Case {
+    bool has_speed; double speed; double count; bool iterated;
+    const char* kind; const char* domain; bool merged;
+  };
+  const Case cases[] = {
+      {true, 1.0, 3.0, false, "generator", "image", true},
+      {true, -1.0, 3.0, false, "generator", "image", true},
+      {true, 0.0, 3.0, false, "generator", "image", false},
+      {false, 0.0, 3.0, false, "generator", "image", false},
+      {true, 1.0, 0.0, false, "generator", "image", false},
+      {true, 1.0, -1.0, false, "generator", "image", false},
+      {true, 1.0, 3.0, true, "generator", "image", false},
+      {true, 1.0, 3.0, false, "generator", "volume-generator", false},
+      {true, 1.0, 3.0, false, "filter", "image", false},
+  };
+  for (const auto& item : cases) {
+    ExecutionPlan plan;
+    ExecutionChain chain;
+    auto definition = make_definition("synth/perlin", item.iterated, std::nullopt, {}, {});
+    definition.kind = item.kind;
+    definition.domain = item.domain;
+    const auto image = add_effect(plan, chain, std::move(definition));
+    if (item.has_speed) std::get<EffectStep>(chain.steps[image]).params.push_back(
+        {"speed", PlanValue::number_value(item.speed)});
+    const auto emit = add_effect(plan, chain, make_definition(
+        "render/pointsEmit", true, std::nullopt, {"global_xyz"}, {}));
+    std::get<EffectStep>(chain.steps[emit]).params.push_back(
+        {"iterationCount", PlanValue::number_value(item.count)});
+    const auto groups = noisemaker::graph::iteration::compute_iteration_groups(plan, chain);
+    if (item.merged) {
+      REQUIRE(groups.size() == 1U);
+      REQUIRE(groups[0].iterated);
+      REQUIRE(groups[0].step_indices == (std::vector<std::size_t>{image, emit}));
+    } else {
+      REQUIRE(groups.size() == 2U);
+      REQUIRE(groups[0].iterated == item.iterated);
+      REQUIRE(groups[0].step_indices == (std::vector<std::size_t>{image}));
+      REQUIRE(groups[1].iterated);
+      REQUIRE(groups[1].step_indices == (std::vector<std::size_t>{emit}));
+    }
+  }
+}
+
+TEST(compute_iteration_groups_never_rejoins_an_animated_image_across_surface_io) {
+  ExecutionPlan plan;
+  ExecutionChain chain;
+  auto definition = make_definition("synth/perlin", false, std::nullopt, {}, {});
+  definition.kind = "generator";
+  definition.domain = "image";
+  const auto image = add_effect(plan, chain, std::move(definition));
+  std::get<EffectStep>(chain.steps[image]).params.push_back(
+      {"speed", PlanValue::number_value(1.0)});
+  add_write(chain, "o1");
+  const auto emit = add_effect(plan, chain, make_definition(
+      "render/pointsEmit", true, std::nullopt, {"global_xyz"}, {}));
+  std::get<EffectStep>(chain.steps[emit]).params.push_back(
+      {"iterationCount", PlanValue::number_value(3.0)});
+  const auto groups = noisemaker::graph::iteration::compute_iteration_groups(plan, chain);
+  REQUIRE(shape(groups) ==
+          (std::vector<std::pair<bool, std::size_t>>{{false, 1U}, {false, 1U}, {true, 1U}}));
+}

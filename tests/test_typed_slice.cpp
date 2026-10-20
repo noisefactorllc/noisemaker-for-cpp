@@ -20,6 +20,135 @@
 
 namespace {
 
+struct SamplerMetadataFixture {
+  std::string_view program_key;
+  std::string_view sampler_name;
+};
+
+// These fixtures preserve native requirements where the source queries sampler
+// dimensions or its canonical adapter reads surface fields. Conditional queries
+// retain their existing strict bind contract.
+constexpr std::array<SamplerMetadataFixture, 85> kSamplerMetadataFixtures{{
+    {"classicNoisedeck/coalesce:coalesce", "inputTex"},
+    {"classicNoisedeck/coalesce:coalesce", "tex"},
+    {"classicNoisedeck/colorLab:colorLab", "inputTex"},
+    {"classicNoisedeck/composite:composite", "inputTex"},
+    {"classicNoisedeck/composite:composite", "tex"},
+    {"classicNoisedeck/effects:effects", "inputTex"},
+    {"classicNoisedeck/refract:refract", "inputTex"},
+    {"classicNoisedeck/splat:splat", "inputTex"},
+    {"filter/celShading:celShadingBlend", "inputTex"},
+    {"filter/celShading:celShadingEdges", "colorTex"},
+    {"filter/channel:channel", "inputTex"},
+    {"filter/chroma:chroma", "inputTex"},
+    {"filter/chromaticAberration:chromaticAberration", "inputTex"},
+    {"filter/clouds:clouds", "inputTex"},
+    {"filter/colorReplace:colorReplace", "inputTex"},
+    {"filter/corrupt:corrupt", "inputTex"},
+    {"filter/deriv:deriv", "inputTex"},
+    {"filter/emboss:emboss", "inputTex"},
+    {"filter/flipMirror:flipMirror", "inputTex"},
+    {"filter/glowingEdge:glowingEdge", "inputTex"},
+    {"filter/lowPoly:lowPoly", "inputTex"},
+    {"filter/normalize:reduce", "inputTex"},
+    {"filter/normalize:reduceMinmax", "inputTex"},
+    {"filter/outline:outlineBlend", "inputTex"},
+    {"filter/outline:outlineSobel", "valueTexture"},
+    {"filter/outline:outlineValueMap", "inputTex"},
+    {"filter/pixelSort:computeRank", "lumTex"},
+    {"filter/pixelSort:finalize", "inputTex"},
+    {"filter/pixelSort:findBrightest", "lumTex"},
+    {"filter/pixelSort:luminance", "inputTex"},
+    {"filter/pixelSort:prepare", "inputTex"},
+    {"filter/pixels:pixels", "inputTex"},
+    {"filter/reindex:nmReindexApply", "inputTex"},
+    {"filter/reindex:nmReindexApply", "statsTex"},
+    {"filter/repeat:repeat", "inputTex"},
+    {"filter/reverb:reverb", "inputTex"},
+    {"filter/ridge:ridge", "inputTex"},
+    {"filter/scroll:scroll", "inputTex"},
+    {"filter/seamless:seamless", "inputTex"},
+    {"filter/sharpen:sharpen", "inputTex"},
+    {"filter/simpleAberration:chromaticAberration", "inputTex"},
+    {"filter/sine:sine", "inputTex"},
+    {"filter/skew:skew", "inputTex"},
+    {"filter/smoothstep:smoothstep", "inputTex"},
+    {"filter/sobel:sobel", "inputTex"},
+    {"filter/spatter:spatter", "inputTex"},
+    {"filter/strayHair:strayHairBlend", "inputTex"},
+    {"filter/strayHair:strayHairBlend", "overlayTex"},
+    {"filter/temporalAberration:temporalAberration", "inputTex"},
+    {"filter/tetraCosine:tetraCosine", "inputTex"},
+    {"filter/text:text", "inputTex"},
+    {"filter/texture:texture", "inputTex"},
+    {"filter/threshold:thresh", "inputTex"},
+    {"filter/tint:colorize", "inputTex"},
+    {"filter/translate:translate", "inputTex"},
+    {"filter/vignette:vignette", "inputTex"},
+    {"filter/wormhole:blend", "accumTex"},
+    {"filter/wormhole:blend", "inputTex"},
+    {"filter3d/flow3d:agent", "stateTex1"},
+    {"filter3d/palette3d:palette3d", "inputTex3d"},
+    {"mixer/alphaMask:alphaMask", "inputTex"},
+    {"mixer/applyMode:applyMode", "inputTex"},
+    {"mixer/applyMode:applyMode", "tex"},
+    {"mixer/blendMode:blendMode", "inputTex"},
+    {"mixer/blendMode:blendMode", "tex"},
+    {"mixer/cellSplit:cellSplit", "inputTex"},
+    {"mixer/cellSplit:cellSplit", "tex"},
+    {"mixer/channelCombine:channelCombine", "bTex"},
+    {"mixer/channelCombine:channelCombine", "gTex"},
+    {"mixer/channelCombine:channelCombine", "rTex"},
+    {"mixer/patternMix:patternMix", "inputTex"},
+    {"mixer/patternMix:patternMix", "tex"},
+    {"mixer/shadow:shadow", "inputTex"},
+    {"mixer/shadow:shadow", "tex"},
+    {"mixer/shapeMask:shapeMask", "inputTex"},
+    {"mixer/shapeMask:shapeMask", "tex"},
+    {"mixer/split:split", "inputTex"},
+    {"mixer/split:split", "tex"},
+    {"mixer/thresholdMix:thresholdMix", "inputTex"},
+    {"mixer/thresholdMix:thresholdMix", "tex"},
+    {"points/hydraulic:agent", "xyzTex"},
+    {"points/physical:agent", "xyzTex"},
+    {"render/pointsBillboardRender:depthMerge", "orderTex"},
+    {"synth/media:mediaInput", "imageTex"},
+    {"synth/navierStokes:nsSmooth", "canvasTex"},
+}};
+
+template <typename Factory>
+void require_sampler_omission_contract(
+    Factory factory, const noisemaker::glsl::Bindings& omitted,
+    std::string_view sampler_name, std::string_view program_key,
+    bool frozen_binding_abi = false) {
+  const bool requires_metadata = frozen_binding_abi || std::any_of(
+      kSamplerMetadataFixtures.begin(), kSamplerMetadataFixtures.end(),
+      [&](const SamplerMetadataFixture& fixture) {
+        return fixture.program_key == program_key && fixture.sampler_name == sampler_name;
+      });
+  if (requires_metadata) {
+    REQUIRE_THROWS_AS(factory(omitted), noisemaker::glsl::KernelBindingError);
+  } else {
+    const noisemaker::Surface zero(1U, 1U);
+    auto explicit_zero = omitted;
+    explicit_zero.set_texture(std::string(sampler_name), zero);
+    const auto actual = noisemaker::run_pass(factory(omitted), 2U, 2U);
+    const auto expected = noisemaker::run_pass(factory(explicit_zero), 2U, 2U);
+    REQUIRE(actual.width() == expected.width());
+    REQUIRE(actual.height() == expected.height());
+    REQUIRE(actual.data().size() == expected.data().size());
+    for (std::size_t lane = 0; lane < actual.data().size(); ++lane) {
+      REQUIRE(noisemaker::float_bits_to_uint(actual.data()[lane]) ==
+              noisemaker::float_bits_to_uint(expected.data()[lane]));
+    }
+    REQUIRE(actual.to_rgba8() == expected.to_rgba8());
+  }
+  auto wrong_category = omitted;
+  wrong_category.set_uniform(std::string(sampler_name), 1.0);
+  REQUIRE_THROWS_AS(factory(wrong_category), noisemaker::glsl::KernelBindingError);
+}
+
+
 [[nodiscard]] std::uint32_t rotate_right(std::uint32_t value, std::uint32_t count) {
   return std::rotr(value, static_cast<int>(count));
 }
@@ -595,7 +724,11 @@ TEST(typed_control_flow_slice_secondary_samplers_are_required) {
   for (const Fixture& fixture : fixtures) {
     noisemaker::glsl::Bindings bindings;
     populate_task10_bindings(bindings, fixture.key, input, blur, tex, base, 0.12f, fixture.sampler);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(fixture.key, bindings), noisemaker::glsl::KernelBindingError);
+    require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(fixture.key, values);
+        },
+        bindings, fixture.sampler, fixture.key);
   }
 }
 
@@ -947,7 +1080,11 @@ TEST(typed_task11_each_distinct_signature_and_sampler_fails_closed) {
     noisemaker::glsl::Bindings missing;
     populate_task11_bindings(missing, fixture, input, tex, edges, grayscale, tint_hybrid,
                              media, transparent, item.sampler);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, missing), noisemaker::glsl::KernelBindingError);
+    require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(item.key, values);
+        },
+        missing, item.sampler, item.key);
   }
 }
 
@@ -1323,7 +1460,13 @@ TEST(typed_task12_each_distinct_signature_and_sampler_fails_closed) {
     const Task12Case fixture{item.key, item.variant, "", "", {}};
     noisemaker::glsl::Bindings missing;
     populate_task12_bindings(missing, fixture, tag1, tag23, tag37, constant_a, constant_b, hue_negative, item.sampler);
-    REQUIRE_THROWS_AS(bind_task12(item.key, missing), noisemaker::glsl::KernelBindingError);
+    // These historical factories retain their captured required-sampler ABI.
+    require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return bind_task12(item.key, values);
+        },
+        missing, item.sampler, item.key,
+        item.key == "filter/hs:hs" || item.key == "filter/scale:scale");
   }
 }
 
@@ -1540,7 +1683,11 @@ TEST(typed_task13_each_required_binding_fails_closed) {
     noisemaker::glsl::Bindings missing;
     populate_task13_bindings(missing, fixture, tag1, tag23, tag37, luma,
                              stats_range, stats_flat, overlay, item.sampler);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, missing), noisemaker::glsl::KernelBindingError);
+    require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(item.key, values);
+        },
+        missing, item.sampler, item.key);
   }
 }
 
@@ -1899,15 +2046,21 @@ TEST(typed_task14_every_required_binding_fails_closed) {
     const Task14Case& fixture = fixture_for(item.key);
     noisemaker::glsl::Bindings missing;
     populate_task14_bindings(missing, fixture, tag1, tag23, tag37, tag53, item.sampler);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, missing),
-                      noisemaker::glsl::KernelBindingError);
+    require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(item.key, values);
+        },
+        missing, item.sampler, item.key);
   }
 }
 
 TEST(typed_pixel_sort_admits_compute_rank_but_still_excludes_gather_sorted) {
   noisemaker::glsl::Bindings empty;
-  REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/pixelSort:computeRank", empty),
-                    noisemaker::glsl::KernelBindingError);
+  require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind("filter/pixelSort:computeRank", values);
+        },
+        empty, "lumTex", "filter/pixelSort:computeRank");
   noisemaker::glsl::Bindings wrong;
   wrong.set_uniform("lumTex", 0.5);
   REQUIRE_THROWS_AS(noisemaker::generated::bind("filter/pixelSort:computeRank", wrong),
@@ -2168,6 +2321,10 @@ constexpr std::array<Task15Binding, 241> kTask15Bindings{{
 
 void populate_task15_bindings(noisemaker::glsl::Bindings& bindings, std::string_view key,
                               const noisemaker::Surface& surface, std::string_view skip = {}) {
+  if (key == "filter/hatch:hatch" || key == "filter/oilPaint:oilPost" ||
+      key == "filter/scatter:scatterSmooth" || key == "filter/strokes:stkPost") {
+    bindings.set_uniform("MODE", std::int32_t{0});
+  }
   for (const Task15Binding& item : kTask15Bindings) {
     if (item.key != key || item.name == skip) continue;
     const std::string name(item.name);
@@ -2195,10 +2352,21 @@ TEST(typed_task15_every_required_uniform_and_sampler_fails_closed) {
   std::size_t sampler_count = 0U;
   std::size_t uniform_count = 0U;
   for (const Task15Binding& item : kTask15Bindings) {
+    noisemaker::glsl::Bindings exact;
+    populate_task15_bindings(exact, item.key, surface);
+    static_cast<void>(noisemaker::generated::bind(item.key, exact));
     noisemaker::glsl::Bindings missing;
     populate_task15_bindings(missing, item.key, surface, item.name);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, missing),
+    if (item.type == Task15BindingType::sampler) {
+      require_sampler_omission_contract(
+        [&](const noisemaker::glsl::Bindings& values) {
+          return noisemaker::generated::bind(item.key, values);
+        },
+        missing, item.name, item.key);
+    } else {
+      REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, missing),
                       noisemaker::glsl::KernelBindingError);
+    }
     if (item.type == Task15BindingType::sampler) {
       ++sampler_count;
       continue;
