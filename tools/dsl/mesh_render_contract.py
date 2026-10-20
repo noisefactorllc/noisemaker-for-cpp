@@ -48,10 +48,25 @@ def authenticate_authority(cpu_root: pathlib.Path, shader_git: pathlib.Path) -> 
     source = cpu_root / CPU_SOURCE
     if source.is_symlink() or digest(source.read_bytes()) != CPU_SHA256:
         raise ValueError("mesh CPU adapter source drift")
+    git = None
+    try:
+        git = subprocess.run(["git", "-C", str(shader_git), "rev-parse", "--verify",
+                              f"{REVISION}^{{commit}}"], check=True,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except (OSError, subprocess.CalledProcessError):
+        git = None
     for name, expected in UPSTREAM.items():
-        raw = subprocess.check_output([
-            "git", "-C", str(shader_git), "show",
-            f"{REVISION}:shaders/effects/render/meshRender/{name}"])
+        if git is not None:
+            raw = subprocess.check_output([
+                "git", "-C", str(shader_git), "show",
+                f"{REVISION}:shaders/effects/render/meshRender/{name}"])
+        else:
+            # Shallow or archive-materialized shader checkouts cannot serve
+            # the pinned revision; authenticate the same bytes from the tree.
+            path = shader_git / "shaders/effects/render/meshRender" / name
+            if path.is_symlink() or not path.is_file():
+                raise ValueError(f"mesh upstream geometry source missing: {name}")
+            raw = path.read_bytes()
         if digest(raw) != expected:
             raise ValueError(f"mesh upstream geometry source drift: {name}")
 

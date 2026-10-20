@@ -533,6 +533,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=pathlib.Path, default=ROOT / "src/effects/generated")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
+    # Lead every run with its inputs so a check receipt names the exact
+    # materialization it authenticated, even when a stage crashes.
+    print(f"effect-catalog check: cpu-root={args.cpu_root} shader-git={args.shader_git} check={args.check}")
     try:
         cpp, provenance = generate(cpu_root=args.cpu_root, shader_git=args.shader_git,
                                    compatibility_path=args.compatibility)
@@ -543,8 +546,11 @@ def main(argv: list[str] | None = None) -> int:
         else:
             args.output_dir.mkdir(parents=True, exist_ok=True)
             targets[0].write_bytes(cpp); targets[1].write_bytes(provenance)
-    except CatalogError as error:
-        print(f"error: {error}", file=sys.stderr)
+    except (CatalogError, ValueError, OSError) as error:
+        print(f"error: {error}")
+        return 1
+    except Exception as error:  # report any other crash instead of an empty receipt
+        print(f"error: {type(error).__name__}: {error}")
         return 1
     return 0
 

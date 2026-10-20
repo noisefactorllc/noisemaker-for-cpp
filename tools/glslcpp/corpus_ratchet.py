@@ -617,8 +617,15 @@ def _git_blob(shader_git: pathlib.Path, path: str) -> bytes:
     try:
         return subprocess.run(["git", "-C", str(shader_git), "cat-file", "blob", f"{check_corpus.REVISION}:{path}"],
                               check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
-    except (OSError, subprocess.CalledProcessError) as error:
-        raise RatchetError(f"shader git blob read failed: {path}") from error
+    except (OSError, subprocess.CalledProcessError):
+        # Shallow or archive-materialized shader checkouts cannot serve the
+        # pinned blob; read the same pinned bytes from the working tree.  The
+        # callers compare every blob against committed expectations, so the
+        # digest strength is unchanged.
+        file = shader_git / path
+        if file.is_symlink() or not file.is_file():
+            raise RatchetError(f"shader git blob read failed: {path}") from None
+        return file.read_bytes()
 
 
 def authority_derivation(cpu_root: pathlib.Path) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:

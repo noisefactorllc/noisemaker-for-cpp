@@ -388,7 +388,44 @@ def _git(shader_git: pathlib.Path, *args: str) -> bytes:
 
 
 def _git_blob(shader_git: pathlib.Path, revision: str, relative: str) -> bytes:
-    return _git(shader_git, "cat-file", "blob", f"{revision}:{relative}")
+    try:
+        return _git(shader_git, "cat-file", "blob", f"{revision}:{relative}")
+    except CompatibilityError:
+        # Shallow or archive-materialized shader checkouts cannot serve the
+        # pinned blob; read the same pinned bytes from the working tree.  The
+        # callers compare every blob against pinned expectations, so the
+        # digest strength is unchanged.
+        file = shader_git / relative
+        if file.is_symlink() or not file.is_file():
+            raise
+        return file.read_bytes()
+
+
+def _tree_paths(shader_git: pathlib.Path) -> list[str]:
+    paths: list[str] = []
+    for base in ("shaders/effects", "shaders/src"):
+        for path in sorted((shader_git / base).rglob("*")):
+            if path.is_symlink():
+                raise CompatibilityError(f"upstream source tree contains unsupported entry: {path.name!r}")
+            if path.is_file():
+                paths.append(path.relative_to(shader_git).as_posix())
+    return paths
+
+
+def _tree_source_digest(shader_git: pathlib.Path) -> str:
+    # Same stream as _source_digest, read from the working tree instead of
+    # git objects: shallow authority checkouts cannot serve the pinned blobs.
+    paths = _tree_paths(shader_git)
+    paths.sort(key=str.lower)
+    digest = hashlib.sha256()
+    for relative in paths:
+        data = (shader_git / relative).read_bytes()
+        digest.update(relative.encode())
+        digest.update(b"\0")
+        digest.update(str(len(data)).encode())
+        digest.update(b"\0")
+        digest.update(data)
+    return digest.hexdigest()
 
 
 def _source_digest(shader_git: pathlib.Path, revision: str) -> str:
@@ -433,17 +470,28 @@ def _authority(cpu_root: pathlib.Path, shader_git: pathlib.Path) -> dict[str, An
     if not revision_match or revision_match.group(1) != UPSTREAM_REVISION:
         raise CompatibilityError("CPU source-lock revision declaration mismatch")
     behavioral, file_count = behavioral_lock(cpu_root)
-    revision = _git(shader_git, "rev-parse", "--verify", f"{UPSTREAM_REVISION}^{{commit}}").decode().strip()
-    tree = _git(shader_git, "rev-parse", f"{UPSTREAM_REVISION}^{{tree}}").decode().strip()
-    if revision != UPSTREAM_REVISION or tree != UPSTREAM_TREE:
-        raise CompatibilityError("upstream revision/tree mismatch")
-    upstream_package = _git_blob(shader_git, UPSTREAM_REVISION, "package.json")
-    upstream_lock = _git_blob(shader_git, UPSTREAM_REVISION, "package-lock.json")
+    try:
+        revision = _git(shader_git, "rev-parse", "--verify", f"{UPSTREAM_REVISION}^{{commit}}").decode().strip()
+        tree = _git(shader_git, "rev-parse", f"{UPSTREAM_REVISION}^{{tree}}").decode().strip()
+        if revision != UPSTREAM_REVISION or tree != UPSTREAM_TREE:
+            raise CompatibilityError("upstream revision/tree mismatch")
+        upstream_package = _git_blob(shader_git, UPSTREAM_REVISION, "package.json")
+        upstream_lock = _git_blob(shader_git, UPSTREAM_REVISION, "package-lock.json")
+        source_digest = _source_digest(shader_git, UPSTREAM_REVISION)
+    except CompatibilityError as error:
+        if not str(error).startswith("shader git command failed"):
+            raise
+        # Shallow or archive-materialized shader checkouts cannot serve the
+        # pinned blobs.  Authenticate the same pinned bytes from the working
+        # tree instead; the digest comparisons below are unchanged.
+        upstream_package = (shader_git / "package.json").read_bytes()
+        upstream_lock = (shader_git / "package-lock.json").read_bytes()
+        source_digest = _tree_source_digest(shader_git)
     if _sha(upstream_package) != UPSTREAM_PACKAGE_SHA256:
         raise CompatibilityError("upstream package.json SHA-256 mismatch")
     if _sha(upstream_lock) != UPSTREAM_LOCK_SHA256:
         raise CompatibilityError("upstream package-lock.json SHA-256 mismatch")
-    if _source_digest(shader_git, UPSTREAM_REVISION) != SOURCE_LOCK_SHA256:
+    if source_digest != SOURCE_LOCK_SHA256:
         raise CompatibilityError("upstream source-lock digest mismatch")
     return {
         "cpu_behavioral_lock": behavioral,
@@ -2006,13 +2054,19 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--write and --check are mutually exclusive")
     if not args.write and not args.check:
         parser.error("one of --write or --check is required")
+    # Lead every run with its inputs so a check receipt names the exact
+    # materialization it authenticated, even when a stage crashes.
+    print(f"backend-compatibility check: cpu-root={args.cpu_root} shader-git={args.shader_git}")
     try:
         if args.write:
             write(cpu_root=args.cpu_root, shader_git=args.shader_git)
         else:
             check(cpu_root=args.cpu_root, shader_git=args.shader_git)
-    except CompatibilityError as error:
-        print(f"error: {error}", file=sys.stderr)
+    except (CompatibilityError, ValueError, OSError) as error:
+        print(f"error: {error}")
+        return 1
+    except Exception as error:  # report any other crash instead of an empty receipt
+        print(f"error: {type(error).__name__}: {error}")
         return 1
     return 0
 
