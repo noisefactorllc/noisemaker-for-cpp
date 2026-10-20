@@ -190,7 +190,8 @@ class NumberStorageTests(unittest.TestCase):
             result = subprocess.run(
                 [compiler, "-std=c++20", "-ffp-contract=off", "-Wall", "-Wextra", "-Werror",
                  "-I", str(root / "include"), str(cpp), str(root / "src/glsl_runtime.cpp"),
-                 str(root / "src/numeric.cpp"), "-o", str(binary)], capture_output=True, text=True)
+                 str(root / "src/numeric.cpp"), str(root / "src/surface.cpp"),
+                 "-o", str(binary)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             result = subprocess.run([str(binary)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)

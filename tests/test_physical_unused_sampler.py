@@ -34,8 +34,12 @@ class PhysicalUnusedSamplerTests(unittest.TestCase):
             hash_scalar_uint_xor_profile="hash-scalar-uint-xor-v1",
             hash_scalar_uint_rshift_profile="hash-scalar-uint-rshift-v1")
         self.assertNotIn('bindings.texture("inputTex")', source)
-        for name in ("xyzTex", "velTex", "rgbaTex"):
-            self.assertIn(f'bindings.texture("{name}")', source)
+        self.assertNotIn('bindings.texture_or_black("inputTex")', source)
+        self.assertIn('bindings.texture("xyzTex")', source)
+        self.assertNotIn('bindings.texture_or_black("xyzTex")', source)
+        for name in ("velTex", "rgbaTex"):
+            self.assertIn(f'bindings.texture_or_black("{name}")', source)
+            self.assertNotIn(f'bindings.texture("{name}")', source)
 
     def test_other_program_does_not_receive_the_omission(self):
         self.assertEqual(omitted_physical_samplers(dataclasses.replace(self.typed, key="foreign:agent")), frozenset())

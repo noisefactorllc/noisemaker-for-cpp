@@ -1680,7 +1680,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertIsNotNone(namespace)
         exact_binder = (
             f'  const auto state = std::make_shared<{namespace.group(1)}::State>(&bindings.texture('
-            '"preparedTex"), &bindings.texture("rankTex"), &bindings.texture('
+            '"preparedTex"), &bindings.texture_or_black("rankTex"), &bindings.texture_or_black('
             '"brightestTex"));')
         fetch_sites = (
             "fetch_texel(*state.brightestTex, glsl::IVec2(std::int32_t(0), y))",
@@ -1734,6 +1734,12 @@ and item["program_key"] != "filter/wobble:wobble"
 
         self.assertEqual(66, audit(block))
         mutations = {
+            "missing-size-sampler": block.replace(
+                'bindings.texture("preparedTex")',
+                'bindings.texture_or_black("preparedTex")', 1),
+            "strict-texel-sampler": block.replace(
+                'bindings.texture_or_black("rankTex")',
+                'bindings.texture("rankTex")', 1),
             "missing-state": block.replace(
                 "  const Surface* rankTex;\n", "", 1),
             "extra-state": block.replace(
