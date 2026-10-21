@@ -427,7 +427,7 @@ console.log(JSON.stringify({{
         description = json.loads(result.stdout)
         self.assertEqual(description["schema"], "noisemaker-cpp.benchmark-result.v2")
         self.assertEqual(description["upstreamRevision"], CORPUS_REVISION)
-        self.assertEqual(description["upstreamTree"], "f5ea13282fd27ea01c94280ae60fcb59bcb5389f")
+        self.assertEqual(description["upstreamTree"], "767a52b77257c1619b77813f6361fb21bc0bdd75")
         self.assertEqual(description["playwrightVersion"], "1.62.1")
         self.assertEqual(description["orientation"], {
             "contract": "top_down",
