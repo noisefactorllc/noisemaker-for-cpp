@@ -1,15 +1,15 @@
 {
   "authority": {
     "cpu_behavioral_file_count": 98,
-    "cpu_behavioral_lock": "93f017428719389437c16398eba2cb7882ab236bf45cdd587de5196ae7424b12",
+    "cpu_behavioral_lock": "df6e11a1671a8e141926d6d0a8a7f79b1394d801d47ea39a157190173d8878ed",
     "cpu_package_lock_sha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
     "cpu_package_sha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
-    "cpu_source_lock_sha256": "8bc363e7f182a869d90839090e339ae445f7b7d663504d0859fca23f417349d1",
-    "source_lock_sha256": "f9d1c063d4116f1b74a1d8f592885a5e97460630f62727be37d129a34367b8b7",
+    "cpu_source_lock_sha256": "3c69af0332f8298e601164ced21504a9b9cf0e0ea50d9779751cdf23e7b03efe",
+    "source_lock_sha256": "6f620dfc3ed249938df917beba75b4e80612e053226813e1004587c8c2483699",
     "upstream_package_lock_sha256": "b465ddd6476e00baaf5dbec5f25add705a3d17089d6d67319117f55fe4cfcaa2",
-    "upstream_package_sha256": "9825b3898c5bae3793c957e32cd42c12e5a55b2ab301de790a6a760e50da5db1",
-    "upstream_revision": "f6b196dc42568576dfc40794040675fde42d2dc1",
-    "upstream_tree": "767a52b77257c1619b77813f6361fb21bc0bdd75"
+    "upstream_package_sha256": "c0cfe4cd42a800da7fe56b6eec2bf4ece3374f4ab82d788652d033735fe8412c",
+    "upstream_revision": "b71a896a4dbdbc01e682b277f6d9a41fe786485e",
+    "upstream_tree": "a33d67f4915abbafa7f38ba5ed63af10dd00a059"
   },
   "backend_counts": {
     "definitions": 210,
@@ -30,8 +30,8 @@
     "unique_fragment_keys": 301
   },
   "backend_schema": "noisemaker-cpp.backend-compatibility.v1",
-  "compatibility_sha256": "70199cbb120512fe6fdaf05c4c64ef797f9992ed113020c3f78ba8866934f8f2",
-  "corpus_revision": "f6b196dc42568576dfc40794040675fde42d2dc1",
+  "compatibility_sha256": "e3c1e5657c80b9080afd609a6faf0b712fffc69e814df944b746b7a089c6e819",
+  "corpus_revision": "b71a896a4dbdbc01e682b277f6d9a41fe786485e",
   "counts": {
     "backend_programs": 308,
     "compatible_programs": 301,
@@ -45,8 +45,8 @@
     "scatter_passes": 16
   },
   "first_effect_id": "classicNoisedeck/bitEffects",
-  "generated_payload_sha256": "5e26a39f6b25f4f52a09ff10816e0c8cf48dac3492d6e79701673da2577a00cd",
+  "generated_payload_sha256": "72ac44c86840a12814833e6c22f1def150a2d9b1e381150f4cc448f64edb66da",
   "last_effect_id": "synth3d/shape3d",
-  "normalized_record_stream_sha256": "f605852737fd3cc30377bf957ee40080829b15277ffc8069994bdab979e0ff31",
+  "normalized_record_stream_sha256": "db5217b9c8f4d66a1beb41db415549b81985835b01d32c72981d9d05d89d1f0f",
   "schema": "noisemaker-cpp.effect-catalog-generator.v1"
 }

@@ -1620,7 +1620,7 @@
       "program_key": "synth3d/shape3d:precompute"
     }
   ],
-  "revision": "f6b196dc42568576dfc40794040675fde42d2dc1",
+  "revision": "b71a896a4dbdbc01e682b277f6d9a41fe786485e",
   "schema": 1,
   "types": [
     "bool",

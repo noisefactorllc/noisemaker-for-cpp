@@ -30,6 +30,25 @@ def _temporary_root() -> str:
 
 
 class ExecutableCorpusTest(unittest.TestCase):
+    def test_particle_prefix_keeps_new_surface_defaults_on_the_chained_input(self) -> None:
+        script = f"""
+import {{sourceFor}} from {json.dumps(GENERATOR.as_uri())};
+const emitter = {{namespace:'render',func:'pointsEmit',kind:'filter',iterated:true,params:{{
+  diffuseTex:{{type:'surface',default:'inputTex'}},stateSize:{{type:'int',default:64}}
+}},passes:[{{inputs:{{}},outputs:{{xyz:'global_xyz'}}}}]}};
+const joined = {{namespace:'points',func:'flock',kind:'filter',iterated:false,params:{{}},
+  passes:[{{inputs:{{xyzTex:'global_xyz'}}}}]}};
+console.log(JSON.stringify({{joined:sourceFor(joined,emitter),standalone:sourceFor(emitter,emitter)}}));
+"""
+        result = subprocess.run([self.node(), "--input-type=module", "-e", script],
+                                capture_output=True, text=True, timeout=10)
+        self.assertEqual(0, result.returncode, result.stderr)
+        sources = json.loads(result.stdout)
+        self.assertNotIn("o1", sources["joined"])
+        self.assertIn("pointsEmit(stateSize: 64).flock()", sources["joined"])
+        self.assertIn("solid(color: #3a7).write(o1)", sources["standalone"])
+        self.assertIn("diffuseTex: o1", sources["standalone"])
+
     def node(self) -> str:
         value = shutil.which("node")
         if value is None:

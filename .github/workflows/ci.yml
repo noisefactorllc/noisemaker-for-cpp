@@ -87,7 +87,9 @@ jobs:
         run: cmake --build build --target noisemaker-cpu-tests -j
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: |
+          python3 tools/run_partitioned_checks.py native --executable "$PWD/build/noisemaker-cpu-tests"
+          ctest --test-dir build --output-on-failure --exclude-regex '^noisemaker-cpu-tests$' --timeout 300
 
   sanitizers:
     name: sanitizers (ASan + UBSan)
@@ -113,7 +115,7 @@ jobs:
         env:
           ASAN_OPTIONS: detect_leaks=1
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
-        run: ./build-sanitize/noisemaker-cpu-tests
+        run: python3 tools/run_partitioned_checks.py native --executable "$PWD/build-sanitize/noisemaker-cpu-tests"
 
   generator:
     name: generator determinism / py${{ matrix.python }}
@@ -166,7 +168,7 @@ jobs:
       - name: Run the push-gate subset
         env:
           NOISEMAKER_PUSH_GATE: '1'
-        run: python -m unittest discover -s tests -p 'test_*.py' -q
+        run: python tools/run_partitioned_checks.py python
 
   python-tests:
     name: python test suite
@@ -194,7 +196,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check pytest
 
       - name: Run full discovery
-        run: python -m unittest discover -s tests -p 'test_*.py' -q
+        run: python tools/run_partitioned_checks.py python
 
   corpus-parity:
     name: byte-exact corpus parity (C++ vs JS authority)
@@ -210,7 +212,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: eafa256245b956a0793aee61d40da99062ad6f13
+          ref: 2b0779bf3ba5dc7a2a7fa0b9c68115f153bdcbf4
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree
@@ -301,7 +303,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: eafa256245b956a0793aee61d40da99062ad6f13
+          ref: 2b0779bf3ba5dc7a2a7fa0b9c68115f153bdcbf4
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree

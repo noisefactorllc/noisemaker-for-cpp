@@ -9,7 +9,7 @@ const ROOT = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..')
 const COMPATIBILITY = path.join(ROOT, 'src/effects/generated/backend_compatibility.json')
 const PROVENANCE = path.join(ROOT, 'src/effects/generated/effect_catalog.provenance.json')
 const TYPED_MANIFEST = path.join(ROOT, 'src/typed_generated/typed_manifest.json')
-const BACKEND_SHA256 = '70199cbb120512fe6fdaf05c4c64ef797f9992ed113020c3f78ba8866934f8f2'
+const BACKEND_SHA256 = 'e3c1e5657c80b9080afd609a6faf0b712fffc69e814df944b746b7a089c6e819'
 
 function usage(message) {
   if (message) console.error(`generate_executable_corpus: ${message}`)
@@ -39,8 +39,8 @@ function dslValue(param, value, surfaceTarget) {
   if (typeof value === 'boolean') return value ? 'true' : 'false'
   return String(value)
 }
-function defaultArgs(effect, surfaceTarget) {
-  return Object.entries(effect.params ?? {}).map(([name, param]) => `${name}: ${dslValue(param, param.default, surfaceTarget)}`).join(', ')
+function defaultArgs(effect, surfaceTarget, includeSurfaces = true) {
+  return Object.entries(effect.params ?? {}).filter(([, param]) => includeSurfaces || param.type !== 'surface').map(([name, param]) => `${name}: ${dslValue(param, param.default, surfaceTarget)}`).join(', ')
 }
 function hasBoundSurface(effect) {
   return Object.values(effect.params ?? {}).some((param) => param.type === 'surface' && param.default !== null && param.default !== 'none')
@@ -54,7 +54,7 @@ function referencesParticleState(effect) {
     Object.values(pass.inputs ?? {}).some((value) => PARTICLE_STATE_PATTERN.test(value)) ||
     Object.values(pass.outputs ?? {}).some((value) => PARTICLE_STATE_PATTERN.test(value)))
 }
-function sourceFor(effect, pointsEmit) {
+export function sourceFor(effect, pointsEmit) {
   let search = effect.kind === 'generator' ? [effect.namespace] : ['synth', effect.namespace].filter((item, index, list) => list.indexOf(item) === index)
   // The authority's iteration contract (src/runtime/iteration.js): a step
   // referencing particle state joins an OPEN particle group, and
@@ -70,7 +70,7 @@ function sourceFor(effect, pointsEmit) {
   // both lanes refuse. Outside a particle group, surface parameters read o1
   // written from the same solid first.
   const boundSurface = !needsParticleGroup && hasBoundSurface(effect)
-  const prefix = needsParticleGroup ? `pointsEmit(${defaultArgs(pointsEmit, 'o1')}).` : ''
+  const prefix = needsParticleGroup ? `pointsEmit(${defaultArgs(pointsEmit, 'o1', false)}).` : ''
   const call = needsParticleGroup
     ? `${effect.func}(${Object.entries(effect.params ?? {}).filter(([, param]) => param.type !== 'surface').map(([name, param]) => `${name}: ${dslValue(param, param.default, 'o1')}`).join(', ')})`
     : `${effect.func}(${defaultArgs(effect, 'o1')})`

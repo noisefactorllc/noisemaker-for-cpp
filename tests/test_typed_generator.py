@@ -22870,13 +22870,13 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "1c0b03431a34afa7f6cf7a063d2d1df05e708c0456c397fbda0f181c43357eaf"),
+                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
             "src/typed_generated/typed_slice.cpp": (
-                3877198,
-                "f5f50addfa19ef9c37dfa45fc65fc084f9720b701d1c5302320446c66ae3a993"),
+                3887274,
+                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
             "src/typed_generated/typed_manifest.json": (
-                926897,
-                "e13b8b2a686d48abe7ac10c4cb1d977686d631e2ef86e38f44d2aaa2cfcb6882"),
+                927073,
+                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23659,13 +23659,13 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "1c0b03431a34afa7f6cf7a063d2d1df05e708c0456c397fbda0f181c43357eaf"),
+                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
             "src/typed_generated/typed_slice.cpp": (
-                3877198,
-                "f5f50addfa19ef9c37dfa45fc65fc084f9720b701d1c5302320446c66ae3a993"),
+                3887274,
+                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
             "src/typed_generated/typed_manifest.json": (
-                926897,
-                "e13b8b2a686d48abe7ac10c4cb1d977686d631e2ef86e38f44d2aaa2cfcb6882"),
+                927073,
+                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24433,13 +24433,13 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "1c0b03431a34afa7f6cf7a063d2d1df05e708c0456c397fbda0f181c43357eaf"),
+                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
             "src/typed_generated/typed_slice.cpp": (
-                3877198,
-                "f5f50addfa19ef9c37dfa45fc65fc084f9720b701d1c5302320446c66ae3a993"),
+                3887274,
+                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
             "src/typed_generated/typed_manifest.json": (
-                926897,
-                "e13b8b2a686d48abe7ac10c4cb1d977686d631e2ef86e38f44d2aaa2cfcb6882"),
+                927073,
+                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24973,13 +24973,13 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "1c0b03431a34afa7f6cf7a063d2d1df05e708c0456c397fbda0f181c43357eaf"),
+                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
             "src/typed_generated/typed_slice.cpp": (
-                3877198,
-                "f5f50addfa19ef9c37dfa45fc65fc084f9720b701d1c5302320446c66ae3a993"),
+                3887274,
+                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
             "src/typed_generated/typed_manifest.json": (
-                926897,
-                "e13b8b2a686d48abe7ac10c4cb1d977686d631e2ef86e38f44d2aaa2cfcb6882"),
+                927073,
+                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25577,13 +25577,13 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "1c0b03431a34afa7f6cf7a063d2d1df05e708c0456c397fbda0f181c43357eaf"),
+                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
             "src/typed_generated/typed_slice.cpp": (
-                3877198,
-                "f5f50addfa19ef9c37dfa45fc65fc084f9720b701d1c5302320446c66ae3a993"),
+                3887274,
+                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
             "src/typed_generated/typed_manifest.json": (
-                926897,
-                "e13b8b2a686d48abe7ac10c4cb1d977686d631e2ef86e38f44d2aaa2cfcb6882"),
+                927073,
+                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),

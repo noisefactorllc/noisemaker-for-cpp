@@ -1,6 +1,10 @@
 #include "noisemaker/effects/catalog.hpp"
+#include "noisemaker/dsl/compiler.hpp"
 
 #include "test_harness.hpp"
+
+#include <algorithm>
+#include <array>
 
 TEST(effect_catalog_is_ordered_and_lookup_is_secondary) {
   const auto& catalog = noisemaker::effects::effect_catalog();
@@ -115,7 +119,58 @@ TEST(effect_catalog_value_preserves_negative_zero) {
 
 TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
-  REQUIRE(provenance.generated_payload_sha256 == "5e26a39f6b25f4f52a09ff10816e0c8cf48dac3492d6e79701673da2577a00cd");
+  REQUIRE(provenance.generated_payload_sha256 == "72ac44c86840a12814833e6c22f1def150a2d9b1e381150f4cc448f64edb66da");
+}
+
+TEST(effect_catalog_particle_surface_parameters_preserve_explicit_and_input_routes) {
+  struct Fixture { const char* id; const char* parameter; const char* function; };
+  const std::array fixtures{
+      Fixture{"points/dla", "fieldTex", "dla"},
+      Fixture{"points/flow", "fieldTex", "flow"},
+      Fixture{"points/hydraulic", "heightTex", "hydraulic"},
+      Fixture{"points/life", "diffuseTex", "life"},
+      Fixture{"points/physarum", "fieldTex", "physarum"},
+      Fixture{"render/pointsEmit", "diffuseTex", "pointsEmit"},
+  };
+  const auto& catalog = noisemaker::effects::effect_catalog();
+  const noisemaker::effects::EffectRegistry registry(catalog);
+  for (const auto& fixture : fixtures) {
+    const auto* definition = catalog.find(fixture.id);
+    REQUIRE(definition != nullptr);
+    const auto parameter = std::find_if(definition->parameters.begin(), definition->parameters.end(),
+        [&](const auto& item) { return item.name == fixture.parameter; });
+    REQUIRE(parameter != definition->parameters.end());
+    REQUIRE(parameter->type == "surface");
+    REQUIRE(parameter->default_value.has_value());
+    REQUIRE(parameter->default_value->string == "inputTex");
+    for (const bool explicit_source : {false, true}) {
+      const std::string argument = explicit_source ? std::string(fixture.parameter) + ": o1" : "";
+      const auto plan = noisemaker::dsl::compile(
+          "search synth, points, render\nsolid().write(o1)\nsolid()." +
+          std::string(fixture.function) + "(" + argument + ").write(o0)\nrender(o0)\n", registry);
+      REQUIRE(plan.executable);
+      bool found = false;
+      for (const auto& chain : plan.chains) for (const auto& step : chain.steps) {
+        const auto* effect = std::get_if<noisemaker::graph::EffectStep>(&step);
+        if (effect == nullptr || effect->effect.id != fixture.id) continue;
+        const auto binding = std::find_if(effect->params.begin(), effect->params.end(),
+            [&](const auto& item) { return item.name == fixture.parameter; });
+        REQUIRE(binding != effect->params.end());
+        REQUIRE(binding->value.kind == noisemaker::graph::PlanValue::Kind::surface);
+        REQUIRE(binding->value.surface.kind == (explicit_source
+            ? noisemaker::graph::SurfaceReference::Kind::named
+            : noisemaker::graph::SurfaceReference::Kind::input));
+        if (explicit_source) REQUIRE(binding->value.surface.name == "o1");
+        bool routed = false;
+        for (const auto& pass : effect->passes) for (const auto& sampler : pass.samplers) {
+          if (sampler.name == "inputTex" && sampler.resource == fixture.parameter) routed = true;
+        }
+        REQUIRE(routed);
+        found = true;
+      }
+      REQUIRE(found);
+    }
+  }
 }
 
 TEST(effect_catalog_matches_current_authority_retirements_and_additions) {

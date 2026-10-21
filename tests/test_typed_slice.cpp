@@ -972,32 +972,32 @@ TEST(typed_task11_all_ninety_four_external_oracles_are_exact_and_repeatable) {
     {"mixer/centerMask:centerMask", "blend12", "b1f2cd9d4c34c6cea4f042e41c43408e8e4ae82e9c2b9e5022e00fa5e6286a64", "f8280e6463bfee3f320b3bee1f70778cc999c4d596a3fff991c503c803667297", {0x3e50c409U,0x3f1a51a2U,0x3f1ea826U,0x3f7afafbU,0x3f088c02U,0x3f3cbbacU,0x3ed4dda2U,0x3f27a7a8U,0x3f73b155U,0x3d834725U,0x3e9d9a67U,0x3f5ddddeU}},
     {"mixer/centerMask:centerMask", "blend13", "89adc880ea981f299a436d1ddb8ffc66287bb9e70790b62cf21b7bd850ec598e", "de9fe75087ade4eb6229b313f14f19f0c1627f0518601ef71106bbfc4d1beca4", {0x3e2ed158U,0x3f1c2bf1U,0x3f21c262U,0x3f7afafbU,0x3f088a86U,0x3f3cbdeeU,0x3ed4dd7eU,0x3f27a7a8U,0x3f774390U,0x3d9f7e36U,0x3e90a635U,0x3f5ddddeU}},
     {"mixer/centerMask:centerMask", "blend15", "c3805de05b17fee053bd510bbc7a5dcd45d0cd1e04bf1993cb10861cbc56a6e5", "6776de4da65e05bdf73267c3cea164f5820516df7be227ba8cf5d49c2da7a106", {0x3e2a18b9U,0x3f1a2b8fU,0x3f2148cbU,0x3f7afafbU,0x3f088446U,0x3f3cb833U,0x3ed4cb03U,0x3f27a7a8U,0x3f6e7cbbU,0x3d373c00U,0x3e86e5baU,0x3f5ddddeU}},
-    {"synth/media:mediaInput", "position0", "28ddcf45d29a5a34caca321e4639e27ddd9061362c6d2c00d2befa5e12c27991", "4943747335a017fc908706cae2864f9a6e23f3b19f5ea1c729584a1b4ddf8081", {0x3e78d0a9U,0x3e332599U,0x3e44905dU,0x3e9e9e9fU,0x3b7dfb04U,0x3ddb9652U,0x3dabf743U,0x3ea8a8a8U,0x3dadcae7U,0x3cf6ac69U,0x3e9fc6ecU,0x3eb2b2b1U}},
-    {"synth/media:mediaInput", "position1", "ed5a45450ebbc1d9a6acbc633a555bafe7eb9f62029eafdbca34110b0210c76c", "fe825ea63ffe458ecb589f996d47fa4c4a24378ddae225398bdf584d735aec2e", {0x3e821bb6U,0x3f33db02U,0x3f22a2a3U,0x3f73f3f4U,0x3ef7ff06U,0x3ef7ff07U,0x3e965c22U,0x3f78f8f8U,0x3f3943cfU,0x3e837a74U,0x3f6f0d24U,0x3f7dfdfdU}},
-    {"synth/media:mediaInput", "position2", "db65b544e7dd6ed25fe19d85ad9e7ae2d2a62759405906bdffacad929f4a4589", "8d037480d30162ea2458bb3ed9ebf4ef5c3d7a6d3aeb0c1a0519e12e0b70b4ad", {0x3ee0c0a1U,0x3ef4e8deU,0x3efaf4f0U,0x3f008081U,0x3d59d2ceU,0x3ebe9873U,0x3ea35e1aU,0x3f058585U,0x3e38b8b9U,0x3e837a72U,0x3e08e94aU,0x3f0a8a8aU}},
-    {"synth/media:mediaInput", "position3", "869861cc2022b37eed2b125497f34118a60ec630e6c5640146aac9cff2bdd045", "0ad0fb9049a115cd1bc0e7469f451b77ea6101e8b56b600743b8652d1ae57546", {0x3ec7fb2fU,0x3df0f0f2U,0x3e909091U,0x3f19999aU,0x3f0bf55fU,0x3f186634U,0x3d865c32U,0x3f1e9e9fU,0x3d8fbeefU,0x3eec2763U,0x3ef3dac3U,0x3f23a3a4U}},
-    {"synth/media:mediaInput", "position4", "365f74819fcb7f75bb26d4275ea7217cb29ac8836c69c2c91c68e27eee109c23", "8908965b141611865971e4bea0e24e9dc0169c60d7854226a2ac3150e52ff5cb", {0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
-    {"synth/media:mediaInput", "position5", "5facfd3e69f9152d624e5ef3651e68d103109ae19f7844c99d175ccf4e28a418", "b7a446e81a7630c4bb29b5366d0ce81315490cf833915b60179ecb89401ec498", {0x3f164e06U,0x3eecfd0eU,0x3f27ccf2U,0x3f4acacbU,0x3f4a1b6dU,0x3e8f6e4eU,0x3ec053e8U,0x3f4fcfd0U,0x3e2a43deU,0x3db447dcU,0x3da6ed34U,0x3f54d4d5U}},
-    {"synth/media:mediaInput", "position6", "ccb8e44755b57644bd2d75756355615ad790672d3bc873baa44cc0a951a8ce29", "52cd7d49a0f7937b64cef671fa6f64ac283d24c7d50d7bed3f1a735b77919bae", {0x3defdecfU,0x3d33e71bU,0x3c33e71bU,0x3eeeeeefU,0x3e702f6fU,0x3ed5d2d0U,0x3ea5015eU,0x3ef8f8f9U,0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU}},
-    {"synth/media:mediaInput", "position7", "80ddaea3c05f47448467c8828c572a364d70fa30054a323e10071b90c8eb450f", "f9f67a594af5dadc97827184242d4c2119f2f014f8337a49cdacb13751c53364", {0x3d9fdf1fU,0x3ce74db5U,0x3bf4e8deU,0x3dd8d8d9U,0x3df8f0eaU,0x3b61c2a5U,0x3db66c23U,0x3e008081U,0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU}},
-    {"synth/media:mediaInput", "position8", "c2d5d15d0951a0df47fc7aef500a169d19c5c14bc541143b9e46fb570e8f4fee", "ce0c65440fb4de43fce82e67720de16785adc85274259ebd58c00cfe586fefe9", {0x3e662b72U,0x3ea2b4c7U,0x3e805020U,0x3f28a8a9U,0x3ec6e0fcU,0x3e28e92aU,0x3c2e5c0bU,0x3f2dadaeU,0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU}},
-    {"synth/media:mediaInput", "tiling1", "96f967a54663481cb8e74ebad034c9e9a67bb92c810fb0ed78c3c0c7ab1cca2f", "7f23d380e2919aae8f292f50c0720be729ff1047a48c459c15d98670afa66276", {0x3ec3b6aaU,0x3e1b9692U,0x3ea7df17U,0x3ed0d0d1U,0x3d36f538U,0x3d573da6U,0x3e0613a6U,0x3e34b4baU,0x3e4447b7U,0x3e25a69cU,0x3dd11145U,0x3e66e6cfU}},
-    {"synth/media:mediaInput", "tiling2", "5c930e431110ffdb95260526b3d0cd4c988946426f62375e2deb505e066f1671", "5e74eefaa556a3311d7279d121281b767734d22fa513fa29158bca988d552065", {0x3efd4187U,0x3ec71565U,0x3eefb67eU,0x3f2cacadU,0x3d36f538U,0x3d573da6U,0x3e0613a6U,0x3e34b4baU,0x3e4447b7U,0x3e25a69cU,0x3dd11145U,0x3e66e6cfU}},
-    {"synth/media:mediaInput", "tiling3", "2e1a732625238546435ebb9270d1f3f17729a3b8c55782565a14fcb19b32facb", "b74113e03a57da06b7cf89a65bcd269ea7ef795da81ea16623e9dd4104b2997e", {0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU,0x3d36f538U,0x3d573da6U,0x3e0613a6U,0x3e34b4baU,0x3e4447b7U,0x3e25a69cU,0x3dd11145U,0x3e66e6cfU}},
-    {"synth/media:mediaInput", "flip1", "6ee9b8136b5591585f0762b17bff2a94d443ee048de0aa25669795ba3c283d6f", "4313513ab6f7fb8f56fd9eb0df720fd0df127826672debe19755e8e0b5679226", {0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U}},
-    {"synth/media:mediaInput", "flip2", "4135ab81ead9024e1354077586b278334ab0178465e249c3a2dee4447662c570", "9ac9e7ec94b9756868055029793e34266a4641d4d62b699d76bce89b1a67ce54", {0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U}},
-    {"synth/media:mediaInput", "flip3", "7df66cf87e4ed72620101bd022158760f5f0dc7407ee98adf919234fa06e3bf0", "d037da9dc014534adabb63edef333df1b8338a5e0ce374e6f544cdc7f6d89031", {0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U}},
-    {"synth/media:mediaInput", "flip11", "bd26178a2b1cebecc40ba26873adddb5ee2466d8001d9169b5ba5f312fd71966", "eb969ec2d498fa7aaec87612447500fe15e29779c5c1fb7d372866d209bd82a3", {0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U}},
-    {"synth/media:mediaInput", "flip12", "46f2279d9f38acf148934c027f103b5d9e960a0ff45b7a383dc28d1710b99cf1", "84c1bb2dd76b89464282fb24544d769cb7039b0a52594824eec7a1ef0d9cc46c", {0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
-    {"synth/media:mediaInput", "flip13", "3da28f3249136b7fa3ca1b7a3e9b566e8025771ee815f330eedb0c4091c543c2", "169d45be3448219e3bafe9e117796f478b2a585e6258c2630c74d4ca6ee4e894", {0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U}},
-    {"synth/media:mediaInput", "flip14", "377c19b2bf4fb8a10de45f69bb2eb71d3a3318b5cabef8552061285eed10056e", "036f1ad0c443124e78760c1706cda5698cd1be03f10880b878649280d9294a90", {0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
-    {"synth/media:mediaInput", "flip15", "7c06fc3c58933f4d6afe671d4f9fa0490203e4d9635381755a24c39dd9f88028", "15e335c7d5f1fc8731818d6ae0e1539e63ebca0daf62e8cf5dc382af7530e2ae", {0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U}},
-    {"synth/media:mediaInput", "flip16", "00c53bdbc854cadad72cffefb2706c524a942ffc027731be273b7b388e1e3a95", "da4fb289cdb043d5e5ec67142974b300d6867089a26cecafa510ae0c2a149221", {0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U}},
-    {"synth/media:mediaInput", "flip17", "7a52f3cf2dd979e4c652f331a7439fc74029ca8b47de9f0d7e1c0d0fccbf3fac", "ee7922a21dd36cccb47ba5671d8d0c47d4ec9dc8ff3ca7e0d532ea2ce1446c3f", {0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U}},
-    {"synth/media:mediaInput", "flip18", "5423167cf3752eb9901317b913f1605319f99f7becd39dd1be485228d0a98c29", "67585c6eb1f30b50fcd0b744c3ef074b869fab092538ae302e6b67f0d8aad2df", {0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
+    {"synth/media:mediaInput", "position0", "f660cb7715bfd9f0d0d40ceb7e692c3069e1b030c88e83fa08644bc2b6011d0c", "af0f5de57f561230be891c3b5087b826e343b444925fa1b3e27cb286b0438f0f", {0x3f0bf55fU,0x3f186634U,0x3d865c32U,0x3f1e9e9fU,0x3d8fbeefU,0x3eec2763U,0x3ef3dac3U,0x3f23a3a4U,0x3e662b72U,0x3ea2b4c7U,0x3e805020U,0x3f28a8a9U}},
+    {"synth/media:mediaInput", "position1", "55942cc47bccb10efad10d692e595ea37dba297cef45a0883742e2c234b330fd", "95a13b196cded97ac05fb9d7bd0cfc43f8bbc19656484735e02e83dd2ea9b252", {0x00000000U,0x00000000U,0x3e47d6e7U,0x3f078788U,0x3e0213a6U,0x3ed6f514U,0x3b0d19a7U,0x3f0c8c8dU,0x3e86b8ecU,0x3e98fd63U,0x3ebb3dc1U,0x3f119192U}},
+    {"synth/media:mediaInput", "position2", "e78ecc2ce446b475bb6e68e7168abc82b51e0ebb5ba168a16230366e6ac03fea", "b5010872f139dd980216c9b6e9a204a97822461e39ab2e1d27aab1b98722709f", {0x3dadcae8U,0x3cf6ac63U,0x3e9fc6eeU,0x3eb2b2b3U,0x3e331d88U,0x3ea09c99U,0x3e47d6e7U,0x3ebcbcbdU,0x3e8c5014U,0x3e733579U,0x3d82f568U,0x3ec6c6c7U}},
+    {"synth/media:mediaInput", "position3", "f79864a578ad1845a588dece2d4c89283724c0efb71479c69bd344de8596a376", "7d3a3a5741595253b243c415312a490a719aa0d126655849d610effa1a9d75a4", {0x3ee6903aU,0x3d8931dbU,0x3daf4dedU,0x3ef2f2f3U,0x3db29477U,0x3ee52d76U,0x3ecf59e5U,0x3efcfcfdU,0x3e568c43U,0x3eaf5a06U,0x3e6f4dadU,0x3f038384U}},
+    {"synth/media:mediaInput", "position4", "3f7b156f1267f3b3cc2f6a0a74e5cd18dcf6c8d8b014703a94f70326cbc99adb", "11bbc734d59bc0f6a26dac9a0b15ac42abbcec9e2df2cb502093f50e22fc0412", {0x3cd1e2f5U,0x3d911192U,0x3e2e641aU,0x3ec4c4c5U,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3e659a50U,0x3e99eb3dU,0x3e9b9ea2U,0x3ed8d8d9U}},
+    {"synth/media:mediaInput", "position5", "231d53780fce7ae18fba565f8f94a8028d361a555830dd46fa7217cb2cd49e53", "0f1481dc6e0e129a99070cd1077051d7b86354e86fd45bdc8a17764c0552eff0", {0x3d816244U,0x3d620325U,0x3e4a43bdU,0x3e50d0d1U,0x3df7be86U,0x3be5cab1U,0x3e0a3beeU,0x3e64e4e5U,0x3e4057f0U,0x3e4633a1U,0x3d6e3b89U,0x3e78f8f9U}},
+    {"synth/media:mediaInput", "position6", "46f930e04666af40ea68c77627be16ea408691e1e3e314dd1a17b18066f88589", "bcaae66f6f01ed1d385c266035da29dff3ef0fadb60a45508d5c94bf9c727334", {0x3f2e743aU,0x3f09eb4dU,0x3f5fc6aeU,0x3f68e8e9U,0x3f69439eU,0x3ea7f33fU,0x3f0dd319U,0x3f6dedeeU,0x3e49fb2dU,0x3ddd0936U,0x3e60d8d1U,0x3f72f2f3U}},
+    {"synth/media:mediaInput", "position7", "60a8f926d0b6251d5559486eea67254d39b94e03f9ddbc2261e1ce293921d9bc", "50a0f2ef609d444c348be42902d4b1a06b6f90f351777e45ebad0fc584000d79", {0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U,0x3da88058U,0x3eaa2fb6U,0x3f38824cU,0x3f56d6d7U,0x3e90d922U,0x3e09f35dU,0x3ed945b2U,0x3f5bdbdcU}},
+    {"synth/media:mediaInput", "position8", "607f6bbf01f1478ae1028f683264778e9a6d87034c06ddd9fed546a650d3d681", "84f1d40d218c62a86d305e9740c5f94d0d6210a8fcbb9afb7c784b453a69d90a", {0x3d8fbeefU,0x3eec2763U,0x3ef3dac3U,0x3f23a3a4U,0x3e662b72U,0x3ea2b4c7U,0x3e805020U,0x3f28a8a9U,0x3ec6e0fcU,0x3e28e92aU,0x3c2e5c0bU,0x3f2dadaeU}},
+    {"synth/media:mediaInput", "tiling1", "8b673d5972d9cac784b2720ec64f5917edf125b2b0a932d662472b5229294e04", "9dd8e08d5cc6ef3b8c44a75e3bdc3e5bcbdde986481149a9679db8f329ebbe7c", {0x3f142dc8U,0x3e4d51daU,0x3f069eb7U,0x3f76f6f6U,0x3d74479cU,0x3ef3a456U,0x3ebaf938U,0x3f0a0a0aU,0x3ed10d4aU,0x3e2c7035U,0x3e27b6ceU,0x3f169696U}},
+    {"synth/media:mediaInput", "tiling2", "8b673d5972d9cac784b2720ec64f5917edf125b2b0a932d662472b5229294e04", "9dd8e08d5cc6ef3b8c44a75e3bdc3e5bcbdde986481149a9679db8f329ebbe7c", {0x3f142dc8U,0x3e4d51daU,0x3f069eb7U,0x3f76f6f6U,0x3d74479cU,0x3ef3a456U,0x3ebaf938U,0x3f0a0a0aU,0x3ed10d4aU,0x3e2c7035U,0x3e27b6ceU,0x3f169696U}},
+    {"synth/media:mediaInput", "tiling3", "dabd9b58ed663abf48d1e63779c544d1ed5a87c069b1aaeb29dd3f5b426a2547", "69d98aaa495a1d2dc4776c83d7622d67046a5d26c088ef9dfa33c88f946436c6", {0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU,0x3d74479cU,0x3ef3a456U,0x3ebaf938U,0x3f0a0a0aU,0x3ed10d4aU,0x3e2c7035U,0x3e27b6ceU,0x3f169696U}},
+    {"synth/media:mediaInput", "flip1", "b52d2c55618b811f7c66f41151eb6d59e73b4e56443ed1186d8b69e662e3bae6", "37ae02d9f1b3f67ea1ff95a000b3452223e38ba9e86d2ad24625fbfaad25c3a7", {0x3db4f93eU,0x3c22c4e8U,0x3deca865U,0x3e088889U,0x3d48f119U,0x3d1223b6U,0x3cd3e6faU,0x3de8e8e9U,0x3c9a33d0U,0x3d552981U,0x3d6447b0U,0x3dc0c0c6U}},
+    {"synth/media:mediaInput", "flip2", "c9623009226b746214bc5ecb5196042f89b2305c38f0c7f12dd847fe9d1f67ed", "7e9c6945eecf8f8765338ca4df8a6e2e99642f768abb3b3c96e7f04d6d39b705", {0x3f2ca095U,0x3ec02f9fU,0x3c2345e9U,0x3f58d8d9U,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3f468a4eU,0x3edec0a3U,0x3e0f561dU,0x3f76f6f7U}},
+    {"synth/media:mediaInput", "flip3", "74a0af0b44291a173eeaa79f72f4b7a387dec2b32bd569c303c9933aa9a01ae4", "981f469c19707d0e10105c33e268a2c90d38d646d02e45ba75bb10ada71fe400", {0x3f21d70dU,0x3f0d8680U,0x3e4b2581U,0x3f2cacadU,0x3d48f119U,0x3d1223b6U,0x3cd3e6faU,0x3de8e8e9U,0x3f047e79U,0x3ee771fdU,0x3db75e05U,0x3f0e8e90U}},
+    {"synth/media:mediaInput", "flip11", "e66a8e362590d3ab2136dad17fbcd2dda2b6d07da19ff9a5d1db0649d3963418", "bf55bf16b5545e1cb574b7c5378146e23137c7bbcfc09fa6130f8ffef3c800be", {0x3cd1e2f5U,0x3d911192U,0x3e2e641aU,0x3ec4c4c5U,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3f468a4eU,0x3edec0a3U,0x3e0f561dU,0x3f76f6f7U}},
+    {"synth/media:mediaInput", "flip12", "31d0d03a774719e2b58c0b40fe1ef9e5ada2aaa011549952b04070b1c37502fc", "e798411fc6b8c3053125441925ebb55c5249e9c5b1e31ec1d6541a5f0dd64d13", {0x3f2ca095U,0x3ec02f9fU,0x3c2345e9U,0x3f58d8d9U,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3e659a50U,0x3e99eb3dU,0x3e9b9ea2U,0x3ed8d8d9U}},
+    {"synth/media:mediaInput", "flip13", "9789f5e770043cb30fcd6df865811656e5a95eeb010d742185df8a1562857f9f", "838ac77ccc6545cbb4898dc201beb03e5f54395b024824fc176a4bdf245c4de6", {0x3cd1e2f5U,0x3d911192U,0x3e2e641aU,0x3ec4c4c5U,0x3d48f119U,0x3d1223b6U,0x3cd3e6faU,0x3de8e8e9U,0x3f047e79U,0x3ee771fdU,0x3db75e05U,0x3f0e8e90U}},
+    {"synth/media:mediaInput", "flip14", "852483fae165a839b7c433d5e07d478409d719774b926f4e1ac9b77aa1e79d0b", "720f116bc4a8d764e2530d036abf32364fcdc4ffd90cf0101b90e65229965ddd", {0x3f21d70dU,0x3f0d8680U,0x3e4b2581U,0x3f2cacadU,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3e659a50U,0x3e99eb3dU,0x3e9b9ea2U,0x3ed8d8d9U}},
+    {"synth/media:mediaInput", "flip15", "b8202b5f7e996e8148240fec4a82b32f941e8171ab46cfd23c7b1664c790d8f7", "7da833c7264c175429ae129fbaac651c5e51165b16c17cd6c1e4e6f11184407d", {0x3cd1e2f5U,0x3d911192U,0x3e2e641aU,0x3ec4c4c5U,0x3d48f119U,0x3d1223b6U,0x3cd3e6faU,0x3de8e8e9U,0x3c9a33d0U,0x3d552981U,0x3d6447b0U,0x3dc0c0c6U}},
+    {"synth/media:mediaInput", "flip16", "36ecc277cd669d3e6ffb4cc060deb83c9a0915d17dea52ddcab55ede3a007787", "2521b9bf8264db266afdd57f15e65bec4f8c821050eeaa5df2d263a7dac2a299", {0x3f21d70dU,0x3f0d8680U,0x3e4b2581U,0x3f2cacadU,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3f468a4eU,0x3edec0a3U,0x3e0f561dU,0x3f76f6f7U}},
+    {"synth/media:mediaInput", "flip17", "c7d1ee86351fca397c88d122a0a6dc66aeb78e2814dccc4e26d2bf0138335d94", "af274c5e82c2df612cac3d4ffb68d1d612d3e1e4bb26780ed875d2279b7f44fc", {0x3f2ca095U,0x3ec02f9fU,0x3c2345e9U,0x3f58d8d9U,0x3d48f119U,0x3d1223b6U,0x3cd3e6faU,0x3de8e8e9U,0x3f047e79U,0x3ee771fdU,0x3db75e05U,0x3f0e8e90U}},
+    {"synth/media:mediaInput", "flip18", "35b5e3ab093817c3cd88a9d38e2d1e56666ea61f87ebcdfffa88e6b62b58668c", "24f796acf5978ec2cabf5ac86e1278d5663ad09a7451368e4c1ed7afa3eaa105", {0x3db4f93eU,0x3c22c4e8U,0x3deca865U,0x3e088889U,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3e659a50U,0x3e99eb3dU,0x3e9b9ea2U,0x3ed8d8d9U}},
     {"synth/media:mediaInput", "outOfBounds", "fbd8055e725662d2d4d00c10fc63ad326d5f090d155293283a980a561cbb2ff7", "3b0002e018b563c702998518b7ea94d251abf6181a0d2d94cf02b19dcef64ad2", {0x3c9ad42cU,0x3eb7dbf4U,0x3f12c3caU,0x3f2147aeU,0x3c9ad42cU,0x3eb7dbf4U,0x3f12c3caU,0x3f2147aeU,0x3c9ad42cU,0x3eb7dbf4U,0x3f12c3caU,0x3f2147aeU}},
     {"synth/media:mediaInput", "transparent", "738c079dff6c9b77a0891ac42db1cabcab933a672b14aed8ecfcf94c0e77bb40", "24045c10c12a89f4c11e3b88ea34558fcdf926a8c1008cd08cc33bc71407c774", {0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U}},
-    {"synth/media:mediaInput", "scaleZeroGuard", "79a63249576cf470127d6ac47cde2a7f9f6f48bb728eac3053d0bee9cd9d13b4", "8908965b141611865971e4bea0e24e9dc0169c60d7854226a2ac3150e52ff5cb", {0x3d02a4c6U,0x3db4987cU,0x3dfd9a36U,0x3e74f4f3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
+    {"synth/media:mediaInput", "scaleZeroGuard", "3f7b156f1267f3b3cc2f6a0a74e5cd18dcf6c8d8b014703a94f70326cbc99adb", "11bbc734d59bc0f6a26dac9a0b15ac42abbcec9e2df2cb502093f50e22fc0412", {0x3cd1e2f5U,0x3d911192U,0x3e2e641aU,0x3ec4c4c5U,0x3df68c23U,0x3ec443c3U,0x3d01c305U,0x3ecececfU,0x3e659a50U,0x3e99eb3dU,0x3e9b9ea2U,0x3ed8d8d9U}},
   }};
   constexpr std::array<std::size_t, 3> pixels{0U, 17U, 34U};
   for (const Task11Case& fixture : fixtures) {
@@ -6112,5 +6112,51 @@ TEST(typed_ca_age_packing_matches_cpu_f6b) {
       REQUIRE(state.data()[lane] == item.state[lane]);
       REQUIRE(seed.data()[lane] == item.seed[lane]);
     }
+  }
+}
+
+TEST(typed_media_tile_context_preserves_legacy_and_zero_origin_paths) {
+  const auto input = source(5U, 3U, 1U);
+  const auto tex = source(7U, 2U, 23U);
+  const auto edges = task11_edges();
+  const auto grayscale = task11_grayscale();
+  const auto tint_hybrid = task11_tint_hybrid();
+  const auto media = source(17U, 13U, 59U);
+  const auto transparent = task11_transparent();
+  const auto before = little_endian_float_bytes(media);
+  const Task11Case fixture{"synth/media:mediaInput", "position4", "", "", {}};
+  for (const std::string_view name : {"tileOffset", "fullResolution"}) {
+    noisemaker::glsl::Bindings missing;
+    populate_task11_bindings(missing, fixture, input, tex, edges, grayscale,
+                            tint_hybrid, media, transparent, name);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind(fixture.key, missing),
+                      noisemaker::glsl::KernelBindingError);
+    noisemaker::glsl::Bindings wrong;
+    populate_task11_bindings(wrong, fixture, input, tex, edges, grayscale,
+                            tint_hybrid, media, transparent);
+    wrong.set_uniform(std::string(name), 1.0f);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind(fixture.key, wrong),
+                      noisemaker::glsl::KernelBindingError);
+  }
+  struct Context {
+    noisemaker::glsl::Vec2 full_resolution;
+    std::string_view float_hash;
+    std::string_view rgba_hash;
+  };
+  const std::array contexts{
+      Context{noisemaker::glsl::Vec2(7.0f, 5.0f), "365f74819fcb7f75bb26d4275ea7217cb29ac8836c69c2c91c68e27eee109c23", "8908965b141611865971e4bea0e24e9dc0169c60d7854226a2ac3150e52ff5cb"},
+      Context{noisemaker::glsl::Vec2(13.0f, 11.0f), "f6dcf82c6ed35da02a7cac58385a14d8cf60d7b0d0d4fa28a5942cb975687028", "dc1678b7bdc2d989fb438351bc863caa793ff26f8421fa28839860427b9c76c0"},
+  };
+  for (const auto& context : contexts) {
+    noisemaker::glsl::Bindings bindings;
+    populate_task11_bindings(bindings, fixture, input, tex, edges, grayscale,
+                            tint_hybrid, media, transparent);
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f));
+    bindings.set_uniform("fullResolution", context.full_resolution);
+    const auto rendered = noisemaker::run_pass(
+        noisemaker::generated::bind(fixture.key, bindings), 7U, 5U, 0.125f, 7.0f);
+    REQUIRE(hex(sha256(little_endian_float_bytes(rendered))) == context.float_hash);
+    REQUIRE(hex(sha256(rendered.to_rgba8())) == context.rgba_hash);
+    REQUIRE(little_endian_float_bytes(media) == before);
   }
 }
