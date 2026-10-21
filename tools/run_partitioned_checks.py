@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import itertools
 import json
 import math
 import os
@@ -179,37 +180,78 @@ def main():
                        "coverage_valid": True, "exit_code": 0, "seconds": 0}
                 if not selected:
                     return row
-                selection = temporary / f"ids-{index}.txt"
-                selection.write_text("\n".join(selected) + "\n")
-                child_report = temporary / f"result-{index}.json"
-                if args.mode == "python":
-                    command = [sys.executable, str(pathlib.Path(__file__).resolve()), "python",
-                               "--start-directory", str(args.start_directory), "--internal-ids",
-                               str(selection), "--internal-report", str(child_report)]
-                else:
-                    command = [str(args.executable.resolve()), "--test-ids-file", str(selection)]
-                with lock:
-                    active += 1
-                    report["peak_children"] = max(report["peak_children"], active)
-                try:
-                    actual = bounded(command, args.timeout_seconds)
-                finally:
+                sequence = itertools.count()
+
+                def execute(group):
+                    """Run one child invocation for exactly these IDs."""
+                    nonlocal active
+                    stamp = f"{index}-{next(sequence)}"
+                    selection = temporary / f"ids-{stamp}.txt"
+                    selection.write_text("\n".join(group) + "\n")
+                    child_report = temporary / f"result-{stamp}.json"
+                    if args.mode == "python":
+                        command = [sys.executable, str(pathlib.Path(__file__).resolve()), "python",
+                                   "--start-directory", str(args.start_directory), "--internal-ids",
+                                   str(selection), "--internal-report", str(child_report)]
+                    else:
+                        command = [str(args.executable.resolve()), "--test-ids-file", str(selection)]
                     with lock:
-                        active -= 1
-                row.update(actual)
-                if args.mode == "python" and child_report.is_file():
-                    child = json.loads(child_report.read_text())
-                    row.update(executed_ids=child["executed_ids"],
-                               accounted_ids=child["accounted_ids"], skipped_ids=child["skipped_ids"],
-                               failure_count=child["failure_count"], skip_count=child["skip_count"])
-                    if not child["successful"] and row["exit_code"] == 0:
-                        row["exit_code"] = 1
-                elif args.mode == "native":
-                    outcomes = re.findall(r"^(PASS|FAIL) ([A-Za-z_][A-Za-z_0-9]*)(?::.*)?$",
-                                          actual["stdout"] + "\n" + actual["stderr"], re.MULTILINE)
-                    row["executed_ids"] = [item for _, item in outcomes]
-                    row["accounted_ids"] = row["executed_ids"]
-                    row["failure_count"] = sum(status == "FAIL" for status, _ in outcomes)
+                        active += 1
+                        report["peak_children"] = max(report["peak_children"], active)
+                    try:
+                        actual = bounded(command, args.timeout_seconds)
+                    finally:
+                        with lock:
+                            active -= 1
+                    if args.mode == "python" and child_report.is_file():
+                        child = json.loads(child_report.read_text())
+                        actual.update(executed_ids=child["executed_ids"],
+                                      accounted_ids=child["accounted_ids"],
+                                      skipped_ids=child["skipped_ids"],
+                                      failure_count=child["failure_count"],
+                                      skip_count=child["skip_count"])
+                        if not child["successful"] and actual["exit_code"] == 0:
+                            actual["exit_code"] = 1
+                    elif args.mode == "native":
+                        outcomes = re.findall(r"^(PASS|FAIL) ([A-Za-z_][A-Za-z_0-9]*)(?::.*)?$",
+                                              actual["stdout"] + "\n" + actual["stderr"], re.MULTILINE)
+                        actual.update(executed_ids=[item for _, item in outcomes],
+                                      accounted_ids=[item for _, item in outcomes],
+                                      skipped_ids=[],
+                                      skip_count=0,
+                                      failure_count=sum(status == "FAIL" for status, _ in outcomes))
+                    return actual
+
+                def combine(results):
+                    """Merge child results; a timed-out child forces a failure."""
+                    row.update(
+                        executed_ids=[item for result in results for item in result["executed_ids"]],
+                        accounted_ids=[item for result in results for item in result["accounted_ids"]],
+                        skipped_ids=[item for result in results for item in result["skipped_ids"]],
+                        failure_count=sum(result["failure_count"] for result in results),
+                        skip_count=sum(result["skip_count"] for result in results),
+                        exit_code=next((result["exit_code"] for result in results
+                                        if result["exit_code"] != 0), 0),
+                        seconds=sum(result["seconds"] for result in results))
+                    row["timed_out"] = any(result["timed_out"] for result in results)
+
+                def attempt(group, depth):
+                    """Run IDs; split a timed-out group into bounded halves."""
+                    if not group:
+                        return []
+                    actual = execute(group)
+                    if actual["timed_out"] and len(group) > 1 and depth < 3:
+                        middle = len(group) // 2
+                        return attempt(group[:middle], depth + 1) + attempt(group[middle:], depth + 1)
+                    if actual["timed_out"]:
+                        # A timed-out child leaves its remaining IDs unaccounted;
+                        # no PASS may be claimed for the unfinished group.
+                        actual.update(executed_ids=[], accounted_ids=[],
+                                      skipped_ids=[], failure_count=1, skip_count=0)
+                    return [actual]
+
+                results = attempt(selected, 0)
+                combine(results)
                 row["coverage_valid"] = Counter(row["accounted_ids"]) == Counter(selected)
                 return row
 
