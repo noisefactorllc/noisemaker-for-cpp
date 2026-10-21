@@ -445,13 +445,58 @@ def _source_digest(shader_git: pathlib.Path, revision: str) -> str:
     # plain byte/Unicode sorting would authenticate a different stream.
     paths.sort(key=str.lower)
     digest = hashlib.sha256()
-    for relative in paths:
-        data = _git_blob(shader_git, revision, relative)
-        digest.update(relative.encode())
-        digest.update(b"\0")
-        digest.update(str(len(data)).encode())
-        digest.update(b"\0")
-        digest.update(data)
+    # One persistent cat-file --batch process serves every pinned blob.  A
+    # spawn per blob (over a thousand files) dominated the check's runtime and
+    # pushed it past the runner window; the served bytes are identical.
+    process = subprocess.Popen(
+        ["git", "-C", str(shader_git), "cat-file", "--batch"],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        for relative in paths:
+            request = f"{revision}:{relative}"
+            process.stdin.write(f"{request}\n".encode())
+            process.stdin.flush()
+            header = process.stdout.readline()
+            if not header:
+                raise CompatibilityError(f"shader git blob read failed: {relative}")
+            # A missing or ambiguous reply echoes the whole request line,
+            # so compare against the exact request instead of splitting on
+            # spaces: a path with a space would otherwise mis-parse.
+            reply = header.decode()
+            if reply == f"{request} missing\n" or reply.endswith(" ambiguous\n"):
+                # Same fallback _git_blob applies: shallow or
+                # archive-materialized shader checkouts cannot serve the
+                # pinned blob, so authenticate the same bytes from the tree.
+                file = shader_git / relative
+                if file.is_symlink() or not file.is_file():
+                    raise CompatibilityError(f"shader git blob read failed: {relative}")
+                data = file.read_bytes()
+            else:
+                fields = reply.rstrip("\n").split(" ")
+                if len(fields) != 3:
+                    raise CompatibilityError(f"shader git blob read failed: {relative}")
+                try:
+                    size = int(fields[2])
+                except ValueError:
+                    raise CompatibilityError(
+                        f"shader git blob read failed: {relative}") from None
+                data = process.stdout.read(size)
+                if len(data) != size or process.stdout.read(1) != b"\n":
+                    raise CompatibilityError(f"shader git blob read failed: {relative}")
+            digest.update(relative.encode())
+            digest.update(b"\0")
+            digest.update(str(len(data)).encode())
+            digest.update(b"\0")
+            digest.update(data)
+    finally:
+        try:
+            process.stdin.close()
+        except OSError:
+            pass
+        process.kill()
+        process.wait()
     return digest.hexdigest()
 
 
