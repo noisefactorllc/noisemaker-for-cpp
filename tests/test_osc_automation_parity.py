@@ -20,6 +20,7 @@ import subprocess
 import tempfile
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.benchmark.corpus_lane import JS_RUNNER, record_flags, resolve_cpu_root, resolve_driver
 
 PROGRAMS = {
@@ -141,7 +142,7 @@ class UnsupportedRealtimeInputTest(unittest.TestCase):
 # number (renderer.js buildBindings) and each kernel compares it with -1 and 1.
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json"
-CORPUS_SOURCES = ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources"
+CORPUS_SOURCES = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources"
 EXECUTOR = ROOT / "src/graph/executor.cpp"
 ROTATION_PROGRAMS = {
     "filter/historicPalette:historicPalette":

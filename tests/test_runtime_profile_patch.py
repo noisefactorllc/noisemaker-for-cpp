@@ -3,13 +3,14 @@ import hashlib
 from pathlib import Path
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.dynamic_define_hoist import transform_source
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend import loop_proof
 
 ROOT = Path(__file__).resolve().parents[1]
-CORPUS = ROOT / 'tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources'
+CORPUS = ROOT / f'tools/glslcpp/corpus/{CORPUS_REVISION}/sources'
 
 
 def dynamic_program(key, relative, defines):

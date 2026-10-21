@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import corpus_ratchet
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.out_inout_admission_profile import (
@@ -16,7 +17,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
+CORPUS = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
 KEY = "synth3d/flythrough3d:precompute"
 PROFILE = "out-inout-admission-flythrough3d-v1"
 LOG_PROFILE = "fractal3d-log-flythrough3d-v1"

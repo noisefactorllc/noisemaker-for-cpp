@@ -7,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.dynamic_define_hoist import transform_source
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -21,7 +22,7 @@ from tools.glslcpp.emit_typed_cpp import render_typed_cpp, TypedEmissionError
 from tools.glslcpp.generate_kernels import GeneratorError
 
 ROOT = Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
+CORPUS = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
 HISTORICAL_EFFECTS_CORPUS = (
     ROOT / "tools/glslcpp/corpus/a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15")
 

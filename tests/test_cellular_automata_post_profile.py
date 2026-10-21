@@ -46,6 +46,17 @@ def _typed():
 
 
 class CellularAutomataPostProfileTests(unittest.TestCase):
+    def test_age_source_preserves_cpu_seed_hash_rounding(self):
+        from tools.glslcpp.emit_typed_cpp import render_typed_cpp
+
+        emitted = render_typed_cpp(_typed(), KEY, RAW_SHA256)
+        self.assertIn('bindings.get<std::int32_t>("colorMode")', emitted)
+        self.assertIn("packState(state, context, alive, age)", emitted)
+        self.assertIn("packState(state, context, finalAlive, finalAge)", emitted)
+        self.assertIn("const double cpuHashDot", emitted)
+        self.assertIn("noisemaker::f32(cpuHashDot + cpuHashDot)", emitted)
+        self.assertNotIn("float(state.seed)", emitted)
+
     def test_exact_sites_and_complete_pending_pipeline(self):
         posts = authenticate_ca_posts(_typed(), RAW_SHA256)
         self.assertEqual(len(posts), 10)

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.dsl import generate_backend_compatibility as generator
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -11,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DynamicDefineBindingTests(unittest.TestCase):
     def test_noise3d_number_seed_carrier_requires_exact_source_and_route(self):
-        metadata = json.loads((ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/metadata.json").read_text())
+        metadata = json.loads((ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/metadata.json").read_text())
         key = "synth3d/noise3d:precompute"
         effect = metadata["effects"]["synth3d/noise3d"]
         pass_item = next(item for item in effect["passes"] if item["program"] == "precompute")
@@ -29,7 +30,7 @@ class DynamicDefineBindingTests(unittest.TestCase):
                                              "synth3d/shape3d:precompute"), "std::int32_t")
 
     def test_new_runtime_defines_have_parameter_binding_sources(self):
-        metadata = json.loads((ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/metadata.json").read_text())
+        metadata = json.loads((ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/metadata.json").read_text())
         cases = {
             "classicNoisedeck/cellRefract:cellRefract": ["KERNEL", "SHAPE"],
             "classicNoisedeck/kaleido:kaleido": ["DIRECTION", "KERNEL", "LOOP_OFFSET", "METRIC"],

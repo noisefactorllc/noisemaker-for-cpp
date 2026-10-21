@@ -6056,3 +6056,61 @@ TEST(typed_fractal3d_power_zero_and_one_match_current_cpu_mrt) {
     }
   }
 }
+
+TEST(typed_ca_age_packing_matches_cpu_f6b) {
+  // Exact float32 output words from the eafa256 CPU authority's f6b shader.
+  struct Case {
+    const char* name;
+    std::int32_t color_mode;
+    std::array<float, 4> state;
+    std::array<float, 4> seed;
+    bool reset;
+    double speed;
+    double weight;
+    double density;
+    std::int32_t rule;
+    std::array<std::uint32_t, 4> expected;
+  };
+  const std::array<Case, 9> cases{{
+      {"seed", 1, {0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, false, 100.0, 0.0, 0.0, 5, {1065353216U, 0U, 0U, 1065353216U}},
+      {"random-seed", 1, {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, false, 100.0, 0.0, 100.0, 5, {1065353216U, 0U, 0U, 1065353216U}},
+      {"reset", 1, {1.0f, 0.7f, 0.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, true, 100.0, 0.0, 0.0, 5, {1065353216U, 0U, 0U, 1065353216U}},
+      {"survive", 1, {1.0f, 0.25f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, false, 100.0, 0.0, 0.0, 5, {1065353216U, 1048911544U, 0U, 1065353216U}},
+      {"age-clamp", 1, {1.0f, 0.995f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, false, 100.0, 0.0, 0.0, 5, {1065353216U, 1065353216U, 0U, 1065353216U}},
+      {"death", 1, {1.0f, 0.25f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, false, 100.0, 0.0, 0.0, 0, {851443712U, 834666496U, 0U, 1065353216U}},
+      {"weighted-speed", 1, {1.0f, 0.25f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, false, 50.0, 50.0, 0.0, 0, {1048576000U, 1040187392U, 0U, 1065353216U}},
+      {"mono-seed", 0, {0.0f, 0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, false, 100.0, 0.0, 0.0, 5, {1065353216U, 1065353216U, 1065353216U, 1065353216U}},
+      {"mono-speed", 0, {1.0f, 0.25f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, false, 50.0, 50.0, 0.0, 0, {1048576000U, 1048576000U, 1048576000U, 1065353216U}}
+  }};
+  for (const auto& item : cases) {
+    noisemaker::Surface state(1, 1);
+    noisemaker::Surface seed(1, 1);
+    state.clear(item.state);
+    seed.clear(item.seed);
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("time", 0.0);
+    bindings.set_uniform("seed", std::int32_t{1});
+    bindings.set_uniform("volumeSize", std::int32_t{1});
+    bindings.set_uniform("neighborMode", std::int32_t{0});
+    bindings.set_uniform("colorMode", item.color_mode);
+    bindings.set_uniform("resetState", item.reset);
+    bindings.set_uniform("speed", item.speed);
+    bindings.set_uniform("weight", item.weight);
+    bindings.set_uniform("density", item.density);
+    bindings.set_uniform("ruleIndex", item.rule);
+    bindings.set_texture("stateTex", state);
+    bindings.set_texture("seedTex", seed);
+    const auto output = noisemaker::run_pass(
+        noisemaker::generated::bind_synth3d_cellularAutomata3d_simulate(bindings), 1, 1);
+    for (std::size_t lane = 0; lane < item.expected.size(); ++lane) {
+      const auto actual = std::bit_cast<std::uint32_t>(output.data()[lane]);
+      if (actual != item.expected[lane]) {
+        throw std::runtime_error(std::string(item.name) + " lane=" + std::to_string(lane) +
+                                 " actual=" + std::to_string(actual) +
+                                 " expected=" + std::to_string(item.expected[lane]));
+      }
+      REQUIRE(state.data()[lane] == item.state[lane]);
+      REQUIRE(seed.data()[lane] == item.seed[lane]);
+    }
+  }
+}

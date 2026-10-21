@@ -6,11 +6,12 @@ from pathlib import Path
 
 import pytest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.dsl.generate_backend_compatibility import authenticate_scatter_contract
 
 
 CORPUS = (Path(__file__).resolve().parents[1] / "tools/glslcpp/corpus"
-          / "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d")
+          / CORPUS_REVISION)
 KEYS = ("render/pointsRender:deposit", "render/pointsBillboardRender:deposit")
 
 

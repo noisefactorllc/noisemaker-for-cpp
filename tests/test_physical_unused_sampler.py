@@ -5,6 +5,7 @@ import dataclasses
 import pathlib
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice as generator
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -13,7 +14,7 @@ from tools.glslcpp.emit_typed_cpp import render_typed_cpp
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "points/physical:agent"
-SOURCE = ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/points/physical/agent.glsl"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/points/physical/agent.glsl"
 
 
 class PhysicalUnusedSamplerTests(unittest.TestCase):

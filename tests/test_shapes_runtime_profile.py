@@ -4,6 +4,7 @@ import json
 import pathlib
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice as generator
 from tools.glslcpp.emit_typed_cpp import render_typed_cpp
 from tools.glslcpp.frontend import parse_program
@@ -20,7 +21,7 @@ from tools.glslcpp.frontend import (
 _LOCAL_REPO = pathlib.Path(__file__).resolve().parents[1]
 REPO = _LOCAL_REPO if (_LOCAL_REPO / 'tools/glslcpp/corpus').exists() else pathlib.Path.cwd()
 KEY = 'classicNoisedeck/shapes:shapes'
-ROOT = REPO / 'tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
+ROOT = REPO / f'tools/glslcpp/corpus/{CORPUS_REVISION}'
 MANIFEST = json.loads((ROOT / 'manifest.json').read_text())
 ENTRY = next(item for item in MANIFEST['programs'] if item['program_key'] == KEY)
 RAW = (ROOT / ENTRY['source']).read_text()

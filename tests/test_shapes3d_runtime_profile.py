@@ -5,6 +5,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.dynamic_define_hoist import transform_source
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -13,7 +14,7 @@ from tools.glslcpp.frontend.shapes3d_runtime_profile import KEY, RAW, authentica
 from tools.glslcpp.frontend.shapes3d_round_profile import authenticate_shapes3d_rounds
 from tools.glslcpp.frontend.struct_frontier_profile import apply_struct_frontier, SHAPES3D_PROFILE
 
-CORPUS=Path(__file__).resolve().parents[1]/'tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
+CORPUS=Path(__file__).resolve().parents[1]/f'tools/glslcpp/corpus/{CORPUS_REVISION}'
 ENTRY=next(x for x in json.loads((CORPUS/'manifest.json').read_text())['programs'] if x['program_key']==KEY)
 SOURCE=(CORPUS/ENTRY['source']).read_text()
 

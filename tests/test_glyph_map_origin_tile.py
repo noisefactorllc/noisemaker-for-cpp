@@ -8,6 +8,7 @@ import pathlib
 import unittest
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -20,7 +21,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 LIVE_ROOT = pathlib.Path(os.environ.get("NOISEMAKER_CPP_ROOT", ROOT))
 KEY = "filter/glyphMap:glyphMap"
 OLD = ROOT / "tools/glslcpp/corpus/a1a3fa2a84223dfc1f5ec2c7a54a6f4269139c15/sources/filter/glyphMap/glyphMap.glsl"
-NEW = ROOT / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/filter/glyphMap/glyphMap.glsl"
+NEW = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/glyphMap/glyphMap.glsl"
 
 
 def analyzed(path: pathlib.Path):

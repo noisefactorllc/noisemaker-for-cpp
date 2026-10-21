@@ -5,6 +5,7 @@ import hashlib
 from pathlib import Path
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.dynamic_define_hoist import transform_source
@@ -21,7 +22,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 ROOT = Path(__file__).resolve().parents[1]
 KEY = "synth/shape:shape"
 SOURCE = (ROOT / "tools/glslcpp/corpus/"
-          "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/"
+          f"{CORPUS_REVISION}/"
           "sources/synth/shape/shape.glsl")
 FRAME = "mutable-global-frame-shape-v1"
 XOR = "scalar-uint-xor-v1"

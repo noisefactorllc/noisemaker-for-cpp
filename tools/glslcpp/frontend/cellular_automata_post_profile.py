@@ -8,24 +8,24 @@ from .typed_ir import TypedExpression, TypedProgram, TypedStatement
 
 
 KEY = "synth3d/cellularAutomata3d:simulate"
-RAW_SHA256 = "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a"
-RAW_BYTES = 8843
-NORMALIZED_SHA256 = "c4f0d809ea5e0e86ce47653cccac606490dd363733fb7c187e6b3698b2346f7b"
-NORMALIZED_BYTES = 6584
-FUNCTIONS_SHA256 = "1b621c0f0d629f778954826f22601e2391d72f41a1aea83cac78a846e1a67674"
-WHOLE_SHA256 = "e99f386c062d5e5dd5e93efc8248913c77707e9da4bd7395f54981839b28e1ff"
-INTERFACE_SHA256 = "7a402a8665f25b7ac55f9663eedc8a452784c477215093af13340b26f957a3e2"
+RAW_SHA256 = "0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881"
+RAW_BYTES = 9257
+NORMALIZED_SHA256 = "a10f48efe5b29791d5c049fc62a1955051a5b5a9e3f846f9dc87483f4ed32a74"
+NORMALIZED_BYTES = 6734
+FUNCTIONS_SHA256 = "2fe56a236dd6b86853c33bf68e521a4ea78fddb65e1c2d5e3c6e07e10753eae1"
+WHOLE_SHA256 = "073ef5eb17770206d4adbcda1c069ecb063dd4ca4f38516f1d8a3f1977b12ec1"
+INTERFACE_SHA256 = "fce73c45922415e4228f120d79289557e7a15f0f3a7cb148a698bb9b5cf07185"
 SITES = (
-    (29, 51, 32, 40, "a692417ec5248dbc6a337f20fbb0b056e55fa06c7c88cf9f33ffd033fd536b80"),
-    (29, 52, 36, 41, "3084a089221add4a2d7b74dc5aadea0ef8e0c808abd5cf2befefbe254f9ca9a1"),
-    (29, 53, 40, 42, "d9fba6d7e01cc52d201e0e9acc32130210ff4eb7ca099dce4cfb03c462b4b9fc"),
-    (29, 56, 39, 39, "50fbf7ea87e0169e54348265fac406155c6bb1db0002e163f8891e82603ec14a"),
-    (30, 73, 21, 44, "fb3efe669537974e9d67f472aae4ac410896e32c175e48de548881b9e862393b"),
-    (30, 74, 21, 44, "2f9e60c3394c6acaf5e528d6725839b4fc91f9131917183854bcbeabe956561d"),
-    (30, 75, 21, 44, "c36ad07a16b71d5dd06462f70191d3adfcd0d2a2988971caf9b42e89bf11865b"),
-    (30, 76, 21, 44, "db8c3ae5f03a14e7da9d03259f2c13683de35b951cdf65882f4ec6420c315a1e"),
-    (30, 77, 21, 44, "03a485e267d339ce3cd5daa751815af0fd840e613149d44e266e52ce2b8f8afb"),
-    (30, 78, 21, 44, "b7fe025495f45366f1ca0f4896485ee86b836875576b5022d7fb32cb5e63acdf"),
+    (32, 61, 32, 44, "2155e1376804853a87a00f54d7b729991cab76de69a690c8890292aafcb6c15b"),
+    (32, 62, 36, 45, "e6c4f551df56d53406c1f8e39a25f2fe350dd099d2d86f66b7cc185a769622e9"),
+    (32, 63, 40, 46, "d56cfffdc0cf3aafa67c847fb8fc66feed85f2089f38ac88aafe8a2e26ce24d3"),
+    (32, 66, 39, 43, "9f104e945e705b601ace6c698a5dfa4514048f8dccbd4fe5e17ce38882fd4f87"),
+    (33, 83, 21, 48, "09671fc606acf43ba582f6e50c2876b55bfc388f8068ec298882235fea0ba98b"),
+    (33, 84, 21, 48, "dabcda0fcb40f5ea0c481068b7a481da8f3dad02784d59d870364c6fd26825c4"),
+    (33, 85, 21, 48, "935549aee0b6bdd84a27394aa804f814e4e33704a2fabba6eca7d19d2236803c"),
+    (33, 86, 21, 48, "20126fcd40f5eb786fdd8ba04e1a6fc0422c001e6246f1e94d44167434719fa3"),
+    (33, 87, 21, 48, "e5b83701c27d260fe6665b284f092cd2530fb936618972371fc14d4129d5f354"),
+    (33, 88, 21, 48, "755fac6fe42e352c6186c361df858f113e86e6f8b072bfc03566b441ac142492"),
 )
 
 
@@ -69,7 +69,7 @@ def authenticate_ca_posts(
     if (_sha(program.functions) != FUNCTIONS_SHA256 or _sha(whole) != WHOLE_SHA256
             or _sha(interface) != INTERFACE_SHA256):
         raise ValueError("cellular-automata-post: function, whole-program, or interface drift")
-    if (len(program.functions) != 9
+    if (len(program.functions) != 10
             or program.counted_loop_proof.loop_count != 3
             or program.counted_loop_proof.unproved_loop_count != 0
             or program.counted_loop_proof.max_lexical_product != 27):
@@ -88,7 +88,7 @@ def authenticate_ca_posts(
                 or node.children[0].type.display() != "int"
                 or _sha(node) != digest):
             raise ValueError("cellular-automata-post: exact post site drift")
-    moore = next(function for function in program.functions if function.id == 29)
+    moore = next(function for function in program.functions if function.id == 32)
     loops = []
 
     def walk(statement: TypedStatement):
@@ -105,6 +105,6 @@ def authenticate_ca_posts(
                    or loop.loop_proof.trip_count != 3
                    or loop.expressions[-1] is not node
                    for loop, symbol_id, (_, node) in zip(
-                       loops, (40, 41, 42), found[:3]))):
+                       loops, (44, 45, 46), found[:3]))):
         raise ValueError("cellular-automata-post: bounded loop updates drift")
     return tuple(node for _, node in found)

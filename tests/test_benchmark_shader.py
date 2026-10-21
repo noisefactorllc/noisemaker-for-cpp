@@ -64,7 +64,7 @@ VALID_RECORD = ("""{
   program: {id:'synth/solid+filter/blur#default',sourceSha256:'a'.repeat(64),planSha256:'b'.repeat(64),width:17,height:11,options:{time:0.25,frame:0,seed:17,oneShot:'ready',renderScale:1}},
   provenance: {
     cpuBehavioralLock:'c'.repeat(64),cpuSourceLockSha256:'d'.repeat(64),upstreamSourceDigest:'e'.repeat(64),
-    upstreamRevision:'""" + CORPUS_REVISION + """',upstreamTree:'f5ea13282fd27ea01c94280ae60fcb59bcb5389f',
+    upstreamRevision:'""" + CORPUS_REVISION + """',upstreamTree:'767a52b77257c1619b77813f6361fb21bc0bdd75',
     catalogPayloadSha256:'1'.repeat(64),compatibilitySha256:'2'.repeat(64),
     expectation:{schema:'noisemaker-cpp.dsl-cpu-expectation.v1',id:'synth/solid+filter/blur#default',rgba8Sha256:'3'.repeat(64),runnerSha256:'4'.repeat(64),cpuBehavioralLock:'c'.repeat(64)}
   },
@@ -168,6 +168,29 @@ def required_directory(variable: str) -> pathlib.Path | None:
 
 
 class ShaderBenchmarkContractTest(unittest.TestCase):
+    def test_revision_tree_pair_matches_authority_and_rejects_old_tree(self) -> None:
+        authority = json.loads(COMPATIBILITY.read_text())["authority"]
+        script = f"""
+import {{describeContract, validateBenchmarkResult}} from {json.dumps(LIBRARY.as_uri())};
+const current = {VALID_RECORD};
+const reject = (value) => {{
+  try {{ validateBenchmarkResult(value); return null; }}
+  catch (error) {{ return error.message; }}
+}};
+const stale = structuredClone(current);
+stale.provenance.upstreamTree = 'f5ea13282fd27ea01c94280ae60fcb59bcb5389f';
+console.log(JSON.stringify({{
+  contract: describeContract(), currentError: reject(current), staleError: reject(stale),
+}}));
+"""
+        result = run_node(script)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        values = json.loads(result.stdout)
+        self.assertEqual(values["contract"]["upstreamRevision"], authority["upstream_revision"])
+        self.assertEqual(values["contract"]["upstreamTree"], authority["upstream_tree"])
+        self.assertIsNone(values["currentError"])
+        self.assertEqual(values["staleError"], "upstream tree mismatch")
+
     def test_exact_comparer_reports_bounded_coordinate_channel_diagnostics(self) -> None:
         script = f"""
 import {{compareExactRgba8}} from {json.dumps(LIBRARY.as_uri())};

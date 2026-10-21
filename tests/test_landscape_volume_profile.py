@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import corpus_ratchet
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.landscape_volume_profile import (
@@ -18,7 +19,7 @@ from tools.glslcpp.frontend.struct_frontier_profile import (
 
 
 CORPUS = (Path(__file__).resolve().parents[1]
-          / "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d")
+          / f"tools/glslcpp/corpus/{CORPUS_REVISION}")
 
 
 def source_and_effect():

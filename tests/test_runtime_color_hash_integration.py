@@ -6,6 +6,7 @@ import dataclasses
 from pathlib import Path
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice as generator
 from tools.glslcpp import emit_typed_cpp as emitter
 from tools.glslcpp.frontend import dynamic_define_hoist, parse_program
@@ -15,7 +16,7 @@ from tools.glslcpp.frontend import moodscape_frontend_profile as moodscape
 from tools.glslcpp.frontend import moodscape_dynamic_profile as moodscape_dynamic
 
 SOURCE_ROOT = (Path(generator.__file__).resolve().parent / "corpus"
-               / "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d" / "sources")
+               / CORPUS_REVISION / "sources")
 
 
 def candidate(kind: str, runtime: bool):
