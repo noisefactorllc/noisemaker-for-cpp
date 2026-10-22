@@ -44,7 +44,7 @@
 >   sanitizers, and the install+consumer job all succeeded; `drift` failed with
 >   the same pre-existing authority-drift failure already excluded at
 >   f18a3dde — it remains the open gap it was before this commit.
-> - **Operational note (not a repo defect)**: the job check mirror for
+> - **Operational note (not a repo defect)**: the check environment for
 >   `backend-compatibility`/`effect-catalog` archives CPU authority 61aa869,
 >   which the repository no longer pins (ci.yml checks out 26d6f42); against
 >   the pinned authority both gates pass. Evidence:
@@ -654,8 +654,8 @@
 >   pass end-to-end under that redirection (exit 0 each), confirming the only defect is that the
 >   checkouts visible to the check environment lack the pinned history; the fix is provisioning that history there.
 >
-> ### Blocked declared verify checks (environment provisioning, not a product defect)
-> - The declared `backend-compatibility` and `effect-catalog` checks fail at this candidate with
+> ### Blocked verification checks (environment provisioning, not a product defect)
+> - The `backend-compatibility` and `effect-catalog` checks fail at this candidate with
 >   `fatal: not a tree object: 61aa8694…458bc` from `git -C <noisemaker-for-cpu checkout>
 >   archive 61aa8694…`, and the `--shader-git <noisemaker checkout>` path lacks the
 >   `0ed489ec…` blobs. Root cause is workspace provisioning, measured 2026-09-27: both authority
