@@ -31,15 +31,15 @@ from .typed_ir import TypedExpression, TypedFunction, TypedProgram, TypedStateme
 PROFILE = "attractor-isnan-any-admission-v1"
 ATTRACTOR_KEY = "points/attractor:agent"
 
-_RAW_BYTES = 4936
-_RAW_SHA256 = "5ec5c8c92dc026ca123c37cb735386c4bca9df0e2b2ebbd9831d3fbc32ac127e"
-_NORMALIZED_BYTES = 4037
-_NORMALIZED_SHA256 = "d6b8f3bdd40429533066d5a36851310e4fd2f12c4d5fbbfeef9e722e2b03c0aa"
-_FUNCTIONS_SHA256 = "b48ff25068d3a828af049eb2877b9a7b78dba0fe01b064815fb2cd21aa108ec2"
-_WHOLE_SHA256 = "01dbb7768fad041b71cd7f21da1edc1214fac2c0498af2b3ebf5ce6d2ee85c74"
-_INTERFACE_SHA256 = "743337eb60a5726ea3f547181b79d65013ebd67850e3484f367fd73b1cebda61"
+_RAW_BYTES = 6045
+_RAW_SHA256 = "cfe98602348063ab7cb3aa0c642f70de000c2352a40368e8fc9eddcf47447e82"
+_NORMALIZED_BYTES = 4962
+_NORMALIZED_SHA256 = "40a92be211e8fdf13632733980068dc859f0537d5a6ea41e6f23a880a6da2b82"
+_FUNCTIONS_SHA256 = "0fa03645f358ef1548d70d161d1de8a3537c9515b3ccc6192a03315c6687792b"
+_WHOLE_SHA256 = "fdf7bfecf50c8e0bd9203bea3ade19426ff315b3d4468711a9891a90eb1f3477"
+_INTERFACE_SHA256 = "67f852eea1830480136dcda6881990f5a10a467ba3a9d94f765515a2d9b0118d"
 
-_MAIN_ID = 31
+_MAIN_ID = 41
 _DEFINES: tuple[tuple[str, str, str], ...] = ()
 _LOOP_PROOF = (0, 0, 0, 0, 0, True)
 
@@ -47,14 +47,14 @@ _LOOP_PROOF = (0, 0, 0, 0, 0, True)
 # (callee, path, span, result type, node sha, parent kind, child type tuple,
 #  child sha tuple). Nothing outside this tuple may be lowered.
 _NODES = (
-    ("any", (12, "e0", 0), "177:9-177:27", "bool",
-     "bfa026ec85fcf4b20dcd6e72688dd1f9b99e0b849c6551f2bb163904d9f1b007",
+    ("any", (12, "e0", 0), "202:9-202:27", "bool",
+     "156d140628c05eb0d6ba53d599cd9a8a14c0c2c5273f7ee61968d0da9fb0713d",
      "binary", ("bvec3",),
-     ("0b5f83c77dbd222b8359bb35ff78b14d6e873b1558aeed99c25736a95163ffa3",)),
-    ("isnan", (12, "e0", 0, 0), "177:13-177:26", "bvec3",
-     "0b5f83c77dbd222b8359bb35ff78b14d6e873b1558aeed99c25736a95163ffa3",
+     ("078af5f75e50d01801324a9bc2cf2d8e3c88f8bf88289d69f9381551b04cbe71",)),
+    ("isnan", (12, "e0", 0, 0), "202:13-202:26", "bvec3",
+     "078af5f75e50d01801324a9bc2cf2d8e3c88f8bf88289d69f9381551b04cbe71",
      "builtin", ("vec3",),
-     ("4f6e28f38aa6b15d449e4ea25d95fb3d948333e5324a8533a1b10c17e1c7cecb",)),
+     ("e98545f21687785126abc55c510e43a8a0e1f19f2e1e38b454c96a6a83eb3ce0",)),
 )
 
 _ANY_SIGNATURE_ID = -4
@@ -64,11 +64,11 @@ _ISNAN_SIGNATURE_ID = -54
 # `if (any(isnan(newPos)) || length(newPos) > 1000.0)`).
 _ANCESTOR_KINDS = (("if",),)
 _ANCESTOR_SPANS = (
-    ("177:5-183:6",),
+    ("202:5-208:6",),
 )
 
-_PROFILE_SHA256 = "281ce06976160c9923bee389e61ab4ba3f2075d773d90bc983c4ffef03a910c8"
-_FROZEN_PROFILE_TUPLE_REPR = """('attractor-isnan-any-admission-v1', 'points/attractor:agent', '5ec5c8c92dc026ca123c37cb735386c4bca9df0e2b2ebbd9831d3fbc32ac127e', (), 'glsl-f32', 'b48ff25068d3a828af049eb2877b9a7b78dba0fe01b064815fb2cd21aa108ec2', '01dbb7768fad041b71cd7f21da1edc1214fac2c0498af2b3ebf5ce6d2ee85c74', '743337eb60a5726ea3f547181b79d65013ebd67850e3484f367fd73b1cebda61', 31, (0, 0, 0, 0, 0, True), (('any', (12, 'e0', 0), '177:9-177:27', 'bool', 'bfa026ec85fcf4b20dcd6e72688dd1f9b99e0b849c6551f2bb163904d9f1b007', 'binary', ('bvec3',), ('0b5f83c77dbd222b8359bb35ff78b14d6e873b1558aeed99c25736a95163ffa3',)), ('isnan', (12, 'e0', 0, 0), '177:13-177:26', 'bvec3', '0b5f83c77dbd222b8359bb35ff78b14d6e873b1558aeed99c25736a95163ffa3', 'builtin', ('vec3',), ('4f6e28f38aa6b15d449e4ea25d95fb3d948333e5324a8533a1b10c17e1c7cecb',))), (('177:5-183:6',),))"""
+_PROFILE_SHA256 = "bc440ad2496401ba1cf81438f960836020885e1ddccdd71dbbd92ab218265bac"
+_FROZEN_PROFILE_TUPLE_REPR = """('attractor-isnan-any-admission-v1', 'points/attractor:agent', 'cfe98602348063ab7cb3aa0c642f70de000c2352a40368e8fc9eddcf47447e82', (), 'glsl-f32', '0fa03645f358ef1548d70d161d1de8a3537c9515b3ccc6192a03315c6687792b', 'fdf7bfecf50c8e0bd9203bea3ade19426ff315b3d4468711a9891a90eb1f3477', '67f852eea1830480136dcda6881990f5a10a467ba3a9d94f765515a2d9b0118d', 41, (0, 0, 0, 0, 0, True), (('any', (12, 'e0', 0), '202:9-202:27', 'bool', '156d140628c05eb0d6ba53d599cd9a8a14c0c2c5273f7ee61968d0da9fb0713d', 'binary', ('bvec3',), ('078af5f75e50d01801324a9bc2cf2d8e3c88f8bf88289d69f9381551b04cbe71',)), ('isnan', (12, 'e0', 0, 0), '202:13-202:26', 'bvec3', '078af5f75e50d01801324a9bc2cf2d8e3c88f8bf88289d69f9381551b04cbe71', 'builtin', ('vec3',), ('e98545f21687785126abc55c510e43a8a0e1f19f2e1e38b454c96a6a83eb3ce0',))), (('202:5-208:6',),))"""
 
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
@@ -197,18 +197,19 @@ def authenticate_attractor_any_isnan_admission(
          program.resources.outputs, program.resources.uses_texture,
          program.resources.uses_derivatives)
             != (("time", "resolution", "seed", "attractor", "speed",
-                 "xyzTex", "velTex", "rgbaTex"),
-                ("xyzTex", "velTex", "rgbaTex"),
-                ("outXYZ", "outVel", "outRGBA"), True, False)):
+                 "xyzTex", "velTex", "rgbaTex", "diffuseTex", "diffuseActive",
+                 "baseColorTex"),
+                ("xyzTex", "velTex", "rgbaTex", "diffuseTex", "baseColorTex"),
+                ("outXYZ", "outVel", "outRGBA", "outBaseColor"), True, False)):
         raise _fail("resource or binding signature mismatch")
 
-    if len(program.functions) != 11:
+    if len(program.functions) != 14:
         raise _fail("function cardinality mismatch")
     main = next((item for item in program.functions if item.id == _MAIN_ID), None)
     if (main is None
             or (main.name, main.return_type.display(), len(main.parameters),
                 len(main.body), _span(main))
-            != ("main", "void", 0, 16, "132:1-188:2")):
+            != ("main", "void", 0, 18, "155:1-215:2")):
         raise _fail("main identity mismatch")
 
     # Census the WHOLE program: an extra any/isnan site anywhere else, or

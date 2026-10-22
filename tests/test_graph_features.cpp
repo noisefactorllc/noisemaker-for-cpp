@@ -635,10 +635,11 @@ TEST(graph_sampler_preflight_accepts_authority_input_map_order) {
   const auto inputs = options(9U, 6U);
   const BindingMaterializationContext context{
       &inputs, &snapshot.definition, inputs.width, inputs.height};
-  // The shader starts with inputTex; the authority input map ends with it.
-  // Both orders are independently authenticated and do not need to coincide.
-  REQUIRE(snapshot.admissions[0].samplers.front().name == "inputTex");
-  REQUIRE(snapshot.definition.passes[0].inputs.back().first == "inputTex");
+  // The shader starts with heightTex; the authority input map starts with
+  // xyzTex. Both orders are independently authenticated and do not need to
+  // coincide.
+  REQUIRE(snapshot.admissions[0].samplers.front().name == "heightTex");
+  REQUIRE(snapshot.definition.passes[0].inputs.front().first == "xyzTex");
   preflight_pass_abi(step, snapshot.admissions[0], snapshot.definition.passes[0], context);
 }
 

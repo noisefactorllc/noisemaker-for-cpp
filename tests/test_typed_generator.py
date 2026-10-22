@@ -22870,13 +22870,13 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
+                "3775cb4b8e799f0cc7247354eedf0d79666056eff1463ec9165876ffb4a2ded4"),
             "src/typed_generated/typed_slice.cpp": (
-                3887274,
-                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
+                3928370,
+                "c418bf40da3d7c2651b6a33a95d7ff4a74fb565118ed921d1688ae52abda2735"),
             "src/typed_generated/typed_manifest.json": (
-                927073,
-                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
+                931565,
+                "d2a6120fdca6b175b06ac5f8e1f0a015bb9804ec920f02574963af0e0c3cfd7c"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23659,13 +23659,13 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
+                "3775cb4b8e799f0cc7247354eedf0d79666056eff1463ec9165876ffb4a2ded4"),
             "src/typed_generated/typed_slice.cpp": (
-                3887274,
-                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
+                3928370,
+                "c418bf40da3d7c2651b6a33a95d7ff4a74fb565118ed921d1688ae52abda2735"),
             "src/typed_generated/typed_manifest.json": (
-                927073,
-                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
+                931565,
+                "d2a6120fdca6b175b06ac5f8e1f0a015bb9804ec920f02574963af0e0c3cfd7c"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24433,13 +24433,13 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
+                "3775cb4b8e799f0cc7247354eedf0d79666056eff1463ec9165876ffb4a2ded4"),
             "src/typed_generated/typed_slice.cpp": (
-                3887274,
-                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
+                3928370,
+                "c418bf40da3d7c2651b6a33a95d7ff4a74fb565118ed921d1688ae52abda2735"),
             "src/typed_generated/typed_manifest.json": (
-                927073,
-                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
+                931565,
+                "d2a6120fdca6b175b06ac5f8e1f0a015bb9804ec920f02574963af0e0c3cfd7c"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24973,13 +24973,13 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
+                "3775cb4b8e799f0cc7247354eedf0d79666056eff1463ec9165876ffb4a2ded4"),
             "src/typed_generated/typed_slice.cpp": (
-                3887274,
-                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
+                3928370,
+                "c418bf40da3d7c2651b6a33a95d7ff4a74fb565118ed921d1688ae52abda2735"),
             "src/typed_generated/typed_manifest.json": (
-                927073,
-                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
+                931565,
+                "d2a6120fdca6b175b06ac5f8e1f0a015bb9804ec920f02574963af0e0c3cfd7c"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25577,13 +25577,13 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 42755,
-                "47799dde454e9d963ad0ef1a6c9d608f9503ef6277e03043135246b4bb39954c"),
+                "3775cb4b8e799f0cc7247354eedf0d79666056eff1463ec9165876ffb4a2ded4"),
             "src/typed_generated/typed_slice.cpp": (
-                3887274,
-                "8d8cf37c8cd6d1676c99021c6f1529dcf2bb97281a0f7ed0c78709d6335ede33"),
+                3928370,
+                "c418bf40da3d7c2651b6a33a95d7ff4a74fb565118ed921d1688ae52abda2735"),
             "src/typed_generated/typed_manifest.json": (
-                927073,
-                "a266762c5d4f9a289f31331a4244ef9d82b9dcf0f45460b112bb741640f7b189"),
+                931565,
+                "d2a6120fdca6b175b06ac5f8e1f0a015bb9804ec920f02574963af0e0c3cfd7c"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -26885,9 +26885,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         pending = json.loads((corpus_root / "pending.json").read_text())
 
         candidates = [
-            ("points/flock:agent", "points/flock/agent.glsl", "points/flock:agent:34:19: unsupported binary operator >>"),
-            ("points/life:agent", "points/life/agent.glsl", "points/life:agent:44:19: unsupported binary operator >>"),
-            ("points/physarum:agent", "points/physarum/agent.glsl", "points/physarum:agent:29:19: unsupported binary operator >>"),
+            ("points/flock:agent", "points/flock/agent.glsl", "points/flock:agent:68:19: unsupported binary operator >>"),
+            ("points/life:agent", "points/life/agent.glsl", "points/life:agent:46:19: unsupported binary operator >>"),
+            ("points/physarum:agent", "points/physarum/agent.glsl", "points/physarum:agent:64:19: unsupported binary operator >>"),
         ]
 
         for key, rel, expected_next_diag in candidates:
@@ -27109,8 +27109,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         pending = json.loads((corpus_root / "pending.json").read_text())
 
         candidates = [
-            ("points/flock:agent", "points/flock/agent.glsl", "points/flock:agent:200:21: unsupported typed expression post"),
-            ("points/life:agent", "points/life/agent.glsl", "points/life:agent:256:17: unsupported typed expression post"),
+            ("points/flock:agent", "points/flock/agent.glsl", "points/flock:agent:236:21: unsupported typed expression post"),
+            ("points/life:agent", "points/life/agent.glsl", "points/life:agent:258:17: unsupported typed expression post"),
             ("points/physarum:agent", "points/physarum/agent.glsl", None),
         ]
 

@@ -768,8 +768,13 @@ ExecutionChain compile_chain(const Chain& source_chain, Scope& scope, bool inlin
     for (auto& binding : normalized.values) step.params.push_back(std::move(binding));
     for (std::size_t argument_index = 0; argument_index < args.size(); ++argument_index) {
       const auto& argument = args[argument_index];
-      const std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
-      if (argument.value.kind != PlanValue::Kind::null_value) step.explicit_params.push_back(supplied);
+      std::string supplied = argument.name.value_or(argument_index < definition->parameters.size() ? definition->parameters[argument_index].name : "argument " + std::to_string(argument_index + 1));
+      if (argument.value.kind == PlanValue::Kind::null_value) continue;
+      // A deprecated alias records its canonical name, once, as upstream's
+      // post-resolution `seen` set does (compiler.js explicitParams).
+      for (const auto& alias : definition->parameter_aliases) if (alias.first == supplied) { supplied = alias.second; break; }
+      if (std::find(step.explicit_params.begin(), step.explicit_params.end(), supplied) == step.explicit_params.end())
+        step.explicit_params.push_back(std::move(supplied));
     }
     step.loc = call.loc;
     for (std::size_t pass_index = 0; pass_index < definition->passes.size(); ++pass_index) {

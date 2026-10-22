@@ -64,7 +64,7 @@ VALID_RECORD = ("""{
   program: {id:'synth/solid+filter/blur#default',sourceSha256:'a'.repeat(64),planSha256:'b'.repeat(64),width:17,height:11,options:{time:0.25,frame:0,seed:17,oneShot:'ready',renderScale:1}},
   provenance: {
     cpuBehavioralLock:'c'.repeat(64),cpuSourceLockSha256:'d'.repeat(64),upstreamSourceDigest:'e'.repeat(64),
-    upstreamRevision:'""" + CORPUS_REVISION + """',upstreamTree:'a33d67f4915abbafa7f38ba5ed63af10dd00a059',
+    upstreamRevision:'""" + CORPUS_REVISION + """',upstreamTree:'0cf0dcf4cd571cf1fb3641f31a8ddcffbcadd54e',
     catalogPayloadSha256:'1'.repeat(64),compatibilitySha256:'2'.repeat(64),
     expectation:{schema:'noisemaker-cpp.dsl-cpu-expectation.v1',id:'synth/solid+filter/blur#default',rgba8Sha256:'3'.repeat(64),runnerSha256:'4'.repeat(64),cpuBehavioralLock:'c'.repeat(64)}
   },
@@ -427,7 +427,7 @@ console.log(JSON.stringify({{
         description = json.loads(result.stdout)
         self.assertEqual(description["schema"], "noisemaker-cpp.benchmark-result.v2")
         self.assertEqual(description["upstreamRevision"], CORPUS_REVISION)
-        self.assertEqual(description["upstreamTree"], "a33d67f4915abbafa7f38ba5ed63af10dd00a059")
+        self.assertEqual(description["upstreamTree"], "0cf0dcf4cd571cf1fb3641f31a8ddcffbcadd54e")
         self.assertEqual(description["playwrightVersion"], "1.62.1")
         self.assertEqual(description["orientation"], {
             "contract": "top_down",

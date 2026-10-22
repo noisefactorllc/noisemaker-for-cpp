@@ -78,7 +78,7 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertEqual(module._RAW_SHA256, _source_hash(_source_text()))
         self.assertEqual(
             (module._NORMALIZED_BYTES, module._NORMALIZED_SHA256),
-            (4037, "d6b8f3bdd40429533066d5a36851310e4fd2f12c4d5fbbfeef9e722e2b03c0aa"))
+            (4962, "40a92be211e8fdf13632733980068dc859f0537d5a6ea41e6f23a880a6da2b82"))
 
 
 class AdmissionGreenTests(unittest.TestCase):
@@ -87,7 +87,7 @@ class AdmissionGreenTests(unittest.TestCase):
         program = _analyzed()
         proof = module.authenticate_attractor_any_isnan_admission(
             program, _source_hash(_source_text()), PROFILE)
-        self.assertEqual(31, proof.main.id)
+        self.assertEqual(41, proof.main.id)
         self.assertEqual("any", proof.reduction.callee)
         self.assertEqual("isnan", proof.test.callee)
         self.assertEqual("bool", proof.reduction.type.display())

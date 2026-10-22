@@ -75,9 +75,21 @@ bool is_particle_state_name(std::string_view name) noexcept {
   }
   constexpr std::string_view kPrefix = "global_";
   constexpr std::string_view kSuffix = "_trail";
-  if (name.size() < kPrefix.size() + kSuffix.size()) return false;
-  return name.substr(0, kPrefix.size()) == kPrefix &&
-         name.substr(name.size() - kSuffix.size()) == kSuffix;
+  if (name.size() >= kPrefix.size() + kSuffix.size() &&
+      name.substr(0, kPrefix.size()) == kPrefix &&
+      name.substr(name.size() - kSuffix.size()) == kSuffix) {
+    return true;
+  }
+  // iteration.js PARTICLE_STATE_PATTERN `^global_[a-z]+_base_color$`: a
+  // particle behavior's base-color memory.
+  constexpr std::string_view kBaseColorSuffix = "_base_color";
+  if (name.size() <= kPrefix.size() + kBaseColorSuffix.size() ||
+      name.substr(0, kPrefix.size()) != kPrefix ||
+      name.substr(name.size() - kBaseColorSuffix.size()) != kBaseColorSuffix) {
+    return false;
+  }
+  const auto middle = name.substr(kPrefix.size(), name.size() - kPrefix.size() - kBaseColorSuffix.size());
+  return std::all_of(middle.begin(), middle.end(), [](char c) { return c >= 'a' && c <= 'z'; });
 }
 
 double wrap01(double value) noexcept {

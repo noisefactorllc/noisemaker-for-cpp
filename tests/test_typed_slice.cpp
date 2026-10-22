@@ -4387,10 +4387,13 @@ TEST(typed_life_matrix_uses_the_authority_lcg_hash) {
 }
 
 // Same unmodified authority and direct pass runner as the Life capture above.
-// Alive agents with zero stored seeds execute Hydraulic's hash2 path.
+// Alive agents with zero stored seeds execute Hydraulic's hash2 path. The
+// height map is bound and the diffuse map is not (tests/fixtures/
+// typed_slice_runtime_reference.mjs binds the authority's 1x1 empty surface).
 TEST(typed_hydraulic_preserves_authority_signed_number_hash) {
   constexpr std::size_t width = 17U, height = 11U;
   noisemaker::Surface input(width, height), xyz(width, height), vel(width, height), rgba(width, height);
+  noisemaker::Surface empty(1U, 1U), base_color(width, height);
   input.clear({0.2f, 0.3f, 0.4f, 1.0f});
   xyz.clear({0.25f, 0.75f, 0.0f, 1.0f});
   vel.clear({0.05f, 0.025f, 0.0f, 0.0f});
@@ -4402,21 +4405,28 @@ TEST(typed_hydraulic_preserves_authority_signed_number_hash) {
   bindings.set_uniform("quantize", 0.0);
   bindings.set_uniform("inverse", 0.0);
   bindings.set_uniform("inputWeight", 100.0);
+  bindings.set_uniform("fieldActive", 1.0);
+  bindings.set_uniform("diffuseActive", 0.0);
   bindings.set_texture("inputTex", input);
+  bindings.set_texture("heightTex", input);
   bindings.set_texture("xyzTex", xyz);
   bindings.set_texture("velTex", vel);
   bindings.set_texture("rgbaTex", rgba);
+  bindings.set_texture("diffuseTex", empty);
+  bindings.set_texture("baseColorTex", base_color);
   const auto surfaces = noisemaker::run_mrt_pass(
       noisemaker::generated::bind_points_hydraulic_agent(bindings), width, height, 0.25f);
-  const std::array<std::string_view, 3> float_hashes = {
+  const std::array<std::string_view, 4> float_hashes = {
       "ed7f25c8aea98d9ec48a476f516ef556aea3d22b24a716783699201001c9a7e3",
       "c3527c83b4b0d86d1a8f35bb7f847e2610124242cc1bcb69827e7212a9cb7252",
-      "77a3411ccfd8928e76ef86d655a49ffe95310c4175a764c35a6f74130ea60f1e"};
-  const std::array<std::string_view, 3> rgba_hashes = {
+      "77a3411ccfd8928e76ef86d655a49ffe95310c4175a764c35a6f74130ea60f1e",
+      "cda258b2a722a9336224ca9bb3997f0761213a8dac68d24b5fed88d80f18e2a3"};
+  const std::array<std::string_view, 4> rgba_hashes = {
       "faed21f9654262da7d570c76ef77c8d5e846389070c8ba8072e324529318a0b7",
       "f6db96408da8bb193f53978341c242a836cc8e9d1acb0fb0365b4bfde2a526ea",
-      "874fd948f07d2d313d58d88bbb4dcb4e3eeab3717a11f7225b1974a4d1042a13"};
-  REQUIRE(surfaces.size() == 3U);
+      "874fd948f07d2d313d58d88bbb4dcb4e3eeab3717a11f7225b1974a4d1042a13",
+      "13a74e7dc8897b6489f66b39e0e4505a4e46a943f3635b5b0c68bbe571b682cf"};
+  REQUIRE(surfaces.size() == 4U);
   for (std::size_t i = 0; i < surfaces.size(); ++i) {
     REQUIRE(hex(sha256(little_endian_float_bytes(surfaces[i]))) == float_hashes[i]);
     REQUIRE(hex(sha256(surfaces[i].to_rgba8())) == rgba_hashes[i]);
@@ -4635,18 +4645,24 @@ TEST(typed_flythrough3d_preserves_authority_mrt_outputs) {
   }
 }
 
-// CPU 9f3bd6a measures both Physical branches without the unused inputTex.
-TEST(typed_physical_agent_needs_only_the_three_state_textures) {
-  const std::array<std::array<std::string_view, 2>, 6> hashes = {{
+// Both Physical branches, captured from the authority with
+// tests/fixtures/typed_slice_runtime_reference.mjs. The CPU pass binds
+// inputTex, which spawnColor() reads; the diffuse map is unbound.
+TEST(typed_physical_agent_reads_its_bound_input_texture) {
+  const std::array<std::array<std::string_view, 2>, 8> hashes = {{
       {"6bd212b6fc82c237da31785d2b0fd3f5df656f43773139dba8b28a9c8e0fcac3", "7b81f9241951cdaa4e64a9574d9bd75017ddd74c8ba3a0a6a90f4c60e1a1e120"},
       {"e2f12d2cf4e51f9697483f6b611e570c24dd2e5e1d1d57ad1d3427c7b7b08f26", "c2534ecf83c71e0c5f192eacec428adbc0f3417b3b4847d7cf5fb04777042b6b"},
       {"71aab86faa2c77d3f56e0f1f5e7d20a834e8ad649953420677cce6083fc60b16", "c6cef49f90ad59b7f2267cb6769f2a445064092391c0a666c2651fcb37b93229"},
+      {"5d89f056865052bcb89c910d2d62872e029fb273c3db03f8968a52a41593c1b5", "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1"},
       {"a21abdbae8268dcb440f1705bc149cff2ab65d892a80974a6742261fc893959c", "a432ddbc5913396b27d3065ddc047599e50cfa89162403b472c8ecc3d1ecf09e"},
       {"ce14ceb7a6d37c52d3a35f0cbd772b73ff144d671beabf1f147942967d330dc8", "304eeff9fa4fa5633a4e121bd60a0eaac1a3e1c8ef1d9edb90e77eb0b4041d65"},
-      {"71aab86faa2c77d3f56e0f1f5e7d20a834e8ad649953420677cce6083fc60b16", "c6cef49f90ad59b7f2267cb6769f2a445064092391c0a666c2651fcb37b93229"}}};
+      {"71aab86faa2c77d3f56e0f1f5e7d20a834e8ad649953420677cce6083fc60b16", "c6cef49f90ad59b7f2267cb6769f2a445064092391c0a666c2651fcb37b93229"},
+      {"5d89f056865052bcb89c910d2d62872e029fb273c3db03f8968a52a41593c1b5", "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1"}}};
   std::size_t capture = 0;
   for (const float alive : {0.0f, 1.0f}) {
-    noisemaker::Surface xyz(4U, 3U), vel(4U, 3U), rgba(4U, 3U);
+    noisemaker::Surface input(4U, 3U), xyz(4U, 3U), vel(4U, 3U), rgba(4U, 3U);
+    noisemaker::Surface empty(1U, 1U), base_color(4U, 3U);
+    input.clear({0.2f, 0.3f, 0.4f, 1.0f});
     xyz.clear({0.25f, 0.75f, 0.125f, alive});
     vel.clear({0.05f, 0.025f, 0.01f, 0.375f});
     rgba.clear({0.2f, 0.4f, 0.6f, 1.0f});
@@ -4659,12 +4675,16 @@ TEST(typed_physical_agent_needs_only_the_three_state_textures) {
     bindings.set_uniform("drag", 0.05);
     bindings.set_uniform("deviation", 0.2);
     bindings.set_uniform("wander", 0.4);
+    bindings.set_uniform("diffuseActive", 0.0);
+    bindings.set_texture("inputTex", input);
     bindings.set_texture("xyzTex", xyz);
     bindings.set_texture("velTex", vel);
     bindings.set_texture("rgbaTex", rgba);
+    bindings.set_texture("diffuseTex", empty);
+    bindings.set_texture("baseColorTex", base_color);
     const auto surfaces = noisemaker::run_mrt_pass(
         noisemaker::generated::bind_points_physical_agent(bindings), 4U, 3U, 0.25f);
-    REQUIRE(surfaces.size() == 3U);
+    REQUIRE(surfaces.size() == 4U);
     for (const auto& surface : surfaces) {
       REQUIRE(hex(sha256(little_endian_float_bytes(surface))) == hashes[capture][0]);
       REQUIRE(hex(sha256(surface.to_rgba8())) == hashes[capture][1]);

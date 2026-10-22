@@ -320,6 +320,21 @@ TEST(is_particle_state_name_matches_exactly_the_four_names_and_the_trail_suffix)
   REQUIRE(!noisemaker::graph::iteration::is_particle_state_name("global_xyzx"));
 }
 
+// iteration.js PARTICLE_STATE_PATTERN third arm, `^global_[a-z]+_base_color$`:
+// a particle behavior's base-color memory joins the group's shared state.
+TEST(is_particle_state_name_matches_lowercase_behavior_base_color_memory) {
+  REQUIRE(noisemaker::graph::iteration::is_particle_state_name("global_flow_base_color"));
+  REQUIRE(noisemaker::graph::iteration::is_particle_state_name("global_physarum_base_color"));
+  REQUIRE(noisemaker::graph::iteration::is_particle_state_name("global_a_base_color"));
+  // `[a-z]+` needs at least one character, lowercase ASCII letters only.
+  REQUIRE(!noisemaker::graph::iteration::is_particle_state_name("global__base_color"));
+  REQUIRE(!noisemaker::graph::iteration::is_particle_state_name("global_base_color"));
+  REQUIRE(!noisemaker::graph::iteration::is_particle_state_name("global_Flow_base_color"));
+  REQUIRE(!noisemaker::graph::iteration::is_particle_state_name("global_flow3d_base_color"));
+  REQUIRE(!noisemaker::graph::iteration::is_particle_state_name("global_my_flow_base_color"));
+  REQUIRE(!noisemaker::graph::iteration::is_particle_state_name("global_flow_base_colors"));
+}
+
 // iteration.js:23-25 -- wrap01, including negative inputs (JS `%` keeps the
 // operand's sign, matching std::fmod exactly, which is why the double-mod
 // idiom is needed at all).

@@ -119,21 +119,32 @@ TEST(effect_catalog_value_preserves_negative_zero) {
 
 TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
-  REQUIRE(provenance.generated_payload_sha256 == "72ac44c86840a12814833e6c22f1def150a2d9b1e381150f4cc448f64edb66da");
+  REQUIRE(provenance.generated_payload_sha256 == "c727b0d528dfac53fd683e2871198d22d9e05ca45d56090c5097759113041ab9");
 }
 
-TEST(effect_catalog_particle_surface_parameters_preserve_explicit_and_input_routes) {
-  struct Fixture { const char* id; const char* parameter; const char* function; };
+// The authority moved particle texture inputs into the behaviors: each
+// surface parameter defaults to `none`, reports its binding through its
+// colorModeUniform, and routes to a sampler of the same name. The deprecated
+// `fieldTex` name resolves to `heightTex` (definition.js paramAliases).
+TEST(effect_catalog_particle_surface_parameters_bind_explicit_alias_and_default_routes) {
+  struct Fixture { const char* id; const char* parameter; const char* function; const char* mode; const char* alias; };
   const std::array fixtures{
-      Fixture{"points/dla", "fieldTex", "dla"},
-      Fixture{"points/flow", "fieldTex", "flow"},
-      Fixture{"points/hydraulic", "heightTex", "hydraulic"},
-      Fixture{"points/life", "diffuseTex", "life"},
-      Fixture{"points/physarum", "fieldTex", "physarum"},
-      Fixture{"render/pointsEmit", "diffuseTex", "pointsEmit"},
+      Fixture{"points/attractor", "diffuseTex", "attractor", "diffuseActive", nullptr},
+      Fixture{"points/dla", "heightTex", "dla", "fieldActive", "fieldTex"},
+      Fixture{"points/dla", "diffuseTex", "dla", "diffuseActive", nullptr},
+      Fixture{"points/flock", "diffuseTex", "flock", "diffuseActive", nullptr},
+      Fixture{"points/flow", "heightTex", "flow", "fieldActive", "fieldTex"},
+      Fixture{"points/hydraulic", "heightTex", "hydraulic", "fieldActive", nullptr},
+      Fixture{"points/life", "diffuseTex", "life", "diffuseActive", nullptr},
+      Fixture{"points/physarum", "heightTex", "physarum", "fieldActive", "fieldTex"},
+      Fixture{"points/physical", "diffuseTex", "physical", "diffuseActive", nullptr},
   };
   const auto& catalog = noisemaker::effects::effect_catalog();
   const noisemaker::effects::EffectRegistry registry(catalog);
+  const auto* emitter = catalog.find("render/pointsEmit");
+  REQUIRE(emitter != nullptr);
+  REQUIRE(std::none_of(emitter->parameters.begin(), emitter->parameters.end(),
+      [](const auto& item) { return item.type == "surface"; }));
   for (const auto& fixture : fixtures) {
     const auto* definition = catalog.find(fixture.id);
     REQUIRE(definition != nullptr);
@@ -142,9 +153,13 @@ TEST(effect_catalog_particle_surface_parameters_preserve_explicit_and_input_rout
     REQUIRE(parameter != definition->parameters.end());
     REQUIRE(parameter->type == "surface");
     REQUIRE(parameter->default_value.has_value());
-    REQUIRE(parameter->default_value->string == "inputTex");
-    for (const bool explicit_source : {false, true}) {
-      const std::string argument = explicit_source ? std::string(fixture.parameter) + ": o1" : "";
+    REQUIRE(parameter->default_value->string == "none");
+    REQUIRE(parameter->color_mode_uniform.has_value());
+    REQUIRE(*parameter->color_mode_uniform == fixture.mode);
+    std::vector<std::string> arguments{"", std::string(fixture.parameter) + ": o1"};
+    if (fixture.alias != nullptr) arguments.push_back(std::string(fixture.alias) + ": o1");
+    for (const auto& argument : arguments) {
+      const bool explicit_source = !argument.empty();
       const auto plan = noisemaker::dsl::compile(
           "search synth, points, render\nsolid().write(o1)\nsolid()." +
           std::string(fixture.function) + "(" + argument + ").write(o0)\nrender(o0)\n", registry);
@@ -156,14 +171,20 @@ TEST(effect_catalog_particle_surface_parameters_preserve_explicit_and_input_rout
         const auto binding = std::find_if(effect->params.begin(), effect->params.end(),
             [&](const auto& item) { return item.name == fixture.parameter; });
         REQUIRE(binding != effect->params.end());
-        REQUIRE(binding->value.kind == noisemaker::graph::PlanValue::Kind::surface);
-        REQUIRE(binding->value.surface.kind == (explicit_source
-            ? noisemaker::graph::SurfaceReference::Kind::named
-            : noisemaker::graph::SurfaceReference::Kind::input));
-        if (explicit_source) REQUIRE(binding->value.surface.name == "o1");
+        if (explicit_source) {
+          REQUIRE(binding->value.kind == noisemaker::graph::PlanValue::Kind::surface);
+          REQUIRE(binding->value.surface.kind == noisemaker::graph::SurfaceReference::Kind::named);
+          REQUIRE(binding->value.surface.name == "o1");
+          REQUIRE((effect->explicit_params == std::vector<std::string>{fixture.parameter}));
+        } else {
+          REQUIRE(binding->value.kind == noisemaker::graph::PlanValue::Kind::null_value);
+          REQUIRE(effect->explicit_params.empty());
+        }
+        REQUIRE(std::none_of(effect->params.begin(), effect->params.end(),
+            [](const auto& item) { return item.name == "fieldTex"; }));
         bool routed = false;
         for (const auto& pass : effect->passes) for (const auto& sampler : pass.samplers) {
-          if (sampler.name == "inputTex" && sampler.resource == fixture.parameter) routed = true;
+          if (sampler.name == fixture.parameter && sampler.resource == fixture.parameter) routed = true;
         }
         REQUIRE(routed);
         found = true;

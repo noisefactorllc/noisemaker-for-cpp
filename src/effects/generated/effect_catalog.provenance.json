@@ -1,15 +1,15 @@
 {
   "authority": {
     "cpu_behavioral_file_count": 98,
-    "cpu_behavioral_lock": "df6e11a1671a8e141926d6d0a8a7f79b1394d801d47ea39a157190173d8878ed",
+    "cpu_behavioral_lock": "e7118bae97ecdd7f09858189796a65721b7117aebd51a5fac67738ab8723b050",
     "cpu_package_lock_sha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
-    "cpu_package_sha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
-    "cpu_source_lock_sha256": "3c69af0332f8298e601164ced21504a9b9cf0e0ea50d9779751cdf23e7b03efe",
-    "source_lock_sha256": "6f620dfc3ed249938df917beba75b4e80612e053226813e1004587c8c2483699",
-    "upstream_package_lock_sha256": "b465ddd6476e00baaf5dbec5f25add705a3d17089d6d67319117f55fe4cfcaa2",
+    "cpu_package_sha256": "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807",
+    "cpu_source_lock_sha256": "f5a0af93c9a61a6cd3ccadbf5611debbb4eba03e5b00e12e656e1fffae8442d7",
+    "source_lock_sha256": "7d851e59971ac5ba8535043f717703b082764d1195fc3e9c4724b3419527c4e7",
+    "upstream_package_lock_sha256": "2df07ff61630588f9ee5ae9a86cf46db4d61c6bcb4dc2fe25928b1e3c5f2b97e",
     "upstream_package_sha256": "c0cfe4cd42a800da7fe56b6eec2bf4ece3374f4ab82d788652d033735fe8412c",
-    "upstream_revision": "b71a896a4dbdbc01e682b277f6d9a41fe786485e",
-    "upstream_tree": "a33d67f4915abbafa7f38ba5ed63af10dd00a059"
+    "upstream_revision": "12751c78103ec352bd359a9944bbeac5ad239a4b",
+    "upstream_tree": "0cf0dcf4cd571cf1fb3641f31a8ddcffbcadd54e"
   },
   "backend_counts": {
     "definitions": 210,
@@ -30,8 +30,8 @@
     "unique_fragment_keys": 301
   },
   "backend_schema": "noisemaker-cpp.backend-compatibility.v1",
-  "compatibility_sha256": "e3c1e5657c80b9080afd609a6faf0b712fffc69e814df944b746b7a089c6e819",
-  "corpus_revision": "b71a896a4dbdbc01e682b277f6d9a41fe786485e",
+  "compatibility_sha256": "78997ffcc35774774f1b6e3a1ffc1c78f9ff23d0faa00d958fa9973a4f3d8bf3",
+  "corpus_revision": "12751c78103ec352bd359a9944bbeac5ad239a4b",
   "counts": {
     "backend_programs": 308,
     "compatible_programs": 301,
@@ -45,8 +45,8 @@
     "scatter_passes": 16
   },
   "first_effect_id": "classicNoisedeck/bitEffects",
-  "generated_payload_sha256": "72ac44c86840a12814833e6c22f1def150a2d9b1e381150f4cc448f64edb66da",
+  "generated_payload_sha256": "c727b0d528dfac53fd683e2871198d22d9e05ca45d56090c5097759113041ab9",
   "last_effect_id": "synth3d/shape3d",
-  "normalized_record_stream_sha256": "db5217b9c8f4d66a1beb41db415549b81985835b01d32c72981d9d05d89d1f0f",
+  "normalized_record_stream_sha256": "777bb909708bef3ce67245d9dae049c796d03c29aa04869fb55d11adb50ddab6",
   "schema": "noisemaker-cpp.effect-catalog-generator.v1"
 }

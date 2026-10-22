@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <limits>
 #include <stdexcept>
 #include <charconv>
@@ -17,6 +18,10 @@ namespace noisemaker::effects {
 namespace {
 
 using graph::PlanValue;
+
+// Hard removal date for every deprecated parameter alias: definition.js
+// ALIAS_EOL_DATE, mirroring upstream shaders/src/lang/paramAliases.js.
+constexpr std::string_view kParameterAliasEolDate = "2027-06-01";
 
 // Generic over the entry containers in play: std::pair<std::string, Value>
 // rows (definition.raw and friends), Value's own ObjectEntry rows
@@ -915,21 +920,21 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     throw std::invalid_argument("Production catalog requires the generated singleton");
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
-      provenance_.corpus_revision != "b71a896a4dbdbc01e682b277f6d9a41fe786485e" ||
-      provenance_.generated_payload_sha256 != "72ac44c86840a12814833e6c22f1def150a2d9b1e381150f4cc448f64edb66da" ||
-      provenance_.normalized_record_stream_sha256 != "db5217b9c8f4d66a1beb41db415549b81985835b01d32c72981d9d05d89d1f0f" ||
-      provenance_.compatibility_sha256 != "e3c1e5657c80b9080afd609a6faf0b712fffc69e814df944b746b7a089c6e819" ||
-      provenance_.cpu_behavioral_lock != "df6e11a1671a8e141926d6d0a8a7f79b1394d801d47ea39a157190173d8878ed" ||
+      provenance_.corpus_revision != "12751c78103ec352bd359a9944bbeac5ad239a4b" ||
+      provenance_.generated_payload_sha256 != "c727b0d528dfac53fd683e2871198d22d9e05ca45d56090c5097759113041ab9" ||
+      provenance_.normalized_record_stream_sha256 != "777bb909708bef3ce67245d9dae049c796d03c29aa04869fb55d11adb50ddab6" ||
+      provenance_.compatibility_sha256 != "78997ffcc35774774f1b6e3a1ffc1c78f9ff23d0faa00d958fa9973a4f3d8bf3" ||
+      provenance_.cpu_behavioral_lock != "e7118bae97ecdd7f09858189796a65721b7117aebd51a5fac67738ab8723b050" ||
       provenance_.cpu_behavioral_file_count != 98 ||
-      provenance_.cpu_revision != "df6e11a1671a8e141926d6d0a8a7f79b1394d801d47ea39a157190173d8878ed" ||
-      provenance_.source_lock_sha256 != "6f620dfc3ed249938df917beba75b4e80612e053226813e1004587c8c2483699" ||
-      provenance_.cpu_package_sha256 != "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21" ||
+      provenance_.cpu_revision != "e7118bae97ecdd7f09858189796a65721b7117aebd51a5fac67738ab8723b050" ||
+      provenance_.source_lock_sha256 != "7d851e59971ac5ba8535043f717703b082764d1195fc3e9c4724b3419527c4e7" ||
+      provenance_.cpu_package_sha256 != "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
-      provenance_.cpu_source_lock_sha256 != "3c69af0332f8298e601164ced21504a9b9cf0e0ea50d9779751cdf23e7b03efe" ||
-      provenance_.upstream_revision != "b71a896a4dbdbc01e682b277f6d9a41fe786485e" ||
-      provenance_.upstream_tree != "a33d67f4915abbafa7f38ba5ed63af10dd00a059" ||
+      provenance_.cpu_source_lock_sha256 != "f5a0af93c9a61a6cd3ccadbf5611debbb4eba03e5b00e12e656e1fffae8442d7" ||
+      provenance_.upstream_revision != "12751c78103ec352bd359a9944bbeac5ad239a4b" ||
+      provenance_.upstream_tree != "0cf0dcf4cd571cf1fb3641f31a8ddcffbcadd54e" ||
       provenance_.upstream_package_sha256 != "c0cfe4cd42a800da7fe56b6eec2bf4ece3374f4ab82d788652d033735fe8412c" ||
-      provenance_.upstream_package_lock_sha256 != "b465ddd6476e00baaf5dbec5f25add705a3d17089d6d67319117f55fe4cfcaa2" ||
+      provenance_.upstream_package_lock_sha256 != "2df07ff61630588f9ee5ae9a86cf46db4d61c6bcb4dc2fe25928b1e3c5f2b97e" ||
       provenance_.first_effect_id != "classicNoisedeck/bitEffects" || provenance_.last_effect_id != "synth3d/shape3d")
     throw std::invalid_argument("Production catalog provenance authentication failed");
   manifest_backed_ = true;
@@ -1222,15 +1227,43 @@ NormalizedArguments EffectRegistry::normalize(const EffectDefinition& definition
     else values.emplace_back(parameter.name, PlanValue::null());
   }
   const bool named = !arguments.empty() && arguments.front().name.has_value();
+  // definition.js normalizeArguments: deprecated aliases resolve as upstream's
+  // resolveParamAliases. Only named arguments participate. An alias without its
+  // canonical name migrates its value, the canonical name wins when both are
+  // supplied, and the alias is always consumed. A null value is the
+  // authority's `undefined` argument value.
+  std::set<std::string> canonical_supplied;
+  std::set<std::string> alias_warned;
+  if (named) {
+    for (const auto& argument : arguments) {
+      if (argument.name.has_value() && argument.value.kind != graph::PlanValue::Kind::null_value) canonical_supplied.insert(*argument.name);
+    }
+  }
   for (std::size_t index = 0; index < arguments.size(); ++index) {
     const std::optional<std::string> supplied = named ? arguments[index].name : (index < params.size() ? std::optional<std::string>(params[index].name) : std::nullopt);
     const std::string supplied_name = supplied.value_or("argument " + std::to_string(index + 1));
+    std::string name = supplied_name;
+    if (named && supplied.has_value()) {
+      for (const auto& alias : definition.parameter_aliases) if (alias.first == *supplied) { name = alias.second; break; }
+    }
     std::size_t parameter_index = params.size();
-    for (std::size_t candidate = 0; candidate < params.size(); ++candidate) if (params[candidate].name == supplied_name) { parameter_index = candidate; break; }
+    for (std::size_t candidate = 0; candidate < params.size(); ++candidate) if (params[candidate].name == name) { parameter_index = candidate; break; }
     if (parameter_index == params.size()) {
       std::string accepted;
       for (const auto& parameter : params) { if (!accepted.empty()) accepted += ", "; accepted += parameter.name; }
       throw std::invalid_argument("Unknown parameter \"" + supplied_name + "\" for " + definition.id + "; accepted: " + accepted);
+    }
+    if (named && name != supplied_name) {
+      // Every alias hit warns once, as upstream's S007 diagnostic does.
+      if (arguments[index].value.kind != graph::PlanValue::Kind::null_value && alias_warned.insert(supplied_name).second) {
+        std::cerr << "param '" << supplied_name << "' is deprecated, use '" << name
+                  << "' instead. Aliases will be removed on " << kParameterAliasEolDate << ".\n";
+        if (canonical_supplied.count(name) == 0U) {
+          values[parameter_index].second = normalize_value(params[parameter_index], arguments[index].value, name);
+          present[parameter_index] = true;
+        }
+      }
+      continue;
     }
     values[parameter_index].second = normalize_value(params[parameter_index], arguments[index].value, supplied_name);
     present[parameter_index] = true;

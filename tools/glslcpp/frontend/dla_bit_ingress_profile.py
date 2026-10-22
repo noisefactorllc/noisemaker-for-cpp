@@ -39,13 +39,13 @@ DLA_AGENT_KEY = "points/dla:agent"
 DLA_KEYS = frozenset({DLA_AGENT_KEY})
 
 _PIN = {
-    "raw_bytes": 5928,
-    "raw_sha256": "5f11d2d5096ac4f54b243a2e9de1d7526960be76c460314f8ec7142c21c9995a",
-    "norm_bytes": 4464,
-    "norm_sha256": "10230df7fdf7fe5a02b8a62f410d28e2606a12d175741c25ec1f746e3ed35b8e",
-    "functions_sha256": "bf3bc64bed802a11e5676f0c4310a39a604f68edd20c3aa73eee83e4b7fecdfd",
-    "whole_sha256": "d56645842caf80c89c5a4b89feaaf2ce03c4fe52e2ec5dfc7e6c31bd82ed6b97",
-    "interface_sha256": "28db1449b3e1ae28184383f5649b1cca9dd5aab5ecc40467ccafb03863cc55a9",
+    "raw_bytes": 7791,
+    "raw_sha256": "cae55bc611428b4e6938a79814898c8bda2a3af19b303502ec5b77f5479b88f9",
+    "norm_bytes": 5998,
+    "norm_sha256": "42ab52479b08fb567ce8d91d9946d0f67025a3f74c369149981c7d8c0afc3098",
+    "functions_sha256": "309b3bc451c5471c50aa7f78c9fa5bc8b5c6f3f5b838bc2a5a8f0d74e9c49fac",
+    "whole_sha256": "8e23638833b84a4abe58d15bc47b78ab54be59258ae1d58ac877344e3fb9d16a",
+    "interface_sha256": "0c30d67bdb183aac29b001aa7fb06e58687ea1257fc4160628fcc48643f59d3d",
 }
 
 # Exactly the five authenticated call sites, in program-walk order (main's
@@ -54,31 +54,11 @@ _PIN = {
 #  child type tuple, child sha tuple, ancestor-chain kind/span tuple).
 # Nothing outside this tuple may be lowered.
 _NODES = (
-    ("floatBitsToUint", "103:48-103:69", "uint",
-     "7f4184a9b9ec3ab6533cec9af8b555ae49f199ad7fd80dcfd2f9a0934bfa026a",
-     "binary", "+", ("float",),
-     ("2cd011953f78ae49bebc5b673ad1b4a2560f4d43c3b1a0fec7dc3789a3c99600",),
-     (("decl", "103:5-103:71"),)),
-    ("uintBitsToFloat", "104:12-104:68", "float",
-     "652e2a449d171e9ba6f25b8810c6e653fbbd5b77c9d2a76c24a68c2165826c61",
-     "binary", "-", ("uint",),
-     ("e040f65668deae4562552773e2e94714706a6c15f2aa1afc314fa6f84b9494fc",),
-     (("expr", "104:5-104:75"),)),
-    ("floatBitsToUint", "43:17-43:38", "uint",
-     "01e23c7c726114f007af2a45cee993e16c42d18de206161e09feb8014d4593c7",
-     "declaration", None, ("float",),
-     ("89a067f227c6988e38335011bfd5e63c876ea7646f26608f3275e5615cb28d48",),
-     (("decl", "43:5-43:39"),)),
-    ("uintBitsToFloat", "45:12-45:47", "float",
-     "c1b516cce7026744b603184b1431f1ed25b5bae5e6abde51fdd2ea754c8bd5f3",
-     "binary", "-", ("uint",),
-     ("4f37cc3f609fea56baae3e38e68a5cd22afef8600d4531334844bb38124e1105",),
-     (("expr", "45:5-45:54"),)),
-    ("uintBitsToFloat", "48:12-48:63", "float",
-     "ee1b2dec3648b0f5e41276c4471d7f51662e23ebb3b969f044ac279794a643f7",
-     "binary", "-", ("uint",),
-     ("c538c1466bd7ed81c63a4d5ed54597949fb2aeebdcca2e5b41dba8ce1aca15ab",),
-     (("expr", "48:5-48:70"),)),
+    ("floatBitsToUint", "139:48-139:69", "uint", "920bcb8f595e2c4bde12ecb1ee706e3c91e7a4b0902d91d24b382b73d5e71cb5", "binary", "+", ("float",), ("d8ce39692341ef79d47fe966b085c9b8762379a14941201cd0c35c996081b4d6",), (("decl", "139:5-139:71"),)),
+    ("uintBitsToFloat", "140:12-140:68", "float", "40f48f24adc58b3110d365259a58fce51423b64e4af00fbb34a229a205bfaeb7", "binary", "-", ("uint",), ("0cc013dafc9cb5aa703b2341bb65e6766c4de748f1ca259b8b7b4f3f383e40be",), (("expr", "140:5-140:75"),)),
+    ("floatBitsToUint", "78:17-78:38", "uint", "0076868b40887093fc130544ef0c7866d83ba6d09acdf7f828dd0dab2d26d321", "declaration", None, ("float",), ("38faced6ee6532c1297c17fe638a8b5952262907c1cab8d6b2d0e95d835628cf",), (("decl", "78:5-78:39"),)),
+    ("uintBitsToFloat", "80:12-80:47", "float", "206b055a360ec240540ea793e0ab0760fe8a61ad1d9796d33cf46e02624f63bd", "binary", "-", ("uint",), ("fca6803937197cdca56ece918021618fa6530ce66bacaeba08fd9ca07a900f1b",), (("expr", "80:5-80:54"),)),
+    ("uintBitsToFloat", "83:12-83:63", "float", "166ca4f1b058e31bd0fae6d310c96cc10ed9722451c0dd24988c98f8a7d45b51", "binary", "-", ("uint",), ("8321687f8dedfa7618c8165ec8e82f1c816aeb72cb0468f2dc6a1671772bf1c3",), (("expr", "83:5-83:70"),)),
 )
 
 # The five scalar ``uint`` ``&``/``|`` mask sites of the same closure, in
@@ -89,31 +69,11 @@ _NODES = (
 # both lower to the exact unsigned C++ operators (no JS int32 boundary is
 # crossed: the operands are already uint words in the typed IR).
 _MASKS = (
-    ("|", "104:29-104:67", "e040f65668deae4562552773e2e94714706a6c15f2aa1afc314fa6f84b9494fc",
-     "builtin", None, ("uint", "uint"),
-     ("97887fbff50634ffcd2f02d86e801da96642a092ca5f32f310ad8b79b4f4ec4e",
-      "bc015d783b04fa3aac4fe17f45fd0007b528a14424f611fe7d9891162679f5c0"),
-     (("expr", "104:5-104:75"),)),
-    ("&", "104:29-104:52", "97887fbff50634ffcd2f02d86e801da96642a092ca5f32f310ad8b79b4f4ec4e",
-     "binary", "|", ("uint", "uint"),
-     ("9e7b2e3453624c6fde92c1f923d6e3d7894c4174a1610ac4c757c37e60aef5f8",
-      "c359d35935f3d76599b75c8c9d63a4ce6ba369ec139f19efafbe76a8911aa577"),
-     (("expr", "104:5-104:75"),)),
-    ("|", "45:28-45:46", "4f37cc3f609fea56baae3e38e68a5cd22afef8600d4531334844bb38124e1105",
-     "builtin", None, ("uint", "uint"),
-     ("56967af465e65900750a463d137aff52edd7d6f5b3ca25295205523b66652377",
-      "cf2510b4285d4d17cea83b1abe80892cf65a8ffb5c6a7f025c9479ce1eb47433"),
-     (("expr", "45:5-45:54"),)),
-    ("|", "48:29-48:62", "c538c1466bd7ed81c63a4d5ed54597949fb2aeebdcca2e5b41dba8ce1aca15ab",
-     "builtin", None, ("uint", "uint"),
-     ("f003331c87288244f4a961f08e8fd4ee40b5f01972208ddd24f5d219281c97bf",
-      "2750c2bdbb44ab2671288a535cb250b8b4487486eb1201037b877207a0c1ace5"),
-     (("expr", "48:5-48:70"),)),
-    ("&", "48:29-48:47", "f003331c87288244f4a961f08e8fd4ee40b5f01972208ddd24f5d219281c97bf",
-     "binary", "|", ("uint", "uint"),
-     ("31eb7fc98a568f4fa911623875e725be6ef2d02c49bc8be4156eb7ee5dbe5876",
-      "2d3268b9422ca3d22950898ea3655b2ee9c5ee7038f64f27f70dca0685aa9b59"),
-     (("expr", "48:5-48:70"),)),
+    ("|", "140:29-140:67", "0cc013dafc9cb5aa703b2341bb65e6766c4de748f1ca259b8b7b4f3f383e40be", "builtin", None, ("uint", "uint"), ("6118d960b363733d1175c23ff3fa809a67727b7a4bb2264b712a203aaea5d09e", "cd4a8cea19be0987467f46776fc2790fcb9766e85c350919c22d04283a7cc227"), (("expr", "140:5-140:75"),)),
+    ("&", "140:29-140:52", "6118d960b363733d1175c23ff3fa809a67727b7a4bb2264b712a203aaea5d09e", "binary", "|", ("uint", "uint"), ("b3190f682592976479a0abe9f87088764a56a3771daf4311fa54a304b3149aec", "fd793f9aab2f9926261f76bc1a053d75d2988f53d183adbea5a3162502877bc1"), (("expr", "140:5-140:75"),)),
+    ("|", "80:28-80:46", "fca6803937197cdca56ece918021618fa6530ce66bacaeba08fd9ca07a900f1b", "builtin", None, ("uint", "uint"), ("3dff387010cf04d3490d3ec54cae3b4440e7e0675c26764e1d2e4359320136b1", "f039946f8ccdb8d77107e2d73cc9af08f4c37beee1cf568efdf5c52488f2937d"), (("expr", "80:5-80:54"),)),
+    ("|", "83:29-83:62", "8321687f8dedfa7618c8165ec8e82f1c816aeb72cb0468f2dc6a1671772bf1c3", "builtin", None, ("uint", "uint"), ("eaafa7f5c40cdd0520e7a57a36d5dcd61d502524b91f1aac75539a0b902e0f89", "bcbc60fc9cfd8e980d600db0a9a8c4ba9bd3446e25a8a3a3e63205944dcebcae"), (("expr", "83:5-83:70"),)),
+    ("&", "83:29-83:47", "eaafa7f5c40cdd0520e7a57a36d5dcd61d502524b91f1aac75539a0b902e0f89", "binary", "|", ("uint", "uint"), ("e46f83d0ce2ea20f7f46ee001936e9e5cde7c6033b27245e559f04c4cb5bf234", "97cb5042d7fae52ed647a001c7ab866b8ab8626533da5daba59494186048c766"), (("expr", "83:5-83:70"),)),
 )
 
 
@@ -206,14 +166,16 @@ def authenticate_dla_bit_ingress_sites(
             program.resources.outputs, program.resources.uses_texture,
             program.resources.uses_derivatives) != (
             ("resolution", "time", "frame", "stride", "inputWeight",
-             "attrition", "stateSize", "resetState", "xyzTex", "velTex",
-             "rgbaTex", "gridTex", "inputTex"),
-            ("xyzTex", "velTex", "rgbaTex", "gridTex", "inputTex"),
-            ("outXYZ", "outVel", "outRGBA"), True, False):
+             "fieldActive", "attrition", "stateSize", "resetState", "xyzTex",
+             "velTex", "rgbaTex", "gridTex", "heightTex", "inputTex",
+             "diffuseTex", "diffuseActive", "baseColorTex"),
+            ("xyzTex", "velTex", "rgbaTex", "gridTex", "heightTex", "inputTex",
+             "diffuseTex", "baseColorTex"),
+            ("outXYZ", "outVel", "outRGBA", "outBaseColor"), True, False):
         raise ValueError(f"{PROFILE}: {program.key} resource or binding signature mismatch")
 
     function_ids = tuple(item.id for item in program.functions)
-    if function_ids != (25, 26, 27, 28, 29, 30, 31, 32):
+    if function_ids != (37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48):
         raise ValueError(f"{PROFILE}: {program.key} function cardinality mismatch")
 
     # Census the WHOLE program: any bit-ingress site outside the frozen table
@@ -309,8 +271,8 @@ def authenticate_dla_bit_ingress_parameter(
         raise ValueError(f"{PROFILE}: {program.key} caller source hash mismatch")
 
     expected = (
-        ("seed", "float", "inout", "42:12-42:28"),
-        ("seed", "float", "inout", "52:22-52:38"),
+        ("seed", "float", "inout", "77:12-77:28"),
+        ("seed", "float", "inout", "87:22-87:38"),
     )
     actual = tuple(
         (parameter.name, parameter.type.display(), parameter.direction,

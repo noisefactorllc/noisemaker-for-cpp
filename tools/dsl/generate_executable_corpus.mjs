@@ -9,7 +9,7 @@ const ROOT = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..')
 const COMPATIBILITY = path.join(ROOT, 'src/effects/generated/backend_compatibility.json')
 const PROVENANCE = path.join(ROOT, 'src/effects/generated/effect_catalog.provenance.json')
 const TYPED_MANIFEST = path.join(ROOT, 'src/typed_generated/typed_manifest.json')
-const BACKEND_SHA256 = 'e3c1e5657c80b9080afd609a6faf0b712fffc69e814df944b746b7a089c6e819'
+const BACKEND_SHA256 = '78997ffcc35774774f1b6e3a1ffc1c78f9ff23d0faa00d958fa9973a4f3d8bf3'
 
 function usage(message) {
   if (message) console.error(`generate_executable_corpus: ${message}`)
@@ -47,7 +47,7 @@ function hasBoundSurface(effect) {
 }
 // Byte-for-byte the authority's particle-state contract
 // (src/runtime/iteration.js: PARTICLE_STATE_PATTERN + referencesParticleState).
-const PARTICLE_STATE_PATTERN = /^global_(xyz|vel|rgba|life_data)$|^global_.*_trail$/
+const PARTICLE_STATE_PATTERN = /^global_(xyz|vel|rgba|life_data)$|^global_.*_trail$|^global_[a-z]+_base_color$/
 
 function referencesParticleState(effect) {
   return (effect.passes ?? []).some((pass) =>

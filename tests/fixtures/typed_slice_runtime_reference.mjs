@@ -1,5 +1,6 @@
-// Authority reference for seven tests/test_typed_slice.cpp runtime tests whose captures had no
-// checked-in script: typed_hydraulic_preserves_authority_signed_number_hash, the three
+// Authority reference for eight tests/test_typed_slice.cpp runtime tests whose captures had no
+// checked-in script: typed_hydraulic_preserves_authority_signed_number_hash,
+// typed_physical_agent_reads_its_bound_input_texture, the three
 // typed_noise3d_* MRT tests, typed_flythrough3d_preserves_authority_mrt_outputs,
 // typed_landscape_matches_authority_volume_mrt and typed_halftone_runtime_modes_preserve_cpu_color_arity.
 // Each block mirrors its native test's bindings; MRT passes run through the authority's own
@@ -41,13 +42,33 @@ const result = {}
 
 // typed_hydraulic_preserves_authority_signed_number_hash
 {
+  // The authority binds a null surface parameter to a 1x1 empty surface.
   const textures = {
-    inputTex: constant(17, 11, [0.2, 0.3, 0.4, 1]), xyzTex: constant(17, 11, [0.25, 0.75, 0, 1]),
-    velTex: constant(17, 11, [0.05, 0.025, 0, 0]), rgbaTex: constant(17, 11, [0.2, 0.4, 0.6, 1]),
+    inputTex: constant(17, 11, [0.2, 0.3, 0.4, 1]), heightTex: constant(17, 11, [0.2, 0.3, 0.4, 1]),
+    xyzTex: constant(17, 11, [0.25, 0.75, 0, 1]), velTex: constant(17, 11, [0.05, 0.025, 0, 0]),
+    rgbaTex: constant(17, 11, [0.2, 0.4, 0.6, 1]), diffuseTex: new Surface(1, 1),
+    baseColorTex: new Surface(17, 11),
   }
-  const uniforms = { resolution: new Float32Array([17, 11]), time: 0.25, stride: 10, quantize: 0, inverse: 0, inputWeight: 100 }
-  result.hydraulic = mrt('points/hydraulic:agent', 17, 11, 3, { time: 0.25, uniforms, textures }, f(0.25)).map(hashes)
+  const uniforms = {
+    resolution: new Float32Array([17, 11]), time: 0.25, stride: 10, quantize: 0, inverse: 0, inputWeight: 100,
+    fieldActive: 1, diffuseActive: 0,
+  }
+  result.hydraulic = mrt('points/hydraulic:agent', 17, 11, 4, { time: 0.25, uniforms, textures }, f(0.25)).map(hashes)
 }
+
+// typed_physical_agent_reads_its_bound_input_texture
+result.physical = [0, 1].flatMap((alive) => {
+  const textures = {
+    inputTex: constant(4, 3, [0.2, 0.3, 0.4, 1]), xyzTex: constant(4, 3, [0.25, 0.75, 0.125, alive]),
+    velTex: constant(4, 3, [0.05, 0.025, 0.01, 0.375]), rgbaTex: constant(4, 3, [0.2, 0.4, 0.6, 1]),
+    diffuseTex: new Surface(1, 1), baseColorTex: new Surface(4, 3),
+  }
+  const uniforms = {
+    resolution: new Float32Array([4, 3]), time: 0.25, gravity: 0.2, wind: 0.3, energy: 1.1, drag: 0.05,
+    deviation: 0.2, wander: 0.4, diffuseActive: 0,
+  }
+  return mrt('points/physical:agent', 4, 3, 4, { time: 0.25, uniforms, textures }, f(0.25)).map(hashes)
+})
 
 function noise3d(volume, seed, scale, time, octaves = 1, colorMode = 0, ridges = false) {
   const width = volume, height = volume * volume

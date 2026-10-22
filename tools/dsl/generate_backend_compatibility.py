@@ -60,13 +60,13 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "src/effects/generated/backend_compatibility.json"
-UPSTREAM_REVISION = "b71a896a4dbdbc01e682b277f6d9a41fe786485e"
-UPSTREAM_TREE = "a33d67f4915abbafa7f38ba5ed63af10dd00a059"
-SOURCE_LOCK_SHA256 = "6f620dfc3ed249938df917beba75b4e80612e053226813e1004587c8c2483699"
-CPU_PACKAGE_SHA256 = "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21"
+UPSTREAM_REVISION = "12751c78103ec352bd359a9944bbeac5ad239a4b"
+UPSTREAM_TREE = "0cf0dcf4cd571cf1fb3641f31a8ddcffbcadd54e"
+SOURCE_LOCK_SHA256 = "7d851e59971ac5ba8535043f717703b082764d1195fc3e9c4724b3419527c4e7"
+CPU_PACKAGE_SHA256 = "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807"
 CPU_LOCK_SHA256 = "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d"
 UPSTREAM_PACKAGE_SHA256 = "c0cfe4cd42a800da7fe56b6eec2bf4ece3374f4ab82d788652d033735fe8412c"
-UPSTREAM_LOCK_SHA256 = "b465ddd6476e00baaf5dbec5f25add705a3d17089d6d67319117f55fe4cfcaa2"
+UPSTREAM_LOCK_SHA256 = "2df07ff61630588f9ee5ae9a86cf46db4d61c6bcb4dc2fe25928b1e3c5f2b97e"
 CORPUS_REVISION = check_corpus.REVISION
 SCATTER_KEY = "filter/wormhole:deposit"
 # Particle-family deposit programs executed through registered C++ scatter

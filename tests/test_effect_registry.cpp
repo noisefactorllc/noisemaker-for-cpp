@@ -56,17 +56,32 @@ TEST(effect_registry_resolves_in_search_order_and_normalizes_defaults) {
   REQUIRE(normalized.values[1].name == "color");
 }
 
-TEST(effect_registry_rejects_legacy_aliases_and_out_of_range_values) {
+// definition.js normalizeArguments: a deprecated alias migrates its value to
+// the canonical name, the canonical name wins when both are supplied, an
+// alias with no value is consumed, and the canonical range still applies.
+TEST(effect_registry_resolves_deprecated_aliases_and_rejects_out_of_range_values) {
   auto effect = source_effect();
   effect.parameter_aliases.push_back({"strength", "amount"});
   EffectRegistry registry({effect});
   const auto* found = registry.get("fixture", "source");
   REQUIRE(found != nullptr);
-  REQUIRE_THROWS_AS(registry.normalize(*found, {{"strength", PlanValue::number_value(4.0)}}), std::invalid_argument);
+  const auto migrated = registry.normalize(*found, {{"strength", PlanValue::number_value(3.0)}});
+  REQUIRE(migrated.values[0].name == "amount");
+  REQUIRE(migrated.values[0].value.number == 3.0);
+  const auto canonical_after = registry.normalize(*found, {{"strength", PlanValue::number_value(1.0)},
+                                                           {"amount", PlanValue::number_value(4.0)}});
+  REQUIRE(canonical_after.values[0].value.number == 4.0);
+  const auto canonical_before = registry.normalize(*found, {{"amount", PlanValue::number_value(4.0)},
+                                                            {"strength", PlanValue::number_value(1.0)}});
+  REQUIRE(canonical_before.values[0].value.number == 4.0);
+  const auto consumed = registry.normalize(*found, {{"strength", PlanValue::null()}});
+  REQUIRE(consumed.values[0].value.number == 2.0);
+  REQUIRE_THROWS_AS(registry.normalize(*found, {{"strength", PlanValue::number_value(5.0)}}), std::invalid_argument);
   const auto normalized = registry.normalize(*found, {{"amount", PlanValue::number_value(4.0)}});
   REQUIRE(normalized.values[0].name == "amount");
   REQUIRE(normalized.values[0].value.number == 4.0);
   REQUIRE_THROWS_AS(registry.normalize(*found, {{"amount", PlanValue::number_value(5.0)}}), std::invalid_argument);
+  REQUIRE_THROWS_AS(registry.normalize(*found, {{"amount2", PlanValue::number_value(1.0)}}), std::invalid_argument);
 }
 
 TEST(effect_registry_rejects_each_omitted_typed_compatibility_fact) {
@@ -184,7 +199,7 @@ TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contra
   const auto& provenance = registry.provenance();
   REQUIRE(registry.manifest_backed());
   REQUIRE(provenance.backend_schema == "noisemaker-cpp.backend-compatibility.v1");
-  REQUIRE(provenance.corpus_revision == "b71a896a4dbdbc01e682b277f6d9a41fe786485e");
+  REQUIRE(provenance.corpus_revision == "12751c78103ec352bd359a9944bbeac5ad239a4b");
   REQUIRE(provenance.cpu_package_sha256.size() == 64);
   REQUIRE(provenance.upstream_package_lock_sha256.size() == 64);
   const auto* wormhole = registry.get("filter", "wormhole");
@@ -247,9 +262,18 @@ TEST(effect_registry_rejects_forged_reference_metadata_and_provenance) {
 TEST(effect_registry_preserves_complete_alias_census) {
   const auto& catalog = noisemaker::effects::effect_catalog();
   std::size_t aliases = 0;
-  for (const auto& effect : catalog.definitions) aliases += effect.parameter_aliases.size();
+  std::vector<std::string> owners;
+  for (const auto& effect : catalog.definitions) {
+    aliases += effect.parameter_aliases.size();
+    for (const auto& alias : effect.parameter_aliases) {
+      REQUIRE(alias.first == "fieldTex");
+      REQUIRE(alias.second == "heightTex");
+      owners.push_back(effect.id);
+    }
+  }
   REQUIRE(catalog.definitions.size() == 210);
-  REQUIRE(aliases == 0);
+  REQUIRE(aliases == 3);
+  REQUIRE((owners == std::vector<std::string>{"points/dla", "points/flow", "points/physarum"}));
 }
 
 TEST(effect_registry_rejects_duplicate_reference_triple_and_order_mutation) {

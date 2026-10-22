@@ -3481,6 +3481,34 @@ void store_step_resource(std::unordered_map<std::string, noisemaker::Surface>& r
   return result;
 }
 
+// renderer.js declaresInheritedStateSizeTextures: a texture dimension that
+// reads the group's shared `stateSize` through the `inherit: true` flag
+// (upstream's inherited texture dimension), as every particle behavior's
+// `global_<behavior>_base_color` memory does.
+[[nodiscard]] bool declares_inherited_state_size_textures(
+    const effects::EffectDefinition& definition) {
+  for (const auto& texture : definition.textures) {
+    for (const auto* expression : {&texture.width, &texture.height}) {
+      if (expression->raw.kind != effects::ValueKind::object) continue;
+      bool inherit = false;
+      bool state_size = false;
+      for (const auto& field : expression->raw.object) {
+        if (field.first == "inherit") {
+          inherit = field.second.kind == effects::ValueKind::boolean && field.second.boolean;
+        } else if (field.first == "param") {
+          state_size = field.second.kind == effects::ValueKind::string &&
+                       field.second.string == "stateSize";
+        }
+      }
+      if (inherit && state_size) return true;
+    }
+  }
+  return false;
+}
+
+// renderer.js:26 -- PARTICLE_STATE_FALLBACK_SIZE.
+constexpr double kParticleStateFallbackSize = 256.0;
+
 // renderer.js:23-32 -- PARTICLE_STATE_FALLBACK_FORMATS / particleStateFallbackFormat.
 [[nodiscard]] std::string_view particle_state_fallback_format(std::string_view name) {
   if (name == "global_xyz" || name == "global_vel") return "rgba32f";
@@ -4238,10 +4266,22 @@ struct GroupPublishResult {
     const auto& snapshot = plan.effects[step->snapshot_index];
     GroupStepState state;
     state.snapshot = &snapshot;
-    state.raw_step = (step != state_owner && owner_state_size.has_value() &&
-                      parameter(*step, "stateSize") != nullptr)
-                         ? apply_owner_state_size_override(*step, *owner_state_size)
-                         : *step;
+    // renderer.js initializeGroupStepState: a joining step takes the owner's
+    // stateSize when it declares one, or when its own textures read the
+    // scope's stateSize through an `inherit: true` dimension (a behavior's
+    // base-color memory). A step with such textures and no stateSize of its
+    // own, outside a group owner, takes the particle-state fallback size.
+    const bool declares_state_size = parameter(*step, "stateSize") != nullptr;
+    const bool inherited_textures = declares_inherited_state_size_textures(snapshot.definition);
+    const bool inherits_state_size = step != state_owner && owner_state_size.has_value() &&
+                                     (declares_state_size || inherited_textures);
+    if (inherits_state_size) {
+      state.raw_step = apply_owner_state_size_override(*step, *owner_state_size);
+    } else if (!declares_state_size && inherited_textures) {
+      state.raw_step = apply_owner_state_size_override(*step, kParticleStateFallbackSize);
+    } else {
+      state.raw_step = *step;
+    }
     if (group_input_volume != nullptr && parameter(state.raw_step, "volumeSize") != nullptr) {
       try {
         const auto size = bundle::inherit_volume_size(

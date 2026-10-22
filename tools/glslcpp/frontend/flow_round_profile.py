@@ -12,26 +12,27 @@ from __future__ import annotations
 
 import hashlib
 
+from .particle_base_color_profile import authenticate_particle_base_color
 from .typed_ir import TypedExpression, TypedProgram, TypedStatement
 
 
 PROFILE = "flow-round-admission-v1"
 FLOW_AGENT_KEY = "points/flow:agent"
 
-RAW_SOURCE_BYTES = 5848
-RAW_SOURCE_SHA256 = "0584139db3b2e14af99788458a48094a0d650a03ae540a0468309bf2f097bb6b"
-NORMALIZED_SOURCE_BYTES = 4806
-NORMALIZED_SOURCE_SHA256 = "f65a6c7d49e84efc852b351c06b0807f1226aba3c79b6d3e1e3f6ca4f08eb1d4"
+RAW_SOURCE_BYTES = 7515
+RAW_SOURCE_SHA256 = "f8149c037daa3172ccafdb0ffcadbebad3a5fd7d3b9fa1112861518cddfede06"
+NORMALIZED_SOURCE_BYTES = 6144
+NORMALIZED_SOURCE_SHA256 = "d4dc5e40a1e5454c2285b923dd582b34bf1b25413032f51edcfbe433b43ae9d2"
 
-FUNCTIONS_SHA256 = "aff889250f44b8b6aa16ecf03c92cf20cfdc45ebd0cc6cf437672b2fca7d55fe"
-WHOLE_PROGRAM_SHA256 = "4630e9ddb459f7224ec1636c7cae3cecdc84159bd5e436a40fb2fbdb7c0a3af9"
-INTERFACE_SHA256 = "1748203f7868b9ee23ea5891b547e21dcc083b83bf45913e332bbae14affac3b"
+FUNCTIONS_SHA256 = "3415b919eb0ed7725d7f3cd6f66c6d0218d6d995a460da8a212c371a75d96cd7"
+WHOLE_PROGRAM_SHA256 = "0961e0f4e18f00c6d43153a299c33eacf486d88e4a6f8e60e029dceede0f4a70"
+INTERFACE_SHA256 = "101c5b05335de2dfa3513c14b9c93c22840f39e48c6b4db83bae72b88153a2b1"
 
-IF_STATEMENT_SHA256 = "3131959ec09cb0369d2a39ee2d8316b6244fe9abe65e7f5bb247cafe75298dd4"
-EXPR_STATEMENT_SHA256 = "cb1443c929bb0ba3bbcaf7984a5b75d683bd08ad87fd738d2d3c5db987926474"
-ASSIGN_EXPRESSION_SHA256 = "046d3ab69eeeb30d2c07467f6fa5e4ec18c55cf3fd3e5637b3c1555dc2720075"
-ROUND_SHA256 = "97ad728ea666ea42eb08d668b972fe1938a9a1ec9d3e94d2331cbd453e3578c7"
-ARGUMENT_SHA256 = "cb72ad451d1969330c95164685c4a4c1112911c5673bec87d2bded32827dde32"
+IF_STATEMENT_SHA256 = "5b9b42b924ec8d52f85f799ddaf39b1a25707419a21eabd51e6115b4ab3a4d5e"
+EXPR_STATEMENT_SHA256 = "8873180620008c35009e2d18eeb4fade74aaf08f77b5ea7aee4654bdd87c533f"
+ASSIGN_EXPRESSION_SHA256 = "4e17313680a63c3f6bf16f3f10bf86618ae06a53dbe40951a1e2fd7fe14f871f"
+ROUND_SHA256 = "2dcdb183931f5431f21ac775fcc1a9a9807dc7f80d96e5db682457c3981d9915"
+ARGUMENT_SHA256 = "d176567b36be05e89922766f574b366e51196e282db4221276d1ec12759ecd4d"
 
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof",
@@ -41,24 +42,28 @@ _OPTIONAL_PROOF_FIELDS = (
 )
 
 _FUNCTION_INVENTORY = (
-    (30, "computeRotationBias", "float", 6, 1, "66:1-94:2"),
-    (31, "cube_root", "float", 1, 3, "45:1-49:2"),
-    (32, "hash", "float", 1, 1, "36:1-38:2"),
-    (33, "hash_uint", "uint", 1, 3, "30:1-34:2"),
-    (34, "main", "void", 0, 36, "96:1-167:2"),
-    (35, "normalized_sine", "float", 1, 1, "61:1-63:2"),
-    (36, "oklab_l", "float", 1, 7, "51:1-59:2"),
-    (37, "srgb_to_linear", "float", 1, 2, "40:1-43:2"),
+    (42, "baseColor", "vec4", 3, 4, "51:1-56:2"),
+    (43, "computeRotationBias", "float", 6, 1, "101:1-129:2"),
+    (44, "cube_root", "float", 1, 3, "80:1-84:2"),
+    (45, "hash", "float", 1, 1, "71:1-73:2"),
+    (46, "hash_uint", "uint", 1, 3, "65:1-69:2"),
+    (47, "keptBaseColor", "vec4", 1, 1, "58:1-60:2"),
+    (48, "main", "void", 0, 38, "131:1-205:2"),
+    (49, "normalized_sine", "float", 1, 1, "96:1-98:2"),
+    (50, "oklab_l", "float", 1, 7, "86:1-94:2"),
+    (51, "selectedDiffuse", "vec4", 1, 3, "32:1-36:2"),
+    (52, "spawnColor", "vec4", 1, 3, "42:1-46:2"),
+    (53, "srgb_to_linear", "float", 1, 2, "75:1-78:2"),
 )
 
-_MAIN_ID = 34
-_MAIN_SPAN = "96:1-167:2"
-_IF_STATEMENT_INDEX = 25
-_IF_STATEMENT_SPAN = "145:5-147:6"
-_ASSIGN_SPAN = "146:9-146:39"
-_NODE_SPAN = "146:22-146:39"
+_MAIN_ID = 48
+_MAIN_SPAN = "131:1-205:2"
+_IF_STATEMENT_INDEX = 26
+_IF_STATEMENT_SPAN = "182:5-184:6"
+_ASSIGN_SPAN = "183:9-183:39"
+_NODE_SPAN = "183:22-183:39"
 _NODE_SIGNATURE_ID = -38
-_DECL_SYMBOL_ID = 66
+_DECL_SYMBOL_ID = 85
 _DECL_SYMBOL_NAME = "finalAngle"
 
 _BINDINGS = (
@@ -69,23 +74,28 @@ _BINDINGS = (
     (5, "kink", "float", "uniform", False),
     (6, "quantize", "float", "uniform", False),
     (7, "inputWeight", "float", "uniform", False),
-    (8, "behavior", "float", "uniform", False),
-    (9, "inputTex", "sampler2D", "uniform", False),
-    (10, "xyzTex", "sampler2D", "uniform", False),
-    (11, "velTex", "sampler2D", "uniform", False),
-    (12, "rgbaTex", "sampler2D", "uniform", False),
-    (13, "outXYZ", "vec4", "output", True),
-    (14, "outVel", "vec4", "output", True),
-    (15, "outRGBA", "vec4", "output", True),
-    (16, "TAU", "float", "const", False),
-    (17, "RIGHT_ANGLE", "float", "const", False),
+    (8, "fieldActive", "float", "uniform", False),
+    (9, "behavior", "float", "uniform", False),
+    (10, "heightTex", "sampler2D", "uniform", False),
+    (11, "inputTex", "sampler2D", "uniform", False),
+    (12, "xyzTex", "sampler2D", "uniform", False),
+    (13, "velTex", "sampler2D", "uniform", False),
+    (14, "rgbaTex", "sampler2D", "uniform", False),
+    (15, "outXYZ", "vec4", "output", True),
+    (16, "outVel", "vec4", "output", True),
+    (17, "outRGBA", "vec4", "output", True),
+    (18, "diffuseTex", "sampler2D", "uniform", False),
+    (19, "diffuseActive", "float", "uniform", False),
+    (21, "baseColorTex", "sampler2D", "uniform", False),
+    (22, "outBaseColor", "vec4", "output", True),
+    (28, "TAU", "float", "const", False),
+    (29, "RIGHT_ANGLE", "float", "const", False),
 )
 
 _RESOURCES = (
-    ("resolution", "time", "stride", "strideDeviation", "kink", "quantize",
-     "inputWeight", "behavior", "inputTex", "xyzTex", "velTex", "rgbaTex"),
-    ("inputTex", "xyzTex", "velTex", "rgbaTex"),
-    ("outXYZ", "outVel", "outRGBA"),
+    ("resolution", "time", "stride", "strideDeviation", "kink", "quantize", "inputWeight", "fieldActive", "behavior", "heightTex", "inputTex", "xyzTex", "velTex", "rgbaTex", "diffuseTex", "diffuseActive", "baseColorTex"),
+    ("heightTex", "inputTex", "xyzTex", "velTex", "rgbaTex", "diffuseTex", "baseColorTex"),
+    ("outXYZ", "outVel", "outRGBA", "outBaseColor"),
     True,
     False,
 )
@@ -208,13 +218,20 @@ def authenticate_flow_round_admission(
             or _sha(round_value.children[0]) != ARGUMENT_SHA256):
         raise _fail("round site or argument profile mismatch")
 
-    # Census the WHOLE program: an extra round site anywhere else is a hard failure
+    # Census the WHOLE program: an extra round site anywhere else is a hard
+    # failure. The two round(vec4) sites of the base-color closure belong to
+    # particle-base-color-admission-v1 and are authenticated there.
+    try:
+        base_color_rounds = authenticate_particle_base_color(program, source_hash).rounds
+    except ValueError as error:
+        raise _fail(f"base-color closure: {error}") from error
     all_rounds: list[TypedExpression] = []
     for function in functions_sorted:
         for item in function.body:
             for value in _walk_statement(item):
                 if (isinstance(value, TypedExpression) and value.kind == "builtin"
-                        and value.callee == "round"):
+                        and value.callee == "round"
+                        and not any(value is base for base in base_color_rounds)):
                     all_rounds.append(value)
     if len(all_rounds) != 1 or all_rounds[0] is not round_value:
         raise _fail("expected exactly one owned round site")

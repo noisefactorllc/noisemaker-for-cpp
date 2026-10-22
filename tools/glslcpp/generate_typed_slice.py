@@ -4718,6 +4718,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_waves_nodes: list[TypedExpression] = []
     authorized_attractor_any_isnan_proof = None
     visited_attractor_nodes: list[TypedExpression] = []
+    authorized_particle_base_color = None
+    visited_particle_base_color: list[TypedExpression] = []
     authorized_any_relational_proof = None
     visited_any_relational_reductions: list[TypedExpression] = []
     visited_any_relational_relationals: list[TypedExpression] = []
@@ -6697,6 +6699,20 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == FLOW_AGENT_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Flow round admission profile carrier required")
+    # particle-base-color-admission-v1 is keyed by program key, like the
+    # struct-frontier carriers: the validator and the emitter each
+    # authenticate the same frozen record on the same tree.
+    from tools.glslcpp.frontend.particle_base_color_profile import (
+        PARTICLE_BASE_COLOR_KEYS, authenticate_particle_base_color)
+    if typed.key in PARTICLE_BASE_COLOR_KEYS:
+        if numeric_literal_contract != "glsl-f32" or compatibility_transform is not None:
+            raise GeneratorError(
+                f"{typed.key}: particle base-color profile metadata mismatch")
+        try:
+            authorized_particle_base_color = authenticate_particle_base_color(
+                typed, source_hash)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
     # as_u32_round_profile is deliberately light-checked, the same style as
     # posterize_round_profile immediately above, keyed by a dict of
     # program_key carriers (AS_U32_ROUND_KEYS) since the admitted `round`
@@ -7046,6 +7062,16 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     and any(value.symbol_id == declaration.symbol_id
                             for declaration in
                             authorized_any_relational_proof.declarations)):
+                return
+            raise GeneratorError(
+                f"{location(value)}: unsupported typed type {typ.display()}")
+        if typ.display() == "bvec4":
+            # Admitted only as the result type of the exact authenticated
+            # particle base-color relational, consumed immediately by its
+            # paired `all`. Type admission and builtin admission must
+            # independently agree.
+            if (authorized_particle_base_color is not None
+                    and value is authorized_particle_base_color.relational):
                 return
             raise GeneratorError(
                 f"{location(value)}: unsupported typed type {typ.display()}")
@@ -8412,9 +8438,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 # standalone round(float) site (authorized_posterize_round,
                 # authenticated by posterize-round-admission-v1). Both are
                 # exact node-identity checks; neither widens the vocabulary.
+                base_color_round = (
+                    authorized_particle_base_color is not None
+                    and any(value is item for item
+                            in authorized_particle_base_color.rounds))
                 if (value is not authorized_round
                         and value is not authorized_posterize_round
                         and value is not authorized_flow_round
+                        and not base_color_round
                         and not any(value is item for item in authorized_shapes3d_rounds)
                         and not (authorized_noise3d_dead_globals is not None
                                  and any(value is item for item
@@ -8424,6 +8455,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         and not (testpattern_frontend_proof is not None
                                  and value is testpattern_frontend_proof.round_node)):
                     raise GeneratorError(f"{location(value)}: unsupported builtin round")
+                if base_color_round:
+                    if (value.type.display() != "vec4" or len(value.children) != 1
+                            or value.children[0].type.display() != "vec4"
+                            or any(value is item for item in visited_particle_base_color)):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed particle base-color round(vec4)")
+                    visited_particle_base_color.append(value)
                 if (testpattern_frontend_proof is not None
                         and value is testpattern_frontend_proof.round_node):
                     if any(value is item for item in visited_testpattern_round_nodes):
@@ -8570,13 +8608,30 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     and authorized_any_relational_proof is not None
                     and any(value is item for item in
                             authorized_any_relational_proof.relationals))
+                base_color_node = (
+                    authorized_particle_base_color is not None
+                    and (value is authorized_particle_base_color.relational
+                         or value is authorized_particle_base_color.reduction))
                 if (not emboss_reduction
                         and not landscape_relational
+                        and not base_color_node
                         and not any(value is item
                                     for item in authorized_extrude_nodes)):
                     raise GeneratorError(
                         f"{location(value)}: unsupported builtin {value.callee}")
-                if emboss_reduction:
+                if base_color_node:
+                    expected_shape = (
+                        ("bvec4", ("vec4", "vec4")) if value.callee == "lessThanEqual"
+                        else ("bool", ("bvec4",)))
+                    if ((value.type.display(),
+                         tuple(child.type.display() for child in value.children))
+                            != expected_shape
+                            or any(value is item for item in visited_particle_base_color)):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed particle base-color "
+                            f"{value.callee}")
+                    visited_particle_base_color.append(value)
+                elif emboss_reduction:
                     if any(value is item
                            for item in visited_emboss_reductions):
                         raise GeneratorError(
@@ -9971,6 +10026,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                        for value in visited_attractor_nodes)):
         raise GeneratorError(
             f"{typed.key}: authenticated Attractor traversal mismatch")
+    if authorized_particle_base_color is not None and (
+            len(visited_particle_base_color) != len(authorized_particle_base_color.nodes)
+            or any(not any(value is item for item in visited_particle_base_color)
+                   for value in authorized_particle_base_color.nodes)):
+        raise GeneratorError(
+            f"{typed.key}: authenticated particle base-color traversal mismatch")
     if authorized_inout_vec3_swap_proof is not None and (
             len(visited_inout_vec3_swap_calls) != len(authorized_inout_vec3_swap_proof.calls)
             or any(not any(value is item for item in visited_inout_vec3_swap_calls)

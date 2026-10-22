@@ -1,4 +1,4 @@
-"""Prove the exact Physical agent's declared inputTex is never read."""
+"""Prove which samplers of the exact Physical agent its CPU pass leaves unbound."""
 from __future__ import annotations
 
 import dataclasses
@@ -7,15 +7,16 @@ import hashlib
 from .typed_ir import TypedExpression, TypedProgram
 
 KEY = "points/physical:agent"
-RAW_SHA256 = "a144cacbadeca15a78a83dac987bfd25164bd7904a2e9f0ea22e8b1bf22e3614"
+RAW_SHA256 = "06f3afef8efeaba67f1babf129ee107b06e860ec8458e270ce404fc770b46615"
 
 
 def omitted_physical_samplers(program: TypedProgram) -> frozenset[str]:
-    """Return only the source-locked sampler that has no typed references.
+    """Return only the source-locked samplers that the CPU pass does not bind.
 
-    The CPU pass does not bind inputTex. Its shader declares the name for
-    chainability, but only the separate passthrough program samples it.
-    Preserve the full IR for existing source and arithmetic proof checks.
+    The pinned CPU pass binds inputTex, and the shader reads it in
+    spawnColor() to restore an agent's spawn color. Thus no declared sampler
+    is omitted. The source lock and the reference audit fail closed if a
+    later authority stops reading inputTex again.
     """
     if program.key != KEY:
         return frozenset()
@@ -28,11 +29,13 @@ def omitted_physical_samplers(program: TypedProgram) -> frozenset[str]:
             or program.resources.samplers.count("inputTex") != 1):
         raise ValueError("Physical unused-sampler declaration changed")
     target = targets[0].symbol.id
+    references = 0
 
     def audit(value):
+        nonlocal references
         if isinstance(value, TypedExpression):
             if value.symbol_id == target or (value.symbol is not None and value.symbol.id == target):
-                raise ValueError("Physical inputTex has a typed reference")
+                references += 1
         if dataclasses.is_dataclass(value):
             for field in dataclasses.fields(value):
                 audit(getattr(value, field.name))
@@ -43,4 +46,6 @@ def omitted_physical_samplers(program: TypedProgram) -> frozenset[str]:
     audit(program.functions)
     for declaration in program.declarations:
         audit(declaration.initializer)
-    return frozenset({"inputTex"})
+    if references == 0:
+        raise ValueError("Physical inputTex has no typed reference")
+    return frozenset()

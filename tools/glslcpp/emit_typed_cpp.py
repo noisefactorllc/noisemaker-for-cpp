@@ -13,6 +13,10 @@ import sys
 
 from .frontend.audio_uniform_profile import authenticate_audio_uniform
 from .frontend.physical_unused_sampler import omitted_physical_samplers
+from .frontend.particle_base_color_profile import (
+    PARTICLE_BASE_COLOR_KEYS, authenticate_particle_base_color)
+from .frontend.particle_diffuse_output_profile import (
+    PARTICLE_DIFFUSE_OUTPUT_KEYS, authenticate_particle_diffuse_outputs)
 from .frontend.local_vec4_array_profile import authenticate_local_vec4_arrays
 from .frontend.effects_zoomblur_local_array_profile import authenticate_zoomblur_local_array
 from .frontend.palette3d_profile import authenticate_palette3d
@@ -1870,6 +1874,12 @@ class _Emitter:
         init=False, default=None)
     emitted_attractor_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_particle_base_color: object = field(init=False, default=None)
+    emitted_particle_base_color: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_particle_diffuse_outputs: object = field(init=False, default=None)
+    emitted_particle_diffuse_outputs: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_any_relational_proof: object = field(init=False, default=None)
     authorized_landscape_indexes: tuple[TypedExpression, ...] = field(
         init=False, default=())
@@ -2593,6 +2603,10 @@ class _Emitter:
         self.emitted_waves_nodes = []
         self.authorized_attractor_any_isnan_proof = None
         self.emitted_attractor_nodes = []
+        self.authorized_particle_base_color = None
+        self.emitted_particle_base_color = []
+        self.authorized_particle_diffuse_outputs = None
+        self.emitted_particle_diffuse_outputs = []
         self.authorized_any_relational_proof = None
         self.authorized_landscape_indexes = ()
         self.authorized_landscape_samplers = None
@@ -5766,6 +5780,29 @@ class _Emitter:
                 profile=self.source_global_literal_int_profile)
         except ValueError as error:
             raise _error(self.program, self.program, str(error)) from error
+        # particle-base-color-admission-v1, keyed by program key: the same
+        # frozen record the validator authenticates.
+        if self.program.key in PARTICLE_BASE_COLOR_KEYS:
+            if (self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "particle base-color profile metadata mismatch")
+            try:
+                self.authorized_particle_base_color = (
+                    authenticate_particle_base_color(self.program, self.source_hash))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        # particle-diffuse-output-keep-v1, keyed by program key.
+        if self.program.key in PARTICLE_DIFFUSE_OUTPUT_KEYS:
+            if (self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "particle diffuse output profile metadata mismatch")
+            try:
+                self.authorized_particle_diffuse_outputs = (
+                    authenticate_particle_diffuse_outputs(self.program, self.source_hash))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         self.omitted_physical_samplers = omitted_physical_samplers(self.program)
         self.uniforms = {item.symbol.id: item.symbol for item in self.program.declarations
                          if item.symbol.storage == "uniform"
@@ -10037,6 +10074,24 @@ class _Emitter:
                         raise _error(self.program, value, "ceil arity")
                     return f"glsl::ceil({arguments[0]})"
                 if value.callee == "round":
+                    base_color = self.authorized_particle_base_color
+                    if (base_color is not None
+                            and any(value is item for item in base_color.rounds)):
+                        # The CPU authority rounds each Float32Array lane with
+                        # Math.round and narrows it to f32. Materialize the
+                        # operand once through Vec4, the same Float32Array
+                        # constructor boundary.
+                        if (len(arguments) != 1 or value.type.display() != "vec4"
+                                or value.children[0].type.display() != "vec4"
+                                or any(value is item for item
+                                       in self.emitted_particle_base_color)):
+                            raise _error(self.program, value,
+                                         "malformed authenticated particle base-color round(vec4)")
+                        self.emitted_particle_base_color.append(value)
+                        lanes = ", ".join(
+                            f"noisemaker::f32(glsl::round(lanes[{index}]))" for index in range(4))
+                        return ("([&] { const glsl::Vec4 lanes = glsl::Vec4("
+                                + arguments[0] + "); return glsl::Vec4(" + lanes + "); }())")
                     if (self.noise3d_dead_globals_proof is not None
                             and any(value is item for item
                                     in self.noise3d_dead_globals_proof.rounds)):
@@ -10284,6 +10339,31 @@ class _Emitter:
                         and self.authorized_any_relational_proof is not None
                         and any(value is item for item in
                                 self.authorized_any_relational_proof.relationals))
+                    base_color = self.authorized_particle_base_color
+                    if (base_color is not None
+                            and (value is base_color.relational
+                                 or value is base_color.reduction)):
+                        if any(value is item for item in self.emitted_particle_base_color):
+                            raise _error(self.program, value,
+                                         "authenticated particle base-color node emitted twice")
+                        self.emitted_particle_base_color.append(value)
+                        if value.callee == "lessThanEqual":
+                            if (len(arguments) != 2 or value.type.display() != "bvec4"
+                                    or tuple(child.type.display() for child in value.children)
+                                    != ("vec4", "vec4")):
+                                raise _error(self.program, value,
+                                             "malformed particle base-color relation")
+                            left, right = arguments
+                            return ("([&] { const glsl::Vec4 lhs = glsl::Vec4("
+                                    + left + "); const glsl::Vec4 rhs = glsl::Vec4("
+                                    + right + "); return glsl::BVec4("
+                                    "lhs[0] <= rhs[0], lhs[1] <= rhs[1], "
+                                    "lhs[2] <= rhs[2], lhs[3] <= rhs[3]); }())")
+                        if len(arguments) != 1 or value.type.display() != "bool":
+                            raise _error(self.program, value,
+                                         "malformed particle base-color reduction")
+                        return ("([&] { const glsl::BVec4 lanes = " + arguments[0]
+                                + "; return lanes[0] && lanes[1] && lanes[2] && lanes[3]; }())")
                     if (not emboss_reduction
                             and not landscape_relational
                             and not any(value is item for item in nodes)):
@@ -11810,6 +11890,22 @@ class _Emitter:
             if (self.local_vec4_proof is not None
                     and any(assignment is node for node in self.local_vec4_proof.conditional_stores)):
                 return [f"{indent}(void){self.expression(assignment)};"]
+            diffuse_outputs = self.authorized_particle_diffuse_outputs
+            if (diffuse_outputs is not None
+                    and any(assignment is node for node in diffuse_outputs.assignments)):
+                # The authority's JavaScript stores only the false arm:
+                # `cond ? a : b.reduce(..., outRGBA)`. The true arm is
+                # evaluated and discarded, so outRGBA keeps the value an
+                # earlier pixel of this kernel binding stored.
+                if any(assignment is node for node in self.emitted_particle_diffuse_outputs):
+                    raise _error(self.program, assignment,
+                                 "authenticated particle diffuse output store emitted twice")
+                self.emitted_particle_diffuse_outputs.append(assignment)
+                target, conditional = assignment.children
+                condition, first, second = conditional.children
+                return [f"{indent}(void)(({self.expression(condition)}) ? "
+                        f"glsl::Vec4({self.expression(first)}) : "
+                        f"({self.expression(target)} = glsl::Vec4({self.expression(second)})));"]
             self._consume_bitwise_number_expression(assignment)
             self._consume_emboss_expression(assignment)
             if assignment.operator not in _ASSIGNMENT_OPERATORS:
@@ -16642,6 +16738,20 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 not any(value is item for item in emitted) for value in expected):
             raise _error(program, program,
                          "authenticated Attractor emission mismatch")
+    if emitter.authorized_particle_diffuse_outputs is not None:
+        expected = emitter.authorized_particle_diffuse_outputs.assignments
+        emitted = emitter.emitted_particle_diffuse_outputs
+        if len(emitted) != len(expected) or any(
+                not any(value is item for item in emitted) for value in expected):
+            raise _error(program, program,
+                         "authenticated particle diffuse output emission mismatch")
+    if emitter.authorized_particle_base_color is not None:
+        expected = emitter.authorized_particle_base_color.nodes
+        emitted = emitter.emitted_particle_base_color
+        if len(emitted) != len(expected) or any(
+                not any(value is item for item in emitted) for value in expected):
+            raise _error(program, program,
+                         "authenticated particle base-color emission mismatch")
     if emitter.authorized_any_relational_proof is not None:
         proof = emitter.authorized_any_relational_proof
         expected = (*proof.reductions, *proof.relationals)

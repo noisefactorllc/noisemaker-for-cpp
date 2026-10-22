@@ -25,7 +25,7 @@ DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-COMPATIBILITY_SHA256 = "e3c1e5657c80b9080afd609a6faf0b712fffc69e814df944b746b7a089c6e819"
+COMPATIBILITY_SHA256 = "78997ffcc35774774f1b6e3a1ffc1c78f9ff23d0faa00d958fa9973a4f3d8bf3"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
@@ -34,7 +34,7 @@ EFFECT_KEYS = frozenset({
 PARAM_KEYS = frozenset({"type", "default", "define", "uniform", "zero", "enum", "choices", "min", "max", "texture", "colorModeUniform", "cpuOnly"})
 PASS_KEYS = frozenset({"name", "program", "inputs", "outputs", "uniforms", "count", "repeat", "conditions", "viewport", "blend", "drawMode", "drawBuffers", "type", "defines"})
 TEXTURE_KEYS = frozenset({"width", "height", "format"})
-DIMENSION_KEYS = frozenset({"default", "param", "paramDefault", "screenDivide", "inputOverride", "power"})
+DIMENSION_KEYS = frozenset({"default", "param", "paramDefault", "screenDivide", "inputOverride", "power", "inherit"})
 
 
 class CatalogError(ValueError):
