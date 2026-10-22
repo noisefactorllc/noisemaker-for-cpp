@@ -25,7 +25,6 @@ the existing sin/cos/fmin/fmax bare-std checks. All 9 tests pass (Ran 9
 tests ... OK).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_julia_emitter_lowering.py | 10 +++++++---
  1 file changed, 7 insertions(+), 3 deletions(-)

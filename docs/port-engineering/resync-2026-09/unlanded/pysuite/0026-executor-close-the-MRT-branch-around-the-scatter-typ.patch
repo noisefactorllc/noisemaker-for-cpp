@@ -11,7 +11,6 @@ outputTex bookkeeping in the same merge and sets wrote_output_tex again.
 Native suite: 601 passed, 0 failed.
 
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  src/graph/executor.cpp | 2 ++
  1 file changed, 2 insertions(+)

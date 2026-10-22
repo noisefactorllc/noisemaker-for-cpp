@@ -41,7 +41,6 @@ correct exercised shape to re-freeze it responsibly. Flagging for whoever
 next touches noise's runtime-define profile.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tools/glslcpp/frontend/scalar_uint_xor_profile.py | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

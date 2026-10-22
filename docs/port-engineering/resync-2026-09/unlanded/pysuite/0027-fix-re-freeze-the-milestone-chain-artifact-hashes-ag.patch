@@ -35,7 +35,6 @@ untouched throughout, matching the cross-check above). Ran all four
 modules together: 50 tests, OK (skipped=7, all authority-gated).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_edge_bvec3_contour.py              |  8 ++++----
  tests/test_emboss_color_style.py              | 20 +++++++++----------

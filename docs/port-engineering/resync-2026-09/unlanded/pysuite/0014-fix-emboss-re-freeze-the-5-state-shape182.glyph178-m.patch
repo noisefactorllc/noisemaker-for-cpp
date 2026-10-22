@@ -41,7 +41,6 @@ Re-pinned all 5 spec hashes and all 15 artifact hashes (5 states x
 Ran 22 tests ... OK (skipped=7, all skips are authority-gated NOISEMAKER_CPU_ROOT/NOISEMAKER_FOR_CPU checks correctly absent in this env).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_emboss_color_style.py | 30 +++++++++++++++---------------
  1 file changed, 15 insertions(+), 15 deletions(-)

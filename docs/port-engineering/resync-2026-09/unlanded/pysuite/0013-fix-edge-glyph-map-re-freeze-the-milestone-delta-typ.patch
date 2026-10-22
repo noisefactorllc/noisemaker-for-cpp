@@ -40,7 +40,6 @@ are untouched. Both full modules pass (edge: Ran 12 tests ... OK;
 glyph-map: Ran 12 tests ... OK).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_edge_bvec3_contour.py              | 8 ++++----
  tests/test_glyph_map_nonnegative_int_shift.py | 8 ++++----

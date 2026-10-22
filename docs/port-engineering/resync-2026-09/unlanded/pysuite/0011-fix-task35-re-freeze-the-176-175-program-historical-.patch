@@ -39,7 +39,6 @@ typed_manifest.json whole-file hashes. All 4 tests in the module now
 pass (Ran 4 tests ... OK).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_task35_bitwise_number_profile.py | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)

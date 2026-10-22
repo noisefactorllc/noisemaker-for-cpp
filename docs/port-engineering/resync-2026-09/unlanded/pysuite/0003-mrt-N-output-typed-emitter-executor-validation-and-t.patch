@@ -125,7 +125,6 @@ landing real Family D/E MRT sources; end-to-end admission proof on those
 real programs is explicitly deferred to that merge, per the task brief.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  CMakeLists.txt                            |   1 +
  include/noisemaker/graph/executor.hpp     |  45 ++++

@@ -28,7 +28,6 @@ mandelbrot/fractal fixes. Updated the counts accordingly (0 std::log(y/log2(,
 2 glsl::log(, 1 glsl::log2().
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  src/effects/snow.cpp                  | 6 +++---
  tests/test_newton_emitter_lowering.py | 9 +++++++--

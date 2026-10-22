@@ -33,7 +33,6 @@ Re-pinned all four tests' current+prior artifact hashes (typed_slice.cpp
 confirmed unchanged). All four pass together (Ran 4 tests ... OK).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_typed_generator.py | 32 ++++++++++++++++----------------
  1 file changed, 16 insertions(+), 16 deletions(-)

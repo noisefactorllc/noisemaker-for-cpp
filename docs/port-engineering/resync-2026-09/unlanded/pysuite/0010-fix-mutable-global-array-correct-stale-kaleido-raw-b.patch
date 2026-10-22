@@ -17,7 +17,6 @@ key (27570) that the test cross-checks against. Only the len(raw) literal
 was stale.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_mutable_global_array.py | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

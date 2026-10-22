@@ -36,7 +36,6 @@ proof object itself, matching test_remap_frontend_profile.py. All 5
 tests pass (Ran 5 tests ... OK).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_remap_emitter_regression.py | 85 ++++++++++++++++++--------
  1 file changed, 58 insertions(+), 27 deletions(-)

@@ -26,7 +26,6 @@ confirmation.
 All 13 tests pass (Ran 13 tests ... OK).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_glitch_mat4_chain.py | 12 ++++++------
  1 file changed, 6 insertions(+), 6 deletions(-)

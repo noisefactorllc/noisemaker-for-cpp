@@ -48,7 +48,7 @@
 >   `backend-compatibility`/`effect-catalog` archives CPU authority 61aa869,
 >   which the repository no longer pins (ci.yml checks out 26d6f42); against
 >   the pinned authority both gates pass. Evidence:
->   Automated job 1e5e9761, check-repair-4a68fe9.md (retained privately).
+>   check-repair-4a68fe9.md (retained privately).
 >
 > ### Remaining queue
 > Unchanged: the counted-for first blockers (flythrough3d parameter-bound
@@ -101,7 +101,7 @@
 > - **Full verification**: two consecutive `regen_all.sh` fixed points (`REGEN
 >   OK`), all seven generator `--check` gates, cmake build + ctest 4/4, zero
 >   symlinks, and the macOS host lane at pinned Python 3.13.13/Node v26.0.0
->   (build/host-shards2.py, job receipt) returned PYSHARDS DONE status=0 on all
+>   (build/host-shards2.py) returned PYSHARDS DONE status=0 on all
 >   four shards (789+529+400+417 tests). `scripts/parity-summary` unchanged:
 >   PARITY-SUMMARY {"expected":179,"executed":174,"exact":174,"strict":0,
 >   "near":0,"defer":0,"skip":5,"fail":0,"missing":0}.
@@ -204,8 +204,8 @@
 >   original forge failure was therefore a one-off flake under machine
 >   load (that shard run overlapped a parallel native CMake build on this
 >   worker), not a candidate defect; the shard-0 cohort is clean apart
->   from the documented environment gap. Evidence archived privately
->   in cpp-continuation-20261001: redbefore_shard0.log
+>   from the documented environment gap. Evidence archived privately:
+>   redbefore_shard0.log
 >   (731 tests) and candidate_shard0_rerun.log (757 tests), both run in
 >   this repair pass; the pair_wip.log and the original shard logs cited
 >   earlier were not preserved in the archive and their claims above are
@@ -301,10 +301,10 @@
 > ### Verification
 > - All seven generator gates pass (`check_corpus`, `check_semantics`, `corpus_ratchet
 >   --check`, `generate_typed_slice`, `generate_kernels`, `generate_backend_compatibility
->   --check`, `generate_effect_catalog --check`; 277 + 27 = 304). The six job-declared
+>   --check`, `generate_effect_catalog --check`; 277 + 27 = 304). The six required
 >   checks pass on the exact published candidates (implementation 6c817485…, records
->   b7267dc…, entrypoint+records f44efd1bf21056e83a9ef693e32900d119037449; machine
->   verification receipts verified_at 2026-09-30T01:21:18.683Z and 2026-10-01T00:35:24.810Z).
+>   b7267dc…, entrypoint+records f44efd1bf21056e83a9ef693e32900d119037449; verifications
+>   at 2026-09-30T01:21:18.683Z and 2026-10-01T00:35:24.810Z).
 > - `tools/resync/regen_all.sh .` twice to a fixed point (`REGEN OK` twice, zero
 >   generated-file drift; `git status --short` empty after the second run); native
 >   Debug CMake configure/build + CTest 4/4; zero symlinks (`find . -type l` empty).
@@ -320,8 +320,7 @@
 >   OK (16 skipped), shard2 400 OK (7 skipped), shard3 437 OK (0 skipped), 2,130 total,
 >   zero failures/errors. The toolchain probe and per-shard logs (rev=f44efd1…,
 >   python3=Python 3.13.13, pytest 9, node v26.0.0) are archived privately
->   in cpp-continuation-20260929 (pyshards_gpu3.shard0-3.log,
->   toolchain.txt).
+>   (pyshards_gpu3.shard0-3.log, toolchain.txt).
 > - **Rendered parity, entrypoint `scripts/parity-summary` (published at f44efd1…)**:
 >   over the whole authenticated executable-corpus manifest
 >   (`tests/fixtures/dsl/executable-corpus.json`, manifest digest
@@ -338,7 +337,7 @@
 >   claimed closed; both the 5 authority-refused records and the sweep-gate dither
 >   residual stay actionable in the frontier census below. The exact-candidate run
 >   log (parity_summary.log) is archived privately.
-> - The Linux worker's earlier 24 failures + 6 errors were its environment gap, not
+> - The earlier Linux run's 24 failures + 6 errors were its environment gap, not
 >   candidate defects: x86 Node v26.5.1 vs the v26.0.0-pinned ARM64 oracle packages
 >   (julia/shape-mixer/mandelbrot NaN drift) plus missing live-checkout/oracle env;
 >   with the pinned Node 26.0.0, live checkout and built C++ oracles the same modules
@@ -346,8 +345,8 @@
 >   in the same commit, and the archive holds the exact-candidate `shasum -a 256
 >   docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md` result --
 >   da654ff0312b39256ea2edc3b27ee3bd8cd5dbe32c621f5fd7c3957bb4023008 at f44efd1…,
->   matching that commit's sidecar (archived privately as handoff_sha256_check.log in
->   cpp-continuation-20260929); at 578b86f… the refreshed
+>   matching that commit's sidecar (archived privately as handoff_sha256_check.log);
+>   at 578b86f… the refreshed
 >   sidecar is e22a921c4d3a77afdba78749c0d0f56d8a59eb42dacdcf72fc711c08c5df453e,
 >   and this commit's own sidecar covers the text it publishes (verify recomputes
 >   both against the publishing head). The only test change
@@ -447,7 +446,7 @@
 
 > ## CONTINUATION CHECKPOINT 2026-09-27B: `uintBitsToFloat` ADMITTED PROOF-GATED FOR points/dla:agent; heightmap3d `any` LEG MEASURED AND BLOCKED BY THE PUBLICATION CAP
 >
-> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The automation then reviewed and published the large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31), and its C++ kit release passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
+> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31) was then reviewed and published, and its C++ kit release passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
 >
 > This checkpoint supersedes the "Next linear leg" ordering in earlier checkpoints only for the
 > closed DLA bit-ingress cluster; all other ordering and census rules apply unchanged.
@@ -548,7 +547,7 @@
 >   `generate_effect_catalog --check` — the latter two **now pass directly against
 >   the `noisemaker-for-cpu` / `noisemaker` checkouts**: the workspace
 >   authority checkouts again carry the pinned revisions (`cat-file -t 61aa8694…` → commit),
->   resolving the 2026-09-27 environment-provisioning block on those declared checks.
+>   resolving the 2026-09-27 environment-provisioning block on those required checks.
 > - `tools/resync/regen_all.sh .` to a fixed point (`REGEN OK`, twice); native Debug CMake
 >   build + CTest 4/4; zero symlinks (`find . -type l` empty). Python evidence: shards 1-3
 >   completed via `pyshards.sh` and shard 0 completed split as `test_typed_generator`
@@ -647,13 +646,13 @@
 >   HEAD); the g++ 12.2 spurious `-Werror=misleading-indentation` on `typed_slice.cpp:10110` and
 >   `-Wrestrict` diagnostics were also reproduced at HEAD and are passed by CI's clang. Zero
 >   symlinks (`find . -type l` empty).
-> - Additional diagnostic (2026-09-27, later in the pass): the declared-check executor runs with a
->   clean environment isolated from the agent session (proven with a benign `UV_CACHE_DIR` probe
->   directory that the executor never created), so environment-based object-store redirection
+> - Additional diagnostic (2026-09-27, later in the pass): the check environment runs
+>   clean and isolated from the agent session (proven with a benign `UV_CACHE_DIR` probe
+>   directory that the check environment never created), so environment-based object-store redirection
 >   (`GIT_OBJECT_DIRECTORY`/`GIT_ALTERNATE_OBJECT_DIRECTORIES` against full mirrors of
 >   `61aa8694…`/`0ed489ec…` held in a private scratch cache) cannot reach it. Both checks
 >   pass end-to-end under that redirection (exit 0 each), confirming the only defect is that the
->   executor-visible checkouts lack the pinned history; the fix is automation-side provisioning.
+>   checkouts visible to the check environment lack the pinned history; the fix is provisioning that history there.
 >
 > ### Blocked declared verify checks (environment provisioning, not a product defect)
 > - The declared `backend-compatibility` and `effect-catalog` checks fail at this candidate with
@@ -670,9 +669,9 @@
 >   `noisemaker-for-cpu@61aa8694…` snapshot exported via `git archive` (719 files, 0 symlinks)
 >   plus its CI-format ledger, `tools/dsl/generate_backend_compatibility --check --cpu-root …
 >   --shader-git …` and `tools/dsl/generate_effect_catalog --check` both exit 0 (run twice this
->   pass, before and after the corpus write). All other four declared checks pass at
+>   pass, before and after the corpus write). All other four required checks pass at
 >   `9c1cdc7` directly (check-corpus 276 vendored + 28 pending, check-semantics, typed-slice 275
->   programs, kernels 3 outputs). The candidate is complete; only the verify worker's authority
+>   programs, kernels 3 outputs). The candidate is complete; only the check environment's authority
 >   checkouts need the pinned history restored to make the two checks executable.
 >
 
@@ -772,8 +771,8 @@
 > [Dispatch 35986078288](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35986078288)
 > succeeded for `5a0c3be`, but the downstream release
 > failed. The served `cpp/0/kit.json` still names `e331a3d88f298d5643de888375df0f60ceacb79a`.
-> Retain the earlier bounded release-system test-reconciliation action and served-file/hash/render acceptance.
-> This job cannot edit the release system or manually dispatch a release. Handoff/checksum-only publication
+> Retain the earlier bounded kit-release test-reconciliation action and served-file/hash/render acceptance.
+> This pass cannot change kit publication or manually dispatch a release. Handoff/checksum-only publication
 > triggers CI and Authority drift through the checksum path; it does not trigger Export kit.
 >
 > The runtime and authority corrections above require multi-pass/state and independent JS evidence;
@@ -783,7 +782,7 @@
 
 > ## CONTINUATION CHECKPOINT 2026-09-26B: KERNELS-CHECK REVIEWABILITY FIX PUBLISHED; LOOP-PROOF REVERT STILL BLOCKED BY REVIEW CAP
 >
-> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The automation then reviewed and published the large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31), and its C++ kit release passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
+> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31) was then reviewed and published, and its C++ kit release passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
 >
 > This checkpoint records this continuation pass's publication and the still-blocked leg, amending the
 > 2026-09-26 checkpoint above; that checkpoint's "What was implemented and verified" and "Required
@@ -794,10 +793,10 @@
 >   `tools/glslcpp/generate_kernels.py` only): `check_outputs` returned `None`, so the check success line
 >   would have read "None generated outputs verified". It now returns the verified output list and prints
 >   `glslcpp: ok (3 generated outputs verified)`. Independent review approved exactly
->   `b621c57f828e8dccbd8ae6491a755f2b9fe69b9f` (review_id `10ffc386-2726-42bc-8eef-ae0f514622bf`), the
->   automation pushed it, and exact-source machine verification succeeded for all four declared checks
+>   `b621c57f828e8dccbd8ae6491a755f2b9fe69b9f`, it was
+>   pushed, and exact-source verification succeeded for all four required checks
 >   (`check-corpus`, `check-semantics`, `typed-slice`, `kernels`) at that commit
->   (`verified_at` 2026-09-27T02:44:00.647Z).
+>   (verified at 2026-09-27T02:44:00.647Z).
 > - Local gate evidence at `b621c57`: all five generator `--check` gates pass (`corpus_ratchet: ok
 >   (276 vendored + 28 pending = 304 authority programs)`), Debug CMake build + CTest 4/4, the full
 >   Python suite is green under the pinned interpreter (all 18 `tests/test_typed_generator` classes
@@ -826,7 +825,7 @@
 
 > ## CONTINUATION CHECKPOINT 2026-09-26: synth3d/cellularAutomata3d:simulate PROMOTION BLOCKED AT PUBLICATION; PRODUCT CHANGES REVERTED TO BASELINE
 >
-> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The automation then reviewed and published the large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31), and its C++ kit release passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
+> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31) was then reviewed and published, and its C++ kit release passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
 >
 > This checkpoint records a blocked publication, not landed work. The promotion of **`synth3d/cellularAutomata3d:simulate`** (counted-for loop proof + remaining `post` blocker on its 3D loop update) was fully implemented, locally verified, and published in two partial steps (`77364c6` step 1, `3b34c16` step 2), but the final generated artifact **`src/effects/generated/effect_catalog.cpp` cannot be published under the harness constraint that an independent review reads at most 2 MiB of diff**, so per the failure & revert guard the product changes were reverted from `main` to keep it green. Everything below must be redone once the publication constraint is resolved.
 >
@@ -855,11 +854,11 @@
 > - The separate **authority-drift** workflow fails identically on every commit since at least `f97bd11` (2026-09-25T00:13, run 36076505439): the live `noisemaker-for-cpu` default branch (`aaa6df5`, synced through noisemaker@2f47612c, behavioral lock `2f17e1f9…`) has drifted from this port's pin (`0ed489ec…` authority snapshot, CPU commit `61aa869`, lock `27a2a197…`). Re-pinning the authority is a separate leg; this job's brief freezes the authority at `61aa869`.
 >
 > ### Final-acceptance exclusion-premise resolution (published a09de7b, 2026-09-27)
-> - Verify receipt `891532a2-9bae-4708-8612-8716ba9d9dfc` (verified_at 2026-09-27T04:32:53Z): all four declared checks green at `a09de7b`; ci.yml run `36290207907` and authority-drift run `36290207916` concluded `failure` at this head.
+> - Verification at 2026-09-27T04:32:53Z: all four required checks green at `a09de7b`; ci.yml run `36290207907` and authority-drift run `36290207916` concluded `failure` at this head.
 > - Cancellation-pattern note (verified from run data): each docs push cancels the previous head's in-progress ci.yml run (concurrency cancel-in-progress), so a racing parent shows conclusion `cancelled` (52ee76d run `36289704352`) and the known-failure-at-parent exclusion premise appears unmet. The corrected sequencing, applied here: let the parent's ci.yml run reach a `failure` conclusion (parent `a09de7b`, run `36290207907`, conclusion `failure`), then publish the next head; from that head on, both ci.yml and authority-drift.yml carry a valid known-failure-at-parent premise. The corpus-parity failure mechanism is unchanged: 168 exact / 5 authority-refused / 6 grouped-multi-output refusals (buddhabrot, flock, flow, hydraulic, life, pointsEmit) measured locally against pinned authority `61aa869`.
 
-> - Published `b621c57` ("fix(glslcpp): count verified outputs in kernels check message"): `check_outputs` returned `None`, so the check success line read "None generated outputs verified"; it now returns and prints the verified output count. All four declared checks (check-corpus, check-semantics, typed-slice, kernels) green at `b621c57` (verify receipt `b791eb46-a41d-4f7d-8ac4-83a26c1ab44d`, verified_at 2026-09-27T02:44:00Z).
-> - Final-acceptance reviewer finding (unapproved receipt `b791eb46`): the ci.yml exclusion premise required a *failure* conclusion at the published parent, but parent `7d7e9bc`'s ci.yml run `36269638112` was superseded to `cancelled` by the follow-up push (concurrency cancel), leaving no failure-conclusion run at the published parent. Resolution: a docs-only head above `b621c57` re-triggers ci.yml, which fails identically at this head and at parent `b621c57` (run `36283668643`, conclusion `failure`), restoring a valid known-failure-at-parent premise for both ci.yml and authority-drift.yml. The corpus-parity failure mechanism is unchanged: 168 exact / 5 authority-refused / 6 grouped-multi-output refusals (buddhabrot, flock, flow, hydraulic, life, pointsEmit) measured locally against pinned authority `61aa869`.
+> - Published `b621c57` ("fix(glslcpp): count verified outputs in kernels check message"): `check_outputs` returned `None`, so the check success line read "None generated outputs verified"; it now returns and prints the verified output count. All four required checks (check-corpus, check-semantics, typed-slice, kernels) green at `b621c57` (verified at 2026-09-27T02:44:00Z).
+> - Review finding: the ci.yml exclusion premise required a *failure* conclusion at the published parent, but parent `7d7e9bc`'s ci.yml run `36269638112` was superseded to `cancelled` by the follow-up push (concurrency cancel), leaving no failure-conclusion run at the published parent. Resolution: a docs-only head above `b621c57` re-triggers ci.yml, which fails identically at this head and at parent `b621c57` (run `36283668643`, conclusion `failure`), restoring a valid known-failure-at-parent premise for both ci.yml and authority-drift.yml. The corpus-parity failure mechanism is unchanged: 168 exact / 5 authority-refused / 6 grouped-multi-output refusals (buddhabrot, flock, flow, hydraulic, life, pointsEmit) measured locally against pinned authority `61aa869`.
 >
 > ## CONTINUATION CHECKPOINT 2026-09-25: ADMIT RUNTIME TILE REDUCTION LOOP PROOF & PROMOTE render/pointsBillboardRender:spriteMeanTiles
 >
@@ -1168,7 +1167,7 @@
 >
 > The incoming [Export kit dispatch](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35763411182)
 > succeeded, but the downstream release
-> failed in the release system's C++ kit tests: the compatibility assertion
+> failed in the C++ kit release tests: the compatibility assertion
 > reports `synth/noise` at line 31, and the render test expects the now-supported Snow effect to refuse
 > at line 74 (`Missing expected rejection`). Other historical refusal expectations also need review
 > against the current runtime. Do not restore an obsolete C++ refusal or enlarge kit claims to satisfy them.
@@ -1179,21 +1178,21 @@
 > not the reviewed header `cc2f552f6268f4f17d14be002c40cc2be0b284059ceb7abbb80214bbd2ce332e`.
 > This is a verified stale delivery, not a successful release inferred from a dispatch.
 >
-> **UPDATE (ced9055 delivery, partial):** a live readback from this worker's network on 2026-09-29 measured:
+> **UPDATE (ced9055 delivery, partial):** a live readback from one network location on 2026-09-29 measured:
 > `deployment-meta.json` reports `"git_hash": "ced90558815c3478c784b2bd12cc77ebf4186a31"` (version 0.1.2),
 > `kit.json` reports `source.sha = ced9055…`, and all 98 manifest files fetched and byte-matched their
 > manifest SHA-256 hashes, with every `engine/noisemaker/*` file byte-matching its `td/noisemaker/*`
-> source at `ced9055…` (transcript in the automation's receipt archive). This readback is from the worker
-> container only: no verification receipt has yet carried deployment evidence for it, so the delivery is
-> NOT independently confirmed. Treat the delivery as unverified until an automated-review readback or
+> source at `ced9055…` (transcript in private run records). This readback is from one network location
+> only: no verification has yet carried deployment evidence for it, so the delivery is
+> NOT independently confirmed. Treat the delivery as unverified until an independent readback or
 > deployment check reproduces it. The downstream criteria therefore remain open at this SHA: independent
-> confirmation of the served delivery, and the assembled-kit acceptance-image render (release-system side).
+> confirmation of the served delivery, and the assembled-kit acceptance-image render (kit release side).
 >
-> **Bounded external action:** reconcile the release system's compatibility/refusal tests with authenticated current
+> **Bounded external action:** reconcile the kit release's compatibility/refusal tests with authenticated current
 > kit claims and demonstrated runtime behavior while preserving genuine negative cases. Acceptance:
 > existing downstream validation passes on the intended C++ SHA, the normal publication path succeeds,
 > served metadata/files match that SHA and their manifest hashes, and the assembled kit renders the
-> acceptance images. This review is restricted to this repository and cannot modify the release system or manually
+> acceptance images. This review is restricted to this repository and cannot modify the kit release or manually
 > dispatch/release. Its documentation pushes do not trigger kit publication. Retain this dependency until
 > the existing publication system provides that evidence.
 >
@@ -1675,7 +1674,7 @@
 >
 > Local evidence is under ignored `build-review/evidence/`, `build-review/sweep-kit-release/` and
 > `build-review/sweep-defines-debug/`; these paths identify observations, not portable golden fixtures. Current run state,
-> commit coverage, hashes and CI references are retained in the automation's `review-state.json` outside the repository.
+> commit coverage, hashes and CI references are retained in private run records outside the repository.
 >
 
 > ## RESYNC CHECKPOINT 2026-09-17: READ THIS FIRST
@@ -1843,8 +1842,8 @@
 >      pins re-quoted from the regenerated files; effect-catalog counts compatible 274 -> 275 and
 >      missing_passes 68 -> 67). Native Debug CMake build + CTest 4/4 with g++ 12.2 on this Linux
 >      container, matching ci.yml's native steps; the ci.yml native matrix also runs macos-latest, which
->      this Linux container cannot execute. Run evidence (shards, sweep, run ids) lives in the automated review's
->      receipts. Residual-failure diagnoses (all red-before; their generator inputs are untouched by
+>      this Linux container cannot execute. Run evidence (shards, sweep, run ids) lives in private run
+>      records. Residual-failure diagnoses (all red-before; their generator inputs are untouched by
 >      this pass): (a) `test_lightleak192_oracle` leaf-symlink tests hardcoded `/private/tmp` (macOS
 >      path) and ERROR on Linux — **[COMPLETED at f2d9822]**: the second leg now uses a fixed explicit
 >      temp root distinct from the platform default, on every platform. (b) the LightLeakPhase2 smoke
@@ -1860,7 +1859,7 @@
 >      they were dropped, the dry-run guard now routes multi-output admissions through
 >      `authenticate_factory_route_mrt`, and all 6 programs render byte-exact against the authority
 >      (corpus parity byteExactCount 168 -> 174; suite `tests.test_dsl_corpus_parity` +
->      `tests.test_typed_generator` 297 tests OK; evidence: Automated job e5c685f8, evidence archive).
+>      `tests.test_typed_generator` 297 tests OK; evidence archived privately).
 >      Still open in ci.yml's byte-exact job — **blocked, upstream** (confirmed at 4b4e3ab, CI run
 >      36598761795): the corpus-parity lane itself now PASSES (executor fix verified in CI; python
 >      test suite, all four native lanes and sanitizers also green), and the only failing step is the
@@ -2165,7 +2164,7 @@
 > Work only in:
 >
 > ```text
-> /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
+> /path/to/noisemaker-for-cpp
 > ```
 >
 > Local `main`, clean tree, no remote, nothing pushed. Seven commits since
@@ -2202,7 +2201,7 @@
 >   warmups>=5, samples>=30).
 > - **Full Python discovery:** 1997 tests, 0 failures (fresh external regen
 >   cache; NOISEMAKER_CPU_ROOT must point at the frozen mirror
->   `/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu`
+>   `/path/to/frozen/noisemaker-for-cpu`
 >   — it has the oracle-ledger sidecar; the live platform checkout does not).
 > - **Native:** 476 PASS / 2 FAIL — the two FAILs are the documented
 >   pre-existing glitch/shapeMixer fixtures, byte-identical to the Task 6
@@ -2314,7 +2313,7 @@
 > Work only in:
 >
 > ```text
-> /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
+> /path/to/noisemaker-for-cpp
 > ```
 >
 > The repository now has a clean committed Task 6 base:
@@ -2550,7 +2549,7 @@
 > Actual checkout:
 >
 > ```text
-> /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
+> /path/to/noisemaker-for-cpp
 > ```
 >
 > Stable link:
@@ -2745,7 +2744,7 @@
 > The actual checkout is:
 >
 > ```text
-> /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
+> /path/to/noisemaker-for-cpp
 > ```
 >
 > Exposed as:

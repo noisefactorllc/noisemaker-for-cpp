@@ -71,7 +71,6 @@ Sweep evidence (NOISEMAKER_DSL_CPU_CASE built from this tree):
   cause, not a code regression.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  src/effects/registry.cpp                      |  4 +--
  tests/test_dsl_frontend_oracle.py             |  2 +-

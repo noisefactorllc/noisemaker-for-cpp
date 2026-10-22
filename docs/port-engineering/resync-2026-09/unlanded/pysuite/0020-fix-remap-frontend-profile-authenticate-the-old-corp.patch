@@ -24,7 +24,6 @@ exactly. Pointed SOURCE back at the a024dc3a corpus tree. All 4 tests
 now pass (Ran 4 tests ... OK).
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_remap_frontend_profile.py | 9 ++++++++-
  1 file changed, 8 insertions(+), 1 deletion(-)

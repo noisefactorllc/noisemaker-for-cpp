@@ -103,7 +103,6 @@ Verification:
   admitted effect.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  CMakeLists.txt                                |   1 +
  .../iteration-group-resource-lifetime.md      | 209 ++++++

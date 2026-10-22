@@ -54,7 +54,6 @@ change but were re-run to confirm the sidecar fix alone cleared them) now
 pass 161 passed, 4 skipped, 0 failed under the CI-style authority env.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tests/test_distortion_oracle.py       | 10 +++----
  tests/test_dither_preparation.py      | 43 ++++++++++++++-------------

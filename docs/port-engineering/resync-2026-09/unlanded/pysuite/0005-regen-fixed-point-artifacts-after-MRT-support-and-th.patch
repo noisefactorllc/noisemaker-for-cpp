@@ -5,7 +5,6 @@ Subject: [PATCH 05/29] regen: fixed-point artifacts after MRT support and the
  julia uniform fix
 
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  src/effects/registry.cpp                 | 4 ++--
  tests/test_dsl_frontend_oracle.py        | 2 +-

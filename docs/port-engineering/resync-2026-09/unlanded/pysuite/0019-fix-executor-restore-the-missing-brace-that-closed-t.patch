@@ -52,7 +52,6 @@ run_iterated_group path's actual behavior, only that the file now
 parses and the full native suite (old and new tests alike) passes.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  src/graph/executor.cpp | 1 +
  1 file changed, 1 insertion(+)

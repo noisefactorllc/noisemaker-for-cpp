@@ -87,7 +87,6 @@ that traces back to one of these uniforms -- reverted the incomplete
 attempt rather than leave the tree broken or ship an unverified change.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  .../julia-parity/julia-oracle-report.md       | 114 +++++++++---------
  .../julia-oracle-report.md.sha256             |   2 +-

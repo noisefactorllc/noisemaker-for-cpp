@@ -49,7 +49,6 @@ Verification:
   starting point. No new failures.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  tools/parity/sweep.py | 47 +++++++++++++++++++++++++++++++++++++++----
  1 file changed, 43 insertions(+), 4 deletions(-)

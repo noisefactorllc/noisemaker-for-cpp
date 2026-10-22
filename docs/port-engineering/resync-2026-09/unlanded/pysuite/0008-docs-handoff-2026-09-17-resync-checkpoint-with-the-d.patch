@@ -5,7 +5,6 @@ Subject: [PATCH 08/29] docs(handoff): 2026-09-17 resync checkpoint with the
  drift post-mortem, gates, and remaining work
 
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  .../NEXT_CODING_AGENT_HANDOFF.md              | 63 +++++++++++++++++++
  1 file changed, 63 insertions(+)

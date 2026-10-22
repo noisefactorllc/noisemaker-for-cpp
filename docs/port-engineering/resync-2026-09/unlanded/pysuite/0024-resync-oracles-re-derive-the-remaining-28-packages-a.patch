@@ -75,7 +75,6 @@ kFactorySha256/kFactoryClosureSha256) are updated to match every package
 above.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
 ---
  .../emboss-parity-oracle-report.md            |   2 +-
  .../emboss-parity-oracle-report.md.sha256     |   2 +-
