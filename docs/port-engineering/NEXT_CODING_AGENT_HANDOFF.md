@@ -337,8 +337,7 @@
 >   NOT met (skip=5, executed 174 != expected 179) and no rendered-parity gap is
 >   claimed closed; both the 5 authority-refused records and the sweep-gate dither
 >   residual stay actionable in the frontier census below. The exact-candidate run
->   log is archived privately in cpp-continuation-20260929
->   (parity_summary.log; computed by the automated review during verify as well).
+>   log (parity_summary.log) is archived privately.
 > - The Linux worker's earlier 24 failures + 6 errors were its environment gap, not
 >   candidate defects: x86 Node v26.5.1 vs the v26.0.0-pinned ARM64 oracle packages
 >   (julia/shape-mixer/mandelbrot NaN drift) plus missing live-checkout/oracle env;
