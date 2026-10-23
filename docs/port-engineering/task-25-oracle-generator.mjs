@@ -22,7 +22,7 @@ const corpusRevision = EXPECTED.upstreamRevision
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
 const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
 const adapterIndexPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
-const canonicalSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
+const canonicalSha256 = '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869'
 const catalogSha256 = 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'
 const adapterIndexSha256 = 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'
 const f = Math.fround
@@ -255,7 +255,7 @@ function buildData() {
   })
 
   return {
-    schema: 'noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6', authority: EXPECTED,
+    schema: 'noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '9b7294820eec2a0b95c66790b1dae374fa079c13', authority: EXPECTED,
     provenance: { node: process.version, public_api: 'kernelFactories.get(key)', canonical_identity: true, adapter_entries_absent: true, canonical_kernels_sha256: canonicalSha256, public_catalog_sha256: catalogSha256, adapter_index_sha256: adapterIndexSha256 },
     profile: { name: 'literal-vec3-lane-index-v1', keys: Object.values(programs).map(p => p.key).sort(), selected_source_sites: 11, direct_plain_assignment_lvalues: 6, reads: 5, lane_incidence_0_1_2: [7, 3, 1], dynamic_or_generic_vector_index_capability: false },
     programs: Object.fromEntries(Object.entries(programs).map(([name, p]) => [name, { key: p.key, source: p.source, raw_source_bytes: p.rawBytes, raw_source_sha256: p.rawSha256, normalized_source_bytes: p.normalizedBytes, normalized_source_sha256: p.normalizedSha256, defines: {}, canonical_factory_name: p.factoryName, canonical_factory_to_string_sha256: p.factorySha256, public_factory_is_canonical_identity: true, adapter_entry_absent: true, bindings: p.bindings, resources: name === 'lens' ? { samplers: 1, ordinary_uniforms: 20, outputs: 1, uses_texture: true, uses_derivatives: false, static_texture_sites: 3, dynamic_texture_calls_per_pixel: 3, texture_size_calls_per_pixel: 0 } : { samplers: 1, ordinary_uniforms: 10, outputs: 1, uses_texture: true, uses_derivatives: false, static_texture_sites: 3, dynamic_texture_calls_per_pixel: 3, texture_size_calls_per_pixel: 1 } }])),
