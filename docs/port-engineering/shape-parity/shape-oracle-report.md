@@ -1,6 +1,6 @@
 # Shape184 exact-parity oracle
 
-Program `synth/shape:shape`; corpus revision `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`; exact defines
+Program `synth/shape:shape`; corpus revision `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`; exact defines
 `LOOP_A_OFFSET=40`, `LOOP_B_OFFSET=30`.
 
 ## The two contracts this program exists to prove

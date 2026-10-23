@@ -9,9 +9,9 @@
 
 namespace shape184_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "465b53d5bf6cf4a1fbadc6e1a169bb29e03da463673849305fcb690ed1d43414";
+inline constexpr std::string_view kOracleSha256 = "f4d2bd39175cb08afa665915a535f733dd568e81c927f790e5fb3c70fae921ef";
 inline constexpr std::string_view kProgramKey = "synth/shape:shape";
-inline constexpr std::string_view kCorpusRevision = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d";
+inline constexpr std::string_view kCorpusRevision = "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3";
 inline constexpr std::int32_t kLoopAOffset = 40;
 inline constexpr std::int32_t kLoopBOffset = 30;
 inline constexpr std::size_t kCaseCount = 8U;

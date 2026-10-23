@@ -41,7 +41,7 @@ SCHEMA_VERSION = 1
 PROGRAM_KEY = "synth/shape:shape"
 EFFECT_KEY = "synth/shape"
 # Revision authenticated by the immutable oracle capture.
-CORPUS_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
+CORPUS_REVISION = "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
 DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
 FACTORY_NAME = "canonicalFactory285"
 FACTORY_SHA256 = "3990c88aae14f81b5ea57e259b12e3fa5ce36490e828ba83c8a630205a5adfd0"
@@ -53,7 +53,7 @@ SOURCE_SHA256 = "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"),
+        "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
@@ -62,7 +62,7 @@ PINNED_CPU_FILES = {
         "f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff"),
     "glsl_runtime": (
         "src/csl/glsl-runtime.js",
-        "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"),
+        "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30"),
     "pass_runner": (
         "src/runtime/pass-runner.js",
         "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
