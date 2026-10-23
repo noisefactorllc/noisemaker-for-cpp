@@ -5,7 +5,7 @@
   "effect_key": "synth/newton",
   "runtime_key": "synth/newton:newton",
   "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
-  "upstream_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "upstream_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
   "factory": {
     "name": "canonicalFactory272",
     "text_sha256": "75c306dcb6df750cfe3312654336613603e37910d5f8aac907f30b98f200dbc9",
@@ -149,7 +149,7 @@
         },
         {
           "relative_path": "src/csl/glsl-runtime.js",
-          "sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
+          "sha256": "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30"
         },
         {
           "relative_path": "src/csl/metal-division.js",
@@ -213,7 +213,7 @@
         },
         {
           "relative_path": "src/effects/definition.js",
-          "sha256": "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"
+          "sha256": "9ffd11c838b9b791a26f2ae0701c9a3f640acf1b40be486a93664e2f10af9f2e"
         },
         {
           "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -221,7 +221,7 @@
         },
         {
           "relative_path": "src/effects/generated/canonical-kernels.js",
-          "sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
+          "sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869"
         },
         {
           "relative_path": "src/effects/generated/kernels.js",
@@ -229,7 +229,7 @@
         },
         {
           "relative_path": "src/effects/generated/upstream-snapshot.js",
-          "sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"
+          "sha256": "de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f"
         },
         {
           "relative_path": "src/effects/registry.js",
@@ -256,7 +256,7 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/newton-parity/newton_oracle_generator.mjs",
-      "sha256": "39dcb4d62909fc80dee2226199e424f66c08236df4c4d573c0ac66bd51be70e4"
+      "sha256": "4821c8f796825e6ba9b5760a5df1bc6f8b0e6d9b5851bc51fd8dad7bdfe8f271"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_newton_native_oracle_include.py"
