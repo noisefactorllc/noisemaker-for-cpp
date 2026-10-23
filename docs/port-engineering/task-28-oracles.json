@@ -1,12 +1,12 @@
 {
   "schema": "noisemaker-for-cpp.task28.rotate-mat2-return.public-canonical-oracles.v1",
-  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
   "provenance": {
     "node": "v26.9.0",
     "public_api": "kernelFactories.get(key)",
     "canonical_identity": true,
     "adapter_entry_absent": true,
-    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
+    "canonical_kernels_sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869",
     "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
     "adapter_index_sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
   },
