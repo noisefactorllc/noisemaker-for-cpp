@@ -1,13 +1,13 @@
 {
   "schema": "noisemaker-for-cpp.task20-fixed-affine-centers13.canonical-oracles.v1",
-  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
   "provenance": {
     "node": "v26.0.0",
-    "cpu_revision": "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6",
-    "cpu_behavioral_sha256": "30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b",
+    "cpu_revision": "9b7294820eec2a0b95c66790b1dae374fa079c13",
+    "cpu_behavioral_sha256": "f039d5075988c468d54ca550c89e9e7f01c5b4f92963f22ed087596d629bf70e",
     "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
     "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
-    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
+    "canonical_kernels_sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869",
     "factory_name": "canonicalFactory283",
     "factory_to_string_sha256": "5e1e07a05251573d22324cc4cb83347e01838bc2341b41400acfb74833cd8843",
     "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",

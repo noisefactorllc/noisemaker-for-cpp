@@ -26,7 +26,7 @@ const key = 'synth/sacredGeometry:sacredGeometry'
 const source = 'sources/synth/sacredGeometry/sacredGeometry.glsl'
 const expectedRawSha256 = '24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de'
 const expectedNormalizedSha256 = '6b3c4e8492a69969f3d6f78689cfd19de846656fd0c6d5c8dfd5a758427c61d3'
-const expectedCanonicalKernelsSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
+const expectedCanonicalKernelsSha256 = '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869'
 const expectedFactorySha256 = '5e1e07a05251573d22324cc4cb83347e01838bc2341b41400acfb74833cd8843'
 
 const f = Math.fround
@@ -466,7 +466,7 @@ function build() {
     corpus_revision: corpusRevision,
     provenance: {
       node: process.version,
-      cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6',
+      cpu_revision: '9b7294820eec2a0b95c66790b1dae374fa079c13',
       cpu_behavioral_sha256: EXPECTED.behavioralLockSha256,
       api: 'canonicalKernelFactories+bindCanonicalKernel+runPass+Surface',
       canonical_kernels_path: 'src/effects/generated/canonical-kernels.js',
