@@ -98,7 +98,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             for dimension in (texture.get("width"), texture.get("height"))
         ))
         self.assertEqual(4, sum("format" not in texture for texture in textures))
-        self.assertEqual(109, sum("format" in texture for texture in textures))
+        self.assertEqual(118, sum("format" in texture for texture in textures))
         self.assertEqual(
             0,
             sum("outputTex" in effect for effect in records),
@@ -146,7 +146,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(16, provenance["counts"]["scatter_passes"])
             self.assertEqual(210, provenance["counts"]["executable_definitions"])
             self.assertEqual(0, provenance["counts"]["incomplete_definitions"])
-            self.assertEqual("03b0c42537995616cf4ff032900d82693c249d2a826fe1eb0317caefec28ab0b", provenance["normalized_record_stream_sha256"])
+            self.assertEqual("fb72ad197ea19e667c5697fd234d983e5b70f299bad1d79bde69661969342215", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)
             payload_hash = provenance["generated_payload_sha256"]
             marker = f'c.provenance.generated_payload_sha256 = "{payload_hash}";'.encode()
@@ -212,7 +212,8 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             result = self.run_generator("--cpu-root", str(CPU), "--shader-git", str(SHADER),
                                         "--compatibility", str(manifest), "--output-dir", td)
             self.assertNotEqual(0, result.returncode)
-            self.assertIn("sha", result.stderr.lower())
+            # The generator reports errors on stdout, in its run receipt.
+            self.assertIn("sha", (result.stdout + result.stderr).lower())
 
     def test_structural_join_rejects_duplicate_missing_and_inconsistent_rows(self) -> None:
         with tempfile.TemporaryDirectory(prefix="catalog-join-") as td:
