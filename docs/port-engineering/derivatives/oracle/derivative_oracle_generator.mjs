@@ -111,11 +111,11 @@ function sameBytes(a, b) { return Buffer.compare(bytes(a.data), bytes(b.data)) =
 // ---------------------------------------------------------------------------
 const RUNTIME_PROVENANCE = {
   glsl_kernel_sha256: 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
-  glsl_runtime_sha256: 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd',
+  glsl_runtime_sha256: '7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30',
   pass_runner_sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   surface_sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
+  canonical_kernels_sha256: '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869',
   adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
 }
 for (const [file, hash] of [
@@ -785,7 +785,7 @@ function build() {
   }
   return {
     schema: 'noisemaker-for-cpp.derivatives.cluster15.derivative-oracles.v1',
-    corpus_revision: revision, cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '9b7294820eec2a0b95c66790b1dae374fa079c13', authority: EXPECTED,
     provenance: { ...RUNTIME_PROVENANCE, node: process.version, public_identity: true, adapter_absent: true },
     define_as_binding_note: 'halftone (MODE, PATTERN), pondRipples (STYLE, WRAP), and stipple (MODE) pin compile-time GLSL #defines that the JS reference reads as ordinary $bindings[...] lookups (no preprocessor in JS) -- every case for these three programs supplies the define at its generate_typed_slice._defaults()-authorized value via `uniforms`, verified live against the real _defaults() output (see report) and against the factory text actually containing the $bindings["<NAME>"] read (loadProgram()). Omitting these would silently select the wrong runtime branch, not fail loudly.',
     programs: programsOut,
