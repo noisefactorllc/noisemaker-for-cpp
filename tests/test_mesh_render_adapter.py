@@ -98,7 +98,7 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
     def test_capture_has_immutable_cpu_provenance(self):
         expected = json.loads(capture_path().read_text())
-        self.assertEqual(expected["cpu_revision"], "2e751f4c09154bd67e5d83f50d2185425aba0c1a")
+        self.assertEqual(expected["cpu_revision"], "9b7294820eec2a0b95c66790b1dae374fa079c13")
         self.assertEqual(expected["source_hashes"], {
             "src/effects/cpu/mesh-render.js": "ea9480452c59bcc51aa33fa0e699368b3dcadc6c629569a3b0fa7142186ee499",
             "src/runtime/external-input.js": "705f8f27b29e6ddc2334eb1e9af6ad57004063d848ea3bee9356626218c12757",
@@ -164,6 +164,6 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
 FIXTURE_HASHES = {
     "cases.json": "161358e3d0bfb3bcb2798d05ff5c2c681982d369441726256d265458b8c65830",
-    "expected.json": "962ebf15d1abd50dbd0ff0d020f717feaf85568751a244d513dadd9df9f5e30e",
-    "expected_linux_x86_64_node26.json": "a91ece7b75d911acfe18b184afb836a6beb24b8bba930d92195950c1e0eaec99",
+    "expected.json": "5f5f3be26f0a7736eb518e3b538481402510a0bdd6f63bc5303af600a3cb0d97",
+    "expected_linux_x86_64_node26.json": "d5e77157a151612080b2cc80ce7244690c9247eda8af155142a314dfccb2c230",
 }
