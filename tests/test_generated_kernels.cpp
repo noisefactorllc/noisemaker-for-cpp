@@ -29822,14 +29822,14 @@ void require_oracle_metadata() {
   REQUIRE(noisemaker_moodscape_oracle::kProgramKey ==
           "classicNoisedeck/moodscape:moodscape");
   REQUIRE(noisemaker_moodscape_oracle::kOracleJsonSha256 ==
-          "19d904b2ac62f7f0a4a67ad9e3e2c101c8aee7a76086ea15e0d0218480da1a12");
+          "8d6697fa192a7b0ff0ec5572f5bcf0b6e8691d381479cdcd5496700e57505c18");
   REQUIRE(noisemaker_moodscape_oracle::kFactorySha256 ==
           "b5fe9e225f841e285dace48441ae3945b035b269e2a2e7e4d4938a3357d60fc6");
   REQUIRE(noisemaker_moodscape_oracle::kSourceSha256 ==
           "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44");
   REQUIRE(noisemaker_moodscape_oracle::kSourceBytes == 19559U);
   REQUIRE(noisemaker_moodscape_oracle::kSourceRelativePath ==
-          "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/classicNoisedeck/moodscape/moodscape.glsl");
+          "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/sources/classicNoisedeck/moodscape/moodscape.glsl");
   REQUIRE(noisemaker_moodscape_oracle::kImportClosureCardinality == 27U);
   REQUIRE(noisemaker_moodscape_oracle::kImportClosure.size() == 27U);
   constexpr std::array<std::string_view, 15> runtime_names{
