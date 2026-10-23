@@ -49,7 +49,8 @@ int main() {
             result = subprocess.run(
                 ["c++", "-std=c++20", "-I", str(ROOT / "include"),
                  str(path), str(ROOT / "src/glsl_runtime.cpp"),
-                 str(ROOT / "src/numeric.cpp"), "-o", str(binary)],
+                 str(ROOT / "src/numeric.cpp"), str(ROOT / "src/surface.cpp"),
+                 "-o", str(binary)],
                 text=True, capture_output=True,
             )
             self.assertEqual(result.returncode, 0, result.stderr)

@@ -11672,8 +11672,12 @@ synth/subdivide:subdivide""".splitlines())
         # re-captures the Life matrix under the authority's LCG hash routing.
         # 7f47340 regenerates the current-authority captures and binds the
         # canonical full-resolution aspect in the Polygon, Pattern and Osc2D fixtures.
+        # 98d3135 adds the cellular automata age-packing captures, 0452493
+        # re-captures the media tiling rows and adds the sampler metadata
+        # fixtures, and 5a57539 binds Hydraulic's height and diffuse maps as the
+        # authority does; none of the three moved this pin.
         self.assertEqual(
-            "72ad8cd1573dd94d9aa4d66487aad705f6a2915b078a65c3b811aa253ac10430",
+            "7ac7916b6b9a7d209f1edb80870546519859428af6083c12101b289601834193",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 

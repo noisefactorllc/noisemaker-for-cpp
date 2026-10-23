@@ -68,7 +68,8 @@ class DitherEmitterLoweringTests(unittest.TestCase):
                 [compiler, "-std=c++20", "-Wall", "-Wextra", "-Werror",
                  "-I", str(ROOT / "include"), str(source),
                  str(ROOT / "src/glsl_runtime.cpp"),
-                 str(ROOT / "src/numeric.cpp"), "-o", str(binary)],
+                 str(ROOT / "src/numeric.cpp"),
+                 str(ROOT / "src/surface.cpp"), "-o", str(binary)],
                 capture_output=True, text=True, check=False)
             self.assertEqual(built.returncode, 0, built.stderr)
             result = subprocess.run([str(binary)], capture_output=True,
