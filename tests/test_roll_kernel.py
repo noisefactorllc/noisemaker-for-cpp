@@ -109,7 +109,7 @@ class RollReferenceTests(unittest.TestCase):
         for name, digest in FIXTURE_HASHES.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
+        self.assertEqual(expected["cpu_revision"], "9b7294820eec2a0b95c66790b1dae374fa079c13")
         self.assertEqual(len(expected["source_hashes"]), 8)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({(c["width"], c["height"]) for c in cases}, {(1, 1), (17, 11), (64, 256)})
@@ -150,5 +150,5 @@ class RollReferenceTests(unittest.TestCase):
 
 FIXTURE_HASHES = {
     "cases.json": "7b4763eb3e72116ead1f7251dbe9c756918888bd92fb1197bf3fa455f5171c9c",
-    "expected.json": "fdd57b6dcd481a151c7fd117b005b121e83dc42f090220d8dcc16c00f1c39a53",
+    "expected.json": "2facd4f5566924f64697932c9c867519c5781970517ffc7b3a00c472ed091566",
 }

@@ -252,56 +252,48 @@ console.log(JSON.stringify(records));
             self.assertFalse(marker.exists())
             self.assertTrue("behavioral" in result.stderr or "sha256" in result.stderr or "symlink" in result.stderr)
 
-    def test_current_and_frozen_kernel_authorities_are_disjoint_and_fail_closed(self) -> None:
+    def test_current_kernel_authority_fails_closed(self) -> None:
         current = self.authority()
-        frozen = os.environ.get("NOISEMAKER_FROZEN_KERNEL_CPU_ROOT")
-        frozen_ledger = os.environ.get("NOISEMAKER_FROZEN_KERNEL_CPU_LEDGER")
         current_ledger = os.environ.get("NOISEMAKER_CPU_AUTHORITY_LEDGER")
-        if not frozen or not frozen_ledger or not current_ledger:
-            self.skipTest("explicit current and frozen kernel roots and ledgers are required")
+        if not current_ledger:
+            self.skipTest("an explicit current kernel root and ledger are required")
         module = (ROOT / "tools/dsl/corpus_authority.mjs").as_uri()
         script = f"""
 import assert from 'node:assert/strict';
-import {{authenticateCpuRoot, authenticate3ccCpuRoot}} from {json.dumps(module)};
-const [current, currentLedger, frozen, frozenLedger] = process.argv.slice(1);
+import {{authenticateCpuRoot}} from {json.dumps(module)};
+const [current, currentLedger] = process.argv.slice(1);
 assert.equal(authenticateCpuRoot(current, currentLedger), current);
-assert.equal(authenticate3ccCpuRoot(frozen, frozenLedger), frozen);
-assert.throws(() => authenticateCpuRoot(frozen, frozenLedger), /CPU behavioral lock mismatch/);
-assert.throws(() => authenticate3ccCpuRoot(current, currentLedger), /CPU behavioral lock mismatch/);
 """
         result = subprocess.run([self.node(), "--input-type=module", "-e", script,
-                                 str(current), current_ledger, frozen, frozen_ledger], capture_output=True, text=True)
+                                 str(current), current_ledger], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        for root, source_ledger, verifier in (
-                (current, current_ledger, "authenticateCpuRoot"),
-                (pathlib.Path(frozen), frozen_ledger, "authenticate3ccCpuRoot")):
-            with self.subTest(verifier=verifier), tempfile.TemporaryDirectory() as directory:
-                forged = pathlib.Path(directory).resolve() / "cpu"
-                shutil.copytree(root, forged)
-                entries = [line.split("  ", 1) for line in pathlib.Path(source_ledger).read_text().splitlines()]
-                ledger = forged.parent / "ledger.sha256"
-                ledger_text = "".join(f"{digest}  {forged / pathlib.Path(name).relative_to(root)}\n"
-                                      for digest, name in entries)
-                ledger.write_text(ledger_text)
-                invoke = f"import {{{verifier}}} from {json.dumps(module)}; {verifier}(process.argv[1], process.argv[2]);"
-                def check(error=None):
-                    outcome = subprocess.run([self.node(), "--input-type=module", "-e", invoke,
-                                              str(forged), str(ledger)], capture_output=True, text=True)
-                    if error is None:
-                        self.assertEqual(outcome.returncode, 0, outcome.stderr)
-                    else:
-                        self.assertNotEqual(outcome.returncode, 0)
-                        self.assertIn(error, outcome.stderr)
-                check()
-                for name, error in (("src/runtime/renderer.js", "CPU behavioral lock mismatch"),
-                                    ("README.md", "oracle ledger sha256 mismatch")):
-                    file = forged / name
-                    original = file.read_bytes()
-                    file.write_bytes(original + b"\n// altered fixture\n")
-                    check(error)
-                    file.write_bytes(original)
-                ledger.write_text("\n".join(ledger_text.splitlines()[:-1]) + "\n")
-                check("oracle ledger entry count mismatch")
+        with tempfile.TemporaryDirectory() as directory:
+            forged = pathlib.Path(directory).resolve() / "cpu"
+            shutil.copytree(current, forged)
+            entries = [line.split("  ", 1) for line in pathlib.Path(current_ledger).read_text().splitlines()]
+            ledger = forged.parent / "ledger.sha256"
+            ledger_text = "".join(f"{digest}  {forged / pathlib.Path(name).relative_to(current)}\n"
+                                  for digest, name in entries)
+            ledger.write_text(ledger_text)
+            invoke = f"import {{authenticateCpuRoot}} from {json.dumps(module)}; authenticateCpuRoot(process.argv[1], process.argv[2]);"
+            def check(error=None):
+                outcome = subprocess.run([self.node(), "--input-type=module", "-e", invoke,
+                                          str(forged), str(ledger)], capture_output=True, text=True)
+                if error is None:
+                    self.assertEqual(outcome.returncode, 0, outcome.stderr)
+                else:
+                    self.assertNotEqual(outcome.returncode, 0)
+                    self.assertIn(error, outcome.stderr)
+            check()
+            for name, error in (("src/runtime/renderer.js", "CPU behavioral lock mismatch"),
+                                ("README.md", "oracle ledger sha256 mismatch")):
+                file = forged / name
+                original = file.read_bytes()
+                file.write_bytes(original + b"\n// altered fixture\n")
+                check(error)
+                file.write_bytes(original)
+            ledger.write_text("\n".join(ledger_text.splitlines()[:-1]) + "\n")
+            check("oracle ledger entry count mismatch")
 
 
 if __name__ == "__main__":

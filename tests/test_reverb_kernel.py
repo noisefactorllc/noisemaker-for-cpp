@@ -93,10 +93,10 @@ class ReverbReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "86ab3d3fe7e8a63ce56e3deec9faf1d928850ec32c94c82ab9dd6ab90d9dd530",
-                "expected.json": "1edf193cd5843f1e52af8d1dbec513935af5a1fc76a4e17df6f223a8512b258d"}.items():
+                "expected.json": "b9cbe85eccb8e4cfe287dbb075abc021ec0c8f9278482f3fed89c95c2689b4da"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
+        self.assertEqual(expected["cpu_revision"], "9b7294820eec2a0b95c66790b1dae374fa079c13")
         self.assertEqual(len(expected["source_hashes"]), 8)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({c["uniforms"]["iterations"] for c in cases}, {1, 3, 8})

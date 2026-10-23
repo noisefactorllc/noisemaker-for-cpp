@@ -22,15 +22,6 @@ export const EXPECTED = Object.freeze({
   upstreamSourceDigest: '6eeeea4efd13d15a611646bb2b49c6c3b8872665234e74be9c11e46c1422502e',
 })
 
-const FROZEN_KERNEL_EXPECTED = Object.freeze({
-  ledgerEntries: 893,
-  packageSha256: 'cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21',
-  packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
-  sourceLockSha256: '594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c',
-  behavioralLockSha256: '30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b',
-  behavioralFileCount: 98,
-})
-
 export function sha256(bytes) { return crypto.createHash('sha256').update(bytes).digest('hex') }
 
 function realFile(file, label) {
@@ -119,10 +110,6 @@ function authenticateRoot(rootArg, ledgerArg, expected) {
 
 export function authenticateCpuRoot(rootArg, ledgerArg = null) {
   return authenticateRoot(rootArg, ledgerArg, EXPECTED)
-}
-
-export function authenticate3ccCpuRoot(rootArg, ledgerArg = null) {
-  return authenticateRoot(rootArg, ledgerArg, FROZEN_KERNEL_EXPECTED)
 }
 
 export async function importCpu(rootArg, ledgerArg = null) {

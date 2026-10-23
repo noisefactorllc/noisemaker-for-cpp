@@ -101,10 +101,10 @@ class CorruptReferenceTests(unittest.TestCase):
     def test_capture_provenance_and_coverage(self):
         for name, digest in {
                 "cases.json": "3a8fe2538d58395696245eec7425b5491e3e6ca2135ea85240b7f7c3ee762e53",
-                "expected.json": "ff06cc76a2bbc12b9974f96be7e7365ef6fde5c090ab02d108d8578d9c460a0a"}.items():
+                "expected.json": "8beb68c7513b59a93ff5a4085deb6aaf903b2bf544c6ab49843f90b2c9da21fd"}.items():
             self.assertEqual(hashlib.sha256((FIXTURE / name).read_bytes()).hexdigest(), digest)
         expected = json.loads((FIXTURE / "expected.json").read_text())
-        self.assertEqual(expected["cpu_revision"], "7f473400ac744025d46221bf527b43c1b5c1ef4e")
+        self.assertEqual(expected["cpu_revision"], "9b7294820eec2a0b95c66790b1dae374fa079c13")
         self.assertEqual(len(expected["source_hashes"]), 8)
         cases = json.loads((FIXTURE / "cases.json").read_text())
         self.assertEqual({c["name"].split("-")[0] for c in cases},
