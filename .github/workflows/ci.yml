@@ -215,7 +215,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: c3356dc1e5ae75963acb14f63fae4d0463f4af9e
+          ref: 9b7294820eec2a0b95c66790b1dae374fa079c13
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree
@@ -306,7 +306,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: c3356dc1e5ae75963acb14f63fae4d0463f4af9e
+          ref: 9b7294820eec2a0b95c66790b1dae374fa079c13
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree
