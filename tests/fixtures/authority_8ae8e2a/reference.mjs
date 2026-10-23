@@ -4,11 +4,11 @@ import {resolve, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 // The complete relative-import closure of the four modules this capture drives,
-// at noisemaker-for-cpu 7f473400ac744025d46221bf527b43c1b5c1ef4e.
+// at noisemaker-for-cpu 9b7294820eec2a0b95c66790b1dae374fa079c13.
 const hashes = {
-  'src/effects/generated/canonical-kernels.js': '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
+  'src/effects/generated/canonical-kernels.js': '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869',
   'src/csl/glsl-kernel.js': 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff',
-  'src/csl/glsl-runtime.js': 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd',
+  'src/csl/glsl-runtime.js': '7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30',
   'src/csl/metal-division.js': '104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8',
   'src/csl/metal-reciprocal-data.js': '08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87',
   'src/csl/metal-reciprocal-grid.js': 'bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39',
@@ -69,5 +69,5 @@ try {
     for (let i = 0; i < words.length; ++i) bytes.writeUInt32LE(words[i], i * 4);
     results.push({name: test.name, float32_sha256: sha(bytes), rgba8_sha256: sha(destination.toRgba8())});
   }
-  console.log(JSON.stringify({cpu_revision: '7f473400ac744025d46221bf527b43c1b5c1ef4e', source_hashes: hashes, results}));
+  console.log(JSON.stringify({cpu_revision: '9b7294820eec2a0b95c66790b1dae374fa079c13', source_hashes: hashes, results}));
 } finally { await rm(scratch, {recursive: true, force: true}); }
