@@ -3,3 +3,4 @@ src/typed_generated/** linguist-generated
 include/noisemaker/generated/** linguist-generated
 tools/glslcpp/corpus/** linguist-generated
 tests/fixtures/dsl/executable-corpus.json linguist-generated
+tests/oracles/dsl_compiler_expected.txt linguist-generated
