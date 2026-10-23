@@ -2,3 +2,4 @@ src/effects/generated/** linguist-generated
 src/typed_generated/** linguist-generated
 include/noisemaker/generated/** linguist-generated
 tools/glslcpp/corpus/** linguist-generated
+tests/fixtures/dsl/executable-corpus.json linguist-generated
