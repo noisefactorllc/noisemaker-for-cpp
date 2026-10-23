@@ -33,7 +33,7 @@ function occurrences(text, needle) { return text.split(needle).length - 1 }
 function evaluated(text) { return (0, eval)(`(${text})`) }
 
 const provenance = {
-  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
+  canonical_kernels_sha256: '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
   adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
   source_sha256: '3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29',

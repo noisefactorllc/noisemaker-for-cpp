@@ -17989,7 +17989,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         self.assertTrue(oracle_path.is_file(), "Task 30 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "5a4c1a5dc58a7a38e5c411dd9d85fe700c812cd6030155ed926f47d01e3ea4a4",
+            "0e3915dc46314b6096f6d6afe24e3be0d472fbc780649bd14a6031b84538500f",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
@@ -18127,7 +18127,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
             self.assertNotEqual(baseline, changed,
                                 f"Task30 executable token {ordinal}: {old}")
         self.assertEqual(
-            "5a4c1a5dc58a7a38e5c411dd9d85fe700c812cd6030155ed926f47d01e3ea4a4",
+            "0e3915dc46314b6096f6d6afe24e3be0d472fbc780649bd14a6031b84538500f",
             hashlib.sha256(oracle_bytes).hexdigest())
 
     def test_task30_node_level_closure_logic_rejects_past_the_coarse_hash_gate(self) -> None:
