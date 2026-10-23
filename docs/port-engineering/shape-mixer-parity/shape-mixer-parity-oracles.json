@@ -4,8 +4,8 @@
   "define": {
     "LOOP_OFFSET": 10
   },
-  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
-  "upstream_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
+  "upstream_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
   "oracle_authority": "clean pinned noisemaker-for-cpu canonicalFactory15 under pinned Node; no C++ output participates",
   "exactness_contract": {
     "float32": "complete raw little-endian uint32 lane arrays; signed zero and NaN payloads are significant",
@@ -15,7 +15,7 @@
     "coordinates": "all probes and first mismatches use top-down storage x/y"
   },
   "provenance": {
-    "authority_commit": "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6",
+    "authority_commit": "9b7294820eec2a0b95c66790b1dae374fa079c13",
     "authority_checkout_clean": true,
     "live_checkout_required": true,
     "authority_live_distinct": true,
@@ -28,7 +28,7 @@
       },
       {
         "relative_path": "src/csl/glsl-runtime.js",
-        "sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
+        "sha256": "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30"
       },
       {
         "relative_path": "src/csl/metal-division.js",
@@ -92,7 +92,7 @@
       },
       {
         "relative_path": "src/effects/definition.js",
-        "sha256": "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"
+        "sha256": "9ffd11c838b9b791a26f2ae0701c9a3f640acf1b40be486a93664e2f10af9f2e"
       },
       {
         "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -100,7 +100,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
+        "sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -108,7 +108,7 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"
+        "sha256": "de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f"
       },
       {
         "relative_path": "src/effects/registry.js",
@@ -134,7 +134,7 @@
     "files": {
       "canonical_kernels": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-        "sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
+        "sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869"
       },
       "public_catalog": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/catalog.js",
@@ -146,7 +146,7 @@
       },
       "upstream_snapshot": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"
+        "sha256": "de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f"
       },
       "glsl_kernel": {
         "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-kernel.js",
@@ -154,7 +154,7 @@
       },
       "glsl_runtime": {
         "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-runtime.js",
-        "sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
+        "sha256": "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30"
       },
       "pass_runner": {
         "relative_path_from_noisemaker_for_cpu": "src/runtime/pass-runner.js",
@@ -166,7 +166,7 @@
       }
     },
     "source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/classicNoisedeck/shapeMixer/shapeMixer.glsl",
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/sources/classicNoisedeck/shapeMixer/shapeMixer.glsl",
       "bytes": 21721,
       "sha256": "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b",
       "normalized_loop_offset_10_bytes": 17664,
@@ -475,7 +475,7 @@
         "symbol_id": 30
       }
     ],
-    "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+    "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
     "counts": {
       "declarations": 25,
       "dynamic_indexes": 5,
@@ -79587,7 +79587,7 @@
       "name": "vector-reflect-dot-child-order",
       "source_layer": "pinned noisemaker-for-cpu GLSL runtime owner slice",
       "runtime_relative_path": "src/csl/glsl-runtime.js",
-      "runtime_sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd",
+      "runtime_sha256": "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30",
       "owner_start_marker": "      reflect: (incident, normal)",
       "owner_end_marker": "      refract: (incident, normal, eta)",
       "owner_bytes": 102,
@@ -79596,14 +79596,14 @@
       "anchor_sha256": "934e9e2a6336b1ecf4828cda4547213161cdca71a37e5b9beaf48363049f50e3",
       "replacement_sha256": "eb27270a108d98ff872ecf85f2dbe6b65287827bd4aecbf70059140de80ac1f9",
       "mutated_owner_sha256": "2bb7127394627068b074ac2a20dcd2b2da7c621859d0d6c7fdf4b779c683b70c",
-      "mutated_runtime_sha256": "76dacc26b66aa4527b703680c1b442f02a6d7a49fe78752e29b1c1f11a73ce18",
+      "mutated_runtime_sha256": "ca496cb06f83729fd55a2c9308c06d3cef69d030fe166dc00b1e3066a98a9882",
       "pixel_expectation": "structural/profile/emitter rejection; dot-child swap is commutative and has no fabricated rendered divergence"
     },
     {
       "name": "vector-refract-dot-child-order",
       "source_layer": "pinned noisemaker-for-cpu GLSL runtime owner slice",
       "runtime_relative_path": "src/csl/glsl-runtime.js",
-      "runtime_sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd",
+      "runtime_sha256": "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30",
       "owner_start_marker": "      refract: (incident, normal, eta)",
       "owner_end_marker": "      lessThan: relational",
       "owner_bytes": 378,
@@ -79612,7 +79612,7 @@
       "anchor_sha256": "934e9e2a6336b1ecf4828cda4547213161cdca71a37e5b9beaf48363049f50e3",
       "replacement_sha256": "eb27270a108d98ff872ecf85f2dbe6b65287827bd4aecbf70059140de80ac1f9",
       "mutated_owner_sha256": "e5881f966c801880cb99af96997b5e6a130b71fa6cb7caea9a036d8e2490072e",
-      "mutated_runtime_sha256": "86b9b3be385dadf4881ae2337a61abb4b485c32b50925028541e96c143c9e4ba",
+      "mutated_runtime_sha256": "31c6af8883374853ede0b88b19c35f3579608a6a1771d778d4a71c9ded6ad991",
       "pixel_expectation": "structural/profile/emitter rejection; dot-child swap is commutative and has no fabricated rendered divergence"
     },
     {

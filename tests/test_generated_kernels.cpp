@@ -16750,11 +16750,11 @@ TEST(typed_shape_mixer_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape_mixer_matches_all_forty_two_independent_js_oracles) {
   REQUIRE(shape_mixer182_oracle::kOracleSha256 ==
-          "0c8ed329f15818d1e16bbb6541b4efd89aa3102dbf82e98ea6a3e4b8ce4d2a89");
+          "fe1bb429a377b1616be94241279ea150505fde31e40f5efc5c33c7541280adbb");
   REQUIRE(shape_mixer182_oracle::kProgramKey ==
           "classicNoisedeck/shapeMixer:shapeMixer");
   REQUIRE(shape_mixer182_oracle::kCorpusRevision ==
-          "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
+          "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3");
   REQUIRE(shape_mixer182_oracle::kCaseCount == 42U);
 
   std::size_t total_float_words = 0U;

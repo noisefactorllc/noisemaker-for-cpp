@@ -19,7 +19,7 @@ ORACLE = PACKAGE / "shape-mixer-parity-oracles.json"
 OUTPUT = ROOT / "tests/oracles/shape_mixer182_expected.inc"
 PROGRAM_KEY = "classicNoisedeck/shapeMixer:shapeMixer"
 # Revision authenticated by the immutable oracle capture.
-CORPUS_REVISION = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d"
+CORPUS_REVISION = "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
 SCHEMA = "noisemaker-for-cpp.shape-mixer182.pixel-parity.v1"
 WORD = re.compile(r"0x[0-9a-f]{8}")
 HEX64 = re.compile(r"[0-9a-f]{64}")
@@ -349,7 +349,7 @@ def load() -> tuple[dict[str, Any], str]:
         raise OracleError("Shape Mixer schema/program/define mismatch")
     provenance = oracle.get("provenance", {})
     if (provenance.get("authority_commit") !=
-            "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6"
+            "9b7294820eec2a0b95c66790b1dae374fa079c13"
             or provenance.get("authority_checkout_clean") is not True
             or provenance.get("node_version") != "v26.0.0"
             or provenance.get("public_factory_is_canonical_identity") is not True
@@ -468,11 +468,11 @@ def load() -> tuple[dict[str, Any], str]:
         ("vector-reflect-dot-child-order", 102,
          "4c662c611eb3791504489059e1bfaf333d04eeeed1936f4107e1fead1e09fb5f",
          "2bb7127394627068b074ac2a20dcd2b2da7c621859d0d6c7fdf4b779c683b70c",
-         "76dacc26b66aa4527b703680c1b442f02a6d7a49fe78752e29b1c1f11a73ce18"),
+         "ca496cb06f83729fd55a2c9308c06d3cef69d030fe166dc00b1e3066a98a9882"),
         ("vector-refract-dot-child-order", 378,
          "9b4ef5725fe268e68a4122b69a575941d0413d50e6266ae062f969f20327753b",
          "e5881f966c801880cb99af96997b5e6a130b71fa6cb7caea9a036d8e2490072e",
-         "86b9b3be385dadf4881ae2337a61abb4b485c32b50925028541e96c143c9e4ba"),
+         "31c6af8883374853ede0b88b19c35f3579608a6a1771d778d4a71c9ded6ad991"),
     )
     for row, (name, owner_bytes, owner_hash, mutant_hash,
               mutated_runtime_hash) in zip(
@@ -482,7 +482,7 @@ def load() -> tuple[dict[str, Any], str]:
                 "pinned noisemaker-for-cpu GLSL runtime owner slice"
                 or row.get("runtime_relative_path") != "src/csl/glsl-runtime.js"
                 or row.get("runtime_sha256") !=
-                "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
+                "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30"
                 or row.get("owner_bytes") != owner_bytes
                 or row.get("owner_sha256") != owner_hash
                 or row.get("anchor_occurrences_in_owner") != 1

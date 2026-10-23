@@ -1,6 +1,6 @@
 # Shape Mixer182 exact-parity oracle
 
-Program `classicNoisedeck/shapeMixer:shapeMixer`; corpus revision `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`; exact define `LOOP_OFFSET=10`.
+Program `classicNoisedeck/shapeMixer:shapeMixer`; corpus revision `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`; exact define `LOOP_OFFSET=10`.
 
 ## Result
 
