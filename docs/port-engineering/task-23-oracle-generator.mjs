@@ -21,7 +21,7 @@ const cppRoot = path.resolve(here, '../..')
 const corpusRevision = EXPECTED.upstreamRevision
 const corpus = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision)
 const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
-const canonicalSha256 = '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'
+const canonicalSha256 = '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869'
 const f = Math.fround
 const frame = 23
 const deltaTime = f(1 / 60)
@@ -286,7 +286,7 @@ function buildData() {
     mutations.push(...program.mutations.map(mutation => mutationResult(program, mutation, surfaces)))
   }
   return {
-    schema: 'noisemaker-for-cpp.task23-source-global-literal-int.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6', authority: EXPECTED,
+    schema: 'noisemaker-for-cpp.task23-source-global-literal-int.public-canonical-oracles.v1', corpus_revision: corpusRevision, cpu_revision: '9b7294820eec2a0b95c66790b1dae374fa079c13', authority: EXPECTED,
     provenance: { node: process.version, api: 'public kernelFactories identity with canonicalKernelFactories + bindCanonicalKernel + runPass + Surface', canonical_kernels_path: 'src/effects/generated/canonical-kernels.js', canonical_kernels_sha256: canonicalSha256, reference_only: 'all expected output comes from each pinned public factory after proving it is the identical canonical function object and has no adapter entry' },
     contract: { capability: 'source-global-literal-int-v1', counted_bound_kind: 'source-global-const-literal', numeric_literal_contract: 'glsl-f32', compatibility_transforms: 'none', historical_introduction_counts: { typed: 122, public: 124, unported: 88, corpus: 212 }, excluded_adapter_key: 'filter/reindex:nmReindexStats' },
     programs: programs.map(program => ({ key: program.key, source: program.source, raw_source_bytes: program.rawBytes, raw_source_sha256: program.rawSha256, normalized_source_sha256: program.normalizedSha256, defines: program.defines, canonical_factory_name: program.factoryName, canonical_factory_to_string_sha256: program.factorySha256, public_factory_is_canonical_identity: true, adapter_entry_absent: true, pre_function_tuple_sha256: program.preFunctionsSha256, post_function_tuple_sha256: program.postFunctionsSha256, pre_whole_program_sha256: program.preWholeSha256, post_whole_program_sha256: program.postWholeSha256, interface_sha256_pre_and_post: program.interfaceSha256, source_global_literal_int: program.global, counted_loop_proof: program.loop, binding_signature: program.bindingSignature, output_signature: program.outputSignature, resource_fetch_bounds: program.fetchBounds })),
