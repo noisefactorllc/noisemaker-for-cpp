@@ -23,7 +23,7 @@ native)
   run native-ctest ctest --test-dir build-ci --output-on-failure ;;
 sanitizers)
   run san-configure cmake -S . -B build-san -DCMAKE_BUILD_TYPE=Debug \
-    "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer" \
+    "-DCMAKE_CXX_FLAGS=-O1 -fsanitize=address,undefined -fno-omit-frame-pointer" \
     "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined"
   run san-build cmake --build build-san --target noisemaker-cpu-tests -j10
   ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1 run san-run ./build-san/noisemaker-cpu-tests ;;
