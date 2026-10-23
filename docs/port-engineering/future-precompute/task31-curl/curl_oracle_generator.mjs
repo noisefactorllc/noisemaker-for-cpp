@@ -120,7 +120,7 @@ function occurrences(text, needle) { return text.split(needle).length - 1 }
 // Provenance / hermeticity pinning.
 // ---------------------------------------------------------------------------
 const provenance = {
-  canonical_kernels_sha256: '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423',
+  canonical_kernels_sha256: '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
   adapter_index_sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e',
   source_sha256: '33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce',
@@ -534,7 +534,7 @@ function build() {
 
   return {
     schema: 'noisemaker-for-cpp.future-precompute.task31.curl-tanh-mod-closure-oracles.v1',
-    corpus_revision: revision, cpu_revision: '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6', authority: EXPECTED,
+    corpus_revision: revision, cpu_revision: '9b7294820eec2a0b95c66790b1dae374fa079c13', authority: EXPECTED,
     provenance: { ...provenance, node: process.version, public_identity: true, adapter_absent: true },
     program: {
       key, defines: { ...AUTHORIZED_DEFINES }, profile_candidate: 'curl-tanh-vec3-mod-vecN-float-v1',

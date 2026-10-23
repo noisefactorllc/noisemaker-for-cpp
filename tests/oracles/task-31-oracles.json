@@ -1,19 +1,19 @@
 {
   "schema": "noisemaker-for-cpp.future-precompute.task31.curl-tanh-mod-closure-oracles.v1",
-  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
-  "cpu_revision": "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6",
+  "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
+  "cpu_revision": "9b7294820eec2a0b95c66790b1dae374fa079c13",
   "authority": {
-    "ledgerEntries": 893,
-    "packageSha256": "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21",
+    "ledgerEntries": 898,
+    "packageSha256": "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807",
     "packageLockSha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
-    "sourceLockSha256": "594eac7141434eb19d97fbff77cc414e1556380fc5be3db8360e2fc7bd96c20c",
-    "behavioralLockSha256": "30424f99ee8a25535a921ed9d9c364c881b858cb4491a9130f5c4bf4bc499d4b",
+    "sourceLockSha256": "8ef4b2c6a6d9a40d4f2811afeafc54ff6ed829fed3d392884caa39fe2cbe99f5",
+    "behavioralLockSha256": "f039d5075988c468d54ca550c89e9e7f01c5b4f92963f22ed087596d629bf70e",
     "behavioralFileCount": 98,
-    "upstreamRevision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
-    "upstreamSourceDigest": "7cd5fc55dcf37098c1c6fa39054c901d0b44196fef3ee99e69c0f0fd56df7ebf"
+    "upstreamRevision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
+    "upstreamSourceDigest": "6eeeea4efd13d15a611646bb2b49c6c3b8872665234e74be9c11e46c1422502e"
   },
   "provenance": {
-    "canonical_kernels_sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423",
+    "canonical_kernels_sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869",
     "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
     "adapter_index_sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e",
     "source_sha256": "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce",
