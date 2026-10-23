@@ -113,7 +113,7 @@ def load() -> tuple[dict[str, Any], str]:
         raise OracleError("Emboss corpus revision mismatch")
     provenance = oracle.get("provenance", {})
     if (provenance.get("authority_commit")
-            != "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6"
+            != "9b7294820eec2a0b95c66790b1dae374fa079c13"
             or provenance.get("authority_checkout_clean") is not True
             or provenance.get("node_version") != "v26.0.0"
             or provenance.get("canonical_factory") != {

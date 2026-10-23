@@ -4,7 +4,7 @@
 
 namespace emboss181_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "3ad825106d92be7b4d3190a6b1b8f606cc9dfb99f79c550ddd0d3dd08353835c";
+inline constexpr std::string_view kOracleSha256 = "bcda35630372c6dcb8f0b313a3eba80a8f9f9a547337b0b2c7a58f569e9bfff3";
 inline constexpr std::string_view kProgramKey = "filter/emboss:emboss";
 inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
 inline constexpr std::size_t kTotalFloatWords = 2784U;

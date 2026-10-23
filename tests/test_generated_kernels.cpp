@@ -16281,7 +16281,7 @@ TEST(typed_emboss_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_emboss_matches_all_seventeen_independent_js_oracles) {
   REQUIRE(emboss181_oracle::kOracleSha256 ==
-          "3ad825106d92be7b4d3190a6b1b8f606cc9dfb99f79c550ddd0d3dd08353835c");
+          "bcda35630372c6dcb8f0b313a3eba80a8f9f9a547337b0b2c7a58f569e9bfff3");
   REQUIRE(emboss181_oracle::kProgramKey == "filter/emboss:emboss");
   REQUIRE(emboss181_oracle::kTotalFloatWords == 2784U);
   REQUIRE(emboss181_oracle::kTotalRgbaBytes == 2784U);
