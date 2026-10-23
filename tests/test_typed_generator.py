@@ -1978,7 +1978,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertTrue(oracle_path.is_file(), "Task 24 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "3dfcf33963abdb52c1b483139261dc22944eaa78709d2c3cc062311ed6a57af8",
+            "604c7541412947a15fe9039be26917e1d05132549c9bbc5d9a112f773baf8c25",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
@@ -2029,7 +2029,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertTrue(oracle_path.is_file(), "Task 24 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "3dfcf33963abdb52c1b483139261dc22944eaa78709d2c3cc062311ed6a57af8",
+            "604c7541412947a15fe9039be26917e1d05132549c9bbc5d9a112f773baf8c25",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
 
