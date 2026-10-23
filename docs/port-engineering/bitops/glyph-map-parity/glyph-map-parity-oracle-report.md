@@ -4,8 +4,8 @@ Frozen JavaScript ground truth for `filter/glyphMap:glyphMap`. Exact Float32 and
 
 ## Frozen authority
 
-- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
-- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Upstream snapshot revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
+- Corpus revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
 - GLSL source: 8145 bytes, SHA-256 `dc0af9a6a6fb4d0cd62ea25c4508a714a36a1dc66923f5578d91ac190d9f4dd6`
 - Canonical factory: `canonicalFactory56`, 6910 bytes, SHA-256 `9440d2bc8f051ddb8b0db22d193f88aeb6684a0439b2c86920c7cdc502f8770c`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
