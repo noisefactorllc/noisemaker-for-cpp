@@ -29,7 +29,7 @@ const reportPath = path.join(here, 'edge-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'edge_frontend_probe.py')
 const programKey = 'filter/edge:edge'
-const corpusRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
+const corpusRevision = '32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3'
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/filter/edge/edge.glsl')
 const f = Math.fround
 
@@ -179,12 +179,12 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', 'de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  glsl_runtime: ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
+  glsl_runtime: ['src/csl/glsl-runtime.js', '7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
   surface: ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
 }

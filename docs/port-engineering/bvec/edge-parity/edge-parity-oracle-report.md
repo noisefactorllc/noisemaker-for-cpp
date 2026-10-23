@@ -4,8 +4,8 @@ Frozen JavaScript ground truth for `filter/edge:edge`. Exact Float32 and RGBA8 h
 
 ## Frozen authority
 
-- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
-- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Upstream snapshot revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
+- Corpus revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
 - GLSL source: 6530 bytes, SHA-256 `841f9f547d06aace8444953f401009abd02758f9dff271097b2799424c1db5d0`
 - Canonical factory: `canonicalFactory47`, 9305 bytes, SHA-256 `803105b512871071bea0224710b125113d72270e171bfd78cdfcaf9ba9de6709`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
