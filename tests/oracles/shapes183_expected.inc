@@ -4,9 +4,9 @@
 
 namespace shapes183_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "cd732ce53d8d479938f72a64c4fbe297d0fbbfb84a74a0718c1869806692e71b";
+inline constexpr std::string_view kOracleSha256 = "84538b917ff8659f6d6a859a7f02520772e56d638ef4df989048a09d2de26ab7";
 inline constexpr std::string_view kProgramKey = "classicNoisedeck/shapes:shapes";
-inline constexpr std::string_view kCorpusRevision = "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d";
+inline constexpr std::string_view kCorpusRevision = "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3";
 inline constexpr std::int32_t kLoopAOffset = 40;
 inline constexpr std::int32_t kLoopBOffset = 30;
 inline constexpr std::size_t kCaseCount = 6U;

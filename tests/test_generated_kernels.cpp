@@ -17628,10 +17628,10 @@ TEST(typed_shapes_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shapes_matches_all_six_independent_js_oracles) {
   REQUIRE(shapes183_oracle::kOracleSha256 ==
-          "cd732ce53d8d479938f72a64c4fbe297d0fbbfb84a74a0718c1869806692e71b");
+          "84538b917ff8659f6d6a859a7f02520772e56d638ef4df989048a09d2de26ab7");
   REQUIRE(shapes183_oracle::kProgramKey == "classicNoisedeck/shapes:shapes");
   REQUIRE(shapes183_oracle::kCorpusRevision ==
-          "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d");
+          "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3");
   REQUIRE(shapes183_oracle::kCaseCount == 6U);
   REQUIRE(shapes183_oracle::kCases.size() == 6U);
   REQUIRE(shapes183_oracle::kLoopAOffset == 40);
