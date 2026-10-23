@@ -198,8 +198,10 @@ jobs:
       - name: Install Python test dependencies
         run: python -m pip install --disable-pip-version-check pytest
 
+      # A whole partition of this suite cannot finish within one child's
+      # 300-second bound, so each partition starts as groups that can.
       - name: Run full discovery
-        run: python tools/run_partitioned_checks.py python
+        run: python tools/run_partitioned_checks.py python --groups 8
 
   corpus-parity:
     name: byte-exact corpus parity (C++ vs JS authority)

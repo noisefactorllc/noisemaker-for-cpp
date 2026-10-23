@@ -106,6 +106,25 @@ class PartitionedCheckTests(unittest.TestCase):
         self.assertEqual(["run"], attempts)
         self.assertEqual(1, sum(row["timed_out"] for row in report["partitions"]))
 
+    def test_python_groups_run_each_id_once_when_every_group_fits(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            marker = root / "attempts"
+            for index in range(4):
+                (root / f"test_group_{index}.py").write_text(
+                    "import pathlib,time,unittest\nclass Example(unittest.TestCase):\n"
+                    "    def test_case(self):\n"
+                    f"        with pathlib.Path({str(marker)!r}).open('a') as f: f.write('run\\n')\n"
+                    "        time.sleep(1)\n")
+            result, report = self.run_checks("python", "--start-directory", directory,
+                                             "--partitions", "1", "--groups", "4",
+                                             "--timeout-seconds", "3")
+            attempts = marker.read_text().splitlines()
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertTrue(report["success"])
+        self.assertFalse(report["partitions"][0]["timed_out"])
+        self.assertEqual(["run"] * 4, attempts)
+
     def test_python_duplicate_discovery_fails_before_execution(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -161,7 +180,7 @@ class PartitionedCheckTests(unittest.TestCase):
                     self.assertTrue(all(row["coverage_valid"] for row in report["partitions"]))
 
     def test_bounds_reject_more_than_two_children_or_300_seconds(self) -> None:
-        for option, value in (("--workers", "3"), ("--timeout-seconds", "301")):
+        for option, value in (("--workers", "3"), ("--groups", "9"), ("--timeout-seconds", "301")):
             with self.subTest(option=option):
                 result, _ = self.run_checks("python", option, value)
                 self.assertNotEqual(0, result.returncode)

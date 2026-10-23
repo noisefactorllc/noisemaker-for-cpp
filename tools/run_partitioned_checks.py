@@ -125,13 +125,14 @@ def arguments():
     parser.add_argument("--executable", type=pathlib.Path)
     parser.add_argument("--partitions", type=int, default=8)
     parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument("--groups", type=int, default=1)
     parser.add_argument("--timeout-seconds", type=float, default=300)
     parser.add_argument("--internal-discover", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--internal-ids", type=pathlib.Path, help=argparse.SUPPRESS)
     parser.add_argument("--internal-report", type=pathlib.Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
-    if not 1 <= args.partitions <= 8 or not 1 <= args.workers <= 2:
-        parser.error("partitions must be 1..8 and workers must be 1..2")
+    if not 1 <= args.partitions <= 8 or not 1 <= args.workers <= 2 or not 1 <= args.groups <= 8:
+        parser.error("partitions and groups must be 1..8 and workers must be 1..2")
     if not math.isfinite(args.timeout_seconds) or not 0 < args.timeout_seconds <= 300:
         parser.error("timeout must be positive and at most 300 seconds")
     return args
@@ -250,7 +251,12 @@ def main():
                                       skipped_ids=[], failure_count=1, skip_count=0)
                     return [actual]
 
-                results = attempt(selected, 0)
+                # Start a partition as contiguous groups, so a partition that
+                # cannot finish in one child does not first spend a timed-out
+                # run on the whole of it.
+                size = -(-len(selected) // args.groups)
+                results = [result for start in range(0, len(selected), size)
+                           for result in attempt(selected[start:start + size], 0)]
                 combine(results)
                 row["coverage_valid"] = Counter(row["accounted_ids"]) == Counter(selected)
                 return row
