@@ -60,9 +60,9 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "src/effects/generated/backend_compatibility.json"
-UPSTREAM_REVISION = "12751c78103ec352bd359a9944bbeac5ad239a4b"
-UPSTREAM_TREE = "0cf0dcf4cd571cf1fb3641f31a8ddcffbcadd54e"
-SOURCE_LOCK_SHA256 = "7d851e59971ac5ba8535043f717703b082764d1195fc3e9c4724b3419527c4e7"
+UPSTREAM_REVISION = "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
+UPSTREAM_TREE = "9ca196db1ea6aae9762e238502e55bc6bce95d3e"
+SOURCE_LOCK_SHA256 = "6eeeea4efd13d15a611646bb2b49c6c3b8872665234e74be9c11e46c1422502e"
 CPU_PACKAGE_SHA256 = "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807"
 CPU_LOCK_SHA256 = "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d"
 UPSTREAM_PACKAGE_SHA256 = "c0cfe4cd42a800da7fe56b6eec2bf4ece3374f4ab82d788652d033735fe8412c"
