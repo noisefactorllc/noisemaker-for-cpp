@@ -70,8 +70,8 @@ Both original Oracle A loop mutations are retained for each axis. Additional exa
 
 ## Provenance
 
-- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
-- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Upstream snapshot revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
+- Corpus revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
 - blurH GLSL SHA-256: `c4283e820b2ade9148358ad4582d350bc7f4a5ccb5fc60f2e1b76bcda58deecc`; canonical factory SHA-256: `0146923de3ee8c49a1634c5e9f83f05d08c0de21951b5cbf5ca1ddbad5f3f405`
 - blurV GLSL SHA-256: `cc33343032b34e1ede6eed15fbdcb9229ad64484a092b2914065b09fa957fb9b`; canonical factory SHA-256: `4f7da5e9d1c919b362fdc112e61733eca2b50d10ab7a423f94372d7f34347da5`
 - Node reference engine used to freeze this file: `v26.9.0`

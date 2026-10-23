@@ -1,7 +1,7 @@
 {
   "schema": "noisemaker-for-cpp.blur.binary64-boundary-and-pixel-parity-oracle.v1",
-  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
-  "upstream_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
+  "upstream_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
   "provenance": {
     "node": "v26.9.0",
     "reference_api": "canonicalKernelFactories[key] via createCanonicalBindings, bindGlslKernel, and runPass",
@@ -9,7 +9,7 @@
     "cpu_files": {
       "canonical_kernels": {
         "path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
+        "sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869"
       },
       "public_catalog": {
         "path": "src/effects/catalog.js",
@@ -21,7 +21,7 @@
       },
       "upstream_snapshot": {
         "path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"
+        "sha256": "de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f"
       },
       "glsl_kernel": {
         "path": "src/csl/glsl-kernel.js",
@@ -29,7 +29,7 @@
       },
       "glsl_runtime": {
         "path": "src/csl/glsl-runtime.js",
-        "sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
+        "sha256": "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30"
       },
       "pass_runner": {
         "path": "src/runtime/pass-runner.js",
