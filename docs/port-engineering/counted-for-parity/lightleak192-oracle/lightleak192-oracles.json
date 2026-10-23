@@ -1,8 +1,8 @@
 {
   "schema": "noisemaker-for-cpp.lightleak192.pixel-parity.v1",
   "program_key": "filter/lightLeak:lightLeak",
-  "corpus_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
-  "upstream_revision": "6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d",
+  "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
+  "upstream_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
   "oracle_authority": "canonicalFactory74 from immutable noisemaker-for-cpu snapshot; no C++ output participates",
   "input_fixture": {
     "schema": "noisemaker-for-cpp.lightleak192.input-texture.v1",
@@ -23,7 +23,7 @@
     ]
   },
   "provenance": {
-    "authority_commit": "3cc7a0362d0ae37cba15e71e17d2113c86caf2d6",
+    "authority_commit": "9b7294820eec2a0b95c66790b1dae374fa079c13",
     "authority_checkout_clean": true,
     "node_version": "v26.0.0",
     "factory": {
@@ -32,7 +32,7 @@
       "sha256": "a30e8a1c27c9c2774e6d38d649cc695ac35c9db7ecde043980fd20e71d45cbf2"
     },
     "source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/sources/filter/lightLeak/lightLeak.glsl",
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/sources/filter/lightLeak/lightLeak.glsl",
       "bytes": 5047,
       "sha256": "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb"
     },
@@ -43,7 +43,7 @@
       },
       {
         "relative_path": "src/csl/glsl-runtime.js",
-        "sha256": "ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd"
+        "sha256": "7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30"
       },
       {
         "relative_path": "src/csl/metal-division.js",
@@ -107,7 +107,7 @@
       },
       {
         "relative_path": "src/effects/definition.js",
-        "sha256": "4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545"
+        "sha256": "9ffd11c838b9b791a26f2ae0701c9a3f640acf1b40be486a93664e2f10af9f2e"
       },
       {
         "relative_path": "src/effects/generated/canonical-adapter-data.js",
@@ -115,7 +115,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423"
+        "sha256": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -123,7 +123,7 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467"
+        "sha256": "de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f"
       },
       {
         "relative_path": "src/effects/registry.js",

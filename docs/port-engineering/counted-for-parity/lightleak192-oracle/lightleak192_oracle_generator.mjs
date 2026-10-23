@@ -12,13 +12,13 @@ const outputPath = path.join(here, 'lightleak192-oracles.json')
 const reportPath = path.join(here, 'lightleak192-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 // This package measures the current authenticated CPU and GLSL source.
-const corpusRevision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
+const corpusRevision = '32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3'
 const sourceRelative = `tools/glslcpp/corpus/${corpusRevision}/sources/filter/lightLeak/lightLeak.glsl`
 const sourcePath = path.join(cppRoot, sourceRelative)
 const programKey = 'filter/lightLeak:lightLeak'
 const authorityNode = 'v26.0.0'
-const upstreamRevisionExpected = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
-const authorityCommit = '3cc7a0362d0ae37cba15e71e17d2113c86caf2d6'
+const upstreamRevisionExpected = '32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3'
+const authorityCommit = '9b7294820eec2a0b95c66790b1dae374fa079c13'
 const factoryName = 'canonicalFactory74'
 const factoryBytesExpected = 7846
 const factoryShaExpected = 'a30e8a1c27c9c2774e6d38d649cc695ac35c9db7ecde043980fd20e71d45cbf2'
@@ -55,7 +55,7 @@ if (beneath(cppRoot, cpuRoot)) throw new Error('--cpu-root must not live inside 
 
 const expectedClosure = Object.freeze([
   ['src/csl/glsl-kernel.js', 'f5664e2c90289c82f7109cea910fb5de71ae08f5c2204fb569299a9c49a645ff'],
-  ['src/csl/glsl-runtime.js', 'ad71e22deeb31ad1f19f81923704c9ad0e1ef0475f9a333e0d5fe9088051eebd'],
+  ['src/csl/glsl-runtime.js', '7f05e207246152aafa8b1777c230be86f266b398fcd535dc9c0e5f0b4f81fd30'],
   ['src/csl/metal-division.js', '104cda4fda758fcdfd20f69264a92c1190830102814aec8aa9706058642ce2a8'],
   ['src/csl/metal-reciprocal-data.js', '08905259e72a066e77675f98b9700d6c3a6467662f5de562d8f8e1e14d082c87'],
   ['src/csl/metal-reciprocal-grid.js', 'bd6613830c4239ff9b21a4157875a7c92ced898fd706e735527f39552be11e39'],
@@ -71,11 +71,11 @@ const expectedClosure = Object.freeze([
   ['src/effects/adapters/remap.js', '91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
   ['src/effects/adapters/snow.js', '9acaa9c8a612e3b58e5935646bc37540146a52cda6c947cc67d5443d468f041c'],
   ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  ['src/effects/definition.js', '4edcee437bc4fd4364f5fbf84878b9d6ca49f5799a49d876ec8df05ac0135545'],
+  ['src/effects/definition.js', '9ffd11c838b9b791a26f2ae0701c9a3f640acf1b40be486a93664e2f10af9f2e'],
   ['src/effects/generated/canonical-adapter-data.js', 'ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
-  ['src/effects/generated/canonical-kernels.js', '86fc0a3b6fdd2227341b2b59e0d7dd4177980f1b78b57e61c85c8f7525391423'],
+  ['src/effects/generated/canonical-kernels.js', '2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869'],
   ['src/effects/generated/kernels.js', 'b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
-  ['src/effects/generated/upstream-snapshot.js', '272570c86da679801350fdfd78922635249f1475a3afffd74950c7a5136fe467'],
+  ['src/effects/generated/upstream-snapshot.js', 'de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f'],
   ['src/effects/registry.js', '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
   ['src/runtime/automation.js', '7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f'],
   ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
