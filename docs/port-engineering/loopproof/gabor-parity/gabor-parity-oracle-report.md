@@ -14,8 +14,8 @@ Frozen JavaScript ground truth for `synth/gabor:gabor`. The package authenticate
 
 ## Frozen identities
 
-- Upstream snapshot revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
-- Corpus revision: `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`
+- Upstream snapshot revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
+- Corpus revision: `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3`
 - GLSL source: 3870 bytes, SHA-256 `91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5`
 - Canonical factory: `canonicalFactory257`, 4480 bytes, SHA-256 `1b1a5e306c24eeb679d656dc568d768dc9ca45be3635c7f44e9f8873b8477533`
 - Public catalog identity is exactly the canonical factory; no adapter override exists.
