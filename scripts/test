@@ -6,6 +6,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# getconf counts online CPUs on Linux and macOS; macOS has no nproc.
+jobs="$(getconf _NPROCESSORS_ONLN)"
+
 # Focused lane: the supervisor may pass changed paths in NM_CHANGED_FILES,
 # one per line. When it is set, run only the tests that exercise those
 # paths; with the variable unset, the full suite below runs exactly as
@@ -33,7 +36,7 @@ if [ "${NM_CHANGED_FILES:-}" != "" ]; then
   if [ "$native_needed" = 1 ]; then
     if [ "${NOISEMAKER_TEST_SKIP_BUILD:-}" = "" ] || [ ! -x build/noisemaker-cpu-tests ]; then
       cmake -S . -B build -DCMAKE_BUILD_TYPE=Release >&2
-      cmake --build build -j "$(nproc)" --target noisemaker-cpu-tests >&2
+      cmake --build build -j "$jobs" --target noisemaker-cpu-tests >&2
     fi
     ctest --test-dir build --output-on-failure "$@"
   else
@@ -58,7 +61,7 @@ fi
 
 if [ "${NOISEMAKER_TEST_SKIP_BUILD:-}" = "" ] || [ ! -x build/noisemaker-cpu-tests ]; then
   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release >&2
-  cmake --build build -j "$(nproc)" --target noisemaker-cpu-tests >&2
+  cmake --build build -j "$jobs" --target noisemaker-cpu-tests >&2
 fi
 
 ctest --test-dir build --output-on-failure "$@"
