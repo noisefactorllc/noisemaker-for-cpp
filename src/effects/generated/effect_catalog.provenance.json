@@ -30,7 +30,7 @@
     "unique_fragment_keys": 301
   },
   "backend_schema": "noisemaker-cpp.backend-compatibility.v1",
-  "compatibility_sha256": "d8f4dfcd051fee2a3dd8824e41d8d9dea184724830e631f06aec11de42bab338",
+  "compatibility_sha256": "3c964b452c4591b60c62553343c9aa079446f20379ff3565a59b9fc6de4665cc",
   "corpus_revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
   "counts": {
     "backend_programs": 308,
@@ -45,7 +45,7 @@
     "scatter_passes": 16
   },
   "first_effect_id": "classicNoisedeck/bitEffects",
-  "generated_payload_sha256": "ee9ba8199411f9f54b9c994356d12efa0cf1e778181c19f927ba3d1bda005a9e",
+  "generated_payload_sha256": "5fb54b3d45b3dc4af48e9502fe289247b32d6042b864110f1b9e5f3062785390",
   "last_effect_id": "synth3d/shape3d",
   "normalized_record_stream_sha256": "fb72ad197ea19e667c5697fd234d983e5b70f299bad1d79bde69661969342215",
   "schema": "noisemaker-cpp.effect-catalog-generator.v1"

@@ -660,8 +660,14 @@ def _cpp_type(display: str, name: str | None = None, source: str | None = None,
     # compiled CPU factory reads the full render seed as a JS Number in
     # `float(seed)`. The typed emitter authenticates the same source and
     # carries it as double until the first Float32 vector boundary.
+    # synth3d/cellularAutomata3d:simulate joins with raw source sha256
+    # 0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881: its
+    # factory binds `$bindings["seed"]` raw and multiplies it in JS-number
+    # precision inside hash3, so a std::int32_t truncation at bind time
+    # flips every past-2^31 seed one rounding before the authority.
     if (program_key in {"synth3d/noise3d:precompute",
-                        "synth3d/cell3d:precompute"} and name == "seed"
+                        "synth3d/cell3d:precompute",
+                        "synth3d/cellularAutomata3d:simulate"} and name == "seed"
             and source == "effect_parameter" and display == "int"):
         return "double"
     if (display == "float[128]" and source == "reserved_runtime_state"

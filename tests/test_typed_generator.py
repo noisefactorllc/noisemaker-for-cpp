@@ -22876,11 +22876,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
             "src/typed_generated/typed_slice.cpp": (
-                3928370,
-                "5b08af81bd1dcd39ce7bca96babd13928e3f600d669ed38d9168ad9b830759e3"),
+                3928351,
+                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "156efe7ea22aabd1c07dce48271b008292769c8a66af75f3ac8c2470c19f0de3"),
+                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23665,11 +23665,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
             "src/typed_generated/typed_slice.cpp": (
-                3928370,
-                "5b08af81bd1dcd39ce7bca96babd13928e3f600d669ed38d9168ad9b830759e3"),
+                3928351,
+                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "156efe7ea22aabd1c07dce48271b008292769c8a66af75f3ac8c2470c19f0de3"),
+                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24439,11 +24439,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 42755,
                 "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
             "src/typed_generated/typed_slice.cpp": (
-                3928370,
-                "5b08af81bd1dcd39ce7bca96babd13928e3f600d669ed38d9168ad9b830759e3"),
+                3928351,
+                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "156efe7ea22aabd1c07dce48271b008292769c8a66af75f3ac8c2470c19f0de3"),
+                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24979,11 +24979,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 42755,
                 "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
             "src/typed_generated/typed_slice.cpp": (
-                3928370,
-                "5b08af81bd1dcd39ce7bca96babd13928e3f600d669ed38d9168ad9b830759e3"),
+                3928351,
+                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "156efe7ea22aabd1c07dce48271b008292769c8a66af75f3ac8c2470c19f0de3"),
+                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25583,11 +25583,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 42755,
                 "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
             "src/typed_generated/typed_slice.cpp": (
-                3928370,
-                "5b08af81bd1dcd39ce7bca96babd13928e3f600d669ed38d9168ad9b830759e3"),
+                3928351,
+                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "156efe7ea22aabd1c07dce48271b008292769c8a66af75f3ac8c2470c19f0de3"),
+                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),

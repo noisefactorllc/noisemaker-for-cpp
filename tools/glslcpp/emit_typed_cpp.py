@@ -44,6 +44,11 @@ HISTORICAL_VECTOR_EQUALITY_COMPARER = "glsl::canonical_js_vector_equality_result
 CURRENT_AUTHORITY_HASH_UINT_BY_BODY = True
 NOISE3D_NUMBER_SEED_SOURCE_SHA256 = (
     "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727")
+# cellularAutomata3d:simulate's raw GLSL (uniform int seed) whose compiled
+# CPU factory binds the seed as a raw JS Number -- the same authority rule
+# as the noise3d carrier above.
+CA_SIMULATE_NUMBER_SEED_SOURCE_SHA256 = (
+    "0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881")
 # The canonical compiler fences `return fract((p3.x + p3.y) * p3.z);` and its
 # vec2 form by source text, in whatever function carries it. Historical
 # reconstructions turn this off to regenerate the function-name gate
@@ -7533,6 +7538,16 @@ class _Emitter:
                 and symbol.type.display() == "int"):
             # The authenticated CPU factory reads this shader's int-declared
             # seed as a Number. Its float(seed) call does not narrow it.
+            return "double"
+        if (self.program.key == "synth3d/cellularAutomata3d:simulate"
+                and self.source_hash == CA_SIMULATE_NUMBER_SEED_SOURCE_SHA256
+                and symbol.name == "seed"
+                and symbol.type.display() == "int"):
+            # Same authority rule as noise3d: the compiled factory binds
+            # $bindings["seed"] raw (a JS Number) and multiplies it in
+            # JS-number precision inside hash3 before the first Float32
+            # boundary. Narrowing to std::int32_t at bind time flips every
+            # past-2^31 seed.
             return "double"
         if (self.cell3d_hash3_proof is not None
                 and symbol.name == "seed"

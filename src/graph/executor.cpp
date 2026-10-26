@@ -1876,6 +1876,13 @@ void validate_uniform_abi_shape(const EffectStep& step,
       abi.name == "seed" && abi.type == "int" &&
       abi.cpp_type == "double" && abi.source == "effect_parameter" &&
       abi.source_name == "seed";
+  const bool cellular_automata3d_number_seed =
+      admission.identity.program_key == "synth3d/cellularAutomata3d:simulate" &&
+      admission.source_sha256 ==
+          "0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881" &&
+      abi.name == "seed" && abi.type == "int" &&
+      abi.cpp_type == "double" && abi.source == "effect_parameter" &&
+      abi.source_name == "seed";
   const bool cubemap_double_basis =
       ((admission.identity.program_key == "render/renderCubemap3d:renderCubemap3d" &&
         admission.source_sha256 ==
@@ -1886,7 +1893,8 @@ void validate_uniform_abi_shape(const EffectStep& step,
       abi.name == "cubeBasis" && abi.type == "mat3" &&
       abi.cpp_type == "glsl::DMat3" && abi.source == "effect_parameter" &&
       abi.source_name == "cubeBasis";
-  known = known || noise3d_number_seed || cell3d_number_seed || cubemap_double_basis;
+  known = known || noise3d_number_seed || cell3d_number_seed ||
+          cellular_automata3d_number_seed || cubemap_double_basis;
   if ((admission.identity.program_key == "render/renderCubemap3d:renderCubemap3d" ||
        admission.identity.program_key == "render/renderCubemapSurface:renderCubemapSurface") &&
       abi.name == "cubeBasis" && !cubemap_double_basis) {
@@ -1902,6 +1910,11 @@ void validate_uniform_abi_shape(const EffectStep& step,
       abi.name == "seed" && !cell3d_number_seed) {
     throw binding_error(step, admission, GraphErrorCode::binding_type,
                         "Cell3D seed ABI is not authenticated");
+  }
+  if (admission.identity.program_key == "synth3d/cellularAutomata3d:simulate" &&
+      abi.name == "seed" && !cellular_automata3d_number_seed) {
+    throw binding_error(step, admission, GraphErrorCode::binding_type,
+                        "CellularAutomata3D seed ABI is not authenticated");
   }
   if (!known || abi.name.empty() || abi.source_name.empty()) {
     throw binding_error(step, admission, GraphErrorCode::binding_type,
