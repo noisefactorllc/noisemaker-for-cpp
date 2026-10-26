@@ -6109,7 +6109,7 @@ TEST(typed_ca_age_packing_matches_cpu_f6b) {
     seed.clear(item.seed);
     noisemaker::glsl::Bindings bindings;
     bindings.set_uniform("time", 0.0);
-    bindings.set_uniform("seed", std::int32_t{1});
+    bindings.set_uniform("seed", 1.0);
     bindings.set_uniform("volumeSize", std::int32_t{1});
     bindings.set_uniform("neighborMode", std::int32_t{0});
     bindings.set_uniform("colorMode", item.color_mode);
