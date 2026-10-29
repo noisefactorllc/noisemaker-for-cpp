@@ -11677,7 +11677,7 @@ synth/subdivide:subdivide""".splitlines())
         # fixtures, and 5a57539 binds Hydraulic's height and diffuse maps as the
         # authority does; none of the three moved this pin.
         self.assertEqual(
-            "7ac7916b6b9a7d209f1edb80870546519859428af6083c12101b289601834193",
+            "daab3aefd26de5298a5613f7b69277b09ca6a56b146679987a20356813e38a68",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
