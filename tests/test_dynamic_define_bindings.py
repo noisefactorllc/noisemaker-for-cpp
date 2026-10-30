@@ -11,6 +11,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DynamicDefineBindingTests(unittest.TestCase):
+    def test_cellular_automata_number_seed_requires_exact_source(self):
+        metadata = json.loads((ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/metadata.json").read_text())
+        key = "synth3d/cellularAutomata3d:simulate"
+        effect = metadata["effects"]["synth3d/cellularAutomata3d"]
+        pass_item = next(item for item in effect["passes"] if item["program"] == "simulate")
+        record = {"program_key": key,
+                  "source_sha256": "0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881",
+                  "typed_abi": {"uniforms": [{"name": "seed", "type": "int"}], "samplers": []}}
+        result, uniforms, _ = generator._binding_abi(effect, pass_item, record)
+        self.assertEqual(result["unresolved"], [])
+        self.assertEqual(uniforms, [{"name": "seed", "type": "int", "cpp_type": "double",
+                                    "source": "effect_parameter", "source_name": "seed"}])
+        with self.assertRaises(generator.CompatibilityError):
+            generator._binding_abi(effect, pass_item, {**record, "source_sha256": "0" * 64})
+
     def test_noise3d_number_seed_carrier_requires_exact_source_and_route(self):
         metadata = json.loads((ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/metadata.json").read_text())
         key = "synth3d/noise3d:precompute"

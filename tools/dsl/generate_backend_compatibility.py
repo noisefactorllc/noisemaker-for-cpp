@@ -872,6 +872,10 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
                 and typed_record.get("source_sha256") !=
                 "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755"):
             raise CompatibilityError(f"{program_key}: Number seed carrier source mismatch")
+        if (program_key == "synth3d/cellularAutomata3d:simulate" and name == "seed"
+                and typed_record.get("source_sha256") !=
+                "0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881"):
+            raise CompatibilityError(f"{program_key}: Number seed carrier source mismatch")
         if (program_key in DOUBLE_CUBEMAP_BASIS_SOURCES and name == "cubeBasis"
                 and typed_record.get("source_sha256") != DOUBLE_CUBEMAP_BASIS_SOURCES[program_key]):
             raise CompatibilityError(f"{program_key}: double matrix carrier source mismatch")

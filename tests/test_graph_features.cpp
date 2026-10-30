@@ -1952,13 +1952,16 @@ TEST(graph_executor_classic_noise_palette_runtime_preserves_raw_uniforms) {
 
 TEST(graph_executor_rejects_forged_synth3d_number_seed_abi) {
   Renderer renderer;
-  const std::array<std::pair<const char*, const char*>, 2> cases{{
+  const std::array<std::pair<const char*, const char*>, 3> cases{{
       {"synth3d/noise3d",
        "search synth3d, filter3d, render\n"
        "noise3d(volumeSize: 32).render3d().write(o0)\nrender(o0)\n"},
       {"synth3d/cell3d",
        "search synth3d, filter3d, render\n"
        "cell3d(volumeSize: 64, metric: 0, scale: 10, variation: 100, seed: 1, colorMode: 1).render3d().write(o0)\nrender(o0)\n"},
+      {"synth3d/cellularAutomata3d",
+       "search synth3d, render\n"
+       "cellularAutomata3d(volumeSize: 16).render3d().write(o0)\nrender(o0)\n"},
   }};
   for (const auto& [effect, source] : cases) {
     auto plan = renderer.compile(source, "forged-synth3d-seed.dsl");
@@ -1982,6 +1985,8 @@ TEST(graph_executor_rejects_forged_synth3d_number_seed_abi) {
       REQUIRE(error.code() == GraphErrorCode::binding_type);
       REQUIRE(error.detail() == (std::string_view(effect) == "synth3d/noise3d"
               ? "Noise3D seed ABI is not authenticated"
+              : std::string_view(effect) == "synth3d/cellularAutomata3d"
+              ? "CellularAutomata3D seed ABI is not authenticated"
               : "Cell3D seed ABI is not authenticated"));
     }
   }

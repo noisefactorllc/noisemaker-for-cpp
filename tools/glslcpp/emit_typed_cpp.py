@@ -7541,6 +7541,7 @@ class _Emitter:
             return "double"
         if (self.program.key == "synth3d/cellularAutomata3d:simulate"
                 and self.source_hash == CA_SIMULATE_NUMBER_SEED_SOURCE_SHA256
+                and self.authorized_ca_posts
                 and symbol.name == "seed"
                 and symbol.type.display() == "int"):
             # Same authority rule as noise3d: the compiled factory binds

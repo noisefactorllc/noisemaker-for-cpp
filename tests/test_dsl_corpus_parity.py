@@ -43,6 +43,38 @@ def resolve_cpp_driver() -> pathlib.Path:
 
 
 class CorpusParityTest(unittest.TestCase):
+    def test_cellular_automata_volume_preserves_number_seed(self) -> None:
+        from tools.parity import sweep
+
+        driver = resolve_cpp_driver()
+        cpu_root = resolve_cpu_root()
+        node = shutil.which("node")
+        self.assertIsNotNone(node, "node is required for the authority runner")
+        authority_module = (ROOT / "tools/dsl/corpus_authority.mjs").as_uri()
+        ledger = subprocess.check_output(
+            [node, "--input-type=module", "-e",
+             f"import {{ resolveAuthorityLedger }} from {json.dumps(authority_module)}; "
+             "console.log(resolveAuthorityLedger(process.argv[1]).path)", str(cpu_root)],
+            text=True).strip()
+        with tempfile.TemporaryDirectory(prefix="cellular-volume-seed-") as temporary:
+            sweep._init_worker(sweep.RunConfig(
+                node=node, driver=str(driver), cpu_root=str(cpu_root),
+                ledger=ledger, scratch_root=temporary, timeout=120))
+            for seed in (3987926037, 2147483648, 1335807911, -2147483649):
+                for explicit in (False, True):
+                    with self.subTest(seed=seed, explicit=explicit):
+                        parameter = ", seed: 7" if explicit else ""
+                        job = sweep.Job(
+                            case_id=f"cellular-volume-{seed}-{explicit}",
+                            effect_id="synth3d/cellularAutomata3d", kind="default",
+                            source="search synth3d, render\n"
+                                f"cellularAutomata3d(volumeSize: 16{parameter})"
+                                ".render3d().write(o0)\nrender(o0)\n",
+                            width=32, height=32, time=0.25, seed=seed)
+                        result = sweep.run_job(vars(job))
+                        self.assertEqual(result["classification"], "byte_exact", result)
+                        self.assertTrue(result["float32_ok"], result)
+
     def test_every_dispatched_corpus_program_is_byte_exact(self) -> None:
         driver = resolve_cpp_driver()
         cpu_root = resolve_cpu_root()
