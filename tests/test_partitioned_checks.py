@@ -107,6 +107,8 @@ class PartitionedCheckTests(unittest.TestCase):
         self.assertFalse(report["success"])
         self.assertEqual(["run"], attempts)
         self.assertEqual(1, sum(row["timed_out"] for row in report["partitions"]))
+        self.assertIn('Loading Python test IDs: ["test_timeout.Example.test_case"]', result.stderr)
+        self.assertIn("test_case (test_timeout.Example.test_case)", result.stderr)
 
     def test_python_groups_run_each_id_once_when_every_group_fits(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -79,6 +79,7 @@ def bounded(command, seconds):
 def python_child(start, ids, report):
     sys.path.insert(0, str(start.resolve()))
     loader = unittest.TestLoader()
+    print("Loading Python test IDs: " + json.dumps(ids), file=sys.stderr, flush=True)
     suite = loader.loadTestsFromNames(ids)
     loaded = [case.id() for case in flatten(suite)]
     if loader.errors or Counter(loaded) != Counter(ids):
@@ -107,7 +108,7 @@ def python_child(start, ids, report):
                     skipped.extend(affected)
             super().addSkip(test, reason)
 
-    result = unittest.TextTestRunner(verbosity=1, resultclass=Result).run(suite)
+    result = unittest.TextTestRunner(verbosity=2, resultclass=Result).run(suite)
     report.write_text(json.dumps({"executed_ids": executed,
                                  "accounted_ids": executed + fixture_skipped,
                                  "skipped_ids": skipped,

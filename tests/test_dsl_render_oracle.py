@@ -215,7 +215,7 @@ class DslRenderOracleTest(unittest.TestCase):
         authority = self.require_authority()
         before_include = INCLUDE.read_bytes()
         before_metadata = METADATA.read_bytes()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-oracle-", dir="/private/tmp") as temporary:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-oracle-", dir=pathlib.Path(tempfile.gettempdir()).resolve()) as temporary:
             for _ in range(2):
                 result = run_oracle(
                     "--cpu-root", str(authority),
@@ -238,7 +238,7 @@ class DslRenderOracleTest(unittest.TestCase):
 
     def test_oracle_rejects_forged_or_symlinked_authority_before_import(self) -> None:
         authority = self.require_authority()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-forge-", dir="/private/tmp") as temporary:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-forge-", dir=pathlib.Path(tempfile.gettempdir()).resolve()) as temporary:
             root = pathlib.Path(temporary) / "cpu"
             shutil.copytree(authority, root)
             marker = root / "imported-marker"
@@ -256,7 +256,7 @@ class DslRenderOracleTest(unittest.TestCase):
 
     def test_oracle_rejects_mutated_fixture_and_expected_bytes(self) -> None:
         authority = self.require_authority()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-mutate-", dir="/private/tmp") as temporary:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-mutate-", dir=pathlib.Path(tempfile.gettempdir()).resolve()) as temporary:
             scratch = pathlib.Path(temporary)
             forged_fixture = scratch / "blur.dsl"
             forged_fixture.write_bytes(FIXTURE.read_bytes() + b" ")
@@ -277,7 +277,7 @@ class DslRenderOracleTest(unittest.TestCase):
     def test_oracle_rejects_symlinked_scratch_directory_targeting_repository(self) -> None:
         authority = self.require_authority()
         sentinel = METADATA.read_bytes()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-scratch-link-", dir="/private/tmp") as temporary:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-scratch-link-", dir=pathlib.Path(tempfile.gettempdir()).resolve()) as temporary:
             link = pathlib.Path(temporary) / "scratch-link"
             simulate_symlink(link, ROOT / "tests/oracles", target_is_directory=True)
             result = run_oracle(
@@ -291,7 +291,7 @@ class DslRenderOracleTest(unittest.TestCase):
     def test_oracle_rejects_symlinked_output_file_before_write(self) -> None:
         authority = self.require_authority()
         sentinel = METADATA.read_bytes()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-output-link-", dir="/private/tmp") as temporary:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-output-link-", dir=pathlib.Path(tempfile.gettempdir()).resolve()) as temporary:
             output = pathlib.Path(temporary) / "output-link.json"
             simulate_symlink(output, METADATA)
             result = run_oracle(
@@ -306,7 +306,7 @@ class DslRenderOracleTest(unittest.TestCase):
     def test_oracle_rejects_symlinked_output_parent_before_write(self) -> None:
         authority = self.require_authority()
         sentinel = METADATA.read_bytes()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-parent-link-", dir="/private/tmp") as temporary:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-parent-link-", dir=pathlib.Path(tempfile.gettempdir()).resolve()) as temporary:
             parent = pathlib.Path(temporary) / "parent-link"
             simulate_symlink(parent, ROOT / "tests/oracles", target_is_directory=True)
             result = run_oracle(
@@ -321,7 +321,7 @@ class DslRenderOracleTest(unittest.TestCase):
 
     def test_oracle_accepts_real_external_output_and_scratch(self) -> None:
         authority = self.require_authority()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-real-output-", dir="/private/tmp") as temporary:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-real-output-", dir=pathlib.Path(tempfile.gettempdir()).resolve()) as temporary:
             root = pathlib.Path(temporary)
             output = root / "output.json"
             result = run_oracle(
@@ -331,6 +331,19 @@ class DslRenderOracleTest(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(json.loads(output.read_text(encoding="utf-8"))["schema"], "noisemaker-for-cpp.dsl-render-oracle.v1")
+
+    def test_external_output_uses_the_platform_temporary_parent(self) -> None:
+        original = tempfile.TemporaryDirectory
+        with original(prefix="noisemaker-portable-temp-") as temporary:
+            parent = pathlib.Path(temporary).resolve()
+
+            def checked_directory(*args, **kwargs):
+                self.assertEqual(pathlib.Path(kwargs["dir"]), parent)
+                return original(*args, **kwargs)
+
+            with mock.patch.object(tempfile, "gettempdir", return_value=str(parent)), \
+                    mock.patch.object(tempfile, "TemporaryDirectory", side_effect=checked_directory):
+                self.test_oracle_accepts_real_external_output_and_scratch()
 
 
 if __name__ == "__main__":
