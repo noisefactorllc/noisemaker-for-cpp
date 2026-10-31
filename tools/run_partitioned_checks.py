@@ -204,6 +204,12 @@ def main():
                     finally:
                         with lock:
                             active -= 1
+                    if actual["exit_code"] != 0 or actual["timed_out"]:
+                        with lock:
+                            print(f"Failed child {stamp}: exit={actual['exit_code']} "
+                                  f"timed_out={actual['timed_out']}", file=sys.stderr)
+                            print(actual["stdout"], file=sys.stderr, end="")
+                            print(actual["stderr"], file=sys.stderr, end="", flush=True)
                     if args.mode == "python" and child_report.is_file():
                         child = json.loads(child_report.read_text())
                         actual.update(executed_ids=child["executed_ids"],

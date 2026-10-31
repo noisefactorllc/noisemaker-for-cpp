@@ -57,6 +57,8 @@ class PartitionedCheckTests(unittest.TestCase):
         self.assertEqual(8, sum(len(row["executed_ids"]) for row in report["partitions"]))
         self.assertEqual(1, sum(row["failure_count"] for row in report["partitions"]))
         self.assertTrue(all(row["coverage_valid"] for row in report["partitions"]))
+        self.assertIn("test_case (test_part_0.Example.test_case)", result.stderr)
+        self.assertIn("AssertionError: synthetic failure", result.stderr)
 
     def test_python_skip_remains_visible(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
