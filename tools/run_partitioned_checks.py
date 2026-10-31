@@ -8,6 +8,7 @@ import json
 import math
 import os
 import pathlib
+import platform
 import re
 import signal
 import subprocess
@@ -38,6 +39,31 @@ def validate_ids(ids):
     if len(ids) != len(set(ids)):
         raise ValueError("duplicate discovered test ID")
     return sorted(ids)
+
+
+FROZEN_MACOS_IDS = (
+    "test_julia_oracle.JuliaOracleTests.test_authority_generator_and_materializer",
+    "test_publication_roots_shape_spooky.PublicationRootShapeSpookyTests.test_shape_mixer_requires_strict_external_authority_and_live_roots",
+    "test_top_level_oracle_unittest_bridge.TopLevelOracleUnittestBridge.test_test_mandelbrot_oracle__test_generator_check_self_test_and_materializer_contract",
+)
+
+
+def select_python_ids(ids, suite):
+    ids = validate_ids(ids)
+    if suite == "all":
+        return ids, []
+    if suite not in ("portable", "frozen-macos"):
+        raise ValueError("unknown Python suite")
+    if any(ids.count(identity) != 1 for identity in FROZEN_MACOS_IDS):
+        raise ValueError("frozen macOS routing IDs must each occur exactly once in discovery")
+    if suite == "frozen-macos" and (sys.platform != "darwin" or platform.machine() != "arm64"):
+        raise ValueError("frozen-macos suite requires darwin/arm64")
+    frozen = set(FROZEN_MACOS_IDS)
+    selected = [identity for identity in ids if (identity in frozen) == (suite == "frozen-macos")]
+    routed = [identity for identity in ids if identity not in selected]
+    if Counter(selected + routed) != Counter(ids):
+        raise ValueError("Python suite routing does not preserve discovery")
+    return selected, routed
 
 
 def python_discovery(start, pattern):
@@ -123,6 +149,7 @@ def arguments():
     parser.add_argument("mode", choices=("python", "native"))
     parser.add_argument("--start-directory", type=pathlib.Path, default=ROOT / "tests")
     parser.add_argument("--pattern", default="test_*.py")
+    parser.add_argument("--python-suite", choices=("all", "portable", "frozen-macos"), default="all")
     parser.add_argument("--executable", type=pathlib.Path)
     parser.add_argument("--partitions", type=int, default=8)
     parser.add_argument("--workers", type=int, default=2)
@@ -136,6 +163,8 @@ def arguments():
         parser.error("partitions and groups must be 1..8 and workers must be 1..2")
     if not math.isfinite(args.timeout_seconds) or not 0 < args.timeout_seconds <= 300:
         parser.error("timeout must be positive and at most 300 seconds")
+    if args.mode != "python" and args.python_suite != "all":
+        parser.error("--python-suite applies only to Python checks")
     return args
 
 
@@ -170,7 +199,12 @@ def main():
                 if any(not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", item) for item in ids):
                     raise ValueError("native discovery returned invalid IDs")
             report.update(discovered_ids=ids, discovered_count=len(ids))
-            groups = partition_ids(ids, args.partitions)
+            selected_ids, routed_ids = (select_python_ids(ids, args.python_suite)
+                                        if args.mode == "python" else (ids, []))
+            report.update(python_suite=args.python_suite, selected_ids=selected_ids,
+                          selected_count=len(selected_ids), routed_ids=routed_ids,
+                          routed_count=len(routed_ids))
+            groups = partition_ids(selected_ids, args.partitions)
             lock = threading.Lock()
             active = 0
 
@@ -272,7 +306,7 @@ def main():
                 futures = [pool.submit(run, index, selected) for index, selected in enumerate(groups)]
                 report["partitions"] = [future.result() for future in futures]
             all_accounted = [item for row in report["partitions"] for item in row["accounted_ids"]]
-            report["success"] = Counter(all_accounted) == Counter(ids) and all(
+            report["success"] = Counter(all_accounted) == Counter(selected_ids) and all(
                 row["exit_code"] == 0 and not row["timed_out"] and row["coverage_valid"] and
                 row["failure_count"] == 0 for row in report["partitions"])
     except Exception as error:

@@ -149,10 +149,10 @@ jobs:
       - name: Verify generated kernels are byte-identical
         run: python -m tools.glslcpp.generate_kernels --check
 
-  python-gate:
-    name: python push-gate subset
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+  python-frozen-oracles:
+    name: frozen oracle mutation words / macOS arm64
+    # Frozen mutation witnesses retain architecture-specific NaN payloads.
+    runs-on: macos-14
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -240,6 +240,109 @@ jobs:
                   output.write(f'{key}={value}\n')
           PY
 
+      - name: Verify frozen oracle execution platform
+        run: |
+          python -c 'import platform, sys; assert sys.platform == "darwin" and platform.machine() == "arm64"'
+          node -e 'if (process.version !== "v26.0.0" || process.platform !== "darwin" || process.arch !== "arm64") process.exit(1)'
+
+      - name: Install Python test dependencies
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Run architecture-bound oracle checks
+        run: python tools/run_partitioned_checks.py python --python-suite frozen-macos
+
+  python-gate:
+    name: python push-gate subset
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26.0.0'
+
+      - uses: actions/checkout@v4
+        with:
+          repository: noisefactorllc/noisemaker-for-cpu
+          ref: db42f30c5c3ab711362bf5dbd4013b16637b48f5
+          fetch-depth: 0
+          path: cpu-fixtures-checkout
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: noisefactorllc/noisemaker
+          ref: d0ed94ae19cca7328bc7d6b28902712a0838e1a9
+          fetch-depth: 0
+          path: shader-fixtures-checkout
+          persist-credentials: false
+
+      - name: Prepare authenticated oracle sources
+        run: |
+          mv "$GITHUB_WORKSPACE/cpu-fixtures-checkout" "$RUNNER_TEMP/cpu-fixtures-git"
+          mv "$GITHUB_WORKSPACE/shader-fixtures-checkout" "$RUNNER_TEMP/shader-fixtures-git"
+          python - <<'PY'
+          import hashlib, io, os, pathlib, shutil, subprocess, tarfile
+          temporary = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()
+          cpu_git = temporary / 'cpu-fixtures-git'
+          sources = {
+              'cpu-authority': 'db42f30c5c3ab711362bf5dbd4013b16637b48f5',
+              'cpu-frozen-9b729482': '9b7294820eec2a0b95c66790b1dae374fa079c13',
+              'cpu-historical': '8b257b0f8651f46d090dd76663805735194f1f56',
+              'cpu-dsl-render': '4834b0144ee0524588144a482cca0067b15f68ec',
+          }
+          for name, revision in sources.items():
+              root = temporary / name
+              root.mkdir()
+              archive = subprocess.check_output(['git', '-C', str(cpu_git), 'archive', revision])
+              with tarfile.open(fileobj=io.BytesIO(archive)) as bundle:
+                  members = bundle.getmembers()
+                  for member in members:
+                      path = pathlib.PurePosixPath(member.name)
+                      if (path.is_absolute() or '..' in path.parts
+                              or not (member.isfile() or member.isdir())):
+                          raise RuntimeError(f'Non-regular oracle archive member: {member.name}')
+                  bundle.extractall(root, members=members, filter='data')
+              ledger = temporary / f'{name}.sha256'
+              ledger.write_text(''.join(
+                  f'{hashlib.sha256(file.read_bytes()).hexdigest()}  {file}\n'
+                  for file in sorted(root.rglob('*')) if file.is_file()))
+          workspace = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          values = {
+              'NOISEMAKER_REGEN_CACHE': temporary / 'typed-regen-cache',
+              'NOISEMAKER_CPU_ROOT': temporary / 'cpu-authority',
+              'NOISEMAKER_CPU_AUTHORITY_LEDGER': temporary / 'cpu-authority.sha256',
+              'NOISEMAKER_CPU_9B729482_ROOT': temporary / 'cpu-frozen-9b729482',
+              'NOISEMAKER_CPU_9B729482_LEDGER': temporary / 'cpu-frozen-9b729482.sha256',
+              'NOISEMAKER_HISTORICAL_CPU_ROOT': temporary / 'cpu-historical',
+              'NOISEMAKER_DSL_RENDER_CPU_ROOT': temporary / 'cpu-dsl-render',
+              'NOISEMAKER_DSL_RENDER_ORACLE_LEDGER': temporary / 'cpu-dsl-render.sha256',
+              'NOISEMAKER_CHAIN_COPY_CPU_ROOT': temporary / 'cpu-frozen-9b729482',
+              'NOISEMAKER_FOR_CPU': cpu_git,
+              'NOISEMAKER_SHADER_GIT': temporary / 'shader-fixtures-git',
+              'NOISEMAKER_ORACLE_NODE': pathlib.Path(shutil.which('node')).resolve(),
+          }
+          executables = {
+              'NOISEMAKER_DSL_CPU_CASE': 'noisemaker-dsl-cpu-case',
+              'NOISEMAKER_DSL_CPU_BENCHMARK': 'noisemaker-dsl-cpu-benchmark',
+              'NOISEMAKER_RENDER_CLI': 'noisemaker-render',
+              'NOISEMAKER_EXAMPLE_PERLIN': 'noisemaker-cpu-example-perlin',
+              'NOISEMAKER_DSL_CPP_ORACLE': 'noisemaker-dsl-frontend-oracle',
+              'NOISEMAKER_DSL_PARSER_ORACLE': 'noisemaker-dsl-parser-oracle',
+              'NOISEMAKER_DSL_COMPILER_ORACLE': 'noisemaker-dsl-compiler-oracle',
+          }
+          values.update({key: workspace / 'build' / value for key, value in executables.items()})
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              for key, value in values.items():
+                  output.write(f'{key}={value}\n')
+          PY
+
       - name: Build oracle executables
         run: |
           sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -251,6 +354,9 @@ jobs:
       - name: Install Python test dependencies
         run: python -m pip install --disable-pip-version-check pytest
 
+      - name: Prepare authenticated typed regeneration cache
+        run: python -c 'from tools.glslcpp import generate_typed_slice; generate_typed_slice.generate_outputs()'
+
       # tests/gate.py: every test marked `full_run_only` (the measured slow
       # ones -- typed-slice regenerations, historical milestone
       # reconstructions, compiled-probe kernels) skips here and runs in the
@@ -258,7 +364,10 @@ jobs:
       - name: Run the push-gate subset
         env:
           NOISEMAKER_PUSH_GATE: '1'
-        run: python tools/run_partitioned_checks.py python --groups 8
+        run: python tools/run_partitioned_checks.py python --groups 8 --python-suite portable
+
+      - name: Independently rederive every cached typed output
+        run: python -m tools.glslcpp.regen_cache --verify
 
   python-tests:
     name: python test suite
@@ -330,6 +439,7 @@ jobs:
                   for file in sorted(root.rglob('*')) if file.is_file()))
           workspace = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
           values = {
+              'NOISEMAKER_REGEN_CACHE': temporary / 'typed-regen-cache',
               'NOISEMAKER_CPU_ROOT': temporary / 'cpu-authority',
               'NOISEMAKER_CPU_AUTHORITY_LEDGER': temporary / 'cpu-authority.sha256',
               'NOISEMAKER_CPU_9B729482_ROOT': temporary / 'cpu-frozen-9b729482',
@@ -369,13 +479,19 @@ jobs:
       - name: Install Python test dependencies
         run: python -m pip install --disable-pip-version-check pytest
 
+      - name: Prepare authenticated typed regeneration cache
+        run: python -c 'from tools.glslcpp import generate_typed_slice; generate_typed_slice.generate_outputs()'
+
       # A whole partition of this suite cannot finish within one child's
       # 300-second bound, so each partition starts as groups that can.
       - name: Run full discovery
-        run: python tools/run_partitioned_checks.py python --groups 8
+        run: python tools/run_partitioned_checks.py python --groups 8 --python-suite portable
 
       - name: Run parametrized and fixture-based oracle cases
         run: python -m pytest -q tests/test_render_scatter_contracts.py tests/test_noise3d_dead_globals.py
+
+      - name: Independently rederive every cached typed output
+        run: python -m tools.glslcpp.regen_cache --verify
 
   corpus-parity:
     name: byte-exact corpus parity (C++ vs JS authority)

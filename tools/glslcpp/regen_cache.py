@@ -65,6 +65,7 @@ import os
 import pathlib
 import pkgutil
 import sys
+import tempfile
 from typing import Any, Callable
 
 _ENV_VAR = "NOISEMAKER_REGEN_CACHE"
@@ -154,6 +155,19 @@ def load(root: pathlib.Path, key: str) -> dict[str, bytes] | None:
     return outputs
 
 
+def _atomic_write(target: pathlib.Path, payload: bytes) -> None:
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=target.parent, prefix=f"{target.name}.",
+                                         suffix=".partial", delete=False) as stream:
+            temporary = pathlib.Path(stream.name)
+            stream.write(payload)
+        temporary.replace(target)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def store(root: pathlib.Path, key: str, outputs: dict[str, bytes],
           slice_spec: dict[str, Any] | None = None) -> None:
     """Write an entry, including the spec that produced it.
@@ -165,22 +179,17 @@ def store(root: pathlib.Path, key: str, outputs: dict[str, bytes],
     directory = _entry_dir(root, key)
     directory.mkdir(parents=True, exist_ok=True)
     if slice_spec is not None:
-        temporary_spec = directory / "spec.json.partial"
-        temporary_spec.write_text(
-            json.dumps(slice_spec, sort_keys=True), encoding="utf-8")
-        temporary_spec.replace(directory / "spec.json")
+        _atomic_write(directory / "spec.json",
+                      json.dumps(slice_spec, sort_keys=True).encode("utf-8"))
     names = {}
     for relative, payload in outputs.items():
         stored = hashlib.sha256(relative.encode("utf-8")).hexdigest()[:16]
         names[relative] = stored
         # Write-then-rename so a killed run cannot leave a half-written blob
         # that a later run would serve as a hit.
-        temporary = directory / f"{stored}.partial"
-        temporary.write_bytes(payload)
-        temporary.replace(directory / stored)
-    temporary_index = directory / "index.json.partial"
-    temporary_index.write_text(json.dumps(names, sort_keys=True), encoding="utf-8")
-    temporary_index.replace(directory / "index.json")
+        _atomic_write(directory / stored, payload)
+    _atomic_write(directory / "index.json",
+                  json.dumps(names, sort_keys=True).encode("utf-8"))
 
 
 # `load_slice` is the ONE patch the cache tolerates: patching it is the
@@ -430,7 +439,7 @@ def verify_all() -> int:
     if mismatched:
         print("regen_cache: DELETE THIS CACHE -- a bad entry can turn a real "
               "regression into a green suite")
-    return 1 if mismatched else 0
+    return 1 if mismatched or orphaned else 0
 
 
 def stats() -> int:

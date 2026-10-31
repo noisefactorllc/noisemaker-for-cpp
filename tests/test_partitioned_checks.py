@@ -8,6 +8,8 @@ import sys
 import tempfile
 import textwrap
 import unittest
+from unittest import mock
+from tools import run_partitioned_checks as runner
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -143,6 +145,51 @@ class PartitionedCheckTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertFalse(report["success"])
         self.assertIn("duplicate", report["error"])
+
+    def test_python_suite_routes_are_complementary_and_platform_bound(self) -> None:
+        frozen = [
+            "test_julia_oracle.JuliaOracleTests.test_authority_generator_and_materializer",
+            "test_publication_roots_shape_spooky.PublicationRootShapeSpookyTests.test_shape_mixer_requires_strict_external_authority_and_live_roots",
+            "test_top_level_oracle_unittest_bridge.TopLevelOracleUnittestBridge.test_test_mandelbrot_oracle__test_generator_check_self_test_and_materializer_contract",
+        ]
+        complete = sorted(frozen + ["test_portable.Example.test_case"])
+        portable, routed = runner.select_python_ids(complete, "portable")
+        with mock.patch.object(runner.sys, "platform", "darwin"), mock.patch.object(runner.platform, "machine", return_value="arm64"):
+            selected, other = runner.select_python_ids(complete, "frozen-macos")
+        self.assertEqual(frozen, selected)
+        self.assertEqual(selected, routed)
+        self.assertEqual(portable, other)
+        self.assertEqual(complete, sorted(portable + selected))
+        self.assertEqual((complete, []), runner.select_python_ids(complete, "all"))
+        for system, machine in (("linux", "aarch64"), ("darwin", "x86_64")):
+            with mock.patch.object(runner.sys, "platform", system), mock.patch.object(runner.platform, "machine", return_value=machine):
+                with self.assertRaisesRegex(ValueError, "darwin/arm64"):
+                    runner.select_python_ids(complete, "frozen-macos")
+        for bad in (complete[:-2], complete + [frozen[0]]):
+            with self.assertRaises(ValueError):
+                runner.select_python_ids(bad, "portable")
+
+    def test_python_portable_route_does_not_credit_unrun_tests(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for identity in (
+                "test_julia_oracle.JuliaOracleTests.test_authority_generator_and_materializer",
+                "test_publication_roots_shape_spooky.PublicationRootShapeSpookyTests.test_shape_mixer_requires_strict_external_authority_and_live_roots",
+                "test_top_level_oracle_unittest_bridge.TopLevelOracleUnittestBridge.test_test_mandelbrot_oracle__test_generator_check_self_test_and_materializer_contract",
+            ):
+                module, cls, method = identity.split(".")
+                (root / (module + ".py")).write_text(
+                    f"import unittest\nclass {cls}(unittest.TestCase):\n    def {method}(self): self.fail('routed test executed')\n")
+            (root / "test_portable.py").write_text(
+                "import unittest\nclass Example(unittest.TestCase):\n    def test_case(self): pass\n")
+            result, report = self.run_checks("python", "--start-directory", directory, "--python-suite", "portable")
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(4, report["discovered_count"])
+        self.assertEqual(1, report["selected_count"])
+        self.assertEqual(3, report["routed_count"])
+        self.assertEqual(report["selected_ids"], [item for row in report["partitions"] for item in row["executed_ids"]])
+        self.assertEqual([], [item for row in report["partitions"] for item in row["skipped_ids"]])
+        self.assertEqual(sorted(report["discovered_ids"]), sorted(report["selected_ids"] + report["routed_ids"]))
 
     def native_fixture(self, root: pathlib.Path, behavior: str = "pass") -> pathlib.Path:
         executable = root / "native-fixture"

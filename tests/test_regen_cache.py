@@ -12,12 +12,14 @@ cache's own logic with cheap synthetic payloads.
 from __future__ import annotations
 
 import copy
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
 import pathlib
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -235,6 +237,41 @@ class StoreAndLoadTests(unittest.TestCase):
             leftovers = list(regen_cache._entry_dir(root, "e" * 64)
                              .glob("*.partial"))
             self.assertEqual([], leftovers)
+
+    def test_concurrent_same_key_stores_complete_without_colliding(self) -> None:
+        blob = hashlib.sha256(next(iter(self.PAYLOAD)).encode()).hexdigest()[:16]
+        for target_name in ("spec.json", blob, "index.json"):
+            with self.subTest(target=target_name), _CacheTempDir() as root:
+                outputs = self.PAYLOAD if target_name == blob else {}
+                spec = {"programs": []} if target_name == "spec.json" else None
+                barrier = threading.Barrier(2)
+                replace = pathlib.Path.replace
+
+                def synchronized_replace(source, target):
+                    if pathlib.Path(target).name == target_name:
+                        barrier.wait(timeout=10)
+                    return replace(source, target)
+
+                with mock.patch.object(pathlib.Path, "replace", synchronized_replace), \
+                        ThreadPoolExecutor(max_workers=2) as pool:
+                    futures = [pool.submit(regen_cache.store, root, "a" * 64,
+                                           outputs, spec)
+                               for _ in range(2)]
+                    errors = [future.exception(timeout=15) for future in futures]
+                self.assertEqual([None, None], errors)
+                self.assertEqual(outputs, regen_cache.load(root, "a" * 64))
+                directory = regen_cache._entry_dir(root, "a" * 64)
+                if spec is not None:
+                    self.assertEqual(spec, json.loads((directory / "spec.json").read_text()))
+                self.assertEqual([], list(directory.glob("*.partial")))
+
+    def test_failed_replace_cleans_up_its_temporary_file(self) -> None:
+        with _CacheTempDir() as root:
+            with mock.patch.object(pathlib.Path, "replace", side_effect=OSError("write failure")):
+                with self.assertRaisesRegex(OSError, "write failure"):
+                    regen_cache.store(root, "a" * 64, self.PAYLOAD, {"programs": []})
+            self.assertEqual([], list(regen_cache._entry_dir(root, "a" * 64)
+                                      .glob("*.partial")))
 
     def test_the_spec_is_stored_so_the_entry_can_be_audited(self) -> None:
         with _CacheTempDir() as root:
@@ -491,4 +528,4 @@ class AuditTests(unittest.TestCase):
             self.assertFalse((regen_cache._entry_dir(root, "8" * 64)
                               / "spec.json").exists())
             # Counted as unverifiable, which is not the same as verified.
-            self.assertEqual(0, regen_cache.verify_all())
+            self.assertEqual(1, regen_cache.verify_all())
