@@ -80,6 +80,94 @@ _LOOPS = (
      "1018cb4de2542972568ccadcf48a738338be2da24a0cecafce828358cef15da1",
      5, 1, 1, 5, 425),
 )
+_SOURCE_VARIANTS = {
+    _RAW_SHA256: dict(raw_bytes=_RAW_BYTES, normalized_bytes=_NORMALIZED_BYTES,
+        normalized_sha256=_NORMALIZED_SHA256, functions_sha256=_FUNCTIONS_SHA256,
+        whole_sha256=_WHOLE_PROGRAM_SHA256, interface_sha256=_INTERFACE_SHA256,
+        functions=_FUNCTIONS, loops=_LOOPS),
+    '52dbe8d5ef5ae2bebf89096f029d9f9074499bd025cbbff6e9085da95cec5da8': {'raw_bytes': 3939,
+ 'normalized_bytes': 3246,
+ 'normalized_sha256': '6d8817fff6dbb4679ec5a98c0d351baec0695239e29e107c2a1fe96a6c7e42eb',
+ 'functions_sha256': '9945f2a70f4c77c4d6ff5508a0e45c75c0a1c1933d07b3868d48cafb90035dae',
+ 'whole_sha256': 'a4b306dea09dea34136ea0d1c33c46c3868a3a5e35808fe71ec7daa0e10c53c8',
+ 'interface_sha256': '0b3943f7173cc3b4ae66827781a689a0ed9ab5447607a61882accaf5f037c55b',
+ 'functions': ((29,
+                'gaborNoise',
+                'float',
+                8,
+                5,
+                '44:1-81:2',
+                'ba15587da36dee9f90dca1130d332811cd512623817cee248d772f196820cb97'),
+               (30,
+                'main',
+                'void',
+                0,
+                19,
+                '83:1-118:2',
+                '67bacfb6ddc421398a59a048dd44844e249a75581568a3fc6473ed2ab69f39ea'),
+               (31,
+                'map',
+                'float',
+                5,
+                1,
+                '39:1-41:2',
+                'b814ae9e6b9ac7d6404abff88982ac4a3d7f6fbb1d0d797a6c1002aaabb85ba4'),
+               (32,
+                'pcg',
+                'uvec3',
+                1,
+                9,
+                '20:1-30:2',
+                'c0b8b6e04415f3fccdf1a228dfdad0e7558f6ce6a9ffd2bb4a4e3f1af6f82781'),
+               (33,
+                'prng',
+                'vec3',
+                1,
+                2,
+                '32:1-37:2',
+                '2537e47e3efbae454b0b63ac51cb0e920587b5825642f8c3b6688ccbbfd35067')),
+ 'loops': ((29,
+            'gaborNoise',
+            'for',
+            '49:5-79:6',
+            'f0802df2cc6a5a46f5fedca326d8055bc2c6c588011ba6b6131aa22874760d46',
+            3,
+            1,
+            2,
+            72,
+            425),
+           (29,
+            'gaborNoise',
+            'for',
+            '50:9-78:10',
+            '7aa6774975034d0a005131f2d91b82111566909cdd146da273e9569cb175048b',
+            3,
+            2,
+            3,
+            72,
+            425),
+           (29,
+            'gaborNoise',
+            'for',
+            '54:13-77:14',
+            '10fdd92c0a89920012e571348cd71975318089534af09d2913fa16fe3d17d194',
+            8,
+            3,
+            4,
+            72,
+            425),
+           (30,
+            'main',
+            'for',
+            '104:5-113:6',
+            '6818819f3a2d33514588ccdcb64ac1c110715cf2aea181cfbd229346616646b1',
+            5,
+            1,
+            1,
+            5,
+            425))}
+}
+
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof",
     "fixed_grid_counter_store_proof",
@@ -171,8 +259,11 @@ def validate_gabor_effective_depth_contract(
             or candidate.counted_loop_proof is not contract.program_proof
             or _proof_tuple(contract.program_proof) != _PROGRAM_PROOF):
         raise _fail("malformed authenticated effective-depth contract")
+    site = _SOURCE_VARIANTS.get(hashlib.sha256(candidate.raw_source.encode()).hexdigest())
+    if site is None or _sha(_whole(candidate)) != site["whole_sha256"]:
+        raise _fail("unrecognized contract source or tree")
     owners, loops, rows = _candidate_loop_rows(candidate)
-    if (rows != _LOOPS or len(contract.owners) != len(owners)
+    if (rows != site["loops"] or len(contract.owners) != len(owners)
             or len(contract.loops) != len(loops)
             or any(actual is not expected
                    for actual, expected in zip(contract.owners, owners))
@@ -190,19 +281,20 @@ def authenticate_gabor_effective_depth(
         raise _fail("exact profile carrier required")
     if program.key != GABOR_KEY:
         raise _fail("profile on foreign key")
-    if source_hash != _RAW_SHA256:
+    site = _SOURCE_VARIANTS.get(source_hash)
+    if site is None:
         raise _fail("exact caller source hash required")
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
-    if (len(raw) != _RAW_BYTES or hashlib.sha256(raw).hexdigest() != _RAW_SHA256
-            or len(normalized) != _NORMALIZED_BYTES
-            or hashlib.sha256(normalized).hexdigest() != _NORMALIZED_SHA256
+    if (len(raw) != site["raw_bytes"] or hashlib.sha256(raw).hexdigest() != source_hash
+            or len(normalized) != site["normalized_bytes"]
+            or hashlib.sha256(normalized).hexdigest() != site["normalized_sha256"]
             or program.preprocessor_defines != ()
             or program.body_status != "analyzed"
-            or _sha(program.functions) != _FUNCTIONS_SHA256
-            or _sha(_whole(program)) != _WHOLE_PROGRAM_SHA256
-            or _sha(_interface(program)) != _INTERFACE_SHA256):
+            or _sha(program.functions) != site["functions_sha256"]
+            or _sha(_whole(program)) != site["whole_sha256"]
+            or _sha(_interface(program)) != site["interface_sha256"]):
         raise _fail("source, define, function, whole-program, or interface mismatch")
     if any(getattr(program, field_name, None) is not None
            for field_name in _OPTIONAL_PROOF_FIELDS):
@@ -225,13 +317,13 @@ def authenticate_gabor_effective_depth(
         (item.id, item.name, item.return_type.display(), len(item.parameters),
          len(item.body), _span(item), _sha(item))
         for item in program.functions)
-    if functions != _FUNCTIONS:
+    if functions != site["functions"]:
         raise _fail("function inventory mismatch")
     proof = program.counted_loop_proof
     if proof is None or _proof_tuple(proof) != _PROGRAM_PROOF:
         raise _fail("loop or call graph profile mismatch")
     owners, loops, rows = _candidate_loop_rows(program)
-    if rows != _LOOPS:
+    if rows != site["loops"]:
         raise _fail("loop statement, owner, or proof mismatch")
 
     return validate_gabor_effective_depth_contract(

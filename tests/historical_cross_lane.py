@@ -46,7 +46,10 @@ def _select_row(spec: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(
             "historical cross-lane spec must contain exactly one Gradient row")
     row = rows[0]
-    if (set(row) != _EXPECTED_ROW_FIELDS or row.get("defines") != {}
+    fields = set(row)
+    if row.get("prng_boolean_mix_select_profile") == "prng-boolean-mix-select-v1":
+        fields.remove("prng_boolean_mix_select_profile")
+    if (fields != _EXPECTED_ROW_FIELDS or row.get("defines") != {}
             or row.get("cross_lane_assignment_profile") != CROSS_LANE_PROFILE):
         raise ValueError(
             "historical cross-lane Gradient row must carry the exact carrier")
@@ -66,6 +69,7 @@ def historical_cross_lane(spec: dict[str, Any]) -> Iterator[dict[str, Any]]:
     """
     row = _select_row(spec)
     original_profile = row["cross_lane_assignment_profile"]
+    original_prng = row.get("prng_boolean_mix_select_profile")
 
     original_validate = generate_typed_slice.validate_capabilities
 
@@ -123,6 +127,7 @@ def historical_cross_lane(spec: dict[str, Any]) -> Iterator[dict[str, Any]]:
 
     try:
         del row["cross_lane_assignment_profile"]
+        row.pop("prng_boolean_mix_select_profile", None)
         with contextlib.ExitStack() as stack:
             stack.enter_context(historical_authority(spec))
             stack.enter_context(mock.patch.object(
@@ -141,6 +146,8 @@ def historical_cross_lane(spec: dict[str, Any]) -> Iterator[dict[str, Any]]:
             yield spec
     finally:
         row["cross_lane_assignment_profile"] = original_profile
+        if original_prng is not None:
+            row["prng_boolean_mix_select_profile"] = original_prng
 
 
 __all__ = [

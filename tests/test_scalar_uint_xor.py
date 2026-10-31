@@ -28,6 +28,8 @@ def _load_program(key: str, *, historical: bool = False):
 
     corpus = (corpus_census.HISTORICAL_CORPUS if historical
               else check_corpus._corpus_root(REPOSITORY))
+    if not historical and key == "synth/noise:noise":
+        corpus = REPOSITORY / "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
     manifest = (corpus_census.historical_document("manifest.json") if historical
                 else json.loads((corpus / "manifest.json").read_text()))
     entry = next(item for item in manifest["programs"]
@@ -445,6 +447,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
                 "defines": {"LOOP_OFFSET": 300, "NOISE_TYPE": 10},
                 "mutable_global_frame_profile":
                     "mutable-global-frame-noise-v1",
+                "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
                 "runtime_define_profile": "runtime-defines-noise-v1",
                 "runtime_loop_bound_profile": "runtime-loop-bound-v1",
                 "scalar_uint_xor_profile": PROFILE,

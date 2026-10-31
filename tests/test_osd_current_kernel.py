@@ -1,6 +1,8 @@
 """Current-CPU OSD regression for truncated glyph cell indexing."""
 from __future__ import annotations
 
+from tests.historical_cpu import cpu_9b729482_root
+
 import hashlib
 import json
 import os
@@ -103,9 +105,9 @@ class OsdCurrentReferenceTests(unittest.TestCase):
         self.assertEqual({c["image"] for c in cases}, {"solid", "asymmetric"})
 
     def test_captures_reproduce_from_authenticated_cpu(self):
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = cpu_9b729482_root()
         if not configured:
-            self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce the OsdCurrent capture")
+            self.skipTest("NOISEMAKER_CPU_9B729482_ROOT is required to reproduce the OsdCurrent capture")
         cases = json.loads((FIXTURE / "cases.json").read_text())
         with tempfile.TemporaryDirectory(prefix="osd-current-reference-inputs-") as raw:
             inputs = pathlib.Path(raw) / "inputs.json"

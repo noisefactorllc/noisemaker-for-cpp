@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from tests.simulated_links import simulate_symlink
 
 import os
@@ -11,7 +11,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_AUTHORITY = current_cpu_root()
+CURRENT_AUTHORITY = cpu_9b729482_root()
 LIVE = os.environ.get("NOISEMAKER_FOR_CPU")
 SHAPE = ROOT / "docs/port-engineering/shape-mixer-parity/shape_mixer_parity_oracle_generator.mjs"
 SPOOKY = ROOT / "docs/port-engineering/spooky-ticker-parity/spooky_ticker_oracle_generator.mjs"

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from tests.simulated_links import simulate_symlink
 
 import copy
@@ -29,7 +29,7 @@ def _sha256(path: pathlib.Path) -> str:
 
 
 def _authority() -> pathlib.Path:
-    value = current_cpu_root()
+    value = cpu_9b729482_root()
     if not value or not pathlib.Path(value).is_dir():
         raise unittest.SkipTest("NOISEMAKER_CPU_ROOT unavailable; authority test skipped")
     return pathlib.Path(value)

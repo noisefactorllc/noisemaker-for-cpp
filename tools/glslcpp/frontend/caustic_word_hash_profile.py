@@ -85,6 +85,107 @@ _DYNAMIC_XOR_ANCESTOR_SPAN = ("210:5-214:7",)
 _DYNAMIC_PROFILE_SHA256 = "378633c35bade1b134eefaae5497f64c60c6b3f26aa46f53c4d5176c481e67f5"
 _DYNAMIC_FROZEN_PROFILE_TUPLE_REPR = """('caustic-float-bits-scalar-word-hash-v1', 'classicNoisedeck/caustic:caustic', '161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d', (('NOISE_TYPE', 'str', 'int'),), 'glsl-f32', 'd8d32f6c2e3dbe45d18858abf262a256b6eeb46b04fa06bfd726a7cfd797839a', '0d087d5f016f8009ea7fbf1dc7f80a0d2763656b4e9fea80801ed660984f6fac', '12318d0f302f004fd3dfeac3062f3d2a2c03690275c2485d14f5c522110900aa', 120, (0, 0, 0, 0, 0, True), (('floatBitsToUint', (13, 'e0', 0), '208:21-208:46', 'uint', '76eb921a7e9a5477c2949d65d2c17eb5dc3eaab48015168f83a93c0054ceb08f', 'declaration', ('float',), ('173cd80f191c0d8d4a892a3ec9edca50bfa26d68befb861e6999eefaa2b0a893',)), ('^', (14, 'e0', 0, 0), '211:10-211:46', 'uint', 'e353c388481f3feb7caebad195a6777eb70946f5f7e2c65b4e67dff4c8409344', 'construct', ('uint', 'uint'), ('2b2dae07fb219e922c6b33cccc9c34fe23306c1804bd260e4862480c987d63cc', '5cc579da348ac02af52f5220601b725224e38a430ef4eb7d29cf24806593b9e1')), ('^', (14, 'e0', 0, 1), '212:10-212:46', 'uint', '9d78c3f72dafa6e9aebf1c7ff2671bea1351ff9adc8248e2cdaedc086c63a5fe', 'construct', ('uint', 'uint'), ('44b6b9133fb0f0280fcd107975a336163f2752cb3e94b6a93b163b9cafe04f48', '0d9ab4870cfc3be497a81bae1ee2f04c924ca4de97a07ec76b8a7cb8ea8cf521')), ('^', (14, 'e0', 0, 2), '213:10-213:47', 'uint', '170e029abdad3360d5f4bd1795cefdfeebd7cb1594c74172827fb68715fdf984', 'construct', ('uint', 'uint'), ('6d0582c8f8fb6430a384ca8d1b8fc3b42ab0d1b2348c4314143a64d4d9935eec', 'cd6902ba856fec8e875d7672cea0411fa43ea4553b96b1699bc2c4018b53c4e0'))))"""
 
+_CURRENT_VARIANTS = {10: {'raw_sha256': '9ff29d7f4b4baacb800295540ab1c939f9482dbb1f2f48173819c947334c4fd7',
+      'raw_bytes': 15714,
+      'normalized_bytes': 7920,
+      'normalized_sha256': '8009ac5af751ebdea2f7986a585c874944e6988e7e844598b68080070ff32a6e',
+      'frozen': ('caustic-float-bits-scalar-word-hash-v1',
+                 'classicNoisedeck/caustic:caustic',
+                 '9ff29d7f4b4baacb800295540ab1c939f9482dbb1f2f48173819c947334c4fd7',
+                 (('NOISE_TYPE', 'int', '10'),),
+                 'glsl-f32',
+                 '76fa79f83c464c9b2379b024ab56270728a24607c551cee3fff72028789da169',
+                 '3a4bc8cf2700207cc723a9e20a6277ca315705bf43b9c4acdd61c1ad5cb133f5',
+                 'dc05bfc7735bd9abd9c659976aa01cf5a752f684d89a3e1ab520c238ff47a2e2',
+                 94,
+                 (0, 0, 0, 0, 0, True),
+                 (('floatBitsToUint',
+                   (13, 'e0', 0),
+                   '192:21-192:46',
+                   'uint',
+                   'ade5c761279b2c782c00846c315e39489a49151ae4720ac8f2c2d9400cc13d4f',
+                   'declaration',
+                   ('float',),
+                   ('158f5e4dedfbbb77222077d1acebb752749d0d771423334534d189d9070856c1',)),
+                  ('^',
+                   (14, 'e0', 0, 0),
+                   '195:10-195:46',
+                   'uint',
+                   'f2739ee698403fee4ee3be740b68d80f7df6abffa962f64925cd40616689831c',
+                   'construct',
+                   ('uint', 'uint'),
+                   ('0b298b125e84b1c712d489a96b4d5a24887d9c2d700688f6a6a0c096b5f279cf',
+                    '57dd9737d48215c30ce1240532833f403d798bbfcd47fe790b6387f6a09ec932')),
+                  ('^',
+                   (14, 'e0', 0, 1),
+                   '196:10-196:46',
+                   'uint',
+                   '51044fe79b47e0c60ec7e724c9e0069831044b9863d31ed27d04c14a8147bc2e',
+                   'construct',
+                   ('uint', 'uint'),
+                   ('757092384ae101ebbb6d620dd56da7dfc272b86667949790000a0330b0697063',
+                    'b2e21ecb99e1f38997a12f81cf8397f50923c63490a3f9d395ebe80bba53b9ec')),
+                  ('^',
+                   (14, 'e0', 0, 2),
+                   '197:10-197:47',
+                   'uint',
+                   '0f31127db4a3b5d9e1230d1813f3624399b20d1976ab9038a051c4f57dbe7756',
+                   'construct',
+                   ('uint', 'uint'),
+                   ('0e071f4f374b037279801785e28b39b275728c2c2ac80c8f1a4871f6390344e4',
+                    '431feae2e65feb2dd25788a5b76ca3f89befd6a51f45c605ec1e26cfe3ce1d32')))),
+      'profile_sha256': '25d3aacbd1b217d53c911fd8468dc078c67cd601a5826e3491c1d5d250e71d38'},
+ 'int': {'raw_sha256': '9ff29d7f4b4baacb800295540ab1c939f9482dbb1f2f48173819c947334c4fd7',
+         'raw_bytes': 15714,
+         'normalized_bytes': 14704,
+         'normalized_sha256': '6179233bf409c810df54f8931ccfb84d6c95fdad8be45337391f81e646a2c98d',
+         'frozen': ('caustic-float-bits-scalar-word-hash-v1',
+                    'classicNoisedeck/caustic:caustic',
+                    '9ff29d7f4b4baacb800295540ab1c939f9482dbb1f2f48173819c947334c4fd7',
+                    (('NOISE_TYPE', 'str', 'int'),),
+                    'glsl-f32',
+                    '3ca074327fb5a86540fcd38fc9ed3ed7d40ea2f34ee768462e2ac57c1991690e',
+                    '613f55d8d27fbfa1f93393ad95eb177f0588c6d6bf748a4e8745cf3570952b5c',
+                    'dce9a3494102253a82a988aa222ab361b59741de95f32efb2d82650175676f3c',
+                    120,
+                    (0, 0, 0, 0, 0, True),
+                    (('floatBitsToUint',
+                      (13, 'e0', 0),
+                      '208:21-208:46',
+                      'uint',
+                      '20427c30b329b30f032e2fd98aa226d21c8bb408e822fd5b49888e9471db294c',
+                      'declaration',
+                      ('float',),
+                      ('245523e2d1119071c1c25bdd72c2c0e46f864275afcd435bf5fc114c7ee4ee98',)),
+                     ('^',
+                      (14, 'e0', 0, 0),
+                      '211:10-211:46',
+                      'uint',
+                      'ee67b787353117b4c6752ce9f4d452b459dddddb53eccdb97eeda58b010f8f68',
+                      'construct',
+                      ('uint', 'uint'),
+                      ('359b02d0099b2c1132277ed10c81ac2c1d25c2f041a480067b91d3900cba4e4f',
+                       '5efc0fc5e266c8c4c05ef7b49b078142c5a4ef5275387f5be8cda08d279a2c6d')),
+                     ('^',
+                      (14, 'e0', 0, 1),
+                      '212:10-212:46',
+                      'uint',
+                      'fda7701e5bc4f97a06da1a4e340706e38c724c071027a5c64f38d9d85a3318c3',
+                      'construct',
+                      ('uint', 'uint'),
+                      ('61d40741374a1836831081b4e40dba592d4553deb4ee9993817701e8f9949df6',
+                       'e42030df1d4e02624fb356eb5f9624a9a76c68772dd4cf59c479d605338b1327')),
+                     ('^',
+                      (14, 'e0', 0, 2),
+                      '213:10-213:47',
+                      'uint',
+                      'd87eddcb0ec12f5af259429e8555e62682c9b0530bc90ab11d1868e2672d7e4f',
+                      'construct',
+                      ('uint', 'uint'),
+                      ('af14d16e00610c493758bfe3786b8402e24d382b63813a4a0da0b68c7f825b24',
+                       '11cf02f787bb51d8db7277eefabf7679d692225ce96555d4999361a2f1d2e924')))),
+         'profile_sha256': '06cd795df07ea63cb907390833afe073326b84e83fdc49ddbc24d1e09d45e8a3'}}
+
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
     "fixed_array_in_parameter_proof", "fixed_affine_centers13_proof",
@@ -221,12 +322,23 @@ def authenticate_caustic_word_hash(
         expected_uniforms = ("time", "seed", "wrap", "resolution", "tileOffset",
                              "fullResolution", "noiseScale", "speed", "hueRotation",
                              "hueRange", "intensity")
-    if program.key != CAUSTIC_KEY or source_hash != _RAW_SHA256:
+    raw_sha256, raw_bytes = _RAW_SHA256, _RAW_BYTES
+    current = _CURRENT_VARIANTS["int" if dynamic else 10]
+    if source_hash == current["raw_sha256"]:
+        frozen = current["frozen"]
+        if _sha(frozen) != current["profile_sha256"]:
+            raise _fail("current frozen profile tuple mismatch")
+        raw_sha256, raw_bytes = current["raw_sha256"], current["raw_bytes"]
+        normalized_bytes = current["normalized_bytes"]
+        normalized_sha256 = current["normalized_sha256"]
+        functions_sha256, whole_sha256, interface_sha256 = frozen[5:8]
+        host_id, nodes = frozen[8], frozen[10]
+    if program.key != CAUSTIC_KEY or source_hash != raw_sha256:
         raise _fail("selected key and exact caller source hash required")
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
-    if (len(raw) != _RAW_BYTES or hashlib.sha256(raw).hexdigest() != _RAW_SHA256
+    if (len(raw) != raw_bytes or hashlib.sha256(raw).hexdigest() != raw_sha256
             or len(normalized) != normalized_bytes
             or hashlib.sha256(normalized).hexdigest() != normalized_sha256
             or defines != frozen[3]

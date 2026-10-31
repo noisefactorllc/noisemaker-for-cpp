@@ -1,4 +1,4 @@
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from pathlib import Path
 import copy
 import hashlib
@@ -23,7 +23,7 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_classic_noise_native_oracle_includ
 INCLUDE = ROOT / "tests/oracles/classic_noise_expected.inc"
 # No defaults: the current CPU authority and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(current_cpu_root() or "/nonexistent")
+AUTHORITY = Path(cpu_9b729482_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 
 

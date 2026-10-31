@@ -153,12 +153,15 @@ VOLUME_SEED_HASH_KEYS = frozenset({
 _LATTICE_KEYS = frozenset({NOISE3D_LATTICE_KEY, PERLIN_LATTICE_KEY, CELL3D_LATTICE_KEY}) | VOLUME_SEED_HASH_KEYS
 # The pinned corpus sources these program-specific rewrites authenticate.
 _CURRENT_REWRITE_SOURCES = {
-    EXTRUDE_KEY: "3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29",
-    PERLIN_LATTICE_KEY: "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318",
-    CELL3D_LATTICE_KEY: "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755",
-    NOISE3D_LATTICE_KEY: "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727",
-    "synth3d/cellularAutomata3d:simulate": "0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881",
-    "synth3d/reactionDiffusion3d:simulate": "23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17",
+    EXTRUDE_KEY: frozenset({"3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29"}),
+    PERLIN_LATTICE_KEY: frozenset({
+        "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318",
+        "d36fe934e6f0833ba01862b14c11697cc1db9e6a1eaafc690ac9c70438b5ea05",
+    }),
+    CELL3D_LATTICE_KEY: frozenset({"83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755"}),
+    NOISE3D_LATTICE_KEY: frozenset({"60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727"}),
+    "synth3d/cellularAutomata3d:simulate": frozenset({"0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881"}),
+    "synth3d/reactionDiffusion3d:simulate": frozenset({"23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17"}),
 }
 _PIXELSORT_SAMPLE_SOURCES = {
     "filter/pixelSort:computeRank": "6ce61bb5cb69bb22ac51f48603d5b40755b1e3f700acad1bc685a1e8a4dea6a4",
@@ -402,6 +405,10 @@ from .frontend.extrude_bvec2_relational_reduction_profile import (
 from .frontend.edge_bvec3_contour_profile import (
     EDGE_KEY, authenticate_edge_bvec3_contour,
     authenticate_edge_center_splat)
+from .frontend.prng_boolean_mix_select_profile import (
+    requires_profile as requires_prng_boolean_mix_profile,
+    PROFILE as PRNG_BOOLEAN_MIX_SELECT_PROFILE,
+    authenticate as authenticate_prng_boolean_mix_select)
 from .frontend.glitch_mat4_chain_profile import (
     GLITCH_KEY, EFFECTS_KEY as EFFECTS_BICUBIC_KEY,
     PROFILES as GLITCH_MAT4_CHAIN_PROFILES,
@@ -1529,6 +1536,7 @@ class _Emitter:
         init=False, default_factory=list)
     authorized_extrude_proof: object | None = field(init=False, default=None)
     authorized_edge_proof: object | None = field(init=False, default=None)
+    authorized_prng_mix_proof: object | None = field(init=False, default=None)
     authorized_edge_splat_proof: object | None = field(init=False, default=None)
     authorized_glitch_proof: object | None = field(init=False, default=None)
     authorized_emboss_proof: object | None = field(init=False, default=None)
@@ -1893,6 +1901,10 @@ class _Emitter:
         init=False, default=None)
     emitted_any_relational_reductions: list[TypedExpression] = field(
         init=False, default_factory=list)
+    emitted_prng_mixes: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_prng_relationals: list[TypedExpression] = field(
+        init=False, default_factory=list)
     emitted_any_relational_relationals: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_struct_frontier: object = field(init=False, default=None)
@@ -2006,6 +2018,7 @@ class _Emitter:
     julia_frontend_profile: str | None = None
     distortion_frontend_profile: str | None = None
     scatter_jitter_cross_lane_assignment_profile: str | None = None
+    prng_boolean_mix_select_profile: str | None = None
     authorized_testpattern_proof: object | None = field(init=False, default=None)
     authorized_osd_proof: object | None = field(init=False, default=None)
     authorized_moodscape_projection: object | None = field(
@@ -2363,10 +2376,10 @@ class _Emitter:
 
     def __post_init__(self) -> None:
         if (CURRENT_AUTHORITY_EXTRUDE_REWRITE and self.program.key == EXTRUDE_KEY
-                and self.source_hash == _CURRENT_REWRITE_SOURCES[EXTRUDE_KEY]):
+                and self.source_hash in _CURRENT_REWRITE_SOURCES[EXTRUDE_KEY]):
             self._locate_extrude_rewrites()
         if (CURRENT_AUTHORITY_SEEDED_LATTICE_HASHES and self.program.key in _LATTICE_KEYS
-                and self.source_hash == _CURRENT_REWRITE_SOURCES[self.program.key]):
+                and self.source_hash in _CURRENT_REWRITE_SOURCES[self.program.key]):
             self._locate_lattice_rewrites()
         if (self.program.key == "filter/hatch:hatch"
                 and len(self.program.preprocessor_defines) == 1
@@ -2435,6 +2448,7 @@ class _Emitter:
         self.emitted_simulation_sampler_actuals = []
         self.authorized_extrude_proof = None
         self.authorized_edge_proof = None
+        self.authorized_prng_mix_proof = None
         self.authorized_edge_splat_proof = None
         self.authorized_glitch_proof = None
         self.emitted_glitch_matrix_objects = []
@@ -2618,6 +2632,8 @@ class _Emitter:
         self.authorized_landscape_perspective_call = None
         self.emitted_any_relational_reductions = []
         self.emitted_any_relational_relationals = []
+        self.emitted_prng_relationals = []
+        self.emitted_prng_mixes = []
         self.authorized_struct_frontier = None
         self.emitted_frontier_struct_definitions = []
         self.emitted_frontier_locals = []
@@ -2949,7 +2965,8 @@ class _Emitter:
             profile_fields = tuple(
                 name for name in self.__dataclass_fields__
                 if name.endswith("_profile")
-                and name != "noise_frontend_profile")
+                and name not in {"noise_frontend_profile",
+                                 "prng_boolean_mix_select_profile"})
             if (self.program.key != NOISE_FRONTEND_KEY
                     or self.noise_frontend_profile != NOISE_FRONTEND_PROFILE
                     or self.numeric_literal_contract != "glsl-f32"
@@ -3203,8 +3220,24 @@ class _Emitter:
         elif self.program.key == EXTRUDE_KEY:
             raise _error(self.program, self.program,
                          "exact Extrude bvec2 relational reduction profile carrier required")
+        if self.prng_boolean_mix_select_profile is not None:
+            try:
+                self.authorized_prng_mix_proof = (
+                    authenticate_prng_boolean_mix_select(
+                        self.program, self.source_hash,
+                        self.prng_boolean_mix_select_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+            if (self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "prng boolean mix select profile metadata mismatch")
+        elif (requires_prng_boolean_mix_profile(self.program)
+                and self.prng_boolean_mix_select_profile is None):
+            raise _error(self.program, self.program,
+                         "prng boolean mix select profile carrier required")
         if self.edge_bvec3_contour_profile is not None:
             collisions = (
+                self.prng_boolean_mix_select_profile,
                 self.compatibility_transform, self.custom_comparer_profile,
                 self.source_global_literal_int_profile,
                 self.runtime_loop_bound_profile,
@@ -3309,6 +3342,7 @@ class _Emitter:
                 "ceil_admission_profile": self.ceil_admission_profile,
             }
             collisions = (
+                self.prng_boolean_mix_select_profile,
                 self.compatibility_transform, self.custom_comparer_profile,
                 self.source_global_literal_int_profile,
                 self.runtime_loop_bound_profile,
@@ -3420,6 +3454,7 @@ class _Emitter:
                 "exact Glitch mat4 chain profile carrier required")
         if self.emboss_color_style_profile is not None:
             collisions = (
+                self.prng_boolean_mix_select_profile,
                 self.compatibility_transform, self.custom_comparer_profile,
                 self.source_global_literal_int_profile,
                 self.runtime_loop_bound_profile,
@@ -4295,6 +4330,7 @@ class _Emitter:
                          "exact struct declaration profile carrier required")
         if self.out_inout_admission_profile is not None:
             collisions = (
+                self.prng_boolean_mix_select_profile,
                 self.compatibility_transform, self.custom_comparer_profile,
                 self.runtime_loop_bound_profile,
                 self.gabor_effective_depth_profile,
@@ -5168,6 +5204,7 @@ class _Emitter:
                 "simulation_sampler_profile",
                 "extrude_bvec2_relational_reduction_profile",
                 "edge_bvec3_contour_profile", "glitch_mat4_chain_profile",
+                "prng_boolean_mix_select_profile",
                 "emboss_color_style_profile", "shape_mixer_builtin_profile",
                 "caustic_word_hash_profile", "scanline_error_float_bits_ingress_profile",
                 "glyph_map_nonnegative_int_shift_profile", "curl_vector_math_profile",
@@ -5259,7 +5296,8 @@ class _Emitter:
             profile_fields = tuple(
                 name for name in self.__dataclass_fields__
                 if name.endswith("_profile")
-                and name != "moodscape_frontend_profile")
+                and name not in {"moodscape_frontend_profile",
+                                 "prng_boolean_mix_select_profile"})
             from .frontend.moodscape_dynamic_profile import (
                 PROFILE as MOODSCAPE_RUNTIME_PROFILE,
                 authenticate_projection as authenticate_moodscape_runtime_projection)
@@ -5440,6 +5478,7 @@ class _Emitter:
                          "Remap frontend proof requires exact profile")
         if self.shape_mixer_builtin_profile is not None:
             collisions = (
+                self.prng_boolean_mix_select_profile,
                 self.compatibility_transform, self.custom_comparer_profile,
                 self.source_global_literal_int_profile,
                 self.runtime_loop_bound_profile,
@@ -5518,6 +5557,7 @@ class _Emitter:
                 "exact Shape Mixer builtin profile carrier required")
         if self.bit_effects_frontend_profile is not None:
             collisions = (
+                self.prng_boolean_mix_select_profile,
                 self.compatibility_transform, self.custom_comparer_profile,
                 self.source_global_literal_int_profile,
                 self.runtime_loop_bound_profile,
@@ -10421,6 +10461,27 @@ class _Emitter:
                     # The exact nodes authenticated by any-relational-admission-v1
                     # are emitted by object identity, independent of the Edge
                     # closure's (vec3, FloatExpr) shapes below.
+                    prng_relational = (
+                        self.authorized_prng_mix_proof is not None
+                        and any(value is item
+                                for item in
+                                self.authorized_prng_mix_proof.relationals))
+                    if prng_relational:
+                        if (len(arguments) != 2
+                                or value.type.display() != "bvec3"
+                                or tuple(child.type.display()
+                                         for child in value.children)
+                                != ("vec3", "vec3")):
+                            raise _error(self.program, value,
+                                         "malformed authenticated prng relation")
+                        if any(value is item
+                               for item in self.emitted_prng_relationals):
+                            raise _error(
+                                self.program, value,
+                                "authenticated prng relation emitted twice")
+                        self.emitted_prng_relationals.append(value)
+                        return (f"glsl::{value.callee}({arguments[0]}, "
+                                f"{arguments[1]})")
                     any_relational_proof = self.authorized_any_relational_proof
                     any_relational_node = (
                         any_relational_proof is not None
@@ -10663,6 +10724,16 @@ class _Emitter:
                         raise _error(self.program, value, str(error)) from error
                     if not any(value is site for site in sites):
                         raise _error(self.program, value, "unowned authenticated degrees node")
+                if (value.callee == "mix" and len(value.children) == 3
+                        and value.children[2].type.display() == "bvec3"):
+                    proof = self.authorized_prng_mix_proof
+                    if proof is None or not any(value is node for node in proof.mix_nodes):
+                        raise _error(self.program, value, "unowned PRNG boolean mix node")
+                    if any(value is node for node in self.emitted_prng_mixes):
+                        raise _error(self.program, value, "PRNG boolean mix node emitted twice")
+                    self.emitted_prng_mixes.append(value)
+                    # The CPU authority interpolates numerically even for boolean amounts.
+                    arguments[2] = f"glsl::Vec3({arguments[2]})"
                 return f"glsl::{_BUILTIN_NAMES[value.callee]}(" + ", ".join(arguments) + ")"
             if value.signature_id is None or value.signature_id not in self.function_names:
                 raise _error(self.program, value, "call has no stable user signature")
@@ -15647,6 +15718,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      simulation_sampler_profile: str | None = None,
                      extrude_bvec2_relational_reduction_profile: str | None = None,
                      edge_bvec3_contour_profile: str | None = None,
+                     prng_boolean_mix_select_profile: str | None = None,
                      glitch_mat4_chain_profile: str | None = None,
                      emboss_color_style_profile: str | None = None,
                      shape_mixer_builtin_profile: str | None = None,
@@ -15812,7 +15884,8 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        fractal_frontend_profile=fractal_frontend_profile,
                        julia_frontend_profile=julia_frontend_profile,
                        distortion_frontend_profile=distortion_frontend_profile,
-                       scatter_jitter_cross_lane_assignment_profile=scatter_jitter_cross_lane_assignment_profile)
+                       scatter_jitter_cross_lane_assignment_profile=scatter_jitter_cross_lane_assignment_profile,
+                       prng_boolean_mix_select_profile=prng_boolean_mix_select_profile)
     lines = [f"// Typed IR program: {program_key}", f"// Source SHA-256: {source_hash}"]
     lines.extend(emitter.render_body(namespace, factory))
     if emitter.lattice_expressions and program.key not in VOLUME_SEED_HASH_KEYS:
@@ -16551,6 +16624,12 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 or tuple(emitter.emitted_edge_swizzles) != proof.swizzles):
             raise _error(program, program,
                          "authenticated Edge emission mismatch")
+    if emitter.authorized_prng_mix_proof is not None:
+        proof = emitter.authorized_prng_mix_proof
+        if (tuple(emitter.emitted_prng_relationals) != proof.live_relationals
+                or tuple(emitter.emitted_prng_mixes) != proof.live_mix_nodes):
+            raise _error(program, program,
+                         "authenticated prng mix select emission mismatch")
     if emitter.authorized_edge_splat_proof is not None:
         proof = emitter.authorized_edge_splat_proof
         if emitter.emitted_edge_splat_assignments != [proof.assignment]:

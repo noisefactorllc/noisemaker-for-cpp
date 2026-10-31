@@ -239,6 +239,11 @@ if __package__ in (None, ""):
         EDGE_KEY, PROFILE as EDGE_BVEC3_CONTOUR_PROFILE,
         apply_edge_bvec3_contour, authenticate_edge_bvec3_contour,
         authenticate_edge_center_splat)
+    from tools.glslcpp.frontend.prng_boolean_mix_select_profile import (
+        KEYS as PRNG_BOOLEAN_MIX_SELECT_KEYS,
+        requires_profile as requires_prng_boolean_mix_profile,
+        PROFILE as PRNG_BOOLEAN_MIX_SELECT_PROFILE,
+        authenticate as authenticate_prng_boolean_mix_select)
     from tools.glslcpp.frontend.glitch_mat4_chain_profile import (
         EFFECTS_KEY as GLITCH_MAT4_CHAIN_EFFECTS_KEY,
         EFFECTS_PROFILE as EFFECTS_MAT4_CHAIN_PROFILE,
@@ -709,6 +714,11 @@ else:
         EDGE_KEY, PROFILE as EDGE_BVEC3_CONTOUR_PROFILE,
         apply_edge_bvec3_contour, authenticate_edge_bvec3_contour,
         authenticate_edge_center_splat)
+    from .frontend.prng_boolean_mix_select_profile import (
+        KEYS as PRNG_BOOLEAN_MIX_SELECT_KEYS,
+        requires_profile as requires_prng_boolean_mix_profile,
+        PROFILE as PRNG_BOOLEAN_MIX_SELECT_PROFILE,
+        authenticate as authenticate_prng_boolean_mix_select)
     from .frontend.glitch_mat4_chain_profile import (
         EFFECTS_KEY as GLITCH_MAT4_CHAIN_EFFECTS_KEY,
         EFFECTS_PROFILE as EFFECTS_MAT4_CHAIN_PROFILE,
@@ -1793,7 +1803,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key in HASH_SCALAR_UINT_XOR_KEYS else
                     {"defines", "vec_scalar_modulo_profile", "program_key"}
                     if key in VEC_SCALAR_MODULO_KEYS else
-                    {"defines", "perlin_scalar_uint_xor_profile", "program_key"}
+                    {"defines", "perlin_scalar_uint_xor_profile", "program_key",
+                     "prng_boolean_mix_select_profile"}
                     if key == PERLIN_KEY else
                     {"as_u32_round_profile", "defines", "program_key",
                      "scalar_uint_xor_profile"}
@@ -1840,7 +1851,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     # cannot go stale as profile fields are added elsewhere in
                     # the tree.
                     (set(mutable_global_frame_allowed_row_fields(key))
-                     | {"runtime_define_profile"})
+                     | {"runtime_define_profile",
+                        "prng_boolean_mix_select_profile"})
                     if key == NOISE_RUNTIME_DEFINE_KEY else
                     set(testpattern_allowed_row_fields(key))
                     if key == TESTPATTERN_KEY else
@@ -1976,6 +1988,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         if key in {RUNTIME_LOOP_BOUND_LENIA_KEY, RUNTIME_LOOP_BOUND_ROLL_KEY}:
             expected = expected | {"ceil_admission_profile",
                                    "runtime_loop_bound_profile"}
+        if key in PRNG_BOOLEAN_MIX_SELECT_KEYS:
+            expected = expected | {"prng_boolean_mix_select_profile"}
         if set(item) != expected:
             raise GeneratorError("typed slice programs are invalid")
     keys = [item["program_key"] for item in programs]
@@ -2102,6 +2116,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         (item["program_key"], item.get("simulation_sampler_profile"),
          item["defines"])
         for item in programs if "simulation_sampler_profile" in item]
+    prng_mix_profiles = [
+        (item["program_key"], item.get("prng_boolean_mix_select_profile"),
+         item["defines"])
+        for item in programs if "prng_boolean_mix_select_profile" in item]
     distortion_profiles = [
         (item["program_key"], item.get("distortion_frontend_profile"),
          item["defines"])
@@ -2279,6 +2297,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                 (GLYPH_MAP_KEY, GLYPH_MAP_NONNEGATIVE_INT_SHIFT_PROFILE, {})]
             or edge_profiles != [
                 (EDGE_KEY, EDGE_BVEC3_CONTOUR_PROFILE, {})]
+            or prng_mix_profiles != [('classicNoisedeck/caustic:caustic', 'prng-boolean-mix-select-v1', {'NOISE_TYPE': 10}), ('classicNoisedeck/cellNoise:cellNoise', 'prng-boolean-mix-select-v1', {}), ('classicNoisedeck/moodscape:moodscape', 'prng-boolean-mix-select-v1', {'COLOR_MODE': 2, 'NOISE_TYPE': 10}), ('classicNoisedeck/noise3d:noise3d', 'prng-boolean-mix-select-v1', {'NOISE_TYPE': 12}), ('classicNoisedeck/noise:noise', 'prng-boolean-mix-select-v1', {'COLOR_MODE': 6, 'LOOP_OFFSET': 300, 'METRIC': 0, 'NOISE_TYPE': 10, 'REFRACT_MODE': 2}), ('classicNoisedeck/splat:splat', 'prng-boolean-mix-select-v1', {}), ('filter/corrupt:corrupt', 'prng-boolean-mix-select-v1', {}), ('filter/lensWarp:lensWarp', 'prng-boolean-mix-select-v1', {}), ('filter/warp:warp', 'prng-boolean-mix-select-v1', {}), ('mixer/cellSplit:cellSplit', 'prng-boolean-mix-select-v1', {}), ('synth/cell:cell', 'prng-boolean-mix-select-v1', {}), ('synth/gabor:gabor', 'prng-boolean-mix-select-v1', {}), ('synth/gradient:gradient', 'prng-boolean-mix-select-v1', {}), ('synth/noise:noise', 'prng-boolean-mix-select-v1', {'LOOP_OFFSET': 300, 'NOISE_TYPE': 10}), ('synth/perlin:perlin', 'prng-boolean-mix-select-v1', {'DIMENSIONS': 2})]
             or emboss_profiles != [
                 (EMBOSS_KEY, EMBOSS_COLOR_STYLE_PROFILE, {"STYLE": 0})]
             or shape_mixer_profiles != [
@@ -3831,6 +3850,10 @@ def apply_compatibility_transform(typed, transform_name: str):
     return transformed
 
 
+def _prng_key_check(typed):
+    return requires_prng_boolean_mix_profile(typed)
+
+
 def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           source_hash: str | None = None,
                           compatibility_transform: str | None = None,
@@ -3858,6 +3881,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           simulation_sampler_profile: str | None = None,
                           extrude_bvec2_relational_reduction_profile: str | None = None,
                           edge_bvec3_contour_profile: str | None = None,
+                          prng_boolean_mix_select_profile: str | None = None,
                           glitch_mat4_chain_profile: str | None = None,
                           emboss_color_style_profile: str | None = None,
                           shape_mixer_builtin_profile: str | None = None,
@@ -4227,6 +4251,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_out_inout_calls: tuple[object, ...] = ()
     if out_inout_admission_profile is not None:
         collisions = (
+            prng_boolean_mix_select_profile,
             compatibility_transform, custom_comparer_profile,
             runtime_loop_bound_profile, gabor_effective_depth_profile,
             gather_sorted_round_profile, literal_vec3_lane_index_profile,
@@ -4529,6 +4554,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_simulation_sampler_proof = None
     authorized_extrude_proof = None
     authorized_edge_proof = None
+    authorized_prng_mix_proof = None
     authorized_edge_splat_proof = None
     authorized_glitch_proof = None
     authorized_emboss_proof = None
@@ -4721,6 +4747,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_particle_base_color = None
     visited_particle_base_color: list[TypedExpression] = []
     authorized_any_relational_proof = None
+    visited_prng_mixes: list[TypedExpression] = []
     visited_any_relational_reductions: list[TypedExpression] = []
     visited_any_relational_relationals: list[TypedExpression] = []
     authorized_inout_vec3_swap_proof = None
@@ -4789,7 +4816,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(
                 f"{typed.key}: Classic Noise frontend profile metadata mismatch")
         if any(name.endswith("_profile")
-               and name != "noise_frontend_profile"
+               and name not in {"noise_frontend_profile", "prng_boolean_mix_select_profile"}
                and value is not None
                for name, value in locals().items()):
             raise GeneratorError(
@@ -5057,8 +5084,25 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == EXTRUDE_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Extrude bvec2 relational reduction profile carrier required")
+    if prng_boolean_mix_select_profile is not None:
+        if ((compatibility_transform is not None
+                 and not (typed.key == "filter/corrupt:corrupt"
+                          and compatibility_transform == "corrupt-sample-uv-copy-v2"))
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"):
+            raise GeneratorError(
+                f"{typed.key}: prng boolean mix select profile metadata mismatch")
+        try:
+            authorized_prng_mix_proof = authenticate_prng_boolean_mix_select(
+                typed, source_hash, prng_boolean_mix_select_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif _prng_key_check(typed):
+        raise GeneratorError(
+            f"{typed.key}: prng boolean mix select profile carrier required")
     if edge_bvec3_contour_profile is not None:
         collisions = (
+            prng_boolean_mix_select_profile,
             compatibility_transform, custom_comparer_profile,
             source_global_literal_int_profile, runtime_loop_bound_profile,
             gabor_effective_depth_profile, gather_sorted_round_profile,
@@ -5144,6 +5188,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             "ceil_admission_profile": ceil_admission_profile,
         }
         collisions = (
+            prng_boolean_mix_select_profile,
             compatibility_transform, custom_comparer_profile,
             source_global_literal_int_profile, runtime_loop_bound_profile,
             gabor_effective_depth_profile, gather_sorted_round_profile,
@@ -5246,6 +5291,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             f"{typed.key}: exact Glitch mat4 chain profile carrier required")
     if emboss_color_style_profile is not None:
         collisions = (
+            prng_boolean_mix_select_profile,
             compatibility_transform, custom_comparer_profile,
             source_global_literal_int_profile, runtime_loop_bound_profile,
             gabor_effective_depth_profile, gather_sorted_round_profile,
@@ -6429,6 +6475,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             f"{typed.key}: exact textureLod admission profile carrier required")
     if shape_mixer_builtin_profile is not None:
         collisions = (
+            prng_boolean_mix_select_profile,
             compatibility_transform, custom_comparer_profile,
             source_global_literal_int_profile, runtime_loop_bound_profile,
             gabor_effective_depth_profile, gather_sorted_round_profile,
@@ -6475,6 +6522,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             f"{typed.key}: exact Shape Mixer builtin profile carrier required")
     if bit_effects_frontend_profile is not None:
         collisions = (
+            prng_boolean_mix_select_profile,
             compatibility_transform, custom_comparer_profile,
             source_global_literal_int_profile, runtime_loop_bound_profile,
             gabor_effective_depth_profile, gather_sorted_round_profile,
@@ -7032,6 +7080,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 return
             raise GeneratorError(f"{location(value)}: unsupported typed type {typ.display()}")
         if typ.display() == "bvec3":
+            if (authorized_prng_mix_proof is not None
+                    and any(value is item
+                            for item in authorized_prng_mix_proof.relationals)):
+                return
             nodes = (() if authorized_edge_proof is None
                      else authorized_edge_proof.bvec_nodes)
             if any(value is item for item in nodes):
@@ -8387,6 +8439,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         f"{typed.key}: authenticated out/inout call visited twice")
                 visited_out_inout_calls.append(value)
         elif value.kind == "builtin":
+            if (value.callee == "mix" and len(value.children) == 3
+                    and value.children[2].type.display() == "bvec3"):
+                if (authorized_prng_mix_proof is None
+                        or not any(value is node for node in authorized_prng_mix_proof.mix_nodes)
+                        or any(value is node for node in visited_prng_mixes)):
+                    raise GeneratorError(f"{location(value)}: unowned or repeated PRNG boolean mix")
+                visited_prng_mixes.append(value)
             if (authorized_texture_frontend_inverse_sqrt is not None
                     and value is authorized_texture_frontend_inverse_sqrt):
                 if (value.callee != "inversesqrt"
@@ -8654,9 +8713,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 # bounds) are admitted by object identity, independent of the
                 # Edge closure's (vec3, FloatExpr) shapes below.
                 any_relational_node = (
-                    authorized_any_relational_proof is not None
-                    and any(value is item
-                            for item in authorized_any_relational_proof.relationals))
+                    (authorized_any_relational_proof is not None
+                     and any(value is item
+                             for item in
+                             authorized_any_relational_proof.relationals))
+                    or (authorized_prng_mix_proof is not None
+                        and any(value is item
+                                for item in
+                                authorized_prng_mix_proof.relationals)))
                 if any_relational_node:
                     if (len(value.children) != 2
                             or value.type.display() != "bvec3"
@@ -9961,6 +10025,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 != authorized_edge_proof.swizzles):
             raise GeneratorError(
                 f"{typed.key}: authenticated Edge traversal mismatch")
+    if authorized_prng_mix_proof is not None:
+        if (tuple(visited_prng_mixes) != authorized_prng_mix_proof.live_mix_nodes
+                or tuple(node for node in visited_any_relational_relationals
+                         if any(node is owned for owned in authorized_prng_mix_proof.relationals))
+                != authorized_prng_mix_proof.live_relationals):
+            raise GeneratorError(f"{typed.key}: PRNG boolean mix consumption mismatch")
     if authorized_edge_splat_proof is not None:
         expected_expressions = (
             authorized_edge_splat_proof.assignment,
@@ -10824,6 +10894,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: Glyph Map shift identity profile mutated program")
             typed = profiled
+        prng_boolean_mix_select_profile = slice_spec["programs"][index].get(
+            "prng_boolean_mix_select_profile")
         edge_bvec3_contour_profile = slice_spec["programs"][index].get(
             "edge_bvec3_contour_profile")
         if edge_bvec3_contour_profile is not None:
@@ -11162,6 +11234,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               simulation_sampler_profile=simulation_sampler_profile,
                               extrude_bvec2_relational_reduction_profile=extrude_bvec2_relational_reduction_profile,
                               edge_bvec3_contour_profile=edge_bvec3_contour_profile,
+                              prng_boolean_mix_select_profile=prng_boolean_mix_select_profile,
                               glitch_mat4_chain_profile=glitch_mat4_chain_profile,
                               emboss_color_style_profile=emboss_color_style_profile,
                               shape_mixer_builtin_profile=shape_mixer_builtin_profile,
@@ -11251,6 +11324,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            noise_frontend_profile=noise_frontend_profile,
                                            extrude_bvec2_relational_reduction_profile=extrude_bvec2_relational_reduction_profile,
                                            edge_bvec3_contour_profile=edge_bvec3_contour_profile,
+                                           prng_boolean_mix_select_profile=prng_boolean_mix_select_profile,
                                            glitch_mat4_chain_profile=glitch_mat4_chain_profile,
                                            emboss_color_style_profile=emboss_color_style_profile,
                                            shape_mixer_builtin_profile=shape_mixer_builtin_profile,

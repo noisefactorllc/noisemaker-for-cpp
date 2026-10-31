@@ -18,10 +18,12 @@ from tools.glslcpp.frontend.typed_ir import TypedStatement
 
 ROOT = Path(__file__).resolve().parents[1]
 KEY = profile.KEY
+HISTORICAL_REVISION = "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
+HISTORICAL_CORPUS = ROOT / "tools/glslcpp/corpus" / HISTORICAL_REVISION
 
 
 def analyzed():
-    corpus = check_corpus._corpus_root(ROOT)
+    corpus = HISTORICAL_CORPUS
     manifest = json.loads((corpus / "manifest.json").read_text())
     entry = next(item for item in manifest["programs"] if item["program_key"] == KEY)
     raw = (corpus / entry["source"]).read_text()
@@ -31,21 +33,32 @@ def analyzed():
 class MoodscapePreparedFrontendTests(unittest.TestCase):
     def _row_like_generation_inputs(self, profile_name=profile.PROFILE):
         slice_spec = copy.deepcopy(generate_typed_slice.load_slice(ROOT))
+        slice_spec["revision"] = HISTORICAL_REVISION
         slice_spec["programs"] = [{
             "defines": {"COLOR_MODE": 2, "NOISE_TYPE": 10},
             "program_key": KEY,
             "moodscape_frontend_profile": profile_name,
         }]
-        corpus = check_corpus._corpus_root(ROOT)
+        corpus = HISTORICAL_CORPUS
         manifest = json.loads((corpus / "manifest.json").read_text())
         entry = next(item for item in manifest["programs"]
                      if item["program_key"] == KEY)
         return slice_spec, entry
 
     def _generate_row_like_outputs(self, slice_spec, entry):
+        def historical_admission_hashes(repository, programs):
+            self.assertEqual(ROOT, repository)
+            self.assertEqual([(KEY, profile.RAW_SHA256)],
+                             [(item["program_key"], item["source_sha256"]) for item in programs])
+            return {KEY: profile.RAW_SHA256}
+
         with mock.patch.object(generate_typed_slice, "load_slice",
                                return_value=slice_spec), \
                 mock.patch.object(check_corpus, "validate_corpus"), \
+                mock.patch.object(generate_typed_slice, "_compatibility_source_hashes",
+                                  side_effect=historical_admission_hashes), \
+                mock.patch.object(check_corpus, "REVISION", HISTORICAL_REVISION), \
+                mock.patch.object(check_corpus, "_corpus_root", return_value=HISTORICAL_CORPUS), \
                 mock.patch.object(
                     generate_typed_slice.check_semantics, "semantic_report",
                     return_value={"body_success": corpus_census.vendored_count()}), \

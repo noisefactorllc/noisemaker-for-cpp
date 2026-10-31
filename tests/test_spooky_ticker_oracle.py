@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 import hashlib
 import json
 from pathlib import Path
@@ -19,7 +19,7 @@ REPORT = PACKAGE / "spooky-ticker-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/spooky_ticker_expected.inc"
 
 def cpu_root():
-    raw = current_cpu_root()
+    raw = cpu_9b729482_root()
     if not raw: raise unittest.SkipTest("NOISEMAKER_CPU_ROOT is unset")
     path = Path(raw)
     if not path.is_dir(): raise unittest.SkipTest("NOISEMAKER_CPU_ROOT is not a directory")

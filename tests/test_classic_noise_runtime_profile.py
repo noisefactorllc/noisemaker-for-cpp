@@ -16,6 +16,7 @@ from tools.glslcpp.frontend import noise_frontend_profile as profile
 SOURCE = (Path(check_corpus.__file__).resolve().parents[2]
           / "tools/glslcpp/corpus" / check_corpus.REVISION
           / "sources/classicNoisedeck/noise/noise.glsl")
+HISTORICAL_SOURCE = SOURCE.parents[4] / "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/sources/classicNoisedeck/noise/noise.glsl"
 RUNTIME = {name: "int" for name, _, _ in profile.FIXED_DEFINES}
 DEFAULT = {name: int(value) for name, _, value in profile.FIXED_DEFINES}
 
@@ -36,7 +37,9 @@ class ClassicNoiseRuntimeProofTests(unittest.TestCase):
         for runtime, expected_functions, expected_declarations, loop_count in (
                 (False, 15, 25, 1), (True, 40, 32, 3)):
             with self.subTest(runtime=runtime):
-                program = candidate(raw, runtime)
+                selected_raw = raw if runtime else HISTORICAL_SOURCE.read_text()
+                digest = hashlib.sha256(selected_raw.encode()).hexdigest()
+                program = candidate(selected_raw, runtime)
                 frontend = profile.authenticate_noise_frontend(
                     program, digest, profile.PROFILE)
                 profile.verify_noise_frontend(program, frontend)
@@ -88,7 +91,8 @@ class ClassicNoiseRuntimeProofTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     profile.authenticate_noise_frontend(
                         changed, changed_digest, carrier)
-        with mock.patch.object(profile, "_DYNAMIC_IDENTITY", ()):
+        damaged = dict(profile._DYNAMIC_SOURCE_LOCKS[digest], _DYNAMIC_IDENTITY=())
+        with mock.patch.dict(profile._DYNAMIC_SOURCE_LOCKS, {digest: damaged}):
             with self.assertRaises(ValueError):
                 profile.authenticate_noise_frontend(
                     program, digest, profile.PROFILE)

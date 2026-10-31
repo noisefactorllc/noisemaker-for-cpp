@@ -1,6 +1,8 @@
 """Current-CPU Corrupt regression for copied rather than aliased sample UVs."""
 from __future__ import annotations
 
+from tests.historical_cpu import cpu_9b729482_root
+
 import hashlib
 import dataclasses
 import json
@@ -18,7 +20,8 @@ from tools.glslcpp.emit_typed_cpp import render_typed_cpp
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend.corrupt_value_copy_profile import (
-    PROFILE, RAW_SHA256, authenticate_corrupt_value_copy)
+    PROFILE, authenticate_corrupt_value_copy)
+from tools.glslcpp.frontend.prng_boolean_mix_select_profile import PROFILE as PRNG_PROFILE
 from tools.glslcpp import emit_typed_cpp
 from tests import corpus_census
 from tests.gate import full_run_only
@@ -26,6 +29,7 @@ from tests.gate import full_run_only
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/corrupt"
 KEY = "filter/corrupt:corrupt"
+RAW_SHA256 = "f5bfb791671606227e8ecb2641c4a28e345c1c951a5405bc9fb3f631354df086"
 PARAMETERS = ("intensity", "bandHeight", "sort", "shift", "channelShift", "melt", "scatter", "bits", "speed", "seed")
 
 
@@ -53,7 +57,8 @@ def emitted_kernel():
     if transform:
         program = generate_typed_slice.apply_compatibility_transform(program, transform)
     return render_typed_cpp(program, KEY, digest, compatibility_transform=transform,
-                            factory="bind_corrupt_numerical_probe")
+                            factory="bind_corrupt_numerical_probe",
+                            prng_boolean_mix_select_profile=PRNG_PROFILE)
 
 
 @full_run_only
@@ -112,9 +117,9 @@ class CorruptReferenceTests(unittest.TestCase):
         self.assertEqual({c["image"] for c in cases}, {"solid", "asymmetric"})
 
     def test_captures_reproduce_from_authenticated_cpu(self):
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = cpu_9b729482_root()
         if not configured:
-            self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce the Corrupt capture")
+            self.skipTest("NOISEMAKER_CPU_9B729482_ROOT is required to reproduce the Corrupt capture")
         cases = json.loads((FIXTURE / "cases.json").read_text())
         with tempfile.TemporaryDirectory(prefix="corrupt-reference-inputs-") as raw:
             inputs = pathlib.Path(raw) / "inputs.json"
@@ -160,8 +165,9 @@ class CorruptCopyProfileTests(unittest.TestCase):
         for candidate in candidates:
             with self.subTest(candidate=candidate.key), self.assertRaisesRegex(ValueError, "source or typed program"):
                 authenticate_corrupt_value_copy(candidate, RAW_SHA256, PROFILE)
-            with self.assertRaisesRegex(ValueError, "source or typed program"):
-                render_typed_cpp(candidate, candidate.key, RAW_SHA256, compatibility_transform=PROFILE)
+            with self.assertRaisesRegex(ValueError, "source or typed program|source, define, or typed-tree fingerprint mismatch|unselected key or exact caller source hash required"):
+                render_typed_cpp(candidate, candidate.key, RAW_SHA256, compatibility_transform=PROFILE,
+                                 prng_boolean_mix_select_profile=PRNG_PROFILE)
         for digest, profile in (("0" * 64, PROFILE), (RAW_SHA256, "unknown")):
             with self.assertRaisesRegex(ValueError, "source or typed program"):
                 authenticate_corrupt_value_copy(program, digest, profile)

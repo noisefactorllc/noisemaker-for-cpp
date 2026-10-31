@@ -3,16 +3,47 @@
 import json
 import os
 import pathlib
-import subprocess
 import tempfile
+import subprocess
 import unittest
 from unittest.mock import patch
 
-from tests.historical_cpu import current_run, historical_cpu_root, historical_environment, historical_run
+from tests.historical_cpu import cpu_9b729482_root, current_run, historical_cpu_root, historical_environment, historical_run
 from tests.simulated_links import run_with_simulated_links, simulate_symlink
 
 
 class HistoricalCpuTests(unittest.TestCase):
+    def test_frozen_cpu_prerequisite_does_not_fall_back_or_accept_wrong_source(self):
+        with patch.dict(os.environ, {"NOISEMAKER_CPU_ROOT": "/current",
+                                     "NOISEMAKER_HISTORICAL_CPU_ROOT": "/historical"}, clear=True):
+            with self.assertRaisesRegex(ValueError, "NOISEMAKER_CPU_9B729482_ROOT is required"):
+                cpu_9b729482_root()
+        with tempfile.TemporaryDirectory() as raw:
+            for root in ("relative", str(pathlib.Path(raw) / "missing"), raw):
+                with self.subTest(root=root), patch.dict(os.environ, {"NOISEMAKER_CPU_9B729482_ROOT": root}):
+                    with self.assertRaises(ValueError):
+                        cpu_9b729482_root()
+
+    def test_frozen_cpu_authenticator_keeps_the_current_pin_closed(self):
+        root = cpu_9b729482_root()
+        code = """
+import {authenticateCpuRoot, authenticateCpu9b729482Root} from './tools/dsl/corpus_authority.mjs';
+const root = process.env.NOISEMAKER_CPU_9B729482_ROOT;
+const ledger = process.env.NOISEMAKER_CPU_9B729482_LEDGER;
+if (authenticateCpu9b729482Root(root, ledger) !== root) throw Error('wrong frozen root');
+let rejected = false;
+try { authenticateCpuRoot(root, ledger); } catch { rejected = true; }
+if (!rejected) throw Error('current authority admitted frozen source');
+delete process.env.NOISEMAKER_CPU_9B729482_LEDGER;
+rejected = false;
+try { authenticateCpu9b729482Root(root); } catch { rejected = true; }
+if (!rejected) throw Error('frozen authority used the current ledger fallback');
+"""
+        result = current_run(["node", "--input-type=module", "-e", code],
+                             cwd=pathlib.Path(__file__).resolve().parents[1],
+                             text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_historical_authority_never_falls_back_to_current(self):
         with patch.dict(os.environ, {"NOISEMAKER_CPU_ROOT": "/current"}, clear=True):
             self.assertIsNone(historical_cpu_root())

@@ -407,10 +407,14 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         typed = apply_points_post_admission(typed, source_hash, points_post_profile)
     typed = generate_typed_slice.attach_fixed_array_in_parameter_proof(typed)
     typed = generate_typed_slice.attach_fixed_affine_centers13_proof(typed)
+    from tools.glslcpp.frontend.prng_boolean_mix_select_profile import (
+        PROFILE as PRNG_MIX_PROFILE, requires_profile as requires_prng_mix_profile)
+    prng_boolean_mix_select_profile = PRNG_MIX_PROFILE if requires_prng_mix_profile(typed) else None
     try:
         generate_typed_slice.validate_capabilities(
             typed, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=source_hash,
+            prng_boolean_mix_select_profile=prng_boolean_mix_select_profile,
             source_global_literal_int_profile=source_global_literal_int_profile,
             runtime_loop_bound_profile=runtime_loop_bound_profile,
             simulation_sampler_profile=simulation_sampler_profile,
@@ -434,6 +438,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         render_typed_cpp(
             typed, key, source_hash, "typed_probe",
             "bind_" + key.replace("/", "_").replace(":", "_"),
+            prng_boolean_mix_select_profile=prng_boolean_mix_select_profile,
             source_global_literal_int_profile=source_global_literal_int_profile,
             runtime_loop_bound_profile=runtime_loop_bound_profile,
             simulation_sampler_profile=simulation_sampler_profile,

@@ -17,7 +17,7 @@ from tools.glslcpp.frontend.typed_ir import TypedExpression, TypedStatement
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus" / check_corpus.REVISION
+CORPUS = ROOT / "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
 
 
 def analyzed():
@@ -132,7 +132,7 @@ class ClassicNoiseFrontendTests(unittest.TestCase):
                         check(mutated, profile.RAW_SHA256, profile.PROFILE)
 
     def test_dynamic_define_hoist_authenticates_current_source_and_keeps_guards(self):
-        raw = analyzed().raw_source
+        raw = (check_corpus._corpus_root(ROOT) / "sources/classicNoisedeck/noise/noise.glsl").read_text()
         transformed = dynamic_define_hoist.transform_source(raw, profile.KEY)
         self.assertEqual(2, transformed.count('if (refractAmt != 0.0) {'))
         self.assertIn('vec2 nominalFreq;', transformed)

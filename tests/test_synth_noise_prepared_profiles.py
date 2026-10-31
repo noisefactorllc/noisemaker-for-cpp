@@ -78,7 +78,7 @@ def _span(value: object) -> str:
 
 
 def _manifest():
-    corpus = check_corpus._corpus_root(REPOSITORY)
+    corpus = REPOSITORY / "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
     return corpus, json.loads((corpus / "manifest.json").read_text())
 
 
@@ -519,6 +519,7 @@ class NoiseLandedSliceTests(unittest.TestCase):
         self.assertEqual(
             {"defines": {"LOOP_OFFSET": 300, "NOISE_TYPE": 10},
              "mutable_global_frame_profile": FRAME_PROFILE,
+             "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
              "program_key": KEY,
              "runtime_define_profile": "runtime-defines-noise-v1",
              "runtime_loop_bound_profile": "runtime-loop-bound-v1",

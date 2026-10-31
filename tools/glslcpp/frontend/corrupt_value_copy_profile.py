@@ -12,6 +12,13 @@ RAW_SHA256 = "b81642d2e63294f9f51656eb2441cdaf479c495c5e4acb0d3a4907a13b070d02"
 WHOLE_SHA256 = "967c9e0b769163cf4c768d2f38274009297a1474762237c489277a3352ca5472"
 
 
+_SOURCE_WHOLE_HASHES = {
+    RAW_SHA256: WHOLE_SHA256,
+    "f5bfb791671606227e8ecb2641c4a28e345c1c951a5405bc9fb3f631354df086":
+        "f59921550af0b25694553c64e25f0b0021c3370255756b206c3debf273d19dd0",
+}
+
+
 def authenticate_corrupt_value_copy(program: TypedProgram, source_hash: str,
                                    profile: str) -> TypedExpression:
     # CPU26d canonicalFactory40 copies the Float32Array at sampleUv's
@@ -23,9 +30,10 @@ def authenticate_corrupt_value_copy(program: TypedProgram, source_hash: str,
              program.uniform_blocks, program.interface_symbols,
              program.builtin_symbols, program.counted_loop_proof,
              program.preprocessor_defines)
-    if (program.key != KEY or profile != PROFILE or source_hash != RAW_SHA256
-            or hashlib.sha256(program.raw_source.encode()).hexdigest() != RAW_SHA256
-            or hashlib.sha256(repr(whole).encode()).hexdigest() != WHOLE_SHA256):
+    whole_hash = _SOURCE_WHOLE_HASHES.get(source_hash)
+    if (program.key != KEY or profile != PROFILE or whole_hash is None
+            or hashlib.sha256(program.raw_source.encode()).hexdigest() != source_hash
+            or hashlib.sha256(repr(whole).encode()).hexdigest() != whole_hash):
         raise ValueError("corrupt-value-copy: source or typed program mismatch")
     copies = tuple(node for function in program.functions if function.name == "main"
                    for statement in function.body for node in statement.expressions

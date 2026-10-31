@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from tests.simulated_links import simulate_symlink
 import hashlib, importlib.util, json, os, pathlib, shutil, tempfile, unittest
 ROOT=pathlib.Path(__file__).resolve().parents[1]
-CPU=pathlib.Path(current_cpu_root()) if current_cpu_root() else None
+CPU=pathlib.Path(cpu_9b729482_root()) if cpu_9b729482_root() else None
 HAS_AUTH=CPU is not None and CPU.is_dir()
 LIVE=pathlib.Path(os.environ['NOISEMAKER_FOR_CPU']) if os.environ.get('NOISEMAKER_FOR_CPU') else None
 GEN=ROOT/'docs/port-engineering/noise-parity/noise_oracle_generator.mjs'; MAT=ROOT/'tools/glslcpp/generate_noise_native_oracle_include.py'; ORACLE=ROOT/'docs/port-engineering/noise-parity/noise-oracles.json'

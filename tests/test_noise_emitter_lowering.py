@@ -3,7 +3,6 @@ from __future__ import annotations
 import pathlib
 import unittest
 
-from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.mutable_global_frame_profile import NOISE_PROFILE
@@ -22,7 +21,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/noise:noise"
 SOURCE = ROOT / (
-    f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
+    "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/"
     "sources/synth/noise/noise.glsl"
 )
 SOURCE_HASH = "410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274"

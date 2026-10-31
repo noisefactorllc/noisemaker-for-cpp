@@ -19,8 +19,8 @@ NOISE_TYPE_CHOICES = frozenset({0, 1, 2, 3, 4, 5, 6, 10, 11})
 LOOP_OFFSET_CHOICES = frozenset(
     {10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 200, 210, 300, 400, 410})
 
-RAW_SOURCE_SHA256 = "410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274"
-RAW_SOURCE_BYTES = 18131
+RAW_SOURCE_SHA256 = "607378cb929b309b826bca05580769c18e93000faa7afdc69d9b7d57dff6fb7e"
+RAW_SOURCE_BYTES = 18200
 _BASE_ANCHOR = "    vec2 lf = vec2(1.0);"
 _BASE_HOIST = "    vec2 lf = vec2(1.0); float base = 0.0;"
 _BASE_REPLACEMENTS = (
@@ -28,14 +28,47 @@ _BASE_REPLACEMENTS = (
     ("    float base = map(75.0, 1.0, 100.0, 6.0, 0.5);", "    base = 1.8888888359069824;"),
     ("    float base = map(75.0, 1.0, 100.0, 20.0, 3.0);", "    base = 7.292929649353027;"),
 )
-TRANSFORMED_SOURCE_SHA256 = "39edc72e1aafd638866a116afa10222f9daeb9770952fd625ba285f96cf9f2c2"
-TRANSFORMED_SOURCE_BYTES = 18088
-NORMALIZED_SOURCE_SHA256 = "eac249201e5b732373401cad9b63c71d57e76dbd3b6c5f075098ba57f71e569a"
-NORMALIZED_SOURCE_BYTES = 17259
-PRE_RUNTIME_FUNCTIONS_SHA256 = "076bd00c7aefad0711bea02f9aa36390f64c98d46012ca46dea4d7a3f66663a8"
-PRE_RUNTIME_WHOLE_SHA256 = "1c2738cea1ffab42470761d05bd09b7bb81b7b5c3391b3cce5890b66b575482a"
-POST_RUNTIME_FUNCTIONS_SHA256 = "eaccc05b3c8d7433dc28e5c5abfc075467630e7f3022c6577fe39426783ae3a2"
-POST_RUNTIME_WHOLE_SHA256 = "de3134fd32b928ec4d7116e41dc54fdbafd4676aedaf32fc8cd0f2fabd84ca6b"
+TRANSFORMED_SOURCE_SHA256 = "e82af1e4af29660e543a385eab531d22352b6e32e5e5f828694fa29b2f19c85a"
+TRANSFORMED_SOURCE_BYTES = 18157
+NORMALIZED_SOURCE_SHA256 = "ba444df6355ab4716eaa3991a5c23cb05464d8fbd87d8287076c30eb38c00c64"
+NORMALIZED_SOURCE_BYTES = 17180
+PRE_RUNTIME_FUNCTIONS_SHA256 = "f69d3b217618cd98e148564ed7d1104a827bacb60dfac3d7da8d3ca2cedf5aa5"
+PRE_RUNTIME_WHOLE_SHA256 = "3a1edb832ddfb6486db08be9ee266582479860f413372d6c166a9875b9d4cc02"
+POST_RUNTIME_FUNCTIONS_SHA256 = "2de416c61700a1eea1f39127eeec49e315213516c3295d041992e133a205a967"
+POST_RUNTIME_WHOLE_SHA256 = "e3eaedcbef505ea5b92650e2b5f95c4438464715baed7da6fedceedfae28e357"
+
+
+_SOURCE_VARIANTS = {
+    RAW_SOURCE_SHA256: {
+        'RAW_SOURCE_SHA256': RAW_SOURCE_SHA256,
+        'RAW_SOURCE_BYTES': RAW_SOURCE_BYTES,
+        'TRANSFORMED_SOURCE_SHA256': TRANSFORMED_SOURCE_SHA256,
+        'TRANSFORMED_SOURCE_BYTES': TRANSFORMED_SOURCE_BYTES,
+        'NORMALIZED_SOURCE_SHA256': NORMALIZED_SOURCE_SHA256,
+        'NORMALIZED_SOURCE_BYTES': NORMALIZED_SOURCE_BYTES,
+        'PRE_RUNTIME_FUNCTIONS_SHA256': PRE_RUNTIME_FUNCTIONS_SHA256,
+        'PRE_RUNTIME_WHOLE_SHA256': PRE_RUNTIME_WHOLE_SHA256,
+        'POST_RUNTIME_FUNCTIONS_SHA256': POST_RUNTIME_FUNCTIONS_SHA256,
+        'POST_RUNTIME_WHOLE_SHA256': POST_RUNTIME_WHOLE_SHA256,
+    },
+    '410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274': {'RAW_SOURCE_SHA256': '410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274',
+ 'RAW_SOURCE_BYTES': 18131,
+ 'TRANSFORMED_SOURCE_SHA256': '39edc72e1aafd638866a116afa10222f9daeb9770952fd625ba285f96cf9f2c2',
+ 'TRANSFORMED_SOURCE_BYTES': 18088,
+ 'NORMALIZED_SOURCE_SHA256': 'eac249201e5b732373401cad9b63c71d57e76dbd3b6c5f075098ba57f71e569a',
+ 'NORMALIZED_SOURCE_BYTES': 17259,
+ 'PRE_RUNTIME_FUNCTIONS_SHA256': '076bd00c7aefad0711bea02f9aa36390f64c98d46012ca46dea4d7a3f66663a8',
+ 'PRE_RUNTIME_WHOLE_SHA256': '1c2738cea1ffab42470761d05bd09b7bb81b7b5c3391b3cce5890b66b575482a',
+ 'POST_RUNTIME_FUNCTIONS_SHA256': 'eaccc05b3c8d7433dc28e5c5abfc075467630e7f3022c6577fe39426783ae3a2',
+ 'POST_RUNTIME_WHOLE_SHA256': 'de3134fd32b928ec4d7116e41dc54fdbafd4676aedaf32fc8cd0f2fabd84ca6b'}
+}
+
+
+def _source_variant(source_hash):
+    site = _SOURCE_VARIANTS.get(source_hash)
+    if site is None:
+        raise _fail("dynamic source or interface fingerprint mismatch")
+    return site
 
 
 def _fail(message: str) -> ValueError:
@@ -60,7 +93,8 @@ def transform_source(source: str, program_key: str = KEY) -> str:
     if program_key != KEY:
         raise _fail("program key mismatch")
     raw = source.encode("utf-8")
-    if len(raw) != RAW_SOURCE_BYTES or hashlib.sha256(raw).hexdigest() != RAW_SOURCE_SHA256:
+    site = _source_variant(hashlib.sha256(raw).hexdigest())
+    if len(raw) != site["RAW_SOURCE_BYTES"] or hashlib.sha256(raw).hexdigest() != site["RAW_SOURCE_SHA256"]:
         raise _fail("source hash mismatch")
     if source.count(_BASE_ANCHOR) != 1:
         raise _fail("base hoist anchor census mismatch")
@@ -70,8 +104,8 @@ def transform_source(source: str, program_key: str = KEY) -> str:
     for target, replacement in _BASE_REPLACEMENTS:
         transformed = transformed.replace(target, replacement, 1)
     encoded = transformed.encode("utf-8")
-    if (len(encoded) != TRANSFORMED_SOURCE_BYTES
-            or hashlib.sha256(encoded).hexdigest() != TRANSFORMED_SOURCE_SHA256):
+    if (len(encoded) != site["TRANSFORMED_SOURCE_BYTES"]
+            or hashlib.sha256(encoded).hexdigest() != site["TRANSFORMED_SOURCE_SHA256"]):
         raise _fail("transformed source fingerprint mismatch")
     if len(source.splitlines()) != len(transformed.splitlines()):
         raise _fail("transform changed source line count")
@@ -89,12 +123,13 @@ def authenticate_source(program: object, source_hash: str | None) -> None:
     """Check the complete dynamic source identity before carrier proofs run."""
     if not is_dynamic_program(program):
         raise _fail("dynamic Noise program identity mismatch")
+    site = _source_variant(source_hash)
     raw = program.raw_source.encode("utf-8")
-    if (source_hash != RAW_SOURCE_SHA256 or len(raw) != RAW_SOURCE_BYTES
-            or hashlib.sha256(raw).hexdigest() != RAW_SOURCE_SHA256
-            or len(program.source.encode("utf-8")) != NORMALIZED_SOURCE_BYTES
+    if (source_hash != site["RAW_SOURCE_SHA256"] or len(raw) != site["RAW_SOURCE_BYTES"]
+            or hashlib.sha256(raw).hexdigest() != site["RAW_SOURCE_SHA256"]
+            or len(program.source.encode("utf-8")) != site["NORMALIZED_SOURCE_BYTES"]
             or hashlib.sha256(program.source.encode("utf-8")).hexdigest()
-            != NORMALIZED_SOURCE_SHA256
+            != site["NORMALIZED_SOURCE_SHA256"]
             or len(program.functions) != 35
             or len(program.declarations) != 17):
         raise _fail("dynamic source or interface fingerprint mismatch")
@@ -111,9 +146,10 @@ def authenticate_runtime_loop(program: object, source_hash: str | None,
     if profile != "runtime-loop-bound-v1":
         raise _fail("exact runtime-loop-bound profile required")
     authenticate_source(program, source_hash)
+    site = _source_variant(source_hash)
     if ((_sha(program.functions), _whole(program)) not in {
-            (PRE_RUNTIME_FUNCTIONS_SHA256, PRE_RUNTIME_WHOLE_SHA256),
-            (POST_RUNTIME_FUNCTIONS_SHA256, POST_RUNTIME_WHOLE_SHA256)}):
+            (site["PRE_RUNTIME_FUNCTIONS_SHA256"], site["PRE_RUNTIME_WHOLE_SHA256"]),
+            (site["POST_RUNTIME_FUNCTIONS_SHA256"], site["POST_RUNTIME_WHOLE_SHA256"])}):
         raise _fail("dynamic typed tree fingerprint mismatch")
     octaves = next((item.symbol for item in program.declarations
                     if item.symbol.name == "octaves"), None)
@@ -140,8 +176,9 @@ def authenticate_scalar_xor(program: object, source_hash: str | None,
     if profile != "scalar-uint-xor-v1":
         raise _fail("exact scalar uint XOR profile required")
     authenticate_source(program, source_hash)
-    if (_sha(program.functions) != POST_RUNTIME_FUNCTIONS_SHA256
-            or _whole(program) != POST_RUNTIME_WHOLE_SHA256):
+    site = _source_variant(source_hash)
+    if (_sha(program.functions) != site["POST_RUNTIME_FUNCTIONS_SHA256"]
+            or _whole(program) != site["POST_RUNTIME_WHOLE_SHA256"]):
         raise _fail("post-runtime dynamic typed tree fingerprint mismatch")
     xors, parents, owners, _ = _collect(program)
     if len(xors) != 3 or len({id(item) for item in xors}) != 3:

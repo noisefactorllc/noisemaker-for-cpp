@@ -70,8 +70,10 @@ class HistoricalCrossLaneTests(unittest.TestCase):
         row = self._gradient_row(spec)
         self.assertEqual(CROSS_LANE_PROFILE,
                          row["cross_lane_assignment_profile"])
+        original_row = copy.deepcopy(row)
         with historical_cross_lane(spec):
             self.assertNotIn("cross_lane_assignment_profile", row)
+            self.assertNotIn("prng_boolean_mix_select_profile", row)
         self.assertEqual(CROSS_LANE_PROFILE,
                          row["cross_lane_assignment_profile"])
         with self.assertRaisesRegex(RuntimeError, "sentinel failure"):
@@ -79,6 +81,7 @@ class HistoricalCrossLaneTests(unittest.TestCase):
                 raise RuntimeError("sentinel failure")
         self.assertEqual(CROSS_LANE_PROFILE,
                          row["cross_lane_assignment_profile"])
+        self.assertEqual(original_row, row)
 
     def test_missing_wrong_and_duplicate_gradient_carriers_fail_closed(self) -> None:
         missing = self._spec()
@@ -93,11 +96,56 @@ class HistoricalCrossLaneTests(unittest.TestCase):
             with historical_cross_lane(wrong):
                 pass
 
+        wrong_prng = self._spec()
+        self._gradient_row(wrong_prng)["prng_boolean_mix_select_profile"] = "wrong"
+        with self.assertRaisesRegex(ValueError, "exact carrier"):
+            with historical_cross_lane(wrong_prng):
+                pass
+
         duplicate = self._spec()
         duplicate["programs"].append(copy.deepcopy(self._gradient_row(duplicate)))
         with self.assertRaisesRegex(ValueError, "exactly one"):
             with historical_cross_lane(duplicate):
                 pass
+
+    def test_current_prng_carriers_are_authenticated_before_historical_projection(self) -> None:
+        from tools.glslcpp.frontend import prng_boolean_mix_select_profile as prng
+        live = generate_typed_slice.load_slice(ROOT)
+        original = copy.deepcopy(live)
+        projected = corpus_census.without_expansion(live)
+        self.assertTrue(all('prng_boolean_mix_select_profile' not in row
+                            for row in projected['programs']))
+        self.assertEqual(original, live)
+        key = 'classicNoisedeck/caustic:caustic'
+        for mutation in ('missing', 'wrong', 'duplicate', 'foreign', 'historical'):
+            damaged = copy.deepcopy(live)
+            row = next(row for row in damaged['programs'] if row['program_key'] == key)
+            if mutation == 'missing':
+                row.pop('prng_boolean_mix_select_profile')
+            elif mutation == 'wrong':
+                row['prng_boolean_mix_select_profile'] = 'wrong'
+            elif mutation == 'duplicate':
+                damaged['programs'].append(copy.deepcopy(row))
+            elif mutation == 'foreign':
+                next(row for row in damaged['programs'] if row['program_key'] not in prng.KEYS)[
+                    'prng_boolean_mix_select_profile'] = prng.PROFILE
+            else:
+                damaged = copy.deepcopy(projected)
+                damaged['programs'][0]['prng_boolean_mix_select_profile'] = prng.PROFILE
+            before = copy.deepcopy(damaged)
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(AssertionError, 'PRNG projection drift'):
+                corpus_census.without_expansion(damaged)
+            self.assertEqual(before, damaged)
+        entry = next(row for row in corpus_census.manifest_programs() if row['program_key'] == key)
+        source = corpus_census.CORPUS / entry['source']
+        read_bytes = pathlib.Path.read_bytes
+        def changed_bytes(path):
+            raw = read_bytes(path)
+            return raw + b'\n' if path == source else raw
+        with mock.patch.object(pathlib.Path, 'read_bytes', changed_bytes), \
+                self.assertRaisesRegex(AssertionError, 'PRNG projection drift'):
+            corpus_census.without_expansion(live)
+        self.assertEqual(original, live)
 
     def test_live_census_and_historical_membership_are_separate(self) -> None:
         live = generate_typed_slice.load_slice(ROOT)
@@ -173,7 +221,7 @@ class HistoricalCrossLaneTests(unittest.TestCase):
         source_path = 'sources/classicNoisedeck/noise/noise.glsl'
         raw = (check_corpus._corpus_root(ROOT) / source_path).read_text()
         source_hash = hashlib.sha256(raw.encode()).hexdigest()
-        self.assertEqual(noise_frontend_profile.RAW_SHA256, source_hash)
+        self.assertEqual("513f8278e29564b7f2b0735b539b5990b53dc920d487fffb87d54a0c92fc5f0b", source_hash)
         transformed = generate_typed_slice.transform_generic_dynamic_source(raw, key)
         parsed = parse_program(
             transformed, key, generate_typed_slice.GENERIC_DYNAMIC_DEFINE_TYPES[key])

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from tests.simulated_links import simulate_symlink
 
 import json
@@ -18,8 +18,8 @@ from tests.gate import full_run_only
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "docs/port-engineering/counted-for-parity/lightleak192-oracle"
 GENERATOR = PACKAGE / "lightleak192_oracle_generator.mjs"
-CPU_ROOT = (pathlib.Path(current_cpu_root())
-            if current_cpu_root() else None)
+CPU_ROOT = (pathlib.Path(cpu_9b729482_root())
+            if cpu_9b729482_root() else None)
 WORKER = pathlib.Path(os.environ.get("LIGHTLEAK192_TEST_TMP", tempfile.gettempdir()))
 
 

@@ -45,6 +45,45 @@ _SOURCE_SHA256 = "315914a10bc8a3bdc1464d892d4708fece4db131cf61e7e8d3c2dc729e815e
 _ALIAS_DECL_SPAN = "121:5-121:37"
 
 
+_SOURCE_LOCKS = {
+    _RAW_SHA256: {
+        "RAW_BYTES": _RAW_BYTES,
+        "RAW_SHA256": _RAW_SHA256,
+        "NORMALIZED_BYTES": _NORMALIZED_BYTES,
+        "NORMALIZED_SHA256": _NORMALIZED_SHA256,
+        "FUNCTIONS_SHA256": _FUNCTIONS_SHA256,
+        "WHOLE_SHA256": _WHOLE_SHA256,
+        "INTERFACE_SHA256": _INTERFACE_SHA256,
+        "ASSIGNMENT_SHA256": _ASSIGNMENT_SHA256,
+        "TARGET_SHA256": _TARGET_SHA256,
+        "RHS_SHA256": _RHS_SHA256,
+        "MATRIX_SHA256": _MATRIX_SHA256,
+        "MATRIX_CHILD_SHA256": _MATRIX_CHILD_SHA256,
+        "SOURCE_SHA256": _SOURCE_SHA256,
+    },
+    "05ad693f0c2d3cb590139c3cbd7cb5430843f36b09b9c2478d571a5aa0ec19a6": {
+        "RAW_BYTES": 5508,
+        "RAW_SHA256": '05ad693f0c2d3cb590139c3cbd7cb5430843f36b09b9c2478d571a5aa0ec19a6',
+        "NORMALIZED_BYTES": 4578,
+        "NORMALIZED_SHA256": '6afb5b6b702884b545265cad82ec39b7f1c4857daa55fc3f5f3c36a0adf8b04f',
+        "FUNCTIONS_SHA256": '066ac9cccb6e2798ea65b30b7bf7fbfac2a2f9c53389f7e89366ee988d963422',
+        "WHOLE_SHA256": '1dc0c1bfdf6f43804c1f33c0e8b843ba298309a1182509a84b317787f8d68c6a',
+        "INTERFACE_SHA256": '02af515fc3b874137faf3230c31b88339e81d27dbb55ca0150ceb70b6b9053ed',
+        "ASSIGNMENT_SHA256": 'bd57d7d82feb0ffdaceda5b8789abfc57f200de7500fe2605646af56eb83bc38',
+        "TARGET_SHA256": 'e7b1d5fe774ba398e1377b457986f979b88ba25415cadebffbc5c3bbb987a8c4',
+        "RHS_SHA256": '4773129a92dab7215fbf633a62f8aba35769e42e417b4c889037f04965030d08',
+        "MATRIX_SHA256": '590095c89688b2756a0e216864d71b48e4728443b5c46ed03448af1a24b30e70',
+        "MATRIX_CHILD_SHA256": (
+            'cab14716bb57e29a5646288b7c5ce85df6fb69fbbacc7e648354f40b0cdc638a',
+            '090b7a6a593e54deeb10026a2c51913c661d40c846b2b2f595024716a5eb18ba',
+            '51c81a0a9f635a169f390dacfa0ef328014cc083c35d226dc896aa736176d104',
+            '71a0d163999ed3964eeb675f8f1550290743c5385d4a751ef74160827b4eb764',
+        ),
+        "SOURCE_SHA256": '8061d6b4649355db68cb44f279e7388fef3f9b702144aa5bce4b133e37388c3e',
+    },
+}
+
+
 @dataclass(frozen=True, slots=True)
 class CrossLaneAssignmentProof:
     _candidate: TypedProgram
@@ -100,16 +139,17 @@ def authenticate_cross_lane_assignment(
         profile: str | None) -> CrossLaneAssignmentProof:
     if profile != PROFILE:
         raise _fail("exact profile carrier required")
-    if program.key != CROSS_LANE_KEY or source_hash != _RAW_SHA256:
+    locks = _SOURCE_LOCKS.get(source_hash)
+    if program.key != CROSS_LANE_KEY or locks is None:
         raise _fail("selected key and exact caller source hash required")
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
-    if (len(raw) != _RAW_BYTES or hashlib.sha256(raw).hexdigest() != _RAW_SHA256
-            or len(normalized) != _NORMALIZED_BYTES
-            or hashlib.sha256(normalized).hexdigest() != _NORMALIZED_SHA256
-            or _sha(program.functions) != _FUNCTIONS_SHA256
-            or _whole(program) != _WHOLE_SHA256
-            or _interface(program) != _INTERFACE_SHA256
+    if (len(raw) != locks["RAW_BYTES"] or hashlib.sha256(raw).hexdigest() != locks["RAW_SHA256"]
+            or len(normalized) != locks["NORMALIZED_BYTES"]
+            or hashlib.sha256(normalized).hexdigest() != locks["NORMALIZED_SHA256"]
+            or _sha(program.functions) != locks["FUNCTIONS_SHA256"]
+            or _whole(program) != locks["WHOLE_SHA256"]
+            or _interface(program) != locks["INTERFACE_SHA256"]
             or program.body_status != "analyzed"):
         raise _fail("source, function, whole-program, or interface identity mismatch")
     hosts = tuple(item for item in program.functions
@@ -145,7 +185,7 @@ def authenticate_cross_lane_assignment(
     target, rhs = assignment.children
     if (target.kind != "id" or target.symbol_id != _TARGET_SYMBOL_ID
             or target.type.display() != "vec2" or target.category != "lvalue"
-            or _sha(target) != _TARGET_SHA256):
+            or _sha(target) != locks["TARGET_SHA256"]):
         raise _fail("wrong destination or destination type")
     if (rhs.kind != "binary" or rhs.operator != "*"
             or rhs.type.display() != "vec2" or len(rhs.children) != 2):
@@ -171,20 +211,20 @@ def authenticate_cross_lane_assignment(
     if (rhs_source.kind != "id" or rhs_source.type.display() != "vec2"
             or rhs_source.symbol_id != _SOURCE_SYMBOL_ID
             or rhs_source.member is not None
-            or _sha(rhs_source) != _SOURCE_SHA256):
+            or _sha(rhs_source) != locks["SOURCE_SHA256"]):
         raise _fail("missing or forged cross-lane source")
     source_reads = tuple(value for value in _walk(rhs)
                          if value.kind == "id" and value.symbol_id == _SOURCE_SYMBOL_ID)
     if len(source_reads) != 1 or source_reads != (rhs_source,):
         raise _fail("missing or extra source-lane reads")
-    for child, lock in zip(matrix.children, _MATRIX_CHILD_SHA256):
+    for child, lock in zip(matrix.children, locks["MATRIX_CHILD_SHA256"]):
         if _sha(child) != lock:
             raise _fail("reordered or forged matrix lane route")
-    if _sha(matrix) != _MATRIX_SHA256:
+    if _sha(matrix) != locks["MATRIX_SHA256"]:
         raise _fail("matrix constructor identity mismatch")
-    if _sha(rhs) != _RHS_SHA256:
+    if _sha(rhs) != locks["RHS_SHA256"]:
         raise _fail("whole-vector RHS identity mismatch")
-    if _sha(assignment) != _ASSIGNMENT_SHA256:
+    if _sha(assignment) != locks["ASSIGNMENT_SHA256"]:
         raise _fail("whole-vector assignment identity mismatch")
     return CrossLaneAssignmentProof(
         program, host, statement, alias, assignment, target, alias.children[0],

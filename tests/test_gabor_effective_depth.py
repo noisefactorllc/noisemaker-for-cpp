@@ -21,6 +21,7 @@ from tools.glslcpp.frontend.gabor_effective_depth_profile import (
     validate_gabor_effective_depth_contract,
     validate_gabor_metadata,
 )
+from tools.glslcpp.frontend.prng_boolean_mix_select_profile import PROFILE as PRNG_PROFILE
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend import loop_proof
 from tools.glslcpp.frontend.typed_ir import PreprocessorDefine
@@ -28,7 +29,7 @@ from tools.glslcpp.frontend.typed_ir import PreprocessorDefine
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CORPUS = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
-RAW_SHA256 = "91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5"
+RAW_SHA256 = "52dbe8d5ef5ae2bebf89096f029d9f9074499bd025cbbff6e9085da95cec5da8"
 
 
 def _raw_source():
@@ -128,13 +129,15 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
             generate_typed_slice.validate_capabilities(
                 foreign, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=source_hash,
-                gabor_effective_depth_profile=PROFILE)
+                gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
         with self.assertRaisesRegex(
                 TypedEmissionError,
                 "Gabor effective-depth carrier on foreign key"):
             render_typed_cpp(
                 foreign, foreign.key, source_hash,
-                gabor_effective_depth_profile=PROFILE)
+                gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
 
     def test_oracle_source_mutations_are_rejected_with_their_own_hashes(self):
         raw = _raw_source()
@@ -274,19 +277,22 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
                 r"synth/gabor:gabor:54:13: unsupported counted-for safety charge"):
             generate_typed_slice.validate_capabilities(
                 program, generate_typed_slice.APPROVED_CAPABILITIES,
-                source_hash=RAW_SHA256)
+                source_hash=RAW_SHA256, prng_boolean_mix_select_profile=PRNG_PROFILE)
         with self.assertRaisesRegex(
                 TypedEmissionError,
                 r"synth/gabor:gabor:54:13: unsupported counted-for safety charge"):
-            render_typed_cpp(program, GABOR_KEY, RAW_SHA256)
+            render_typed_cpp(program, GABOR_KEY, RAW_SHA256,
+                             prng_boolean_mix_select_profile=PRNG_PROFILE)
 
         generate_typed_slice.validate_capabilities(
             program, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=RAW_SHA256,
-            gabor_effective_depth_profile=PROFILE)
+            gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
         emitted = render_typed_cpp(
             program, GABOR_KEY, RAW_SHA256,
-            gabor_effective_depth_profile=PROFILE)
+            gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
         self.assertIn("// Typed IR program: synth/gabor:gabor", emitted)
 
     def test_profile_is_foreign_closed_collision_closed_and_does_not_widen_limits(self):
@@ -297,11 +303,13 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
             generate_typed_slice.validate_capabilities(
                 foreign, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=RAW_SHA256,
-                gabor_effective_depth_profile=PROFILE)
+                gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
         with self.assertRaisesRegex(TypedEmissionError, "carrier on foreign key"):
             render_typed_cpp(
                 foreign, foreign.key, RAW_SHA256,
-                gabor_effective_depth_profile=PROFILE)
+                gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
         for authority in ("validator", "emitter"):
             with self.subTest(authority=authority), self.assertRaisesRegex(
                     (generate_typed_slice.GeneratorError
@@ -312,11 +320,13 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
                         program, generate_typed_slice.APPROVED_CAPABILITIES,
                         source_hash=RAW_SHA256,
                         gabor_effective_depth_profile=PROFILE,
+                        prng_boolean_mix_select_profile=PRNG_PROFILE,
                         runtime_loop_bound_profile="runtime-loop-bound-v1")
                 else:
                     render_typed_cpp(
                         program, GABOR_KEY, RAW_SHA256,
                         gabor_effective_depth_profile=PROFILE,
+                        prng_boolean_mix_select_profile=PRNG_PROFILE,
                         runtime_loop_bound_profile="runtime-loop-bound-v1")
 
         self.assertEqual(512, loop_proof.COUNTED_FOR_V1_MAX_TRIP_COUNT)
@@ -346,7 +356,8 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
                 generate_typed_slice.validate_capabilities(
                     program, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=RAW_SHA256,
-                    gabor_effective_depth_profile=PROFILE)
+                    gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
         with mock.patch(
                 "tools.glslcpp.emit_typed_cpp.authenticate_gabor_effective_depth",
                 return_value=other_contract):
@@ -354,7 +365,8 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
                     TypedEmissionError, "candidate identity mismatch"):
                 render_typed_cpp(
                     program, GABOR_KEY, RAW_SHA256,
-                    gabor_effective_depth_profile=PROFILE)
+                    gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
 
     def test_each_authority_authenticates_independently(self):
         program = _analyzed()
@@ -369,11 +381,13 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
                 generate_typed_slice.validate_capabilities(
                     mutated, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=RAW_SHA256,
-                    gabor_effective_depth_profile=PROFILE)
+                    gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
             with self.assertRaises(TypedEmissionError):
                 render_typed_cpp(
                     mutated, GABOR_KEY, RAW_SHA256,
-                    gabor_effective_depth_profile=PROFILE)
+                    gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
         with mock.patch(
                 "tools.glslcpp.emit_typed_cpp.authenticate_gabor_effective_depth",
                 return_value=clean_contract):
@@ -381,11 +395,13 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
                 generate_typed_slice.validate_capabilities(
                     mutated, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=RAW_SHA256,
-                    gabor_effective_depth_profile=PROFILE)
+                    gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
             with self.assertRaises(TypedEmissionError):
                 render_typed_cpp(
                     mutated, GABOR_KEY, RAW_SHA256,
-                    gabor_effective_depth_profile=PROFILE)
+                    gabor_effective_depth_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
 
     def test_slice_schema_admits_only_the_exact_gabor_row(self):
         spec_path = ROOT / "tools/glslcpp/typed_slice.json"
@@ -396,6 +412,7 @@ class GaborEffectiveDepthProfileTests(unittest.TestCase):
         self.assertEqual({
             "defines": {},
             "gabor_effective_depth_profile": PROFILE,
+            "prng_boolean_mix_select_profile": PRNG_PROFILE,
             "program_key": GABOR_KEY,
         }, row)
 

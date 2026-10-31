@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from tests.simulated_links import simulate_symlink
 
 import copy
@@ -26,7 +26,7 @@ REPORT = PACKAGE / "moodscape-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/moodscape_expected.inc"
 # No defaults: the current CPU authority and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(current_cpu_root() or "/nonexistent")
+AUTHORITY = Path(cpu_9b729482_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/moodscape/moodscape.glsl"
 

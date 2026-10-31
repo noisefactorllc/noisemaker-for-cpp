@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.historical_cpu import cpu_9b729482_root, current_run
+
 import dataclasses
 import hashlib
 import json
@@ -38,10 +40,8 @@ def render(typed):
 
 class GradeValueCopyTests(unittest.TestCase):
     def test_reference_reproduces_capture_from_authenticated_cpu(self):
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
-        if not configured:
-            self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce the Grade capture")
-        result = subprocess.run(["node", str(REFERENCE), configured], capture_output=True, text=True)
+        configured = cpu_9b729482_root()
+        result = current_run(["node", str(REFERENCE), configured], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         captured = json.loads(result.stdout)
         self.assertEqual(captured["cpu_revision"], "9b7294820eec2a0b95c66790b1dae374fa079c13")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from tests.historical_cpu import (
-    current_cpu_root, current_run, historical_cpu_root, historical_run)
+    cpu_9b729482_root, current_run, historical_cpu_root, historical_run)
 from tests.simulated_links import simulate_symlink
 
 import copy
@@ -737,7 +737,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
 
     def test_oracle_check_uses_explicit_immutable_snapshot(self):
         package = ROOT / "docs/port-engineering/arrays/emboss-parity"
-        configured = current_cpu_root()
+        configured = cpu_9b729482_root()
         if not configured:
             self.skipTest(
                 "authority-dependent Emboss oracle skipped: "

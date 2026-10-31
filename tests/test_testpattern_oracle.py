@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from tests.simulated_links import simulate_symlink
 import copy, hashlib, importlib.util, json, os, pathlib, re, shutil, tempfile
 
@@ -28,7 +28,7 @@ def sidecar(path):
     assert pathlib.Path(f'{path}.sha256').read_text() == f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n'
 
 def authority():
-    value = current_cpu_root()
+    value = cpu_9b729482_root()
     if not value or not pathlib.Path(value).is_dir(): pytest.skip('NOISEMAKER_CPU_ROOT unavailable')
     return pathlib.Path(value)
 

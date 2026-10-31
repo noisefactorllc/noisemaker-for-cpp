@@ -48,6 +48,46 @@ RUNTIME_CELLULAR_OY = (
 )
 
 
+_SOURCE_VARIANTS = {
+    SOURCE_SHA256: dict(normalized_sha256=NORMALIZED_SHA256, whole_sha256=WHOLE_SHA256,
+        runtime_normalized_sha256=RUNTIME_NORMALIZED_SHA256, runtime_whole_sha256=RUNTIME_WHOLE_SHA256,
+        rounds=RUNTIME_ROUNDS, distances=RUNTIME_CELLULAR_DISTANCES, oy=RUNTIME_CELLULAR_OY,
+        value_copy="7248973a166527c4b46c6ad65da5af2bf9af5f395421f2769e2c5778d9aded85"),
+    'e7762ec990058d51d2c07febd5a4dba9fa90d650cc21cf68c9a5a511d27485b2': {'normalized_sha256': '955b54367153abf3cb1643da6bda156899d7f073e37b6b1e78817b7d798445aa',
+ 'whole_sha256': '0b2fa2d62a35e76296b5e79f6f05393504785fda186d9dd5d50caa9435adfe57',
+ 'runtime_normalized_sha256': '18576c11e02af613547a699afe158c2cebfa6e5a983810dcd35e5c04ba9a2778',
+ 'runtime_whole_sha256': 'c37a71c66e8e0f8b5396450921319f681ce1f5160759ab74877078419d5b9c2c',
+ 'rounds': (('cubes',
+             445,
+             17,
+             'f11a03851671be76aaeea2c8ba91dc6a3bdafa6a3ba07a057dcea080fe03b4ba',
+             'fd393c809f9ffc9b82f9e208fec4d47537d3a1470a2250b3b9914ff9dafc07d2'),
+            ('spheres',
+             433,
+             13,
+             '730e62f11e5e78043cf7d50bbd2446125d0d094c67a00eb5a265d52f3cccc7ec',
+             'c236f2f747952c0d0a4fe993f28d04f8ba23689551810bf1fa17b92ebd68bf76')),
+ 'distances': (('d11', 243, 'be127fe61280aefec45dfdf513beb9d8b00808b07bdb0d633ff02014c25e59f0'),
+               ('d12', 244, '86edd7f91e0115c7c6a5dd02d6ccb72d6dfb4c0c07a092a97749d0d08df93fa8'),
+               ('d13', 245, 'c5773cb65b16d7fa2d74bd75f7b1381dbd2d3455d3047d0e469027be30cb1e40'),
+               ('d21', 246, 'aba4a471de86bc8dfacbc5bfce657f6d0cc44067627f0672ad911fc73b98a2ac'),
+               ('d22', 247, 'ae8b9c3350f2a76edca6a05cab75c1b7b1e771c4b2a066a0898e7df845e5a4ab'),
+               ('d23', 248, '5c19f23bafd5e06660beed41750896d7abd9938e37881c23dba34621d8dab7c1'),
+               ('d31', 249, 'd3fffa5a2a685f661029eac9c75af05fe2c604514bad152c1ad795f2c62fb8d7'),
+               ('d32', 250, 'e737365155327542ed861fd761e8a5ba86bf708d49ef1f6545d2e8fd9d0bbe69'),
+               ('d33', 251, '1116ac5fd2504265f1426111215afc449f823008c534f05fd4f3c2d144a94599')),
+ 'oy': (('oy11', 172, '2fabc931272ef6d9e7af4a2574eb9b6dd42b84f51e80fc27d905816005872e91'),
+        ('oy12', 176, '389d132ba94239ba24b099754955cfdc15aa80ddb5987b7e6a0ba67ba4ec895a'),
+        ('oy13', 180, 'ab6c6a866e2eec2112b09d9f1ae6b802d0c7ecdf3a611bc102accb5a287f3b6c'),
+        ('oy21', 184, 'bdd26f75b2a24821b4d6068d2216af614476a7e6d841bd2e8e096c0c7337ebce'),
+        ('oy22', 188, '889419481cdf5114609cdb8c6e40d4365b76f42ac684c55740768ffe9fdefd92'),
+        ('oy23', 192, '71e98f408268f66ca5361e5df4ec36265e1ec4ab021294c864fbf71c977417f8'),
+        ('oy31', 196, 'de276e63690f3fc6d55c009392418af629bc35f30039ea93a697a75d0c288644'),
+        ('oy32', 200, 'befe31f1b5f5ef6b2193d80d8d80f56e114adeadb65b3f24ad2b1a2df511d00b'),
+        ('oy33', 204, '3b7cc5083d21facb5344c2f9fb1b6ff0fc5f157d67fb9465f031788787c23abd')),
+ 'value_copy': 'e3fed53002c88a304ff244836244fa810db6dcdadad63db498e1269429123c36'}
+}
+
 @dataclass(frozen=True, slots=True)
 class Noise3DDeadGlobalsProof:
     globals: tuple
@@ -89,12 +129,14 @@ def authenticate_noise3d_dead_globals(program, source_hash):
         return None
     runtime = tuple((item.name, item.kind, item.canonical_value)
                     for item in program.preprocessor_defines) == (("NOISE_TYPE", "str", "int"),)
-    if (source_hash != SOURCE_SHA256
-            or hashlib.sha256(program.raw_source.encode()).hexdigest() != SOURCE_SHA256
-            or hashlib.sha256(program.source.encode()).hexdigest()
-            != (RUNTIME_NORMALIZED_SHA256 if runtime else NORMALIZED_SHA256)):
+    site = _SOURCE_VARIANTS.get(source_hash)
+    if site is None:
         raise ValueError("Noise3D source identity mismatch")
-    if _whole(program) != (RUNTIME_WHOLE_SHA256 if runtime else WHOLE_SHA256):
+    if (hashlib.sha256(program.raw_source.encode()).hexdigest() != source_hash
+            or hashlib.sha256(program.source.encode()).hexdigest()
+            != (site["runtime_normalized_sha256"] if runtime else site["normalized_sha256"])):
+        raise ValueError("Noise3D source identity mismatch")
+    if _whole(program) != (site["runtime_whole_sha256"] if runtime else site["whole_sha256"]):
         raise ValueError("Noise3D typed program identity mismatch")
     globals_ = tuple(item for item in program.declarations
                      if item.symbol.storage == "const")
@@ -146,10 +188,10 @@ def authenticate_noise3d_dead_globals(program, source_hash):
         rounds = tuple((function.name, value) for function in program.functions
                        for statement in function.body for value in _statements(statement)
                        if value.kind == "builtin" and value.callee == "round")
-        if len(rounds) != len(RUNTIME_ROUNDS):
+        if len(rounds) != len(site["rounds"]):
             raise ValueError("Noise3D runtime round census mismatch")
         for (function_name, value), (expected_name, line, column, digest, argument_digest) in zip(
-                rounds, RUNTIME_ROUNDS):
+                rounds, site["rounds"]):
             if (function_name != expected_name or value.span.start_line != line
                     or value.span.start_column != column or value.signature_id != -38
                     or value.type.display() != "vec3" or len(value.children) != 1
@@ -178,7 +220,7 @@ def authenticate_noise3d_dead_globals(program, source_hash):
                 or value_copies[0].children[0].kind != "id"
                 or value_copies[0].children[0].symbol.name != "p"
                 or hashlib.sha256(repr(value_copies[0]).encode()).hexdigest()
-                != "7248973a166527c4b46c6ad65da5af2bf9af5f395421f2769e2c5778d9aded85"):
+                != site["value_copy"]):
             raise ValueError("Noise3D spheres value-copy identity mismatch")
         cellular = next((function for function in program.functions
                          if function.name == "cellular"), None)
@@ -186,11 +228,11 @@ def authenticate_noise3d_dead_globals(program, source_hash):
             expression for statement in (cellular.body if cellular is not None else ())
             for expression in statement.expressions
             if expression.kind == "declaration"
-            and expression.symbol.name in {name for name, _, _ in RUNTIME_CELLULAR_DISTANCES})
-        if len(cellular_distances) != len(RUNTIME_CELLULAR_DISTANCES):
+            and expression.symbol.name in {name for name, _, _ in site["distances"]})
+        if len(cellular_distances) != len(site["distances"]):
             raise ValueError("Noise3D cellular distance census mismatch")
         for expression, (name, line, digest) in zip(
-                cellular_distances, RUNTIME_CELLULAR_DISTANCES):
+                cellular_distances, site["distances"]):
             if (expression.symbol.name != name
                     or expression.span.start_line != line
                     or expression.type.display() != "vec3"
@@ -200,10 +242,10 @@ def authenticate_noise3d_dead_globals(program, source_hash):
             expression for statement in cellular.body
             for expression in statement.expressions
             if expression.kind == "declaration"
-            and expression.symbol.name in {name for name, _, _ in RUNTIME_CELLULAR_OY})
-        if len(cellular_oy) != len(RUNTIME_CELLULAR_OY):
+            and expression.symbol.name in {name for name, _, _ in site["oy"]})
+        if len(cellular_oy) != len(site["oy"]):
             raise ValueError("Noise3D cellular oy census mismatch")
-        for expression, (name, line, digest) in zip(cellular_oy, RUNTIME_CELLULAR_OY):
+        for expression, (name, line, digest) in zip(cellular_oy, site["oy"]):
             if (expression.symbol.name != name
                     or expression.span.start_line != line
                     or expression.type.display() != "vec3"

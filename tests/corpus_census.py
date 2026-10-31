@@ -180,6 +180,29 @@ def without_expansion(spec: dict) -> dict:
     unknown = {item["program_key"] for item in result["programs"]} - known
     if unknown:
         raise AssertionError(f"historical slice projection contains unknown authority keys: {sorted(unknown)}")
+    from types import SimpleNamespace
+    from tools.glslcpp.frontend import prng_boolean_mix_select_profile as prng
+    field = "prng_boolean_mix_select_profile"
+    carriers = [row for row in result["programs"] if field in row]
+    if spec["revision"] == HISTORICAL_REVISION:
+        if carriers:
+            raise AssertionError("historical PRNG projection drift: carrier on historical source")
+    else:
+        selected = [row for row in result["programs"] if row["program_key"] in prng.KEYS]
+        if (len(selected) != len(prng.KEYS)
+                or {row["program_key"] for row in selected} != prng.KEYS
+                or len(carriers) != len(selected)
+                or any(row.get(field) != prng.PROFILE for row in selected)):
+            raise AssertionError("historical PRNG projection drift: current carrier census or identity")
+        entries = {entry["program_key"]: entry for entry in manifest_programs()}
+        for row in selected:
+            key = row["program_key"]
+            entry = entries[key]
+            raw = (CORPUS / entry["source"]).read_bytes()
+            if (hashlib.sha256(raw).hexdigest() != entry["raw_sha256"]
+                    or not prng.requires_profile(SimpleNamespace(key=key, raw_source=raw.decode("utf-8")))):
+                raise AssertionError("historical PRNG projection drift: current source identity")
+            del row[field]
     metadata = historical_document("metadata.json")
     projected = set(metadata["provenance"].get("authority_projected", []))
     historical_keys = {item["program_key"] for item in historical["programs"]

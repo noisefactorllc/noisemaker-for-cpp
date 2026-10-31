@@ -186,6 +186,7 @@ class ClassicNoiseIntegrationTests(unittest.TestCase):
         self.assertEqual(
             {"defines": self.DEFINES,
              "noise_frontend_profile": self.PROFILE,
+             "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
              "program_key": self.KEY,
              "runtime_define_profile": "runtime-defines-generic-v1"},
             spec["programs"][keys.index(self.KEY)])
@@ -11791,6 +11792,10 @@ synth/subdivide:subdivide""".splitlines())
                 self.assertEqual("runtime-defines-generic-v1",
                                  current_rows[item["program_key"]]["runtime_define_profile"])
                 item["runtime_define_profile"] = "runtime-defines-generic-v1"
+            if item["program_key"] in generate_typed_slice.PRNG_BOOLEAN_MIX_SELECT_KEYS:
+                self.assertEqual("prng-boolean-mix-select-v1",
+                                 current_rows[item["program_key"]]["prng_boolean_mix_select_profile"])
+                item["prng_boolean_mix_select_profile"] = "prng-boolean-mix-select-v1"
         self.assertFalse(any("literal_vec3_lane_index_profile" in item
                              for item in task24["programs"]))
         with tempfile.TemporaryDirectory() as temporary:
@@ -14946,11 +14951,13 @@ class Task27PerlinTests(unittest.TestCase):
         _, source_hash, typed = self.exact_program()
         generate_typed_slice.validate_capabilities(
             typed, generate_typed_slice.APPROVED_CAPABILITIES,
-            source_hash=source_hash, perlin_scalar_uint_xor_profile=PROFILE)
+            source_hash=source_hash, perlin_scalar_uint_xor_profile=PROFILE,
+            prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if typed.key == "synth/perlin:perlin" else None))
         with self.assertRaises(generate_typed_slice.GeneratorError):
             generate_typed_slice.validate_capabilities(
                 typed, generate_typed_slice.APPROVED_CAPABILITIES,
-                source_hash=source_hash)
+                source_hash=source_hash,
+                prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if typed.key == "synth/perlin:perlin" else None))
 
     def test_task27_emitter_uses_direct_left_nested_scalar_uint_xor_only(self) -> None:
         from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
@@ -14959,7 +14966,8 @@ class Task27PerlinTests(unittest.TestCase):
         _, source_hash, typed = self.exact_program()
         emitted = render_typed_cpp(
             typed, typed.key, source_hash,
-            perlin_scalar_uint_xor_profile=PROFILE)
+            perlin_scalar_uint_xor_profile=PROFILE,
+            prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if typed.key == "synth/perlin:perlin" else None))
         start = emitted.index("double hash3(", emitted.index("double hash3(") + 1)
         hash3 = emitted[start:emitted.index("\n}\n", start)]
         self.assertIn(
@@ -14969,7 +14977,8 @@ class Task27PerlinTests(unittest.TestCase):
         self.assertEqual(1, hash3.count("glsl::bitwise_xor"))
         self.assertNotRegex(hash3, r"bitwise_xor\([^\n]*swizzle<0>")
         with self.assertRaises(TypedEmissionError):
-            render_typed_cpp(typed, typed.key, source_hash)
+            render_typed_cpp(typed, typed.key, source_hash,
+            prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if typed.key == "synth/perlin:perlin" else None))
 
     @full_run_only
     def test_task27_generation_wires_exact_profile_manifest_and_catalog(self) -> None:
@@ -15577,12 +15586,14 @@ class Task27PerlinTests(unittest.TestCase):
                 generate_typed_slice.validate_capabilities(
                     candidate, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=source_hash,
-                    perlin_scalar_uint_xor_profile=PROFILE)
+                    perlin_scalar_uint_xor_profile=PROFILE,
+                    prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if candidate.key == "synth/perlin:perlin" else None))
             with self.subTest(case=label, boundary="emitter"), \
                     self.assertRaises(TypedEmissionError):
                 render_typed_cpp(
                     candidate, candidate.key, source_hash,
-                    perlin_scalar_uint_xor_profile=PROFILE)
+                    perlin_scalar_uint_xor_profile=PROFILE,
+                    prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if candidate.key == "synth/perlin:perlin" else None))
 
         foreign = analyze_program(parse_program(
             "out vec4 color; void main() { color = vec4(1.0); }",
@@ -15607,11 +15618,13 @@ class Task27PerlinTests(unittest.TestCase):
                     ("validator", lambda: generate_typed_slice.validate_capabilities(
                         candidate, generate_typed_slice.APPROVED_CAPABILITIES,
                         source_hash=caller_hash,
-                        perlin_scalar_uint_xor_profile=carrier),
+                        perlin_scalar_uint_xor_profile=carrier,
+                        prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if candidate.key == "synth/perlin:perlin" else None)),
                      generate_typed_slice.GeneratorError),
                     ("emitter", lambda: render_typed_cpp(
                         candidate, candidate.key, caller_hash,
-                        perlin_scalar_uint_xor_profile=carrier),
+                        perlin_scalar_uint_xor_profile=carrier,
+                        prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if candidate.key == "synth/perlin:perlin" else None)),
                      TypedEmissionError)):
                 if pipeline_ok:
                     invoke()
@@ -15635,12 +15648,14 @@ class Task27PerlinTests(unittest.TestCase):
                 generate_typed_slice.validate_capabilities(
                     exact, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=source_hash,
-                    perlin_scalar_uint_xor_profile=PROFILE, **kwargs)
+                    perlin_scalar_uint_xor_profile=PROFILE, **kwargs,
+                    prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if exact.key == "synth/perlin:perlin" else None))
             with self.subTest(carrier=tuple(kwargs), boundary="emitter"), \
                     self.assertRaises(TypedEmissionError):
                 render_typed_cpp(
                     exact, exact.key, source_hash,
-                    perlin_scalar_uint_xor_profile=PROFILE, **kwargs)
+                    perlin_scalar_uint_xor_profile=PROFILE, **kwargs,
+                    prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if exact.key == "synth/perlin:perlin" else None))
 
         def reconstruct(program):
             def expression(value):
@@ -15672,13 +15687,15 @@ class Task27PerlinTests(unittest.TestCase):
             generate_typed_slice.validate_capabilities(
                 equal_reconstructed, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=source_hash,
-                perlin_scalar_uint_xor_profile=PROFILE)
+                perlin_scalar_uint_xor_profile=PROFILE,
+                prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if equal_reconstructed.key == "synth/perlin:perlin" else None))
         with mock.patch(
                 "tools.glslcpp.emit_typed_cpp.authenticate_perlin_scalar_uint_xor",
                 return_value=(outer, inner)), self.assertRaises(TypedEmissionError):
             render_typed_cpp(
                 equal_reconstructed, equal_reconstructed.key, source_hash,
-                perlin_scalar_uint_xor_profile=PROFILE)
+                perlin_scalar_uint_xor_profile=PROFILE,
+                prng_boolean_mix_select_profile=("prng-boolean-mix-select-v1" if equal_reconstructed.key == "synth/perlin:perlin" else None))
 
 
 class Task28RotateMat2ReturnTests(unittest.TestCase):
@@ -19681,7 +19698,7 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         """Posterize/waves each need one more profile parameter beyond
         derivative_admission_profile alone (deliberately not mutually
         exclusive with it -- the Grade LUMA-weights/index-expression
-        coexistence precedent). Every other key needs nothing extra."""
+        coexistence precedent). Warp/LensWarp also carry their exact PRNG profile."""
         from tools.glslcpp.frontend.posterize_round_profile import (
             POSTERIZE_KEY, PROFILE as POSTERIZE_ROUND_PROFILE)
         from tools.glslcpp.frontend.waves_any_notequal_profile import (
@@ -19690,6 +19707,8 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
             return {"posterize_round_profile": POSTERIZE_ROUND_PROFILE}
         if key == WAVES_KEY:
             return {"waves_any_notequal_profile": WAVES_ANY_NOTEQUAL_PROFILE}
+        if key in {"filter/warp:warp", "filter/lensWarp:lensWarp"}:
+            return {"prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1"}
         return {}
 
     @staticmethod
@@ -19741,9 +19760,9 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
                 with self.assertRaises(generate_typed_slice.GeneratorError):
                     generate_typed_slice.validate_capabilities(
                         exact, generate_typed_slice.APPROVED_CAPABILITIES,
-                        source_hash=source_hash)
+                        source_hash=source_hash, **extra)
                 with self.assertRaises(TypedEmissionError):
-                    render_typed_cpp(exact, exact.key, source_hash)
+                    render_typed_cpp(exact, exact.key, source_hash, **extra)
 
                 generate_typed_slice.validate_capabilities(
                     exact, generate_typed_slice.APPROVED_CAPABILITIES,
@@ -22873,14 +22892,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                42755,
-                "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
+                43820,
+                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
             "src/typed_generated/typed_slice.cpp": (
-                3928351,
-                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
+                3916321,
+                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
+                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23662,14 +23681,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                42755,
-                "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
+                43820,
+                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
             "src/typed_generated/typed_slice.cpp": (
-                3928351,
-                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
+                3916321,
+                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
+                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24436,14 +24455,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                42755,
-                "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
+                43820,
+                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
             "src/typed_generated/typed_slice.cpp": (
-                3928351,
-                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
+                3916321,
+                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
+                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24976,14 +24995,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                42755,
-                "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
+                43820,
+                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
             "src/typed_generated/typed_slice.cpp": (
-                3928351,
-                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
+                3916321,
+                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
+                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25580,14 +25599,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                42755,
-                "7e438cd2941355a68575618feb649eb491cd637ca798d37069cd7000caf7cd2b"),
+                43820,
+                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
             "src/typed_generated/typed_slice.cpp": (
-                3928351,
-                "e9de9d7b64827d0ae4b6b372fe63abb6c012231621a2f2128eba09b12972bb02"),
+                3916321,
+                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "8c5bf190211b4fb271d54656b1b864724ea16b2acb31b3b2e0031a978c437d56"),
+                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25943,7 +25962,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
              summary.entrypoint_charge, summary.call_graph_acyclic))
         generate_typed_slice.validate_capabilities(
             typed, generate_typed_slice.APPROVED_CAPABILITIES,
-            source_hash=hashlib.sha256(raw.encode("utf-8")).hexdigest())
+            source_hash=hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+            prng_boolean_mix_select_profile="prng-boolean-mix-select-v1")
 
         # The write-proof's boundary: the same literal local REWRITTEN
         # anywhere in the enclosing function (assignment target, ++/-- operand,

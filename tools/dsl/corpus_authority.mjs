@@ -15,6 +15,17 @@ export const EXPECTED = Object.freeze({
   ledgerEntries: 898,
   packageSha256: 'f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807',
   packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
+  sourceLockSha256: '4c44258f7724b940504c139f5568e9d261ede87fa9ef196252e0fd6c7bdf84d0',
+  behavioralLockSha256: 'b869a51407abbc640cdc500f9e0c4fc39b17003b8b0c4ed1554ad05f4de0a0b5',
+  behavioralFileCount: 98,
+  upstreamRevision: 'd0ed94ae19cca7328bc7d6b28902712a0838e1a9',
+  upstreamSourceDigest: '5bb4413cd710aeb608e555fef4023f5f61bd4579a79c66540b205fbf624c3ada',
+})
+
+const EXPECTED_9B729482 = Object.freeze({
+  ledgerEntries: 898,
+  packageSha256: 'f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807',
+  packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
   sourceLockSha256: '8ef4b2c6a6d9a40d4f2811afeafc54ff6ed829fed3d392884caa39fe2cbe99f5',
   behavioralLockSha256: 'f039d5075988c468d54ca550c89e9e7f01c5b4f92963f22ed087596d629bf70e',
   behavioralFileCount: 98,
@@ -110,6 +121,12 @@ function authenticateRoot(rootArg, ledgerArg, expected) {
 
 export function authenticateCpuRoot(rootArg, ledgerArg = null) {
   return authenticateRoot(rootArg, ledgerArg, EXPECTED)
+}
+
+export function authenticateCpu9b729482Root(rootArg, ledgerArg = null) {
+  const ledger = ledgerArg ?? process.env.NOISEMAKER_CPU_9B729482_LEDGER
+  if (!ledger) throw new Error('NOISEMAKER_CPU_9B729482_LEDGER is required for the frozen CPU authority')
+  return authenticateRoot(rootArg, ledger, EXPECTED_9B729482)
 }
 
 export async function importCpu(rootArg, ledgerArg = null) {

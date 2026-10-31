@@ -1,6 +1,6 @@
 """Strict A/L publication-root contracts for the Parallax and Glitch oracles."""
 
-from tests.historical_cpu import current_cpu_root, current_run, historical_cpu_root, historical_run
+from tests.historical_cpu import cpu_9b729482_root, current_run, historical_cpu_root, historical_run
 from tests.simulated_links import simulate_symlink
 
 import os
@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # No defaults: both CPU authorities and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
 HISTORICAL_AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
-CURRENT_AUTHORITY = Path(current_cpu_root() or "/nonexistent")
+CURRENT_AUTHORITY = Path(cpu_9b729482_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 PARALLAX = ROOT / "docs/port-engineering/counted-for-parity/parallax190_oracle_generator.mjs"
 GLITCH = ROOT / "docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs"

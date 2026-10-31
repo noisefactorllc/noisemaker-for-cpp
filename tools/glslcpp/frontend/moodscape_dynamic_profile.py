@@ -71,13 +71,24 @@ def _fail(reason: str) -> ValueError:
     return ValueError(f"{PROFILE}: {reason}")
 
 
+
+_SOURCE_LOCKS = {'a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44': {'NORMALIZED_BYTES': 17863, 'NORMALIZED_SHA256': '20a6f4a0accd2f1b02c310ee2d3614f2bba0da58eb4f9a64fdc64ed408d823b9', 'FULL_FUNCTIONS_SHA256': '9c00b6fa9906183d686c508f6535fa76c8a5eff96b07f93f08c1e7c7aded8d97', 'FULL_WHOLE_SHA256': '37ef19ad81826860de6a29feff3b89fff6d0fe46eb7c284712df9ba9a73c3b4c', 'FULL_INTERFACE_SHA256': '6ea4427f1d26166be5ace4037357c1d34da55155b6303e7454409cb3962bd56a', 'PROJECTED_FUNCTIONS_SHA256': '405ed5a85af2a335590416e88c606a06fe27dfa0d707712bf138001e326972c9', 'PROJECTED_WHOLE_SHA256': 'b954a5c853150dc073d98859de2546e777f49e8dea7ae0e6485b91bcff7c7825', 'PROJECTED_INTERFACE_SHA256': '11399e43904e3b17c3ebc0289b21bc26e5f734500dfac3f70d43ae87b3fd5759', 'MATRIX_LEDGER': (('fwdA', '151:1-153:68', '3c9305e49aceec28322eea18868be7d419ff76199273ae2fae77e269a5eac785'), ('fwdB', '155:1-157:68', '8124b5c9b6c11157a9cb481c001f856e543c2ddb508300c784588631c167dbec'), ('invB', '159:1-161:66', '3375687c2a685efb11fd17738ab509c1376ea225f5fc0fb14a4c9eb5be0c388c'), ('invA', '163:1-165:68', '6e0af1cc398c98d60efeb657e87fd6875e3c5db7ea114d91fd21a0bc23306aac')), 'LANE_INDEX_LEDGER': (('139:13-139:22', '6bd60913c296bb7349e05474ff5c4327ea2f6398a9e093676465c0bf4a8e7cf7'), ('140:13-140:20', '0c5d77219ae68af0fa55c8617baf2ccc33ec4ade15f7e856bc6a6687f1238ba6'), ('140:23-140:32', '9b7195c3e4d9a08903e0901bba85c732c6e2001f216606d1a70df3b6b52fabe0'), ('142:13-142:20', '375508b57c3bb3ff3316ef77213cf06fd6cc28f0e9ba88e47d961e85df09bf54'), ('142:35-142:44', 'cdddd2146ca633302a509e0f487dcff66997a188d49622f1c08c177493371abd')), 'FLOAT_BITS_LEDGER': (('299:21-299:46', '00790aa8164a81c5ba9e4103a3410004e57549f69b0d35983f12f6ef36b225df'),), 'SCALAR_XOR_LEDGER': (('302:10-302:46', '7875a1a5c5ace478a1f88619c98c490f2975019773a9bb07b5f1de01b67031c9'), ('303:10-303:46', 'ab9e09bb2deb556f5521900640a88d8d23bd0a5dabc024e4786205c15516d5ba'), ('304:10-304:47', '776ee7737ae52317db173d74786d2b99dd87e4b9ad8897df21ea41c949dd779c')), 'HUE_PAIR_LEDGER': (('572:5-572:43', '21b5b20e4ad0bfbe7b109fe7727a4449024ff0429a1c454591a256dab00b568f', '573:5-573:29', '04946dfbf8590c86feb997b986370a9b0221c6c8028d45ee204b627e753578c9'), ('591:5-591:43', '2b59834131837ec2542f2b419e0e7b37fa3767d06e7dd75894a6fab72cde45b2', '592:5-592:29', '49dfc8a26400b85991de3cdf23cf570f33608582bb4782f6090aa5c20429eb31')), 'RAW_BYTES': 19559, 'RAW_SHA256': 'a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44'}, '2b020887bfb1a4dd366b1583e4ff68fd47193bd4993ba1052170de0981aabfa1': {'NORMALIZED_BYTES': 17784, 'NORMALIZED_SHA256': '4b39997d6de130504e3de9e48e4ab3f4dd981b88baffb2954c2e0675d9da590c', 'FULL_FUNCTIONS_SHA256': '617bd7395fde0abafd904ea3e2bb6d8ed994d177dc114ee20f0d0b460ac12319', 'FULL_WHOLE_SHA256': '67c321799605a07200f898f44e996faf82ad3da4854938b61e825ada3a250b78', 'FULL_INTERFACE_SHA256': 'c41be88fc53259617799aa4fda930980863851daff90bfab9f67264610832d03', 'PROJECTED_FUNCTIONS_SHA256': 'aac7bdbb56b8d2fb7c6b2ad6462a368377d0469979b16f4bad6f758db4d3d2e3', 'PROJECTED_WHOLE_SHA256': '0696552b65f48d1f3bb357bbd32482f3af1143d8dca21501fc2930c15375b3cf', 'PROJECTED_INTERFACE_SHA256': '7658fe6d0e777cda9cb28f337fff935b4a7c7a3e92abcb000fe3cfaa72f9bcec', 'MATRIX_LEDGER': (('fwdA', '151:1-153:68', '74bb77e89e38ff741eec170eef34d6120940fd7e09933435f384422df7372098'), ('fwdB', '155:1-157:68', '185fbb2eae0d5894e5cc4cf71f633b426ac655226e15fd90374b9a8ca6dea637'), ('invB', '159:1-161:66', 'bc62a4c1ed3427bc388f29b9ceddff7863551d2b1097be898f42632cbb788fef'), ('invA', '163:1-165:68', '7cbfc76611c4e5a9e0f5ec0381e6b55adabe3547319ed926cdaa07d1b0c72c23')), 'LANE_INDEX_LEDGER': (('139:13-139:22', '67e130e6525bede084363c92c3ea80d52bfbae241033c58135bca7821b48714b'), ('140:13-140:20', '1d42e5bfeb587bd70dff330258fc30e3a7205f4d3b41d9ef2389c00c7413540d'), ('140:23-140:32', '0e9fc9efe7d9542344044fa8fa5a993e10b66c92e3a434df3631da9b21e0b0e0'), ('142:13-142:20', '51469a36828de599684177ca85d51ff4ba0b220a2e5830e44d8ae7f6d6177bea'), ('142:35-142:44', '481344c9e7527a5f365189a3c90a81ef5f80b06ecf75f689a2afbf9c67633170')), 'FLOAT_BITS_LEDGER': (('299:21-299:46', '1f11d4ffef6162cda68825de4d1763caa276e4c753cefa4a59180f6f416b9b4b'),), 'SCALAR_XOR_LEDGER': (('302:10-302:46', '8593a019cccce50d0d7bdafcaeb14d0d077e3c0c7ddbd54d3e202e8458a3654a'), ('303:10-303:46', '2c6a077f2c1e6a9e37f489b896a8feefd0e8345cfd8cfe636af8361f43b73b5f'), ('304:10-304:47', 'e571744ca7ea9aa9b42372252bfe720ddb794f57155edab12923f89d9e9e68b6')), 'HUE_PAIR_LEDGER': (('572:5-572:43', '84652d775d976c59436b5086168b9337323dadb0d65db2aa1aab1cbb183b35a7', '573:5-573:29', '0c249e9d1d98da2bb1c9f5293dc5f49ebe1c3eb08c090495f57436c1ab14f976'), ('591:5-591:43', '8c62423166e42104060a2e824b4fd06520bd0835345a5e0b4491d653c2e784ea', '592:5-592:29', 'b04423e8a6f29eaca36794fa59185225badb0d5621209833fcb96e13c04c6608')), 'RAW_BYTES': 19628, 'RAW_SHA256': '2b020887bfb1a4dd366b1583e4ff68fd47193bd4993ba1052170de0981aabfa1'}}
+
+def _lock(program, name):
+    digest = hashlib.sha256(program.raw_source.encode()).hexdigest()
+    values = _SOURCE_LOCKS.get(digest)
+    if values is None:
+        raise _fail("unrecognized source identity")
+    return values[name]
+
+
 def _provenance(program: TypedProgram, source_hash: str | None, profile: str | None) -> None:
-    if program.key != KEY or profile != PROFILE or source_hash != default.RAW_SHA256:
+    if program.key != KEY or profile != PROFILE or source_hash != _lock(program, "RAW_SHA256"):
         raise _fail("key, source hash, or profile mismatch")
-    if (len(program.raw_source.encode()) != default.RAW_BYTES
-            or hashlib.sha256(program.raw_source.encode()).hexdigest() != default.RAW_SHA256
-            or len(program.source.encode()) != NORMALIZED_BYTES
-            or hashlib.sha256(program.source.encode()).hexdigest() != NORMALIZED_SHA256
+    if (len(program.raw_source.encode()) != _lock(program, "RAW_BYTES")
+            or hashlib.sha256(program.raw_source.encode()).hexdigest() != _lock(program, "RAW_SHA256")
+            or len(program.source.encode()) != _lock(program, "NORMALIZED_BYTES")
+            or hashlib.sha256(program.source.encode()).hexdigest() != _lock(program, "NORMALIZED_SHA256")
             or tuple((item.name, item.kind, item.canonical_value)
                      for item in program.preprocessor_defines) != DEFINES):
         raise _fail("source or define contract mismatch")
@@ -126,7 +137,7 @@ def _hue_pairs(program: TypedProgram) -> tuple[HuePair, ...]:
     visit(main.body)
     if tuple((default._span(pair.addition), default._sha(pair.addition),
               default._span(pair.fract), default._sha(pair.fract))
-             for pair in pairs) != HUE_PAIR_LEDGER:
+             for pair in pairs) != _lock(program, "HUE_PAIR_LEDGER"):
         raise _fail("hue-addition/fract adjacency or identity mismatch")
     for pair in pairs:
         increment = pair.addition.children[1]
@@ -172,9 +183,9 @@ def _sites(program: TypedProgram) -> Sites:
                 for child in statement.children:
                     scan(child)
             scan(item)
-    for values, ledger in ((indexes, LANE_INDEX_LEDGER),
-                           (float_bits, FLOAT_BITS_LEDGER),
-                           (scalar_xors, SCALAR_XOR_LEDGER)):
+    for values, ledger in ((indexes, _lock(program, "LANE_INDEX_LEDGER")),
+                           (float_bits, _lock(program, "FLOAT_BITS_LEDGER")),
+                           (scalar_xors, _lock(program, "SCALAR_XOR_LEDGER"))):
         if tuple((default._span(item), default._sha(item)) for item in values) != ledger:
             raise _fail("exceptional site identity mismatch")
     for node in indexes:
@@ -199,11 +210,11 @@ def authenticate_projection(program: TypedProgram, source_hash: str | None,
     _provenance(program, source_hash, profile)
     if (len(program.functions) != 29
             or tuple(item.id for item in program.functions) != REACHABLE_IDS
-            or default._sha(program.functions) != PROJECTED_FUNCTIONS_SHA256
-            or default._whole(program) != PROJECTED_WHOLE_SHA256
-            or default._interface(program) != PROJECTED_INTERFACE_SHA256
+            or default._sha(program.functions) != _lock(program, "PROJECTED_FUNCTIONS_SHA256")
+            or default._whole(program) != _lock(program, "PROJECTED_WHOLE_SHA256")
+            or default._interface(program) != _lock(program, "PROJECTED_INTERFACE_SHA256")
             or tuple((item.symbol.name, default._span(item), default._sha(item))
-                     for item in program.declarations if item.type.display() == "mat3") != MATRIX_LEDGER[:2]):
+                     for item in program.declarations if item.type.display() == "mat3") != _lock(program, "MATRIX_LEDGER")[:2]):
         raise _fail("projected tree or matrix closure mismatch")
     loop = program.counted_loop_proof
     if loop is None or (loop.loop_count, loop.unproved_loop_count,
@@ -217,11 +228,11 @@ def apply(program: TypedProgram, source_hash: str | None,
           profile: str | None) -> tuple[TypedProgram, Sites]:
     _provenance(program, source_hash, profile)
     if (len(program.functions) != 30
-            or default._sha(program.functions) != FULL_FUNCTIONS_SHA256
-            or default._whole(program) != FULL_WHOLE_SHA256
-            or default._interface(program) != FULL_INTERFACE_SHA256
+            or default._sha(program.functions) != _lock(program, "FULL_FUNCTIONS_SHA256")
+            or default._whole(program) != _lock(program, "FULL_WHOLE_SHA256")
+            or default._interface(program) != _lock(program, "FULL_INTERFACE_SHA256")
             or tuple(item.id for item in program.functions) != tuple(sorted((*REACHABLE_IDS, *DEAD_IDS)))
-            or _matrix_ledger(program) != MATRIX_LEDGER):
+            or _matrix_ledger(program) != _lock(program, "MATRIX_LEDGER")):
         raise _fail("full dynamic tree mismatch")
     _sites(program)
     functions = attach_counted_loop_proofs(

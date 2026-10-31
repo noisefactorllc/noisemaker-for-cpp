@@ -106,12 +106,14 @@
       "defines": {
         "NOISE_TYPE": 10
       },
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "classicNoisedeck/caustic:caustic",
       "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
       "linear_srgb_lane_index_profile": "linear-srgb-cellnoise-lane-index-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "classicNoisedeck/cellNoise:cellNoise"
     },
     {
@@ -166,8 +168,8 @@
       },
       "mutable_global_array_profile": "mutable-global-nine-array-kaleido-v1",
       "program_key": "classicNoisedeck/kaleido:kaleido",
-      "scalar_uint_xor_profile": "scalar-uint-xor-v1",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "runtime_define_profile": "runtime-defines-generic-v1",
+      "scalar_uint_xor_profile": "scalar-uint-xor-v1"
     },
     {
       "defines": {},
@@ -180,6 +182,7 @@
         "NOISE_TYPE": 10
       },
       "moodscape_frontend_profile": "moodscape-runtime-frontend-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "classicNoisedeck/moodscape:moodscape",
       "runtime_define_profile": "runtime-defines-generic-v1"
     },
@@ -187,6 +190,7 @@
       "defines": {
         "NOISE_TYPE": 12
       },
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "classicNoisedeck/noise3d:noise3d",
       "runtime_define_profile": "runtime-defines-generic-v1"
     },
@@ -199,6 +203,7 @@
         "REFRACT_MODE": 2
       },
       "noise_frontend_profile": "classic-noise-frontend-admission-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "classicNoisedeck/noise:noise",
       "runtime_define_profile": "runtime-defines-generic-v1"
     },
@@ -238,6 +243,7 @@
     },
     {
       "defines": {},
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "classicNoisedeck/splat:splat"
     },
     {
@@ -333,6 +339,7 @@
     },
     {
       "defines": {},
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "filter/corrupt:corrupt"
     },
     {
@@ -511,6 +518,7 @@
     {
       "defines": {},
       "derivative_admission_profile": "derivative-admission-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "filter/lensWarp:lensWarp"
     },
     {
@@ -937,8 +945,8 @@
         "MODE": 3
       },
       "program_key": "filter/texture:texture",
-      "texture_frontend_profile": "texture-frontend-admission-v1",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "runtime_define_profile": "runtime-defines-generic-v1",
+      "texture_frontend_profile": "texture-frontend-admission-v1"
     },
     {
       "defines": {},
@@ -984,6 +992,7 @@
     {
       "defines": {},
       "derivative_admission_profile": "derivative-admission-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "filter/warp:warp"
     },
     {
@@ -1074,6 +1083,7 @@
     },
     {
       "defines": {},
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "mixer/cellSplit:cellSplit"
     },
     {
@@ -1386,6 +1396,7 @@
     },
     {
       "defines": {},
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "synth/cell:cell"
     },
     {
@@ -1411,11 +1422,13 @@
     {
       "defines": {},
       "gabor_effective_depth_profile": "gabor-effective-depth-4-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "synth/gabor:gabor"
     },
     {
       "cross_lane_assignment_profile": "cross-lane-assignment-v1",
       "defines": {},
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "synth/gradient:gradient"
     },
     {
@@ -1492,6 +1505,7 @@
         "NOISE_TYPE": 10
       },
       "mutable_global_frame_profile": "mutable-global-frame-noise-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "synth/noise:noise",
       "runtime_define_profile": "runtime-defines-noise-v1",
       "runtime_loop_bound_profile": "runtime-loop-bound-v1",
@@ -1510,6 +1524,7 @@
         "DIMENSIONS": 2
       },
       "perlin_scalar_uint_xor_profile": "perlin-scalar-uint-xor-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "synth/perlin:perlin",
       "runtime_define_profile": "runtime-defines-generic-v1"
     },
@@ -1620,7 +1635,7 @@
       "program_key": "synth3d/shape3d:precompute"
     }
   ],
-  "revision": "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3",
+  "revision": "d0ed94ae19cca7328bc7d6b28902712a0838e1a9",
   "schema": 1,
   "types": [
     "bool",

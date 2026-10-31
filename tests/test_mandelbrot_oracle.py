@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.historical_cpu import current_cpu_root, current_run
+from tests.historical_cpu import cpu_9b729482_root, current_run
 from tests.simulated_links import simulate_symlink
 
 import hashlib
@@ -26,7 +26,7 @@ INCLUDE = ROOT / "tests/oracles/mandelbrot_expected.inc"
 
 
 def _authority() -> pathlib.Path:
-    value = current_cpu_root()
+    value = cpu_9b729482_root()
     if not value or not pathlib.Path(value).is_dir():
         pytest.skip("NOISEMAKER_CPU_ROOT unavailable; current authority test skipped")
     return pathlib.Path(value)

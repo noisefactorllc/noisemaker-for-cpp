@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import hashlib
 import pathlib
 import subprocess
 
@@ -11,6 +12,28 @@ from tests.simulated_links import run_with_simulated_links
 HISTORICAL_CPU_ENV = "NOISEMAKER_HISTORICAL_CPU_ROOT"
 CURRENT_CPU_ENV = "NOISEMAKER_CPU_ROOT"
 ORACLE_NODE_ENV = "NOISEMAKER_ORACLE_NODE"
+
+
+CPU_9B729482_ENV = "NOISEMAKER_CPU_9B729482_ROOT"
+
+
+def cpu_9b729482_root() -> str:
+    value = os.environ.get(CPU_9B729482_ENV)
+    if not value:
+        raise ValueError(f"{CPU_9B729482_ENV} is required for frozen CPU fixtures")
+    root = pathlib.Path(value)
+    if not root.is_absolute() or root.is_symlink() or not root.is_dir():
+        raise ValueError(f"{CPU_9B729482_ENV} must name an absolute, non-symlink directory")
+    identities = {
+        "src/effects/generated/canonical-kernels.js": "2d2ad7a462d2f5e858d1ff339b0be48db097dbf3e7848bde08b90e7e3df1f869",
+        "src/effects/generated/upstream-snapshot.js": "de72cda3ef1b8789b91d284682577be67fd638a2747cae60bea7b72f74ca988f",
+    }
+    for relative, expected in identities.items():
+        source = root / relative
+        if (source.is_symlink() or not source.is_file()
+                or hashlib.sha256(source.read_bytes()).hexdigest() != expected):
+            raise ValueError(f"{CPU_9B729482_ENV} frozen source identity mismatch: {relative}")
+    return value
 
 
 def current_cpu_root() -> str | None:

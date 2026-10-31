@@ -15,7 +15,7 @@ NATIVE_SOURCE = "src/effects/mesh_render.cpp"
 HEADER = "include/noisemaker/effects/mesh_render_contract.hpp"
 CPU_SOURCE = "src/effects/cpu/mesh-render.js"
 CPU_SHA256 = "ea9480452c59bcc51aa33fa0e699368b3dcadc6c629569a3b0fa7142186ee499"
-REVISION = "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
+REVISION = "d0ed94ae19cca7328bc7d6b28902712a0838e1a9"
 UPSTREAM = {
     "definition.js": "4ab85873f6851d0d212e6ed71ff8335430ea69310d62924e32e02dd29e045e6f",
     "glsl/render.vert": "a4baf8432c78f411ba28782c3f1276aa08c7448a4e748ce864a1c9178d34ddb9",

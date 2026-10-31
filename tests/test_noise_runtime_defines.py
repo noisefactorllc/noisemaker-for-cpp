@@ -24,7 +24,7 @@ from tools.glslcpp.frontend.runtime_loop_bound_profile import apply_runtime_loop
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = next((ROOT / "tools" / "glslcpp" / "corpus").glob("*/"))
+CORPUS = ROOT / "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3"
 SOURCE = (CORPUS / "sources/synth/noise/noise.glsl").read_text()
 KEY = NOISE_KEY
 

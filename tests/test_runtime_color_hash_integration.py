@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import hashlib
 from pathlib import Path
 import unittest
 
@@ -21,7 +22,13 @@ SOURCE_ROOT = (Path(generator.__file__).resolve().parent / "corpus"
 
 def candidate(kind: str, runtime: bool):
     profile = noise if kind == "noise" else moodscape
-    raw = (SOURCE_ROOT / "classicNoisedeck" / kind / f"{kind}.glsl").read_text()
+    source_root = SOURCE_ROOT if runtime else (SOURCE_ROOT.parents[1] / "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/sources")
+    raw = (source_root / "classicNoisedeck" / kind / f"{kind}.glsl").read_text()
+    digest = hashlib.sha256(raw.encode()).hexdigest()
+    expected = ({"noise": "513f8278e29564b7f2b0735b539b5990b53dc920d487fffb87d54a0c92fc5f0b",
+                 "moodscape": "2b020887bfb1a4dd366b1583e4ff68fd47193bd4993ba1052170de0981aabfa1"}[kind]
+                if runtime else profile.RAW_SHA256)
+    assert digest == expected, "fixture source identity mismatch"
     defines = ({name: "int" for name, _, _ in profile.FIXED_DEFINES}
                if kind == "noise" else {"COLOR_MODE": "int", "NOISE_TYPE": "int"})
     if not runtime:
@@ -33,67 +40,71 @@ def candidate(kind: str, runtime: bool):
     analyzed = analyze_program(parsed, profile.KEY)
     if kind == "noise":
         selected = noise.PROFILE
-        projected = noise.apply_noise_frontend(analyzed, noise.RAW_SHA256, selected)
+        projected = noise.apply_noise_frontend(analyzed, digest, selected)
     elif runtime:
         selected = moodscape_dynamic.PROFILE
         projected, _ = moodscape_dynamic.apply(
-            analyzed, moodscape.RAW_SHA256, selected)
+            analyzed, digest, selected)
     else:
         selected = moodscape.PROFILE
         projected = moodscape.apply_moodscape_frontend(
-            analyzed, moodscape.RAW_SHA256, selected)
-    return profile, projected, selected
+            analyzed, digest, selected)
+    return digest, projected, selected
 
 
 def validate(kind: str, program, source_hash: str, carrier: str | None):
     generator.validate_capabilities(
         program, generator.APPROVED_CAPABILITIES,
         source_hash=source_hash, numeric_literal_contract="glsl-f32",
-        **{f"{kind}_frontend_profile": carrier})
+        **{f"{kind}_frontend_profile": carrier},
+        **({"prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1"}
+           if any(d.kind == "str" for d in program.preprocessor_defines) else {}))
 
 
 def emit(kind: str, program, source_hash: str, carrier: str | None):
     return emitter.render_typed_cpp(
         program, program.key, source_hash,
         numeric_literal_contract="glsl-f32",
-        **{f"{kind}_frontend_profile": carrier})
+        **{f"{kind}_frontend_profile": carrier},
+        **({"prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1"}
+           if any(d.kind == "str" for d in program.preprocessor_defines) else {}))
 
 
 class RuntimeColorHashIntegrationTests(unittest.TestCase):
     def test_both_runtime_candidates_validate_and_emit(self):
         for kind in ("noise", "moodscape"):
             with self.subTest(kind=kind):
-                profile, program, carrier = candidate(kind, True)
-                validate(kind, program, profile.RAW_SHA256, carrier)
-                text = emit(kind, program, profile.RAW_SHA256, carrier)
+                digest, program, carrier = candidate(kind, True)
+                validate(kind, program, digest, carrier)
+                text = emit(kind, program, digest, carrier)
                 self.assertIn("noisemaker::float_bits_to_uint", text)
                 self.assertIn("static_cast<std::size_t>", text)
 
     def test_original_default_candidates_still_validate_and_emit(self):
         for kind in ("noise", "moodscape"):
             with self.subTest(kind=kind):
-                profile, program, carrier = candidate(kind, False)
-                validate(kind, program, profile.RAW_SHA256, carrier)
+                digest, program, carrier = candidate(kind, False)
+                validate(kind, program, digest, carrier)
                 self.assertIn("Typed IR program", emit(
-                    kind, program, profile.RAW_SHA256, carrier))
+                    kind, program, digest, carrier))
 
     def test_noise_runtime_palette_preserves_uniform_precision(self):
-        profile, program, carrier = candidate("noise", True)
-        text = emit("noise", program, profile.RAW_SHA256, carrier)
+        digest, program, carrier = candidate("noise", True)
+        text = emit("noise", program, digest, carrier)
         for name in ("paletteOffset", "paletteAmp", "paletteFreq", "palettePhase"):
             self.assertIn(f"glsl::DVec3 {name}", text)
 
     def test_source_tree_and_carrier_forgery_reject(self):
         for kind in ("noise", "moodscape"):
-            profile, program, carrier = candidate(kind, True)
+            digest, program, carrier = candidate(kind, True)
             forged = (
                 (dataclasses.replace(program, source=program.source + "\n"),
-                 profile.RAW_SHA256, carrier),
+                 digest, carrier),
                 (dataclasses.replace(program, functions=program.functions[:-1]),
-                 profile.RAW_SHA256, carrier),
+                 digest, carrier),
                 (program, "0" * 64, carrier),
-                (program, profile.RAW_SHA256, "wrong-profile"),
-                (program, profile.RAW_SHA256, None),
+                (program, digest, "wrong-profile"),
+                (program, digest, None),
             )
             for index, (changed, source_hash, changed_carrier) in enumerate(forged):
                 with self.subTest(kind=kind, mutation=index):

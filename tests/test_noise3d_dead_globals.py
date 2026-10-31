@@ -71,10 +71,11 @@ def test_noise3d_repin_does_not_hide_new_rhash_call(monkeypatch):
                              "void main() {\n    vec2 deadUse = rhash(vec2(0.0));")
     typed = analyze_program(parse_program(changed, KEY, {"NOISE_TYPE": 12}), KEY)
     digest = hashlib.sha256(changed.encode()).hexdigest()
-    monkeypatch.setattr(profile, "SOURCE_SHA256", digest)
-    monkeypatch.setattr(profile, "NORMALIZED_SHA256",
-                        hashlib.sha256(typed.source.encode()).hexdigest())
-    monkeypatch.setattr(profile, "WHOLE_SHA256", profile._whole(typed))
+    original_digest = hashlib.sha256(source.encode()).hexdigest()
+    selected = dict(profile._SOURCE_VARIANTS[original_digest])
+    selected.update(normalized_sha256=hashlib.sha256(typed.source.encode()).hexdigest(),
+                    whole_sha256=profile._whole(typed))
+    monkeypatch.setitem(profile._SOURCE_VARIANTS, digest, selected)
     with pytest.raises(ValueError, match="Noise3D dead function graph mismatch"):
         profile.authenticate_noise3d_dead_globals(typed, digest)
 

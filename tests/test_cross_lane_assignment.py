@@ -23,7 +23,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/gradient:gradient"
 PROFILE = "cross-lane-assignment-v1"
 RAW = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}" / "sources/synth/gradient/gradient.glsl"
-RAW_SHA256 = "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75"
+HISTORICAL_RAW_SHA256 = "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75"
+RAW_SHA256 = "05ad693f0c2d3cb590139c3cbd7cb5430843f36b09b9c2478d571a5aa0ec19a6"
+HISTORICAL_RAW = ROOT / "tools/glslcpp/corpus/32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/sources/synth/gradient/gradient.glsl"
+PRNG_PROFILE = "prng-boolean-mix-select-v1"
 ORACLE = ROOT / "docs/port-engineering/cross-lane-parity/gradient_oracle.mjs"
 HISTORICAL_KERNEL = ROOT / "tests/fixtures/historical/gradient_kernel.cpp"
 HISTORICAL_HEADER = (
@@ -121,7 +124,9 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
             "_WHOLE_SHA256": module._whole(candidate),
             "_INTERFACE_SHA256": module._interface(candidate),
         }
-        with mock.patch.multiple(module, **locks):
+        selected = dict(module._SOURCE_LOCKS[RAW_SHA256])
+        selected.update({name.removeprefix("_"): value for name, value in locks.items()})
+        with mock.patch.dict(module._SOURCE_LOCKS, {RAW_SHA256: selected}):
             with self.assertRaisesRegex(ValueError, rf"{PROFILE}: .*{message}"):
                 module.authenticate_cross_lane_assignment(
                     candidate, locks["_RAW_SHA256"], PROFILE)
@@ -143,12 +148,13 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
                 r"synth/gradient:gradient:.*exact cross-lane assignment profile carrier required"):
             generate_typed_slice.validate_capabilities(
                 _analyzed(), generate_typed_slice.APPROVED_CAPABILITIES,
-                source_hash=RAW_SHA256)
+                source_hash=RAW_SHA256, prng_boolean_mix_select_profile=PRNG_PROFILE)
         with self.assertRaisesRegex(
                 emit_typed_cpp.TypedEmissionError,
                 r"synth/gradient:gradient:.*exact cross-lane assignment profile carrier required"):
             emit_typed_cpp.render_typed_cpp(
-                _analyzed(), KEY, RAW_SHA256, "probe", "bind_probe")
+                _analyzed(), KEY, RAW_SHA256, "probe", "bind_probe",
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
 
     def test_shape_mask_is_not_admitted_by_gradient_profile(self):
         module = importlib.import_module("tools.glslcpp.frontend.cross_lane_assignment_profile")
@@ -254,7 +260,8 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
     def test_current_emitter_copies_source_and_reads_original_lanes(self):
         rendered = emit_typed_cpp.render_typed_cpp(
             _analyzed(), KEY, RAW_SHA256, "probe", "bind_probe",
-            cross_lane_assignment_profile=PROFILE)
+            cross_lane_assignment_profile=PROFILE,
+            prng_boolean_mix_select_profile=PRNG_PROFILE)
         copy = "[[maybe_unused]] glsl::Vec2 rotatedCentered = centered;"
         lane0 = "glsl::set_swizzle<0>(rotatedCentered, (c * glsl::swizzle<0>(centered) + s * glsl::swizzle<1>(centered)));"
         lane1 = "glsl::set_swizzle<1>(rotatedCentered, ((-s) * glsl::swizzle<0>(centered) + c * glsl::swizzle<1>(centered)));"
@@ -268,7 +275,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
     def test_frozen_emitter_retains_alias_and_cross_lane_read(self):
         with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False):
             rendered = emit_typed_cpp.render_typed_cpp(
-                _analyzed(), KEY, RAW_SHA256, "probe", "bind_probe",
+                _analyzed(HISTORICAL_RAW.read_text()), KEY, HISTORICAL_RAW_SHA256, "probe", "bind_probe",
                 cross_lane_assignment_profile=PROFILE)
         self.assertIn("[[maybe_unused]] glsl::Vec2& rotatedCentered = centered;", rendered)
         self.assertIn(
@@ -279,7 +286,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
         with mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False), \
                 emit_typed_cpp.authority_before_7f47340():
             emitted = emit_typed_cpp.render_typed_cpp(
-                _analyzed(), KEY, RAW_SHA256, "typed_gradient_historical",
+                _analyzed(HISTORICAL_RAW.read_text()), KEY, HISTORICAL_RAW_SHA256, "typed_gradient_historical",
                 "bind_synth_gradient_gradient",
                 cross_lane_assignment_profile=PROFILE)
         self.assertTrue(HISTORICAL_KERNEL.is_file())
@@ -294,11 +301,16 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
         changed = RAW.read_text(encoding="utf-8").replace(
             "vec2 rotatedCentered = centered;", "vec2 rotatedCentered = st;", 1)
         self.assertNotEqual(changed, RAW.read_text(encoding="utf-8"))
-        with self.assertRaisesRegex(emit_typed_cpp.TypedEmissionError,
+        module = importlib.import_module("tools.glslcpp.frontend.cross_lane_assignment_profile")
+        with self.assertRaisesRegex(ValueError,
                                     "source, function, whole-program, or interface identity mismatch"):
+            module.authenticate_cross_lane_assignment(_analyzed(changed), RAW_SHA256, PROFILE)
+        with self.assertRaisesRegex(emit_typed_cpp.TypedEmissionError,
+                                    "source, define, or typed-tree fingerprint mismatch"):
             emit_typed_cpp.render_typed_cpp(
                 _analyzed(changed), KEY, RAW_SHA256, "probe", "bind_probe",
-                cross_lane_assignment_profile=PROFILE)
+                cross_lane_assignment_profile=PROFILE,
+                prng_boolean_mix_select_profile=PRNG_PROFILE)
 
     def test_executable_oracle_reruns_mutant_and_checks_recomputed_ledger(self):
         authority_root = self._authority_root()

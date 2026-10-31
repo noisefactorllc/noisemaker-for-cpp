@@ -10,6 +10,8 @@ lockstep and reproduces the capture from an authenticated CPU checkout.
 """
 from __future__ import annotations
 
+from tests.historical_cpu import cpu_9b729482_root
+
 import hashlib
 import json
 import os
@@ -102,9 +104,9 @@ class Authority8ae8e2aCaptureTests(unittest.TestCase):
         self.assertEqual(native_table(cases, expected["results"]), source[start:end])
 
     def test_capture_reproduces_from_authenticated_cpu(self):
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = cpu_9b729482_root()
         if not configured:
-            self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce the 8ae8e2a capture")
+            self.skipTest("NOISEMAKER_CPU_9B729482_ROOT is required to reproduce the 8ae8e2a capture")
         # The current authority must pass the reference's full closure hash gate.
         # A configured wrong revision fails instead of skipping reproduction.
         result = subprocess.run(["node", str(FIXTURE / "reference.mjs"), configured,

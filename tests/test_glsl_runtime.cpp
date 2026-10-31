@@ -373,6 +373,23 @@ TEST(glsl_runtime_component_helpers_work_for_scalars_and_vectors) {
   REQUIRE(mix(expression, expression + 1.0, 0.5) == Vec2(0.25f, 1.75f));
 }
 
+TEST(glsl_prng_boolean_amount_preserves_cpu_arithmetic_mix) {
+  using namespace noisemaker::glsl;
+  const Vec3 p(-0.25f, -0.0f, 0.25f);
+  const auto folded = mix(-p * 2.0 + 1.0, p * 2.0,
+                          Vec3(greaterThanEqual(p, FloatExpr<3>(0.0))));
+  REQUIRE(folded == Vec3(1.5f, 0.0f, 0.5f));
+  REQUIRE(!std::signbit(folded[1]));
+  const float inf = std::numeric_limits<float>::infinity();
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  const Vec3 exceptional(inf, -inf, nan);
+  const auto result = mix(-exceptional * 2.0 + 1.0, exceptional * 2.0,
+                         Vec3(greaterThanEqual(exceptional, FloatExpr<3>(0.0))));
+  REQUIRE(std::isnan(result[0]));
+  REQUIRE(std::isnan(result[1]));
+  REQUIRE(std::isnan(result[2]));
+}
+
 TEST(glsl_runtime_scalar_smoothstep_narrows_once_after_double_intermediates) {
   const float value = noisemaker::glsl::smoothstep(0.27f, 0.63f, 0.418f);
   REQUIRE(noisemaker::float_bits_to_uint(value) == 0x3ebc73daU);
