@@ -258,7 +258,7 @@ jobs:
       - name: Run the push-gate subset
         env:
           NOISEMAKER_PUSH_GATE: '1'
-        run: python tools/run_partitioned_checks.py python
+        run: python tools/run_partitioned_checks.py python --groups 8
 
   python-tests:
     name: python test suite
