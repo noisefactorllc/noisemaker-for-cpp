@@ -923,7 +923,7 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
       provenance_.corpus_revision != "d0ed94ae19cca7328bc7d6b28902712a0838e1a9" ||
       provenance_.generated_payload_sha256 != "e8c3927bda3cb45c28403009bea3c1bf7049aebae2a818ee448ea7b5e09b0e36" ||
       provenance_.normalized_record_stream_sha256 != "fb72ad197ea19e667c5697fd234d983e5b70f299bad1d79bde69661969342215" ||
-      provenance_.compatibility_sha256 != "159be6920ee204e23559688fd2c14f03b054f3499bb259b3974339421e166156" ||
+      provenance_.compatibility_sha256 != "be495af31f9700b1a636e8730f3a87a895aa2a681d13d180c6a379dd0be213de" ||
       provenance_.cpu_behavioral_lock != "b869a51407abbc640cdc500f9e0c4fc39b17003b8b0c4ed1554ad05f4de0a0b5" ||
       provenance_.cpu_behavioral_file_count != 98 ||
       provenance_.cpu_revision != "b869a51407abbc640cdc500f9e0c4fc39b17003b8b0c4ed1554ad05f4de0a0b5" ||

@@ -1572,7 +1572,8 @@
       "mutable_global_frame_profile": "mutable-global-frame-shape-v1",
       "program_key": "synth/shape:shape",
       "runtime_define_profile": "runtime-defines-generic-v1",
-      "scalar_uint_xor_profile": "scalar-uint-xor-v1"
+      "scalar_uint_xor_profile": "scalar-uint-xor-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1"
     },
     {
       "defines": {},
@@ -1635,7 +1636,7 @@
       "program_key": "synth3d/shape3d:precompute"
     }
   ],
-  "revision": "d0ed94ae19cca7328bc7d6b28902712a0838e1a9",
+  "revision": "06070900e506b6c8ff6eb7b12d33e6c1bf285108",
   "schema": 1,
   "types": [
     "bool",

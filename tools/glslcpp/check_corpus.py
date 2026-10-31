@@ -30,7 +30,7 @@ else:
 
 
 SCHEMA = 1
-REVISION = "d0ed94ae19cca7328bc7d6b28902712a0838e1a9"
+REVISION = "06070900e506b6c8ff6eb7b12d33e6c1bf285108"
 _ROOT = pathlib.Path(__file__).resolve().parents[2]
 _CORPUS_RELATIVE = pathlib.PurePosixPath("tools/glslcpp/corpus") / REVISION
 _ADAPTERS = frozenset({
