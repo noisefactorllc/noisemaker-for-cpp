@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import {spawnSync} from 'node:child_process'
+import {createHash} from 'node:crypto'
 import {createRequire} from 'node:module'
 import fs from 'node:fs'
 import http from 'node:http'
@@ -157,27 +158,94 @@ function authenticateShaderGit(rootInput) {
 }
 
 function archivePinnedShader(shaderGit) {
+    const listed = spawnSync('git', ['ls-tree', '-r', '-z', UPSTREAM_REVISION], {cwd: shaderGit})
+    if (listed.status !== 0) throw new BenchmarkError('ERR_ARCHIVE', 'pinned shader tree lookup failed')
+    const text = listed.stdout.toString('utf8')
+    if (!Buffer.from(text).equals(listed.stdout) || !text.endsWith('\0')) {
+        throw new BenchmarkError('ERR_ARCHIVE', 'invalid shader tree metadata')
+    }
+    const names = new Set()
+    const entries = text.slice(0, -1).split('\0').map(row => {
+        const match = /^([0-9]{6}) (blob|commit) ([0-9a-f]{40})\t(.+)$/s.exec(row)
+        if (!match) throw new BenchmarkError('ERR_ARCHIVE', 'invalid shader tree entry')
+        const [, mode, type, oid, name] = match
+        if (name.includes('\\') || /^[A-Za-z]:/.test(name) || path.posix.isAbsolute(name) ||
+            name.split('/').some(part => !part || part === '.' || part === '..') || names.has(name)) {
+            throw new BenchmarkError('ERR_ARCHIVE', 'unsafe shader tree path')
+        }
+        if (type !== 'blob' || !(['100644', '100755'].includes(mode) ||
+            (mode === '120000' && name === 'shaders/share'))) {
+            throw new BenchmarkError('ERR_ARCHIVE', 'unsupported shader tree entry')
+        }
+        names.add(name)
+        return {name, mode, oid}
+    })
+    for (const entry of entries) {
+        const parts = entry.name.split('/')
+        for (let count = 1; count < parts.length; count++) {
+            if (names.has(parts.slice(0, count).join('/'))) {
+                throw new BenchmarkError('ERR_ARCHIVE', 'unsafe conflicting shader tree paths')
+            }
+        }
+    }
     const scratch = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'noisemaker-shader-benchmark-')))
     if (scratch === REPO_ROOT || scratch.startsWith(`${REPO_ROOT}${path.sep}`)) {
         fs.rmSync(scratch, {recursive: true})
         throw new BenchmarkError('ERR_SCRATCH', 'TMPDIR must be outside the checkout')
     }
-    const archive = path.join(scratch, 'upstream.tar')
     const root = path.join(scratch, 'noisemaker')
-    const archived = spawnSync('git', [
-        'archive', '--format=tar', `--output=${archive}`, '--prefix=noisemaker/', UPSTREAM_REVISION,
-    ], {cwd: shaderGit, encoding: 'utf8'})
-    if (archived.status !== 0) {
-        fs.rmSync(scratch, {recursive: true})
-        throw new BenchmarkError('ERR_ARCHIVE', `git archive failed: ${(archived.stderr || archived.stdout).trim()}`)
+    try {
+        const objectFile = path.join(scratch, 'upstream.blobs')
+        const descriptor = fs.openSync(objectFile, 'wx', 0o600)
+        const oids = [...new Set(entries.map(entry => entry.oid))]
+        let result
+        try {
+            result = spawnSync('git', ['cat-file', '--batch'], {
+                cwd: shaderGit, input: `${oids.join('\n')}\n`, encoding: 'utf8',
+                stdio: ['pipe', descriptor, 'pipe'],
+            })
+        } finally { fs.closeSync(descriptor) }
+        if (result.status !== 0) throw new BenchmarkError('ERR_ARCHIVE', 'pinned shader blob lookup failed')
+        const bytes = fs.readFileSync(objectFile)
+        fs.unlinkSync(objectFile)
+        const blobs = new Map()
+        let offset = 0
+        for (const oid of oids) {
+            const end = bytes.indexOf(10, offset)
+            const header = end < 0 ? null : /^([0-9a-f]{40}) blob (0|[1-9][0-9]*)$/.exec(bytes.subarray(offset, end).toString('utf8'))
+            const size = header ? Number(header[2]) : NaN
+            if (!header || header[1] !== oid || !Number.isSafeInteger(size) ||
+                end + 1 + size >= bytes.length || bytes[end + 1 + size] !== 10) {
+                throw new BenchmarkError('ERR_ARCHIVE', 'invalid pinned shader blob framing')
+            }
+            const data = bytes.subarray(end + 1, end + 1 + size)
+            if (createHash('sha1').update(`blob ${size}\0`).update(data).digest('hex') !== oid) {
+                throw new BenchmarkError('ERR_ARCHIVE', 'pinned shader blob hash mismatch')
+            }
+            blobs.set(oid, data)
+            offset = end + 2 + size
+        }
+        if (offset !== bytes.length) throw new BenchmarkError('ERR_ARCHIVE', 'unexpected trailing shader blob data')
+        const alias = entries.find(entry => entry.mode === '120000')
+        const shared = entries.filter(entry => entry.name.startsWith('share/'))
+        if (alias && (!blobs.get(alias.oid).equals(Buffer.from('../share')) || !shared.length)) {
+            throw new BenchmarkError('ERR_ARCHIVE', 'invalid shaders/share alias target')
+        }
+        const writeRegular = (entry, name = entry.name) => {
+            const destination = path.join(root, name)
+            const mode = entry.mode === '100755' ? 0o755 : 0o644
+            fs.mkdirSync(path.dirname(destination), {recursive: true})
+            fs.writeFileSync(destination, blobs.get(entry.oid), {flag: 'wx', mode})
+            fs.chmodSync(destination, mode)
+        }
+        for (const entry of entries) if (entry !== alias) writeRegular(entry)
+        // Project only the authenticated upstream alias; never create a link.
+        if (alias) for (const entry of shared) writeRegular(entry, `shaders/${entry.name}`)
+        return {scratch, root}
+    } catch (error) {
+        fs.rmSync(scratch, {recursive: true, force: true})
+        throw error
     }
-    const extracted = spawnSync('tar', ['-xf', archive, '-C', scratch], {encoding: 'utf8'})
-    if (extracted.status !== 0) {
-        fs.rmSync(scratch, {recursive: true})
-        throw new BenchmarkError('ERR_ARCHIVE', `archive extraction failed: ${(extracted.stderr || extracted.stdout).trim()}`)
-    }
-    fs.unlinkSync(archive)
-    return {scratch, root}
 }
 
 async function authenticateArchivedSource(cpuRoot, upstreamRoot) {

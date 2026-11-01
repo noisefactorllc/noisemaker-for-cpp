@@ -167,6 +167,122 @@ def required_directory(variable: str) -> pathlib.Path | None:
     return path if path.is_dir() else None
 
 
+class ShaderArchiveTests(unittest.TestCase):
+    def archive_probe(self, entries, assertion, *, corrupt_batch=False):
+        records = []
+        for name, mode, payload in entries:
+            data = payload.encode() if isinstance(payload, str) else payload
+            oid = hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()
+            records.append({"name": name, "mode": mode, "oid": oid, "data": list(data)})
+        script = r"""
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import vm from 'node:vm';
+import {createHash} from 'node:crypto';
+import {BenchmarkError} from LIBRARY_URL;
+const records = RECORDS;
+const temporary = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'shader-archive-test-')));
+const calls = [];
+const spawnSync = (command, args, options) => {
+    calls.push([command, ...args]);
+    if (command === 'git' && args[0] === 'ls-tree') {
+        assert(args.includes('-z'));
+        return {status: 0, stdout: Buffer.from(records.map(row =>
+            `${row.mode} ${row.mode === '160000' ? 'commit' : 'blob'} ${row.oid}\t${row.name}\0`).join('')), stderr: ''};
+    }
+    if (command === 'git' && args[0] === 'cat-file') {
+        assert.deepEqual(Array.from(args), ['cat-file', '--batch']);
+        const chunks = String(options.input).trim().split('\n').map(oid => {
+            const row = records.find(row => row.oid === oid);
+            assert(row, 'requested blob must be in the authenticated tree fixture');
+            const data = Buffer.from(row.data);
+            return Buffer.concat([Buffer.from(`${oid} blob ${data.length}\n`), data, Buffer.from('\n')]);
+        });
+        const batch = Buffer.concat(chunks);
+        if (CORRUPT_BATCH) batch[batch.indexOf(10) + 1] ^= 1;
+        fs.writeFileSync(options.stdio[1], batch);
+        return {status: 0, stderr: ''};
+    }
+    // Exercise the old path safely: never let its link-bearing archive reach tar.
+    if (command === 'git' && args[0] === 'archive') return {status: 0, stderr: ''};
+    if (command === 'tar') return {status: 1, stderr: 'fixture refuses link-creating tar extraction'};
+    throw new Error(`unexpected subprocess ${command} ${args}`);
+};
+const source = fs.readFileSync(DRIVER_PATH, 'utf8');
+const body = source.slice(source.indexOf('function archivePinnedShader('),
+    source.indexOf('\nasync function authenticateArchivedSource('));
+const extract = vm.runInNewContext(`(${body})`, {
+    fs, os: {...os, tmpdir: () => temporary}, path, spawnSync, createHash,
+    Buffer, BenchmarkError, REPO_ROOT: '/not-the-fixture', UPSTREAM_REVISION: REVISION,
+});
+try {
+    ASSERTION
+} finally {
+    fs.rmSync(temporary, {recursive: true, force: true});
+}
+"""
+        script = (script.replace("LIBRARY_URL", json.dumps(LIBRARY.as_uri()))
+                  .replace("RECORDS", json.dumps(records))
+                  .replace("CORRUPT_BATCH", json.dumps(corrupt_batch))
+                  .replace("DRIVER_PATH", json.dumps(str(DRIVER)))
+                  .replace(": REVISION,", ": " + json.dumps(CORPUS_REVISION) + ",")
+                  .replace("ASSERTION", assertion))
+        result = run_node(script)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_known_share_alias_projects_regular_bytes_and_executable_modes(self):
+        self.archive_probe([
+            ("share/data.bin", "100644", bytes([0, 255, 10, 42])),
+            ("share/run.sh", "100755", "#!/bin/sh\nexit 0\n"),
+            ("shaders/src/renderer.js", "100644", "export const value = 1;\n"),
+            ("shaders/share", "120000", "../share"),
+        ], r"""
+const result = extract(temporary);
+for (const name of ['share/data.bin', 'shaders/share/data.bin']) {
+    const file = path.join(result.root, name);
+    assert(fs.lstatSync(file).isFile());
+    assert.equal(fs.readFileSync(file).toString('hex'), '00ff0a2a');
+    assert.equal(fs.statSync(file).mode & 0o777, 0o644);
+}
+for (const name of ['share/run.sh', 'shaders/share/run.sh']) {
+    const file = path.join(result.root, name);
+    assert(fs.lstatSync(file).isFile());
+    assert.equal(fs.readFileSync(file, 'utf8'), '#!/bin/sh\nexit 0\n');
+    assert.equal(fs.statSync(file).mode & 0o777, 0o755);
+}
+assert(fs.lstatSync(path.join(result.root, 'shaders/share')).isDirectory());
+assert.equal(fs.readFileSync(path.join(result.root, 'shaders/src/renderer.js'), 'utf8'), 'export const value = 1;\n');
+assert(!calls.some(call => call[0] === 'tar' || call[1] === 'archive'));
+""")
+
+    def test_unsafe_tree_entries_fail_before_blob_read_or_materialization(self):
+        for name, mode in [("../escape", "100644"), ("/escape", "100644"),
+                           ("a/../escape", "100644"), ("a\\escape", "100644"),
+                           ("a//escape", "100644"), ("C:/escape", "100644"),
+                           ("other-link", "120000"), ("submodule", "160000")]:
+            with self.subTest(name=name, mode=mode):
+                self.archive_probe([(name, mode, "unsafe")], r"""
+assert.throws(() => extract(temporary), /unsafe|unsupported|invalid/i);
+assert(!calls.some(call => call[1] === 'cat-file' || call[0] === 'tar'));
+assert.deepEqual(fs.readdirSync(temporary), []);
+""")
+
+    def test_changed_alias_target_and_corrupt_blob_fail_without_projection(self):
+        for target in ["../../outside", "../share\n"]:
+            with self.subTest(target=target):
+                self.archive_probe([("share/data", "100644", "safe"),
+                                    ("shaders/share", "120000", target)], r"""
+assert.throws(() => extract(temporary), /alias|target/i);
+assert.deepEqual(fs.readdirSync(temporary), []);
+""")
+        self.archive_probe([("share/data", "100644", "safe")], r"""
+assert.throws(() => extract(temporary), /blob|hash/i);
+assert.deepEqual(fs.readdirSync(temporary), []);
+""", corrupt_batch=True)
+
+
 class ShaderBenchmarkContractTest(unittest.TestCase):
     def test_revision_tree_pair_matches_authority_and_rejects_old_tree(self) -> None:
         authority = json.loads(COMPATIBILITY.read_text())["authority"]
