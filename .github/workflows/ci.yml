@@ -173,18 +173,14 @@ jobs:
           path: cpu-fixtures-checkout
           persist-credentials: false
 
-      - uses: actions/checkout@v4
-        with:
-          repository: noisefactorllc/noisemaker
-          ref: 67d6e44c750e4f9bebb34f88645b934e3b933a84
-          fetch-depth: 0
-          path: shader-fixtures-checkout
-          persist-credentials: false
+      - name: Fetch authenticated shader objects without a checkout
+        run: |
+          git clone --bare https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
+          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse '67d6e44c750e4f9bebb34f88645b934e3b933a84^{commit}')" = '67d6e44c750e4f9bebb34f88645b934e3b933a84'
 
       - name: Prepare authenticated oracle sources
         run: |
           mv "$GITHUB_WORKSPACE/cpu-fixtures-checkout" "$RUNNER_TEMP/cpu-fixtures-git"
-          mv "$GITHUB_WORKSPACE/shader-fixtures-checkout" "$RUNNER_TEMP/shader-fixtures-git"
           python - <<'PY'
           import hashlib, io, os, pathlib, shutil, subprocess, tarfile
           temporary = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()
@@ -275,18 +271,14 @@ jobs:
           path: cpu-fixtures-checkout
           persist-credentials: false
 
-      - uses: actions/checkout@v4
-        with:
-          repository: noisefactorllc/noisemaker
-          ref: 67d6e44c750e4f9bebb34f88645b934e3b933a84
-          fetch-depth: 0
-          path: shader-fixtures-checkout
-          persist-credentials: false
+      - name: Fetch authenticated shader objects without a checkout
+        run: |
+          git clone --bare https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
+          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse '67d6e44c750e4f9bebb34f88645b934e3b933a84^{commit}')" = '67d6e44c750e4f9bebb34f88645b934e3b933a84'
 
       - name: Prepare authenticated oracle sources
         run: |
           mv "$GITHUB_WORKSPACE/cpu-fixtures-checkout" "$RUNNER_TEMP/cpu-fixtures-git"
-          mv "$GITHUB_WORKSPACE/shader-fixtures-checkout" "$RUNNER_TEMP/shader-fixtures-git"
           python - <<'PY'
           import hashlib, io, os, pathlib, shutil, subprocess, tarfile
           temporary = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()
@@ -399,18 +391,14 @@ jobs:
           path: cpu-fixtures-checkout
           persist-credentials: false
 
-      - uses: actions/checkout@v4
-        with:
-          repository: noisefactorllc/noisemaker
-          ref: 67d6e44c750e4f9bebb34f88645b934e3b933a84
-          fetch-depth: 0
-          path: shader-fixtures-checkout
-          persist-credentials: false
+      - name: Fetch authenticated shader objects without a checkout
+        run: |
+          git clone --bare https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
+          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse '67d6e44c750e4f9bebb34f88645b934e3b933a84^{commit}')" = '67d6e44c750e4f9bebb34f88645b934e3b933a84'
 
       - name: Prepare authenticated oracle sources
         run: |
           mv "$GITHUB_WORKSPACE/cpu-fixtures-checkout" "$RUNNER_TEMP/cpu-fixtures-git"
-          mv "$GITHUB_WORKSPACE/shader-fixtures-checkout" "$RUNNER_TEMP/shader-fixtures-git"
           python - <<'PY'
           import hashlib, io, os, pathlib, shutil, subprocess, tarfile
           temporary = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()
