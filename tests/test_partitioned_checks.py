@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import contextlib
+import io
 import os
 import pathlib
 import subprocess
@@ -131,6 +133,69 @@ class PartitionedCheckTests(unittest.TestCase):
         self.assertFalse(report["partitions"][0]["timed_out"])
         self.assertEqual(["run"] * 4, attempts)
 
+    def test_deep_group_timeouts_reach_singletons_without_masking_failures(self) -> None:
+        for outcome in ("pass", "assertion", "exception", "timeout"):
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                marker = root / "executed"
+                methods = []
+                expected = [f"test_deep.Example.test_{index:02d}" for index in range(16)]
+                for index, identity in enumerate(expected):
+                    body = (f"        with pathlib.Path({str(marker)!r}).open('a') as f: "
+                            f"f.write({identity!r} + '\\n')\n")
+                    if index == 0 and outcome == "assertion":
+                        body += "        self.fail('synthetic assertion')\n"
+                    if index == 0 and outcome == "exception":
+                        body += "        raise RuntimeError('synthetic exception')\n"
+                    methods.append(f"    def test_{index:02d}(self):\n" + body)
+                (root / "test_deep.py").write_text(
+                    "import pathlib, unittest\nclass Example(unittest.TestCase):\n" +
+                    "".join(methods))
+                real_bounded = runner.bounded
+                singleton_calls = []
+                budgets = []
+
+                def bounded_groups(command, seconds):
+                    if "--internal-ids" in command:
+                        budgets.append(seconds)
+                        selection = pathlib.Path(command[command.index("--internal-ids") + 1])
+                        identities = selection.read_text().splitlines()
+                        if len(identities) == 1:
+                            singleton_calls.extend(identities)
+                        # Model only the process timeout boundary. Every singleton
+                        # except the explicit timeout control executes a real test.
+                        if len(identities) > 1 or (outcome == "timeout" and identities == expected[:1]):
+                            return {"exit_code": -9, "timed_out": True, "seconds": seconds,
+                                    "stdout": "", "stderr": "synthetic bounded timeout\n"}
+                    return real_bounded(command, seconds)
+
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with mock.patch.object(runner.sys, "argv", [str(RUNNER), "python",
+                        "--start-directory", directory, "--partitions", "1", "--workers", "1"]), \
+                        mock.patch.object(runner, "bounded", side_effect=bounded_groups), \
+                        contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    code = runner.main()
+                records = [line.removeprefix("PARTITIONED_CHECKS ")
+                           for line in stdout.getvalue().splitlines()
+                           if line.startswith("PARTITIONED_CHECKS ")]
+                report = json.loads(records[-1])
+                row = report["partitions"][0]
+                self.assertEqual(0 if outcome == "pass" else 1, code, stderr.getvalue())
+                self.assertEqual(expected, sorted(singleton_calls))
+                self.assertTrue(budgets)
+                self.assertEqual({300}, set(budgets))
+                executed = expected[1:] if outcome == "timeout" else expected
+                self.assertEqual(executed, sorted(marker.read_text().splitlines()))
+                self.assertEqual(executed, sorted(row["executed_ids"]))
+                self.assertEqual(executed, sorted(row["accounted_ids"]))
+                self.assertEqual([], row["skipped_ids"])
+                self.assertEqual(outcome != "timeout", row["coverage_valid"])
+                self.assertEqual(outcome == "timeout", row["timed_out"])
+                self.assertEqual(0 if outcome == "pass" else 1, row["failure_count"])
+                self.assertEqual(outcome == "pass", report["success"])
+                if outcome in ("assertion", "exception"):
+                    self.assertIn("synthetic " + outcome, stderr.getvalue())
+
     def test_python_duplicate_discovery_fails_before_execution(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -145,6 +210,38 @@ class PartitionedCheckTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertFalse(report["success"])
         self.assertIn("duplicate", report["error"])
+
+    def test_python_failure_before_timeout_is_retained_without_retry(self) -> None:
+        for outcome in ("assertion", "exception", "subtest", "unexpected_success"):
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                failed, hung, attempts = (root / name for name in ("failed", "hung", "attempts"))
+                decoration = "    @unittest.expectedFailure\n" if outcome == "unexpected_success" else ""
+                action = {"assertion": "self.fail('original assertion')",
+                          "exception": "raise RuntimeError('original exception')",
+                          "subtest": "with self.subTest(value=1): self.fail('original subtest')",
+                          "unexpected_success": "return"}[outcome]
+                repeated = "self.fail('expected on retry')" if outcome == "unexpected_success" else "return"
+                (root / "test_mixed.py").write_text(
+                    "import pathlib,time,unittest\nclass Example(unittest.TestCase):\n" + decoration +
+                    "    def test_a(self):\n"
+                    f"        with pathlib.Path({str(attempts)!r}).open('a') as f: f.write('a\\n')\n"
+                    f"        p=pathlib.Path({str(failed)!r})\n"
+                    f"        if p.exists(): {repeated}\n"
+                    "        p.touch()\n        " + action + "\n"
+                    "    def test_b(self):\n"
+                    f"        p=pathlib.Path({str(hung)!r})\n"
+                    "        if not p.exists():\n            p.touch()\n            time.sleep(2)\n")
+                result, report = self.run_checks("python", "--start-directory", directory,
+                                                 "--partitions", "1", "--timeout-seconds", "0.3")
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertFalse(report["success"])
+                self.assertEqual(["a"], attempts.read_text().splitlines())
+                row = report["partitions"][0]
+                self.assertEqual(1, row["failure_count"])
+                self.assertTrue(row["timed_out"])
+                self.assertFalse(row["coverage_valid"])
+                self.assertEqual(["test_mixed.Example.test_a"], row["accounted_ids"])
 
     def test_python_suite_routes_are_complementary_and_platform_bound(self) -> None:
         frozen = [
@@ -229,6 +326,37 @@ class PartitionedCheckTests(unittest.TestCase):
                     self.assertTrue(any(not row["coverage_valid"] for row in report["partitions"]))
                 else:
                     self.assertTrue(all(row["coverage_valid"] for row in report["partitions"]))
+
+    def test_native_failure_before_timeout_is_retained_without_retry(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            executable, marker = root / "native-fixture", root / "attempts"
+            executable.write_text(f"#!{sys.executable}\n" + textwrap.dedent(f"""
+                import pathlib,sys,time
+                if sys.argv[1:]==['--list-tests']:
+                    print('alpha\\nbeta')
+                    raise SystemExit(0)
+                p=pathlib.Path({str(marker)!r})
+                first=not p.exists()
+                with p.open('a') as f: f.write('run\\n')
+                if first:
+                    print('FAIL alpha: original assertion',flush=True)
+                    time.sleep(2)
+                for item in pathlib.Path(sys.argv[2]).read_text().splitlines():
+                    print('PASS '+item)
+            """))
+            executable.chmod(0o700)
+            result, report = self.run_checks("native", "--executable", str(executable),
+                                             "--partitions", "1", "--timeout-seconds", "0.3")
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(["run"], marker.read_text().splitlines())
+            self.assertFalse(report["success"])
+            row = report["partitions"][0]
+            self.assertEqual(1, row["failure_count"])
+            self.assertTrue(row["timed_out"])
+            self.assertFalse(row["coverage_valid"])
+            self.assertEqual(["alpha"], row["accounted_ids"])
+            self.assertIn("FAIL alpha: original assertion", result.stderr)
 
     def test_bounds_reject_more_than_two_children_or_300_seconds(self) -> None:
         for option, value in (("--workers", "3"), ("--groups", "9"), ("--timeout-seconds", "301")):

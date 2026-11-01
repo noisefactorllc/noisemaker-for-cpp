@@ -114,7 +114,33 @@ def python_child(start, ids, report):
     skipped = []
     fixture_skipped = []
 
+    def write_report(result, pending_failure=False):
+        report.write_text(json.dumps({"executed_ids": executed,
+                                     "accounted_ids": executed + fixture_skipped,
+                                     "skipped_ids": skipped,
+                                     "failure_count": len(result.failures) + len(result.errors) +
+                                     len(result.unexpectedSuccesses) + int(pending_failure),
+                                     "skip_count": len(result.skipped),
+                                     "successful": False if pending_failure else result.wasSuccessful()}))
+
     class Result(unittest.TextTestResult):
+        def addFailure(self, test, err):
+            write_report(self, pending_failure=True)
+            super().addFailure(test, err)
+
+        def addError(self, test, err):
+            write_report(self, pending_failure=True)
+            super().addError(test, err)
+
+        def addSubTest(self, test, subtest, err):
+            if err is not None:
+                write_report(self, pending_failure=True)
+            super().addSubTest(test, subtest, err)
+
+        def addUnexpectedSuccess(self, test):
+            write_report(self, pending_failure=True)
+            super().addUnexpectedSuccess(test)
+
         def startTest(self, test):
             executed.append(test.id())
             super().startTest(test)
@@ -135,12 +161,7 @@ def python_child(start, ids, report):
             super().addSkip(test, reason)
 
     result = unittest.TextTestRunner(verbosity=2, resultclass=Result).run(suite)
-    report.write_text(json.dumps({"executed_ids": executed,
-                                 "accounted_ids": executed + fixture_skipped,
-                                 "skipped_ids": skipped,
-                                 "failure_count": len(result.failures) + len(result.errors),
-                                 "skip_count": len(result.skipped),
-                                 "successful": result.wasSuccessful()}))
+    write_report(result)
     return 0 if result.wasSuccessful() else 1
 
 
@@ -277,14 +298,16 @@ def main():
                         seconds=sum(result["seconds"] for result in results))
                     row["timed_out"] = any(result["timed_out"] for result in results)
 
-                def attempt(group, depth):
+                def attempt(group):
                     """Run IDs; split a timed-out group into bounded halves."""
                     if not group:
                         return []
                     actual = execute(group)
-                    if actual["timed_out"] and len(group) > 1 and depth < 3:
+                    if actual["timed_out"] and actual.get("failure_count", 0):
+                        return [actual]
+                    if actual["timed_out"] and len(group) > 1:
                         middle = len(group) // 2
-                        return attempt(group[:middle], depth + 1) + attempt(group[middle:], depth + 1)
+                        return attempt(group[:middle]) + attempt(group[middle:])
                     if actual["timed_out"]:
                         # A timed-out child leaves its remaining IDs unaccounted;
                         # no PASS may be claimed for the unfinished group.
@@ -297,7 +320,7 @@ def main():
                 # run on the whole of it.
                 size = -(-len(selected) // args.groups)
                 results = [result for start in range(0, len(selected), size)
-                           for result in attempt(selected[start:start + size], 0)]
+                           for result in attempt(selected[start:start + size])]
                 combine(results)
                 row["coverage_valid"] = Counter(row["accounted_ids"]) == Counter(selected)
                 return row
