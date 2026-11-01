@@ -21,7 +21,9 @@ class PrngBooleanMixProfileTests(unittest.TestCase):
         for name, variants in (
                 ('perlin', ({'DIMENSIONS': 2}, {'DIMENSIONS': 'int'})),
                 ('noise', ({'LOOP_OFFSET': 300, 'NOISE_TYPE': 10},
-                           {'NOISE_TYPE': 'int', 'LOOP_OFFSET': 'int'}))):
+                           {'NOISE_TYPE': 'int', 'LOOP_OFFSET': 'int'})),
+                ('shape', ({'LOOP_A_OFFSET': 40, 'LOOP_B_OFFSET': 30},
+                           {'LOOP_A_OFFSET': 'int', 'LOOP_B_OFFSET': 'int'}))):
             key = f'synth/{name}:{name}'
             raw = (ROOT / f'tools/glslcpp/corpus/{REVISION}/sources/synth/{name}/{name}.glsl').read_text()
             for defines in variants:

@@ -17,6 +17,7 @@ from tools.glslcpp.frontend.scalar_uint_xor_profile import (
     authenticate_scalar_uint_to_float_narrowing_skips,
     authenticate_scalar_uint_xor)
 from tools.glslcpp.frontend.semantic import analyze_program
+from tools.glslcpp.frontend.prng_boolean_mix_select_profile import PROFILE as PRNG
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,10 +61,12 @@ class ShapeRuntimeProfileTests(unittest.TestCase):
             program, self.sha, XOR)))
         generate_typed_slice.validate_capabilities(
             program, generate_typed_slice.APPROVED_CAPABILITIES, source_hash=self.sha,
-            scalar_uint_xor_profile=XOR, mutable_global_frame_profile=FRAME)
+            scalar_uint_xor_profile=XOR, mutable_global_frame_profile=FRAME,
+            prng_boolean_mix_select_profile=PRNG)
         emitted = emit_typed_cpp.render_typed_cpp(
             program, KEY, self.sha, "shape_runtime_test", "bind_shape_runtime_test",
-            scalar_uint_xor_profile=XOR, mutable_global_frame_profile=FRAME)
+            scalar_uint_xor_profile=XOR, mutable_global_frame_profile=FRAME,
+            prng_boolean_mix_select_profile=PRNG)
         self.assertIn("struct Frame", emitted)
         self.assertIn("bind_shape_runtime_test", emitted)
         self.assertIn(

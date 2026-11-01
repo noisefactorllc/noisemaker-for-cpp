@@ -459,6 +459,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
             {
                 "program_key": "synth/shape:shape",
                 "defines": {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30},
+                "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
                 "mutable_global_frame_profile":
                     "mutable-global-frame-shape-v1",
                 "runtime_define_profile": "runtime-defines-generic-v1",

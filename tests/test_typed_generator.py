@@ -20220,6 +20220,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
     KEY = "synth/shape:shape"
     PROFILE = "mutable-global-frame-shape-v1"
     XOR = "scalar-uint-xor-v1"
+    PRNG = "prng-boolean-mix-select-v1"
     ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 207 before the corpus expansion)
     LATER_ROWS = ("filter/dither:dither", "synth/julia:julia",
                   "filter/lightLeak:lightLeak",
@@ -20253,11 +20254,12 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
     KEY_SHA256 = (
         corpus_census.typed_key_sha256())
     SOURCE_SHA256 = (
-        "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67f")
+        "3e573dc301f56d326519ab42d6fa5b4edf50e98dda55c8d540425f61d8ce5ad7")
     DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
     ROW = {
         "defines": DEFINES,
         "mutable_global_frame_profile": PROFILE,
+        "prng_boolean_mix_select_profile": PRNG,
         "program_key": KEY,
         "runtime_define_profile": "runtime-defines-generic-v1",
         "scalar_uint_xor_profile": XOR,
@@ -20509,12 +20511,12 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                         generate_typed_slice.GeneratorError, re.escape(message)):
                     generate_typed_slice.validate_capabilities(
                         exact, generate_typed_slice.APPROVED_CAPABILITIES,
-                        source_hash=source_hash, **kwargs)
+                        source_hash=source_hash, **kwargs, prng_boolean_mix_select_profile=self.PRNG)
         # Only the exact pair is accepted.
         generate_typed_slice.validate_capabilities(
             exact, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=source_hash, scalar_uint_xor_profile=self.XOR,
-            mutable_global_frame_profile=self.PROFILE)
+            mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
 
     def test_emitter_fails_closed_on_every_carrier_combination(self) -> None:
         from tools.glslcpp.emit_typed_cpp import (TypedEmissionError,
@@ -20525,10 +20527,10 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
             with self.subTest(case=label):
                 with self.assertRaisesRegex(TypedEmissionError,
                                             re.escape(message)):
-                    render_typed_cpp(exact, exact.key, source_hash, **kwargs)
+                    render_typed_cpp(exact, exact.key, source_hash, **kwargs, prng_boolean_mix_select_profile=self.PRNG)
         emitted = render_typed_cpp(
             exact, exact.key, source_hash, scalar_uint_xor_profile=self.XOR,
-            mutable_global_frame_profile=self.PROFILE)
+            mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
         self.assertIn("struct Frame final {", emitted)
 
     def test_carrier_on_a_foreign_key_is_refused_by_both_authorities(self) -> None:
@@ -20574,7 +20576,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                          self.ROW["runtime_define_profile"])
         self.assertEqual(frozenset(self.ROW),
                          allowed_row_fields(self.KEY) |
-                         {"runtime_define_profile"})
+                         {"runtime_define_profile", "prng_boolean_mix_select_profile"})
         self.assertEqual(
             frozenset({"defines", "program_key", "scalar_uint_xor_profile",
                        "mutable_global_frame_profile"}),
@@ -20649,12 +20651,12 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
             # way, a missing carrier would sail through to emitted C++.
             generate_typed_slice.validate_capabilities(
                 exact, generate_typed_slice.APPROVED_CAPABILITIES,
-                source_hash=source_hash)
+                source_hash=source_hash, prng_boolean_mix_select_profile=self.PRNG)
             with self.assertRaisesRegex(
                     TypedEmissionError,
                     "exact mutable-global frame profile carrier required"):
                 render_typed_cpp(exact, exact.key, source_hash,
-                                 scalar_uint_xor_profile=self.XOR)
+                                 scalar_uint_xor_profile=self.XOR, prng_boolean_mix_select_profile=self.PRNG)
         self.assertEqual(1, neutered.call_count)
 
     def test_emitter_reauthenticates_from_its_own_source_hash(self) -> None:
@@ -20670,11 +20672,11 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         generate_typed_slice.validate_capabilities(
             exact, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=source_hash, scalar_uint_xor_profile=self.XOR,
-            mutable_global_frame_profile=self.PROFILE)
+            mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
         with self.assertRaises(TypedEmissionError):
             render_typed_cpp(exact, exact.key, "9" * 64,
                              scalar_uint_xor_profile=self.XOR,
-                             mutable_global_frame_profile=self.PROFILE)
+                             mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
         # The reused scalar-XOR carrier checks the caller digest too and is
         # re-authenticated first, so the message above belongs to it. This
         # mechanism's own caller-hash lock is asserted directly, so that
@@ -20744,7 +20746,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                     exact, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=source_hash,
                     scalar_uint_xor_profile=self.XOR,
-                    mutable_global_frame_profile=self.PROFILE)
+                    mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
         with mock.patch.object(emit_typed_cpp,
                                "authenticate_mutable_global_frame",
                                return_value=impostor):
@@ -20752,7 +20754,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                     TypedEmissionError, "unsupported source global declaration"):
                 render_typed_cpp(exact, exact.key, source_hash,
                                  scalar_uint_xor_profile=self.XOR,
-                                 mutable_global_frame_profile=self.PROFILE)
+                                 mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
 
         # (b) Only the FIRST declaration admitted. The validator names only
         #     `31:1`, so an implementation that stopped at one would look
@@ -20768,7 +20770,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                     exact, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=source_hash,
                     scalar_uint_xor_profile=self.XOR,
-                    mutable_global_frame_profile=self.PROFILE)
+                    mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
         with mock.patch.object(emit_typed_cpp,
                                "authenticate_mutable_global_frame",
                                return_value=real[:1]):
@@ -20777,7 +20779,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                     "mutable-global frame carrier cardinality mismatch"):
                 render_typed_cpp(exact, exact.key, source_hash,
                                  scalar_uint_xor_profile=self.XOR,
-                                 mutable_global_frame_profile=self.PROFILE)
+                                 mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
 
         # (c) The pair in the wrong order. Field contracts are positional, so
         #     the emitter must refuse rather than swap the two numeric
@@ -20791,7 +20793,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                     "mutable-global frame field contract mismatch"):
                 render_typed_cpp(exact, exact.key, source_hash,
                                  scalar_uint_xor_profile=self.XOR,
-                                 mutable_global_frame_profile=self.PROFILE)
+                                 mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
 
         # (d) A declaration that is not in the tree at all: the validator's
         #     ledger is what refuses it, because the admission loop never
@@ -20807,7 +20809,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                     exact, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=source_hash,
                     scalar_uint_xor_profile=self.XOR,
-                    mutable_global_frame_profile=self.PROFILE)
+                    mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
 
     def test_admitted_globals_stay_out_of_the_const_write_audit(self) -> None:
         """The two writes in `main` survive only because the admitted
@@ -20825,10 +20827,10 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         generate_typed_slice.validate_capabilities(
             exact, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=source_hash, scalar_uint_xor_profile=self.XOR,
-            mutable_global_frame_profile=self.PROFILE)
+            mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
         emitted = render_typed_cpp(
             exact, exact.key, source_hash, scalar_uint_xor_profile=self.XOR,
-            mutable_global_frame_profile=self.PROFILE)
+            mutable_global_frame_profile=self.PROFILE, prng_boolean_mix_select_profile=self.PRNG)
         # The const globals of the same program are still const, and still
         # emitted as locals -- the widening is scoped to the two mutable ones.
         self.assertIn("const double PI = ", emitted)
@@ -22892,14 +22894,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43820,
-                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
+                43891,
+                "26e0c680fc41ded6288785feeb687799f499570011d7d5fc27861cdea2fbc0ab"),
             "src/typed_generated/typed_slice.cpp": (
-                3916321,
-                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
+                3915501,
+                "02090ad931521addc04ae867d8935656284ad7a9a281f1c2515b02fc303f4d11"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
+                "b31bcc0ab826b8b493e9484a06aa3957bcb3877a969487bbcea08e2d58a066bc"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23681,14 +23683,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43820,
-                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
+                43891,
+                "26e0c680fc41ded6288785feeb687799f499570011d7d5fc27861cdea2fbc0ab"),
             "src/typed_generated/typed_slice.cpp": (
-                3916321,
-                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
+                3915501,
+                "02090ad931521addc04ae867d8935656284ad7a9a281f1c2515b02fc303f4d11"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
+                "b31bcc0ab826b8b493e9484a06aa3957bcb3877a969487bbcea08e2d58a066bc"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24455,14 +24457,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43820,
-                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
+                43891,
+                "26e0c680fc41ded6288785feeb687799f499570011d7d5fc27861cdea2fbc0ab"),
             "src/typed_generated/typed_slice.cpp": (
-                3916321,
-                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
+                3915501,
+                "02090ad931521addc04ae867d8935656284ad7a9a281f1c2515b02fc303f4d11"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
+                "b31bcc0ab826b8b493e9484a06aa3957bcb3877a969487bbcea08e2d58a066bc"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24995,14 +24997,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43820,
-                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
+                43891,
+                "26e0c680fc41ded6288785feeb687799f499570011d7d5fc27861cdea2fbc0ab"),
             "src/typed_generated/typed_slice.cpp": (
-                3916321,
-                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
+                3915501,
+                "02090ad931521addc04ae867d8935656284ad7a9a281f1c2515b02fc303f4d11"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
+                "b31bcc0ab826b8b493e9484a06aa3957bcb3877a969487bbcea08e2d58a066bc"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25599,14 +25601,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43820,
-                "4403039274a98538de3d133d44284d9fb61bea5e9444f11032954386824e3385"),
+                43891,
+                "26e0c680fc41ded6288785feeb687799f499570011d7d5fc27861cdea2fbc0ab"),
             "src/typed_generated/typed_slice.cpp": (
-                3916321,
-                "f74c8b37687131a7d16c35a1674ea0e5cefc1776de1c7ae41f3bbbb8094a1665"),
+                3915501,
+                "02090ad931521addc04ae867d8935656284ad7a9a281f1c2515b02fc303f4d11"),
             "src/typed_generated/typed_manifest.json": (
                 931565,
-                "0acb22d7bfbb022ed72741d5cb1f94260d94ad0d72de481aedce5d000cd611b2"),
+                "b31bcc0ab826b8b493e9484a06aa3957bcb3877a969487bbcea08e2d58a066bc"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),

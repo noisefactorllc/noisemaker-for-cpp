@@ -44,13 +44,13 @@ import types
 import unittest
 from unittest import mock
 
-from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+CORPUS_REVISION = "d0ed94ae19cca7328bc7d6b28902712a0838e1a9"
 CORPUS = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources")
 MODULE = "tools.glslcpp.frontend.mutable_global_frame_profile"
