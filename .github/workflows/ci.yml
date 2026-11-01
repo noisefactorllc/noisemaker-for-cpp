@@ -152,7 +152,7 @@ jobs:
   python-frozen-oracles:
     name: frozen oracle mutation words / macOS arm64
     # Frozen mutation witnesses retain architecture-specific NaN payloads.
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
