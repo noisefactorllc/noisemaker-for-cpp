@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""Read declared authority identities without executing repository code."""
+import argparse
+import ast
+import io
+import json
+from pathlib import Path
+import re
+import sys
+import tokenize
+
+
+def pin(value, location):
+    if not isinstance(value, str) or not re.fullmatch(r'[0-9a-f]{40}', value):
+        raise ValueError(f'{location} must be a lowercase full Git identity')
+    return value
+
+
+def literal_binding(root, filename, name):
+    source = (root / filename).read_text(encoding='utf-8')
+    module = ast.parse(source, filename=filename)
+    assignments = [node for node in module.body if isinstance(node, ast.Assign)
+                   and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
+                   and node.targets[0].id == name]
+    pattern_bindings = tuple(getattr(ast, kind) for kind in ('MatchAs', 'MatchStar', 'MatchMapping')
+                             if hasattr(ast, kind))
+    bindings = []
+    for node in ast.walk(module):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)) and node.id == name:
+            bindings.append(node)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.ExceptHandler)) and node.name == name:
+            bindings.append(node)
+        elif isinstance(node, ast.arg) and node.arg == name:
+            bindings.append(node)
+        elif isinstance(node, ast.alias) and (node.asname or node.name.split('.')[0]) == name:
+            bindings.append(node)
+        elif isinstance(node, pattern_bindings) and name in (getattr(node, 'name', None), getattr(node, 'rest', None)):
+            bindings.append(node)
+    location = f'{filename}:{name}'
+    if len(assignments) != 1 or len(bindings) != 1:
+        raise ValueError(f'{location} requires exactly one plain top-level assignment')
+    value = assignments[0].value
+    if not isinstance(value, ast.Constant) or not isinstance(value.value, str):
+        raise ValueError(f'{location} requires a plain string literal')
+    tokens = [token for token in tokenize.generate_tokens(io.StringIO(ast.get_source_segment(source, value)).readline)
+              if token.type not in (tokenize.NEWLINE, tokenize.NL, tokenize.ENDMARKER)]
+    if len(tokens) != 1 or tokens[0].type != tokenize.STRING:
+        raise ValueError(f'{location} requires a single string literal')
+    return pin(value.value, location)
+
+
+def unique_object(pairs):
+    result = {}
+    for name, value in pairs:
+        if name in result:
+            raise ValueError(f'duplicate JSON key: {name}')
+        result[name] = value
+    return result
+
+
+def document(root, filename):
+    with (root / filename).open(encoding='utf-8') as source:
+        value = json.load(source, object_pairs_hook=unique_object)
+    if not isinstance(value, dict):
+        raise ValueError(f'{filename} must contain a JSON object')
+    return value
+
+
+def same_pin(value, expected, location):
+    if pin(value, location) != expected:
+        raise ValueError(f'{location} differs from its declared authority')
+
+
+def authorities(root):
+    cpu = literal_binding(root, 'scripts/parity-summary', 'CPU_REV')
+    generator = 'tools/dsl/generate_backend_compatibility.py'
+    shader = literal_binding(root, generator, 'UPSTREAM_REVISION')
+    tree = literal_binding(root, generator, 'UPSTREAM_TREE')
+    same_pin(literal_binding(root, 'tools/glslcpp/check_corpus.py', 'REVISION'), shader,
+             'check_corpus.REVISION')
+    compatibility = document(root, 'src/effects/generated/backend_compatibility.json')
+    same_pin(compatibility['corpus_revision'], shader, 'backend_compatibility.corpus_revision')
+    same_pin(compatibility['authority']['upstream_revision'], shader, 'backend_compatibility.authority.upstream_revision')
+    same_pin(compatibility['authority']['upstream_tree'], tree, 'backend_compatibility.authority.upstream_tree')
+    corpus = document(root, 'tests/fixtures/dsl/executable-corpus.json')
+    records = corpus['records']
+    if not isinstance(records, list) or not records:
+        raise ValueError('executable corpus requires its records')
+    for location, value in [('executable-corpus', corpus)] + [
+            (f'executable-corpus.records[{index}]', record) for index, record in enumerate(records)]:
+        same_pin(value['provenance']['upstreamRevision'], shader, f'{location}.provenance.upstreamRevision')
+        same_pin(value['provenance']['upstreamTree'], tree, f'{location}.provenance.upstreamTree')
+    return cpu, shader, tree
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('mode', choices=('cpu', 'shader', 'github'))
+    args = parser.parse_args()
+    try:
+        cpu, shader, tree = authorities(Path(__file__).resolve().parents[1])
+    except (OSError, ValueError, SyntaxError, KeyError, TypeError, tokenize.TokenError) as error:
+        print(f'authority-pins: {error}', file=sys.stderr)
+        return 1
+    if args.mode == 'github':
+        print(f'cpu={cpu}\nshader={shader}\nshader_tree={tree}')
+    else:
+        print(cpu if args.mode == 'cpu' else shader)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

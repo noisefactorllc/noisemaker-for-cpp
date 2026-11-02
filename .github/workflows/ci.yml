@@ -165,20 +165,28 @@ jobs:
         with:
           node-version: '26.0.0'
 
+      - name: Read validated authority pins
+        id: authority
+        run: python3 scripts/authority-pins github >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: 9410b683cb8f3d0112f65d374a9fae2ec96871be
+          ref: ${{ steps.authority.outputs.cpu }}
           fetch-depth: 0
           path: cpu-fixtures-checkout
           persist-credentials: false
 
       - name: Fetch authenticated shader objects without a checkout
+        env:
+          SHADER_REVISION: ${{ steps.authority.outputs.shader }}
         run: |
-          git clone --bare https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
-          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse '67d6e44c750e4f9bebb34f88645b934e3b933a84^{commit}')" = '67d6e44c750e4f9bebb34f88645b934e3b933a84'
+          git clone --no-checkout https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
+          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse "${SHADER_REVISION}^{commit}")" = "$SHADER_REVISION"
 
       - name: Prepare authenticated oracle sources
+        env:
+          CPU_AUTHORITY_REVISION: ${{ steps.authority.outputs.cpu }}
         run: |
           mv "$GITHUB_WORKSPACE/cpu-fixtures-checkout" "$RUNNER_TEMP/cpu-fixtures-git"
           python - <<'PY'
@@ -186,7 +194,7 @@ jobs:
           temporary = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()
           cpu_git = temporary / 'cpu-fixtures-git'
           sources = {
-              'cpu-authority': '9410b683cb8f3d0112f65d374a9fae2ec96871be',
+              'cpu-authority': os.environ['CPU_AUTHORITY_REVISION'],
               'cpu-frozen-9b729482': '9b7294820eec2a0b95c66790b1dae374fa079c13',
               'cpu-historical': '8b257b0f8651f46d090dd76663805735194f1f56',
               'cpu-dsl-render': '4834b0144ee0524588144a482cca0067b15f68ec',
@@ -263,20 +271,28 @@ jobs:
         with:
           node-version: '26.0.0'
 
+      - name: Read validated authority pins
+        id: authority
+        run: python3 scripts/authority-pins github >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: 9410b683cb8f3d0112f65d374a9fae2ec96871be
+          ref: ${{ steps.authority.outputs.cpu }}
           fetch-depth: 0
           path: cpu-fixtures-checkout
           persist-credentials: false
 
       - name: Fetch authenticated shader objects without a checkout
+        env:
+          SHADER_REVISION: ${{ steps.authority.outputs.shader }}
         run: |
-          git clone --bare https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
-          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse '67d6e44c750e4f9bebb34f88645b934e3b933a84^{commit}')" = '67d6e44c750e4f9bebb34f88645b934e3b933a84'
+          git clone --no-checkout https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
+          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse "${SHADER_REVISION}^{commit}")" = "$SHADER_REVISION"
 
       - name: Prepare authenticated oracle sources
+        env:
+          CPU_AUTHORITY_REVISION: ${{ steps.authority.outputs.cpu }}
         run: |
           mv "$GITHUB_WORKSPACE/cpu-fixtures-checkout" "$RUNNER_TEMP/cpu-fixtures-git"
           python - <<'PY'
@@ -284,7 +300,7 @@ jobs:
           temporary = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()
           cpu_git = temporary / 'cpu-fixtures-git'
           sources = {
-              'cpu-authority': '9410b683cb8f3d0112f65d374a9fae2ec96871be',
+              'cpu-authority': os.environ['CPU_AUTHORITY_REVISION'],
               'cpu-frozen-9b729482': '9b7294820eec2a0b95c66790b1dae374fa079c13',
               'cpu-historical': '8b257b0f8651f46d090dd76663805735194f1f56',
               'cpu-dsl-render': '4834b0144ee0524588144a482cca0067b15f68ec',
@@ -383,20 +399,28 @@ jobs:
         with:
           node-version: '26.0.0'
 
+      - name: Read validated authority pins
+        id: authority
+        run: python3 scripts/authority-pins github >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: 9410b683cb8f3d0112f65d374a9fae2ec96871be
+          ref: ${{ steps.authority.outputs.cpu }}
           fetch-depth: 0
           path: cpu-fixtures-checkout
           persist-credentials: false
 
       - name: Fetch authenticated shader objects without a checkout
+        env:
+          SHADER_REVISION: ${{ steps.authority.outputs.shader }}
         run: |
-          git clone --bare https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
-          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse '67d6e44c750e4f9bebb34f88645b934e3b933a84^{commit}')" = '67d6e44c750e4f9bebb34f88645b934e3b933a84'
+          git clone --no-checkout https://github.com/noisefactorllc/noisemaker.git "$RUNNER_TEMP/shader-fixtures-git"
+          test "$(git -C "$RUNNER_TEMP/shader-fixtures-git" rev-parse "${SHADER_REVISION}^{commit}")" = "$SHADER_REVISION"
 
       - name: Prepare authenticated oracle sources
+        env:
+          CPU_AUTHORITY_REVISION: ${{ steps.authority.outputs.cpu }}
         run: |
           mv "$GITHUB_WORKSPACE/cpu-fixtures-checkout" "$RUNNER_TEMP/cpu-fixtures-git"
           python - <<'PY'
@@ -404,7 +428,7 @@ jobs:
           temporary = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()
           cpu_git = temporary / 'cpu-fixtures-git'
           sources = {
-              'cpu-authority': '9410b683cb8f3d0112f65d374a9fae2ec96871be',
+              'cpu-authority': os.environ['CPU_AUTHORITY_REVISION'],
               'cpu-frozen-9b729482': '9b7294820eec2a0b95c66790b1dae374fa079c13',
               'cpu-historical': '8b257b0f8651f46d090dd76663805735194f1f56',
               'cpu-dsl-render': '4834b0144ee0524588144a482cca0067b15f68ec',
@@ -492,10 +516,14 @@ jobs:
       # The frozen CPU authority is the public JS reference at the revision
       # whose 98-file behavioral aggregate this repository pins. Checking it
       # out at that exact commit reproduces the authority bit-for-bit.
+      - name: Read validated authority pins
+        id: authority
+        run: python3 scripts/authority-pins github >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: 9410b683cb8f3d0112f65d374a9fae2ec96871be
+          ref: ${{ steps.authority.outputs.cpu }}
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree
@@ -583,10 +611,14 @@ jobs:
       - uses: actions/checkout@v4
 
       # The same frozen authority as the corpus-parity job.
+      - name: Read validated authority pins
+        id: authority
+        run: python3 scripts/authority-pins github >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: 9410b683cb8f3d0112f65d374a9fae2ec96871be
+          ref: ${{ steps.authority.outputs.cpu }}
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree
