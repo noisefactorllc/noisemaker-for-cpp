@@ -16,9 +16,9 @@ CHECK_CORPUS = Path('tools/glslcpp/check_corpus.py')
 COMPATIBILITY = Path('src/effects/generated/backend_compatibility.json')
 CORPUS = Path('tests/fixtures/dsl/executable-corpus.json')
 INPUTS = (PARITY, GENERATOR, CHECK_CORPUS, COMPATIBILITY, CORPUS)
-CPU = '9410b683cb8f3d0112f65d374a9fae2ec96871be'
-SHADER = '67d6e44c750e4f9bebb34f88645b934e3b933a84'
-TREE = 'f5049c95316fdcf1ec122c7fd4a828cb815bc5c8'
+CPU = '52eb9d883805461279390b326ec3d2bcc62ffb49'
+SHADER = '2cf5bad078ecd94b00c966d08a2dd50cd095f884'
+TREE = 'ee1827916a307d3dde4efedcee1b79084ef7611f'
 BINDINGS = ((PARITY, 'CPU_REV', CPU), (GENERATOR, 'UPSTREAM_REVISION', SHADER),
             (GENERATOR, 'UPSTREAM_TREE', TREE), (CHECK_CORPUS, 'REVISION', SHADER))
 
