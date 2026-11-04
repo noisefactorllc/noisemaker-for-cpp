@@ -33,6 +33,31 @@ if [ "${NM_CHANGED_FILES:-}" != "" ]; then
         fi ;;
     esac
   done <<< "$NM_CHANGED_FILES"
+  # Shard split: when the supervisor passes NM_SHARD_INDEX/NM_SHARD_COUNT
+  # (the count is declared in .nm-test-shards at the repository root), each
+  # shard invocation runs only its round-robin slice of the selected modules
+  # so every invocation stays inside the five-minute bound; together the
+  # shards still run every selected test.
+  case "${NM_SHARD_COUNT:-}" in
+    ''|*[!0-9]*) : ;;
+    *) case "${NM_SHARD_INDEX:-}" in
+         ''|*[!0-9]*) : ;;
+         *) if [ -f .nm-test-shards ] && [ "$NM_SHARD_COUNT" -ge 1 ] \
+              && [ "$NM_SHARD_INDEX" -ge 0 ] \
+              && [ "$NM_SHARD_INDEX" -lt "$NM_SHARD_COUNT" ]; then
+              sharded="$(mktemp)"
+              index=0
+              while IFS= read -r test_file; do
+                if [ "$(( index % NM_SHARD_COUNT ))" = "$NM_SHARD_INDEX" ]; then
+                  echo "$test_file" >> "$sharded"
+                fi
+                index=$(( index + 1 ))
+              done < <(sort -u "$selected")
+              rm -f "$selected"
+              selected="$sharded"
+            fi ;;
+       esac ;;
+  esac
   if [ "$native_needed" = 1 ]; then
     if [ "${NOISEMAKER_TEST_SKIP_BUILD:-}" = "" ] || [ ! -x build/noisemaker-cpu-tests ]; then
       cmake -S . -B build -DCMAKE_BUILD_TYPE=Release >&2
