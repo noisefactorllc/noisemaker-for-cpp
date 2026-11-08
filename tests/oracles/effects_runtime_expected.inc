@@ -2,7 +2,7 @@
 #pragma once
 namespace effects_runtime_oracle {
 struct Case { std::string_view name; int effect; int flip; std::size_t fixture; std::span<const std::uint32_t> words; std::span<const std::uint8_t> rgba; };
-inline constexpr std::string_view kSourceSha256="b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316";
+inline constexpr std::string_view kSourceSha256="ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d";
 inline constexpr std::string_view kFactorySha256="6d6adaeff42719de80378bbaf61d1f3c405dc24e34cae99b9354750582b66cd2";
 inline constexpr std::string_view kLedgerSha256="4c444dd3e8c5f224eb570127268aab6c403768186511675d149567a5fab5e1b6";
 inline constexpr std::array<int,19> kEffects{0,1,2,3,4,5,6,7,8,9,100,110,120,200,210,220,230,300,301};

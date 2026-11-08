@@ -243,6 +243,28 @@ def without_expansion(spec: dict) -> dict:
                 if item.get("moodscape_frontend_profile") != "moodscape-runtime-frontend-v1":
                     raise AssertionError("historical Moodscape frontend carrier identity drift")
                 item["moodscape_frontend_profile"] = "moodscape-frontend-admission-v1"
+        # The 6f98d26a corpus moved Stipple off the derivative screen onto its
+        # fixed-point carrier and gave Craquelure the scalar uint right-shift
+        # carrier. The frozen authority's rows carry the older shapes.
+        projected = {"filter/stipple:stipple": (
+                         "stipple_fixed_point_profile", "stipple-fixed-point-v1",
+                         "derivative_admission_profile", "derivative-admission-v1"),
+                     "filter/craquelure:craquelure": (
+                         "hash_scalar_uint_rshift_profile", "hash-scalar-uint-rshift-v1",
+                         None, None)}
+        if {item["program_key"] for item in result["programs"]
+                if item["program_key"] in projected} != set(projected):
+            raise AssertionError("historical 6f98d26a carrier census drift")
+        for index, item in enumerate(result["programs"]):
+            if item["program_key"] not in projected:
+                continue
+            field, profile, older_field, older_profile = projected[item["program_key"]]
+            if item.pop(field, None) != profile or (
+                    older_field is not None and older_field in item):
+                raise AssertionError("historical 6f98d26a carrier identity drift")
+            if older_field is not None:
+                item[older_field] = older_profile
+            result["programs"][index] = dict(sorted(item.items()))
         present = {item["program_key"] for item in result["programs"]}
         result["programs"].extend(copy.deepcopy(item) for item in _RETIRED_ROWS
                                   if item["program_key"] not in present)

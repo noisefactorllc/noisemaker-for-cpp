@@ -73,9 +73,9 @@ KEY = "classicNoisedeck/cellRefract:cellRefract"
 PROFILE = "mutable-global-nine-array-cellrefract-v1"
 SOURCE_PATH = "classicNoisedeck/cellRefract/cellRefract.glsl"
 SOURCE = CORPUS / SOURCE_PATH
-RAW_SHA256 = "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70"
+RAW_SHA256 = "ada20a78762ccfa36b83995b7020f37e434e23da20650027ffa1784a8344430b"
 NORMALIZED_SHA256 = (
-    "31cce61e01275d44d46556bfc13edeea4383dcfbcfde024fd7c54a624933bd3c")
+    "7e84a65314f00f20f2c4b563d21862c960eefb8202b75741f8f780ae978edd68")
 
 EMBOSS_ID = 17
 SHARPEN_ID = 18
@@ -161,9 +161,9 @@ EFFECTS_PROFILE = "mutable-global-nine-array-effects-v1"
 KALEIDO_SOURCE_PATH = "classicNoisedeck/kaleido/kaleido.glsl"
 KALEIDO_SOURCE = CORPUS / KALEIDO_SOURCE_PATH
 KALEIDO_RAW_SHA256 = (
-    "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52")
+    "2cf9e5528e3b19debec7e9761afbcf0f47452a124dd4bef74b907b2ee67f9642")
 KALEIDO_NORMALIZED_SHA256 = (
-    "d31299ee69dd0c41965209860ef60a4ad2abf762229cc340383dce2646c6cc1d")
+    "db0f5080507860dbd2201d12b6a0c4638b90e5a593280f725429464a15180e99")
 
 # kaleido: five float[9] globals at declaration indices 12-16 (symbols 13-17),
 # immediately after the `fragColor` output at index 11.
@@ -944,8 +944,8 @@ class MutableGlobalArrayCensusTests(unittest.TestCase):
         module = _module()
         program = _analyzed()
         total, assigns = module._node_census(program)
-        self.assertEqual(1670, total)
-        self.assertEqual(173, assigns)
+        self.assertEqual(1655, total)
+        self.assertEqual(172, assigns)
         self.assertEqual(total, module._LOCKS[KEY]["total_nodes"])
         self.assertEqual(assigns, module._LOCKS[KEY]["total_assigns"])
         self.assertEqual(22, len(program.functions))
@@ -1836,11 +1836,11 @@ class KaleidoMutableGlobalArraySurfaceTests(unittest.TestCase):
         lock = module._LOCKS[KALEIDO_KEY]
         self.assertEqual(KALEIDO_SOURCE_PATH, lock["source_path"])
         raw = (CORPUS / lock["source_path"]).read_bytes()
-        self.assertEqual(27570, len(raw))
+        self.assertEqual(27493, len(raw))
         self.assertEqual(KALEIDO_RAW_SHA256, hashlib.sha256(raw).hexdigest())
         self.assertEqual(KALEIDO_RAW_SHA256, lock["raw_sha256"])
         self.assertEqual(KALEIDO_NORMALIZED_SHA256, lock["normalized_sha256"])
-        self.assertEqual(21817, lock["normalized_bytes"])
+        self.assertEqual(21740, lock["normalized_bytes"])
         # Cross-module consistency: the already-frozen scalar-uint-XOR lock for
         # kaleido pins the same raw source (verify, don't rebuild).
         from tools.glslcpp.frontend import scalar_uint_xor_profile
@@ -1938,8 +1938,8 @@ class KaleidoMutableGlobalArrayAdmissionTests(unittest.TestCase):
         program = _analyzed_k()
         lock = module._LOCKS[KALEIDO_KEY]
         total, assigns = module._node_census(program)
-        self.assertEqual(3178, total)
-        self.assertEqual(179, assigns)
+        self.assertEqual(3163, total)
+        self.assertEqual(178, assigns)
         self.assertEqual(total, lock["total_nodes"])
         self.assertEqual(assigns, lock["total_assigns"])
         self.assertEqual(43, len(program.functions))
@@ -2072,7 +2072,7 @@ class KaleidoMutableGlobalArrayAdmissionTests(unittest.TestCase):
         program = _analyzed_k()
         main = _main(program)
         self.assertEqual(KALEIDO_MAIN_ID, main.id)
-        self.assertEqual("813:1-833:2", module._span(main))
+        self.assertEqual("811:1-831:2", module._span(main))
         self.assertEqual(11, len(main.body))
         lock = module._LOCKS[KALEIDO_KEY]
         sites = module._writer_call_sites(main, lock)

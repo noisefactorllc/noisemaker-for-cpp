@@ -27,14 +27,26 @@ the float64 operator.
 that the authority routes. A census of every division of the 298 transpiled
 programs at authority 7f473400 (the instrumented kernel generator against
 this module) matched every routed and every unrouted site.
+
+The authority also routes one division by source-guarded rewrite, outside the
+rule above. compile-glsl.js's ``restoreCraquelureUintHash`` lowers
+filter/craquelure's ``vec2 p = (gc + wob) / spacingPx;``, a division by
+crackMask's parameter, to ``$runtime.fdiv(gc[i] + wob[i], spacingPx)``: the
+Metal compile is ``a * rcp(spacingPx)``. That site is added here only for the
+pinned craquelure source, by node identity.
 """
 
 from __future__ import annotations
+
+import hashlib
 
 from .typed_ir import TypedExpression, TypedProgram, TypedStatement
 
 FLOAT_TYPES = frozenset({"float", "vec2", "vec3", "vec4"})
 VECTOR_TYPES = frozenset({"vec2", "vec3", "vec4"})
+
+CRAQUELURE_KEY = "filter/craquelure:craquelure"
+CRAQUELURE_SOURCE_SHA256 = "876e499ca270346151a873e74c744c884e96e9db7632a9341a0baf5107724d53"
 
 
 class MetalDivisionSites:
@@ -181,7 +193,50 @@ class _Classifier:
             scope: dict = {parameter.name: (parameter, None) for parameter in function.parameters}
             for statement in function.body:
                 self._statement(statement, scope)
+        if self.program.key == CRAQUELURE_KEY and (
+                hashlib.sha256(self.program.raw_source.encode("utf-8")).hexdigest()
+                == CRAQUELURE_SOURCE_SHA256):
+            self.sites.append(_craquelure_cell_division(self.program))
         return MetalDivisionSites(tuple(self.sites))
+
+
+def _craquelure_cell_division(program: TypedProgram) -> TypedExpression:
+    """The pinned craquelure's `(gc + wob) / spacingPx` node in crackMask."""
+    functions = [item for item in program.functions if item.name == "crackMask"]
+    if len(functions) != 1:
+        raise ValueError(f"{CRAQUELURE_KEY}: crackMask identity drift")
+    function = functions[0]
+    parameters = {item.name: item for item in function.parameters}
+    nodes: list[TypedExpression] = []
+
+    def expression(value: TypedExpression) -> None:
+        nodes.append(value)
+        for child in value.children:
+            expression(child)
+
+    def statement(value: TypedStatement) -> None:
+        for item in value.expressions:
+            expression(item)
+        for child in value.children:
+            statement(child)
+
+    for item in function.body:
+        statement(item)
+    divisions = [node for node in nodes if node.kind == "binary" and node.operator == "/"]
+    matches = [
+        node for node in divisions
+        if node.type.display() == "vec2"
+        and node.children[0].kind == "binary" and node.children[0].operator == "+"
+        and tuple((child.kind, child.symbol.name if child.symbol else None)
+                  for child in node.children[0].children) == (("id", "gc"), ("id", "wob"))
+        and node.children[1].kind == "id"
+        and node.children[1].type.display() == "float"
+        and node.children[1].symbol is not None
+        and node.children[1].symbol.name == "spacingPx"
+        and node.children[1].symbol_id == getattr(parameters.get("spacingPx"), "id", None)]
+    if len(matches) != 1:
+        raise ValueError(f"{CRAQUELURE_KEY}: (gc + wob) / spacingPx division identity drift")
+    return matches[0]
 
 
 def metal_division_sites(program: TypedProgram) -> MetalDivisionSites:

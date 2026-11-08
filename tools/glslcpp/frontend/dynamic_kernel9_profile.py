@@ -8,11 +8,11 @@ from .typed_ir import (FixedArrayInParameterProof, FixedArrayParameterProof,
 from . import fixed_array_in_parameter_proof as base
 from . import dynamic_array_reads_profile
 
-LOCKS = {'classicNoisedeck/cellRefract:cellRefract': {'raw': 'aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70',
-                                              'norm': '9819cf76efd248190df8fa9686bb77babdac1a34ef2a1e35cce9f7ef532f546d',
-                                              'functions': '943d955bb06aa106b80162aa0f2ca45b739de232ba9859f80db3f0f87a20a86e',
-                                              'interface': '82826c9e55d437e72c144c9ab4923c85678960764100e9f64172710072da74e5',
-                                              'whole': 'f793d46c9317b959cd71d99f8656f31f435aa70beafbf6218585bcd77ad8947e',
+LOCKS = {'classicNoisedeck/cellRefract:cellRefract': {'raw': 'ada20a78762ccfa36b83995b7020f37e434e23da20650027ffa1784a8344430b',
+                                              'norm': '22a9d4448ac02c076f341b47ae06b81ca8a2d4929b6f54f55912aee1f7784ab3',
+                                              'functions': '0c378d67a979c337fa8da37bc1e860cb4153e22bb52710c10b9dab64deb3e395',
+                                              'interface': '39670d2ea49f74231e7cdde899771c86db06a3d32d70cfbc935ef0ebc3ff8c86',
+                                              'whole': 'b7425e6a68f2e2b163862cee80a0004d79a4c5356fd3ff7e791b19ecf85acaee',
                                               'defines': [['KERNEL', 'str', 'int'],
                                                           ['SHAPE', 'str', 'int']],
                                               'bindings': ['KERNEL:int',
@@ -114,11 +114,11 @@ LOCKS = {'classicNoisedeck/cellRefract:cellRefract': {'raw': 'aa93167faa07ee22ff
                                                                ('convolutionKernel',
                                                                 23,
                                                                 'edge2')]},
- 'classicNoisedeck/kaleido:kaleido': {'raw': '18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52',
-                                      'norm': '3a3edec1e90b4645103803645313361358d1e628cd174715edf81b52ff6edd5a',
-                                      'functions': 'b3352eb881128fbacdb9361df1c91a7d59297c7643fe2ea5b53034cd3f9e31ae',
-                                      'interface': '2a120b047f44fe99652f5ad47bb46ea6e545a50adadeb4ff1a43e1fa42b1baab',
-                                      'whole': '4cdecc27fc3c26c2da67448d49468e02dabf85f963affecab2935499026a0db5',
+ 'classicNoisedeck/kaleido:kaleido': {'raw': '2cf9e5528e3b19debec7e9761afbcf0f47452a124dd4bef74b907b2ee67f9642',
+                                      'norm': '2a44d7dee6d355166a8f92e8ef91e4dee07a4116b025f8044212cfbccb86397c',
+                                      'functions': '66c8cb3b21b986fdadc492c6046f86a3fdaf4973d7e0b93e257e7dd3fad4989e',
+                                      'interface': '72e57face8e787b4c47526f6ec0ab8e4ec1f296eea652beebd94931e4e60fb9e',
+                                      'whole': '055e9395c72c32535bf7a01caa69c49ff861996385c37f31f56b96a51ea1e977',
                                       'defines': [['DIRECTION', 'str', 'int'],
                                                   ['KERNEL', 'str', 'int'],
                                                   ['LOOP_OFFSET', 'str', 'int'],
@@ -321,13 +321,13 @@ _LOCAL_VALUES = {
 }
 
 
-CURRENT_EFFECTS_SHA256 = 'b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316'
+CURRENT_EFFECTS_SHA256 = 'ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d'
 CURRENT_EFFECTS_LOCK = {**LOCKS[base.EFFECTS_KEY],
-    'raw': 'b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316',
-    'norm': '681ded19ebe739c5ec7b017f0125f59fbb7b0e63378b86555c1bb0db5cf868e8',
-    'functions': '017de8e3224b22c9cddcb24fedcbdf10bd1347cd5e6caef90f08c2162e6e08a7',
-    'interface': '73d2db3b08da42881fd2c52d2f15054d0a747cc465b5f64ca0f37c1192c53254',
-    'whole': '149cdfbac71a70cb0016b66b299b196b79e76f0b2c977008272c8118488847e0',
+    'raw': 'ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d',
+    'norm': '70fa6a908c13da4f765d9cbb7be477dd2ceb2e2b176e65c92256e8bf29e9f8a6',
+    'functions': '16ee1106d866b70c2845df862d89df2a6eade8e396451922704b56d174529c44',
+    'interface': 'fd5a54eab9c2b3e9e6970949c3e0e9e99ecb7787a87321596a92a05ad87a77fb',
+    'whole': '9aaf87731d82811a7b6d100c7605f92a9586c0fe76cbcaf567d6b2653e19540e',
 }
 
 
@@ -399,13 +399,13 @@ def _effects_current_tile_route(program: TypedProgram) -> bool:
             or sample.symbol is None or sample.symbol.name != 'tex'):
         return False
     return (base._sha(condition)
-            == '892e1660fd223697602419322324d1c391b9b1f93cc03be943269efab60733a9'
+            == '7258b7f64b3d2c394bcce105f4d061a2b65eed7c9aa7ab2ee4612fd388994bb6'
             and base._sha(budget)
-            == 'ea51458c49c76af9a47f9dc9ac38b53a1bb552f41f137eb2646bea8c9419d481'
+            == 'edf724312c1f3909e535b768a0c619998963b9220fa1f827d98632936f3a8181'
             and base._sha(clamp)
-            == '606b7b4ba528cb6d2bfe15947d4573384abda3115e737cdb2ba6a999cd49b4aa'
+            == '48b8f0e22276ae216a5f3fc329dfe4cf7287b9c7d634dcd41f7e619e60a194fc'
             and base._sha(sample)
-            == '57b83844586971723915d1caa6ec74158366455544fd2ea53730a29cf55cc1a2')
+            == '83ad635fae9e82d2157796c57841c722c8bde6d7c1b2208246aef1a656328979')
 
 
 def prove(program: TypedProgram) -> FixedArrayInParameterProof | None:
@@ -606,7 +606,7 @@ KALEIDO_OFFSET_ARMS = (10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110,
                        120, 200, 210, 300, 310, 320, 330, 340, 350,
                        360, 370, 380, 400, 410)
 KALEIDO_OFFSET_FUNCTION_SHA256 = (
-    '8b3b9477bbab087abbec16533c992cc52a7d3b3c29628d21199ba33082f8cfe3')
+    '13ad36d336a241a92bb8ed9e5e7bcbbc8469cc38a5ba295b5c8f72fa4c65f54e')
 
 
 def authenticate_kaleido_offset_terminal(program: TypedProgram,
@@ -665,7 +665,7 @@ def authenticate_effects_subpixel_value_copy(program: TypedProgram,
                        if function.name == 'subpixel' and function.body)
     if (len(candidates) != 1 or candidates[0].signature.id != 95
             or base._sha(candidates[0]) != (
-                '8bcd1625b7deadd4e73cf6753240d08a9e8ec117fb276977edb11ed3cd583f1d' if source_hash == CURRENT_EFFECTS_SHA256
+                'a14f87ef94ea9ea27bb7efbc9fa98933f732433d4f8caad3bd910b8985bbd100' if source_hash == CURRENT_EFFECTS_SHA256
                 else EFFECTS_SUBPIXEL_FUNCTION_SHA256)):
         raise ValueError('dynamic Effects subpixel function identity mismatch')
     declarations = tuple(expression for statement in candidates[0].body

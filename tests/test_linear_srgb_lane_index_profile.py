@@ -34,7 +34,7 @@ MODULE = "tools.glslcpp.frontend.linear_srgb_lane_index_profile"
 SHAPES_KEY = "classicNoisedeck/shapes:shapes"
 SHAPES_PROFILE = "linear-srgb-shapes-lane-index-v1"
 SHAPES_RAW_SHA256 = (
-    "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e")
+    "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5")
 
 SOURCES = {
     "classicNoisedeck/cellNoise:cellNoise":
@@ -46,8 +46,8 @@ SOURCES = {
 EXISTING = {
     "classicNoisedeck/cellNoise:cellNoise":
         ("linear-srgb-cellnoise-lane-index-v1",
-         ("125:13-125:22", "126:13-126:20", "126:23-126:32",
-          "128:13-128:20", "128:35-128:44")),
+         ("123:13-123:22", "124:13-124:20", "124:23-124:32",
+          "126:13-126:20", "126:35-126:44")),
     "filter/adjust:adjust":
         ("linear-srgb-adjust-lane-index-v1",
          ("78:13-78:22", "79:13-79:20", "79:23-79:32",
@@ -57,8 +57,8 @@ EXISTING = {
          ("48:13-48:22", "49:13-49:20", "49:23-49:32",
           "51:13-51:20", "51:35-51:44")),
 }
-SHAPES_SPANS = ("576:13-576:22", "577:13-577:20", "577:23-577:32",
-                "579:13-579:20", "579:35-579:44")
+SHAPES_SPANS = ("574:13-574:22", "575:13-575:20", "575:23-575:32",
+                "577:13-577:20", "577:35-577:44")
 SHAPES_ROLES = ("read", "write", "read", "write", "read")
 COARSE = "source, define, function, whole-program, or interface mismatch"
 

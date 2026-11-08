@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import dataclasses
 import hashlib
+import importlib
 import importlib.util
 import pathlib
 import sys
@@ -14,7 +15,8 @@ from tests import corpus_census
 from tools.glslcpp import check_corpus, emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import (
     dynamic_define_hoist, fixed_array_in_parameter_proof, lens_distortion_comparer_profile,
-    mutable_global_array_profile, noise_frontend_profile, out_inout_admission_profile, typed_ir)
+    linear_srgb_lane_index_profile, mutable_global_array_profile, noise_frontend_profile,
+    out_inout_admission_profile, typed_ir)
 
 
 # Original source bytes from noisemaker-for-cpp a15c4b6816a3cb4a1811a03429e4fbf84530c722.
@@ -27,6 +29,7 @@ _CRT_PROFILE_SHA256 = "703faf71656bf6a36afeb12ad12a4e8aa390b850aac4c9e79f9e527d4
 _GLYPH_PROFILE_SHA256 = "f5af521501fe990e27e5168c4710fb38d06098416d08f22f2f6c9bb8e7759a14"
 _COMPATIBILITY_SHA256 = "9a55bad28d4b7d9a8ab2cd4ad9af772b6d21a33ccf52f6d55deab5ddfa55eb6a"
 _PRE_5976B7A6_CONSTANTS_SHA256 = "be337fed1a31e0dd07eb8b15e162a3f49c2e6372eb119fd1c0145400aaa57fba"
+_PRE_6F98D26A_CONSTANTS_SHA256 = "a0e7b5881c8061eb17ba5a92565ab9683d0a6846c7e0977ea9116c78cb9da337"
 _CRT_VOCABULARY = {'CRT_ENTRY': {'effect_id': 'filter/crt',
                'normalized_bytes': 18054,
                'normalized_sha256': 'acd1c3f05c6d02052592aeb46bbbc49d23e18f4e83530498687903e00b4623fe',
@@ -265,6 +268,49 @@ def _pre_5976b7a6_constants():
     return namespace["VALUES"]
 
 
+def _pre_6f98d26a_constants():
+    """The module values the 6f98d26a sync re-froze, as of noisemaker-for-cpp 25c2761.
+
+    The frozen milestones authenticated the 0ed489ec sources against these
+    values. Record constructors are qualified by their defining module.
+    """
+    path = pathlib.Path(__file__).parent / "fixtures/historical/pre_6f98d26a_profile_constants.py"
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != _PRE_6F98D26A_CONSTANTS_SHA256:
+        raise AssertionError("historical pre-6f98d26a profile constants drift")
+    namespace = {"__builtins__": {"frozenset": frozenset}}
+    for module in (dynamic_define_hoist, fixed_array_in_parameter_proof,
+                   linear_srgb_lane_index_profile, mutable_global_array_profile, typed_ir):
+        namespace[module.__name__.rsplit(".", 1)[1]] = module
+    exec(compile(raw, str(path), "exec"), namespace)
+    return namespace["VALUES"]
+
+
+def _enter_pre_6f98d26a_constants(stack: contextlib.ExitStack) -> None:
+    for module_name, attribute, path, mode, value in _pre_6f98d26a_constants():
+        module = importlib.import_module(module_name)
+        if mode == "replace":
+            if path:
+                raise AssertionError("historical pre-6f98d26a replace row has a path")
+            stack.enter_context(mock.patch.object(module, attribute, value))
+            continue
+        target = getattr(module, attribute)
+        for key in path:
+            target = target[key]
+        if not isinstance(target, dict):
+            raise AssertionError("historical pre-6f98d26a row does not select a dict")
+        if mode == "update":
+            stack.enter_context(mock.patch.dict(target, value))
+        elif mode == "drop":
+            if any(key not in target for key in value):
+                raise AssertionError("historical pre-6f98d26a drop row names an absent key")
+            stack.enter_context(mock.patch.dict(
+                target, {key: item for key, item in target.items() if key not in value},
+                clear=True))
+        else:
+            raise AssertionError("historical pre-6f98d26a row has an unknown mode")
+
+
 def _historical_effects_fixed_array_proof():
     """Load the exact 0ed Effects proof logic from the published baseline."""
     path = (pathlib.Path(__file__).parent
@@ -309,6 +355,9 @@ def historical_authority(spec: dict):
         return None
 
     with contextlib.ExitStack() as stack:
+        # Restore the values this corpus sync re-froze before every older
+        # projection below, which may override them.
+        _enter_pre_6f98d26a_constants(stack)
         stack.enter_context(mock.patch.object(
             emit_typed_cpp, "authenticated_effects_emission_omission",
             side_effect=retain_effects_helpers))

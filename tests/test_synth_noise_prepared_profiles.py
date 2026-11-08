@@ -153,12 +153,15 @@ def _function(program, name):
 
 
 def _foreign_proof():
-    """A non-None fixed-array proof borrowed from cellRefract (presence only)."""
+    """A non-None fixed-array proof borrowed from the live cellRefract (presence only)."""
     from tools.glslcpp.frontend.fixed_array_in_parameter_proof import (
         attach_fixed_array_in_parameter_proof)
-    corpus, entry = _entry("classicNoisedeck/cellRefract:cellRefract")
-    raw = (corpus / entry["source"]).read_text()
     key = "classicNoisedeck/cellRefract:cellRefract"
+    corpus = check_corpus._corpus_root(REPOSITORY)
+    entry = next(item for item in json.loads(
+        (corpus / "manifest.json").read_text())["programs"]
+        if item["program_key"] == key)
+    raw = (corpus / entry["source"]).read_text()
     defines = generate_typed_slice._defaults(REPOSITORY, key)
     program = analyze_program(parse_program(raw, key, defines), key)
     proof = attach_fixed_array_in_parameter_proof(

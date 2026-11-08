@@ -13,7 +13,7 @@ SOURCE = (Path(check_corpus.__file__).resolve().parents[2]
           / 'tools/glslcpp/corpus' / check_corpus.REVISION
           / 'sources/classicNoisedeck/moodscape/moodscape.glsl').read_text()
 
-RAW_SHA256 = "2b020887bfb1a4dd366b1583e4ff68fd47193bd4993ba1052170de0981aabfa1"
+RAW_SHA256 = "c93cc8744c2368446fe6214a80cdc9e6fd8b36b1dee89f511812c7ba2f0145dc"
 
 
 def program(source=SOURCE, defines=None):

@@ -12,6 +12,7 @@ Authenticates exact scalar uint right shift (>>) expressions across hash functio
 - points/physical:agent (hash_uint)
 - render/pointsEmit:init (hash_uint)
 - points/dla:agent (hash_uint)
+- filter/craquelure:craquelure (hash12)
 
 All candidate right shift expressions operate strictly on uint operands and evaluate to uint.
 """
@@ -37,6 +38,7 @@ LIFE_AGENT_KEY = "points/life:agent"
 PHYSARUM_AGENT_KEY = "points/physarum:agent"
 DLA_AGENT_KEY = "points/dla:agent"
 ATTRACTOR_AGENT_KEY = "points/attractor:agent"
+CRAQUELURE_KEY = "filter/craquelure:craquelure"
 HASH_SCALAR_UINT_RSHIFT_KEYS = frozenset({
     FLOW3D_AGENT_KEY,
     BUDDHABROT_AGENT_KEY,
@@ -50,9 +52,20 @@ HASH_SCALAR_UINT_RSHIFT_KEYS = frozenset({
     PHYSARUM_AGENT_KEY,
     DLA_AGENT_KEY,
     ATTRACTOR_AGENT_KEY,
+    CRAQUELURE_KEY,
 })
 
 _PROFILES = {
+    CRAQUELURE_KEY: {
+        "raw_bytes": 10348,
+        "raw_sha256": "876e499ca270346151a873e74c744c884e96e9db7632a9341a0baf5107724d53",
+        "norm_bytes": 3480,
+        "norm_sha256": "a56e8ae8b5537560dc11ae15d72c5188b58917140b7344601ec9987e692f62c2",
+        "functions_sha256": "e628d341d8e8e05c39c7325650bbcc9d3909e28ff4e7669cd868fa671b159597",
+        "whole_sha256": "40f8afc923710653258e7ad9d5b5f20ce61e9e1ade581930d11f674bd8d86f12",
+        "interface_sha256": "eda0c1abcfbfa0ec3a283714eb29ce8c79297bf93a72a2a774bc37a9d2232445",
+        "rshift_count": 1,
+    },
     FLOW3D_AGENT_KEY: {
         "raw_bytes": 9859,
         "raw_sha256": "f4e3622f4def27221de0bd0b93ed1152f56f835957361e0fcffea8b84d3ce356",

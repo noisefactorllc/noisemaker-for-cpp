@@ -114,12 +114,12 @@ def effects_ceil(program: TypedProgram, source_hash: str | None):
          'c6a8ed0fcca437f4827dba78ce44206bf6d70fa02868e46a03f3b5ad0343dc8a'))
     if source_hash == kernel.CURRENT_EFFECTS_SHA256:
         expected = (
-            ('main', '713:13-713:70',
-             '6f234644acbcdf94f298b012cdf087c30f280492fe0f171f8272b5c006bb2ba7',
-             '8fcf99dca6424723c14f130b1f61f438660d480966476e2b31988b38eda3b8f2'),
-            ('main', '714:13-714:80',
-             'affa7b39b0f2447da5de5b5ef718405b7ef8166d9bf71ebe2edb3375126e8098',
-             '2f01f581755a9db5977fb6cfa7dc3862c35d33e3647679c17d47e29f59adb677'))
+            ('main', '711:13-711:70',
+             'b9248cbd90cd9a241896087e0f37af47ecde17c14fe4cb6bc89823fe8b84ca30',
+             'e6d95a7ab5e99c73abedde24b732bbd121d19e188239223968158af96099c46f'),
+            ('main', '712:13-712:80',
+             'cf6bd1d6049642208f36e078fb38d548bb81419bd5af0b21b69893d17ed4c8f4',
+             'ae4773115783aa7d449f901fa6df7fb437b45490afc45b89536cc5a1c4ae74c8'))
     actual = tuple((function.name, ceil._span(node), ceil._sha(node),
                     ceil._sha(node.children[0]) if len(node.children) == 1 else None)
                    for function, node in found)

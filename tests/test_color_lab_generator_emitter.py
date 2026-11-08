@@ -98,8 +98,8 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
                 and tuple(child.type.display() for child in node.children)
                 == ("vec2", "vec2"))
         )
-        self.assertEqual(1081, len(proof.consumed_nodes))
-        self.assertEqual(1081, len({id(node) for node in proof.consumed_nodes}))
+        self.assertEqual(1066, len(proof.consumed_nodes))
+        self.assertEqual(1066, len({id(node) for node in proof.consumed_nodes}))
         self.assertEqual(13, len(indexes))
         self.assertEqual(6, len(vector_equalities))
         rendered = emit_typed_cpp.render_typed_cpp(

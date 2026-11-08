@@ -22,7 +22,7 @@ const ledger=path.resolve(args['--ledger'])
 const outputPath=path.join(repo,'tests/oracles/classic_shapes_runtime_expected.inc')
 const key = 'classicNoisedeck/shapes:shapes'
 const revision = '6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
-const sourceSha = '28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e'
+const sourceSha = 'a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5'
 const sha = x => crypto.createHash('sha256').update(x).digest('hex')
 const bytes = x => Buffer.from(x.buffer,x.byteOffset,x.byteLength)
 const words = x => Array.from(new Uint32Array(x.buffer,x.byteOffset,x.byteLength/4),v=>`0x${v.toString(16).padStart(8,'0')}`)

@@ -89,6 +89,36 @@ class MetalDivisionClassifierTests(unittest.TestCase):
                          defines={"MODE": 3})
         self.assertEqual(routed, [])
 
+    def test_craquelure_cell_division_is_routed_for_the_pinned_source_only(self):
+        import dataclasses
+        import hashlib
+        from tools.glslcpp import check_corpus
+        from tools.glslcpp.frontend import metal_division
+
+        key = metal_division.CRAQUELURE_KEY
+        root = pathlib.Path(__file__).resolve().parents[1]
+        source = (check_corpus._corpus_root(root) /
+                  "sources/filter/craquelure/craquelure.glsl").read_text(encoding="utf-8")
+        self.assertEqual(hashlib.sha256(source.encode()).hexdigest(),
+                         metal_division.CRAQUELURE_SOURCE_SHA256)
+        pinned = analyze_program(parse_program(source, key, {}), key)
+        nodes = metal_division_sites(pinned).nodes
+        self.assertEqual(len(nodes), 2)
+        cell = nodes[-1]
+        self.assertEqual(("binary", "/", "vec2"), (cell.kind, cell.operator, cell.type.display()))
+        self.assertEqual(["gc", "wob"], [child.symbol.name for child in cell.children[0].children])
+        self.assertEqual("spacingPx", cell.children[1].symbol.name)
+        # Any other source keeps the generic rule: a helper parameter divisor stays float64.
+        changed = analyze_program(parse_program(source + "\n", key, {}), key)
+        self.assertEqual(1, len(metal_division_sites(changed).nodes))
+        # The pinned source with a different division tree fails closed.
+        drifted_text = source.replace("vec2 p = (gc + wob) / spacingPx;", "vec2 p = (gc - wob) / spacingPx;")
+        self.assertNotEqual(drifted_text, source)
+        drifted = dataclasses.replace(analyze_program(parse_program(drifted_text, key, {}), key),
+                                      raw_source=source)
+        with self.assertRaisesRegex(ValueError, "division identity drift"):
+            metal_division_sites(drifted)
+
 
 def _cpu_root() -> pathlib.Path | None:
     value = os.environ.get("NOISEMAKER_CPU_ROOT")
@@ -97,26 +127,32 @@ def _cpu_root() -> pathlib.Path | None:
 
 class ScatterSeedTermTests(unittest.TestCase):
     def test_emitted_seed_term_multiplies_before_float32_store(self):
+        import contextlib
         import hashlib
         import shutil
         import subprocess
         import tempfile
+        from tests import historical_authority
         from tools.glslcpp import generate_typed_slice as generator
         from tools.glslcpp.emit_typed_cpp import render_typed_cpp
         from tools.glslcpp.frontend.scatter_jitter_cross_lane_assignment_profile import PROFILE
 
         root = pathlib.Path(__file__).resolve().parents[1]
         key = "filter/scatter:scatterJitter"
-        source = (root / "tools/glslcpp/corpus" / generator.check_corpus.REVISION /
-                  "sources/filter/scatter/scatterJitter.glsl").read_text()
-        parsed = parse_program(generator.transform_generic_dynamic_source(source, key), key,
-                               generator.GENERIC_DYNAMIC_DEFINE_TYPES[key])
-        parsed["raw_source"] = source
-        program = analyze_program(parsed, key)
-        emitted = render_typed_cpp(
-            program, key, hashlib.sha256(source.encode()).hexdigest(),
-            numeric_literal_contract="source-double",
-            scatter_jitter_cross_lane_assignment_profile=PROFILE)
+        # The 6f98d26a scatterJitter source no longer carries the seed term,
+        # so the rule is exercised on the last source that does.
+        source = (root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+                  "/sources/filter/scatter/scatterJitter.glsl").read_text()
+        with contextlib.ExitStack() as stack:
+            historical_authority._enter_pre_6f98d26a_constants(stack)
+            parsed = parse_program(generator.transform_generic_dynamic_source(source, key), key,
+                                   generator.GENERIC_DYNAMIC_DEFINE_TYPES[key])
+            parsed["raw_source"] = source
+            program = analyze_program(parsed, key)
+            emitted = render_typed_cpp(
+                program, key, hashlib.sha256(source.encode()).hexdigest(),
+                numeric_literal_contract="source-double",
+                scatter_jitter_cross_lane_assignment_profile=PROFILE)
         statement = next(line for line in emitted.splitlines() if "glsl::Vec2 rnd = " in line)
         start = statement.index("noisemaker::f32(")
         opening = statement.index("(", start)

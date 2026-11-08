@@ -836,7 +836,7 @@ class SemanticTests(unittest.TestCase):
         self.assertEqual("cellrefract-convolve-v1", proof.source_profile)
         self.assertEqual(entry["raw_sha256"], proof.raw_source_sha256)
         self.assertEqual(
-            "31cce61e01275d44d46556bfc13edeea4383dcfbcfde024fd7c54a624933bd3c",
+            "7e84a65314f00f20f2c4b563d21862c960eefb8202b75741f8f780ae978edd68",
             proof.normalized_source_sha256)
         self.assertEqual(
             "329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3",
@@ -874,13 +874,13 @@ class SemanticTests(unittest.TestCase):
         self.assertEqual(2, parameter.reads_per_iteration)
         self.assertEqual(("87:25-87:34", "90:25-90:34"),
                          tuple(span(item) for item in parameter.induction_read_spans))
-        self.assertEqual(("203:12-203:46", "204:12-204:46", "223:12-223:45",
-                          "224:12-224:45", "242:11-242:44", "243:11-243:44",
-                          "269:15-269:48", "270:15-270:48"),
+        self.assertEqual(("201:12-201:46", "202:12-202:46", "221:12-221:45",
+                          "222:12-222:45", "240:11-240:44", "241:11-241:44",
+                          "267:15-267:48", "268:15-268:48"),
                          tuple(span(item) for item in parameter.direct_call_spans))
-        self.assertEqual(("203:30-203:37", "204:30-204:37", "223:30-223:37",
-                          "224:30-224:37", "242:29-242:36", "243:29-243:36",
-                          "269:33-269:40", "270:33-270:40"),
+        self.assertEqual(("201:30-201:37", "202:30-202:37", "221:30-221:37",
+                          "222:30-222:37", "240:29-240:36", "241:29-241:36",
+                          "267:33-267:40", "268:33-268:40"),
                          tuple(span(item) for item in parameter.direct_argument_spans))
         tables = proof.caller_tables
         self.assertEqual(8, len(tables))
@@ -911,9 +911,9 @@ class SemanticTests(unittest.TestCase):
                             and len(item.literal_store_spans) == 9
                             and len(item.literal_index_spans) == 9
                             for item in tables))
-        self.assertEqual(("193:8-193:18", "198:8-198:18", "213:8-213:18",
-                          "218:8-218:18", "230:8-230:18", "235:8-235:18",
-                          "259:11-259:21", "264:11-264:21"),
+        self.assertEqual(("191:8-191:18", "196:8-196:18", "211:8-211:18",
+                          "216:8-216:18", "228:8-228:18", "233:8-233:18",
+                          "257:11-257:21", "262:11-262:21"),
                          tuple(span(item.declaration_span) for item in tables))
         offset = proof.offset_table
         self.assertEqual((66, 101, "offset", "vec2[9]", "vec2", 9, "Offsets9",
@@ -941,23 +941,23 @@ class SemanticTests(unittest.TestCase):
         self.assertTrue(proof.parameter_read_only_and_synchronous)
         # Derived, not transcribed: within every caller the second table is
         # fully initialized before the first table's consuming convolve call
-        # (derivatives 199-201 precede 203), so the pairs DO coexist.
+        # (derivatives 197-199 precede 201), so the pairs DO coexist.
         self.assertFalse(proof.caller_tables_never_simultaneously_live)
         self.assertFalse(proof.mode_zero_array_free)
         self.assertEqual(144, proof.raw_simultaneous_payload_bytes)
         self.assertEqual(
-            "09c626e4a6923f856dac399e76972de809ccc8efeb3d49c59d5f69eb8ed17352",
+            "e69f139141d665fe460f693759027bb1a35ad87fe15906a7be08884c9e19e91c",
             proof.interface_sha256)
         self.assertEqual(
-            "e7e3fd532c4fcc8116655ca64d2b73e6c0905d221cc485014315d29b22b27a6b",
+            "6bcdbf7a8df49e1beda961d05af46e852c0857c74e99d3332bb5246fd404fb5a",
             proof.typed_ir_sha256)
         self.assertEqual(
-            "144e3e4c035bf5af4102d3bfed99afabe2f403b8a6c2c2794802adb0ca51d40b",
+            "bb5fd1e61270bb2f2b6291e7a896cbe428bca4b322a073bb264c1b182e593363",
             proof.whole_program_sha256)
         # The unreachability witness: `convolutionKernel` collapsed to
         # `return color;` by the frozen KERNEL=0 define, and main invokes no
         # array caller (the frozen fact this span + empty tuple record).
-        self.assertEqual("280:5-280:18", span(proof.mode_one_span))
+        self.assertEqual("278:5-278:18", span(proof.mode_one_span))
         self.assertEqual((), proof.main_derivative_call_spans)
         # Caller-table records align positionally with the whole-array
         # argument spans the validator zips against them.

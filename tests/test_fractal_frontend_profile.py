@@ -108,11 +108,11 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                          (proof.hsv_parameter.name, proof.hsv_parameter.id,
                           proof.hsv_parameter.type.display()))
         self.assertEqual(
-            ("174:17-174:31", "369:21-369:47"),
+            ("172:17-172:31", "367:21-367:47"),
             tuple(f"{item.span.start_line}:{item.span.start_column}-"
                   f"{item.span.end_line}:{item.span.end_column}"
                   for item in proof.hsv_calls))
-        self.assertEqual("368:9-368:31",
+        self.assertEqual("366:9-366:31",
                          f"{proof.hue_scale_assignment.span.start_line}:"
                          f"{proof.hue_scale_assignment.span.start_column}-"
                          f"{proof.hue_scale_assignment.span.end_line}:"
@@ -125,7 +125,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
         self.assertIs(proof.hue_scale_literal,
                       proof.hue_scale_product.children[1])
         self.assertEqual("0.01", proof.hue_scale_literal.literal)
-        self.assertEqual("353:5-353:17",
+        self.assertEqual("351:5-351:17",
                          f"{proof.distance_fract_assignment.span.start_line}:"
                          f"{proof.distance_fract_assignment.span.start_column}-"
                          f"{proof.distance_fract_assignment.span.end_line}:"
@@ -134,7 +134,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                       proof.distance_fract_assignment.children[1])
         self.assertEqual("fract", proof.distance_fract_builtin.callee)
         self.assertEqual(-18, proof.distance_fract_builtin.signature_id)
-        self.assertEqual("352:5-352:49",
+        self.assertEqual("350:5-350:49",
                          f"{proof.distance_map_assignment.span.start_line}:"
                          f"{proof.distance_map_assignment.span.start_column}-"
                          f"{proof.distance_map_assignment.span.end_line}:"
@@ -153,7 +153,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                          (proof.palette_parameter.name,
                           proof.palette_parameter.id,
                           proof.palette_parameter.type.display()))
-        self.assertEqual("365:21-365:27",
+        self.assertEqual("363:21-363:27",
                          f"{proof.palette_call.span.start_line}:"
                          f"{proof.palette_call.span.start_column}-"
                          f"{proof.palette_call.span.end_line}:"
@@ -172,7 +172,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                                f"{item.span.end_line}:"
                                f"{item.span.end_column}"
                                for item in proof.newton_function.body))
-        self.assertEqual("336:13-336:23",
+        self.assertEqual("334:13-334:23",
                          f"{proof.newton_call.span.start_line}:"
                          f"{proof.newton_call.span.start_column}-"
                          f"{proof.newton_call.span.end_line}:"
@@ -191,7 +191,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
             f"{item.span.start_line}:{item.span.start_column}-"
             f"{item.span.end_line}:{item.span.end_column}"
             for item in proof.julia_function.body))
-        self.assertEqual(("334:13-334:22", 61, 102, "st"), (
+        self.assertEqual(("332:13-332:22", 61, 102, "st"), (
             f"{proof.julia_call.span.start_line}:{proof.julia_call.span.start_column}-"
             f"{proof.julia_call.span.end_line}:{proof.julia_call.span.end_column}",
             proof.julia_call.signature_id,
@@ -209,7 +209,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
             f"{item.span.start_line}:{item.span.start_column}-"
             f"{item.span.end_line}:{item.span.end_column}"
             for item in proof.mandelbrot_function.body))
-        self.assertEqual(("338:13-338:27", 65, 102, "st"), (
+        self.assertEqual(("336:13-336:27", 65, 102, "st"), (
             f"{proof.mandelbrot_call.span.start_line}:"
             f"{proof.mandelbrot_call.span.start_column}-"
             f"{proof.mandelbrot_call.span.end_line}:"
@@ -232,8 +232,8 @@ class FractalPreparedFrontendTests(unittest.TestCase):
         self.assertEqual(profile.MANDELBROT_NUMBER_ANCHOR_SPANS,
                          tuple(profile._span(item)
                                for item in proof.mandelbrot_number_anchors))
-        self.assertEqual("277:9-277:48", profile.JULIA_MODE_ZERO_RETURN_SPAN)
-        self.assertEqual("277:9-277:48",
+        self.assertEqual("275:9-275:48", profile.JULIA_MODE_ZERO_RETURN_SPAN)
+        self.assertEqual("275:9-275:48",
                          profile._span(proof.julia_number_anchors[-2]))
 
     def test_emitter_consumes_exact_number_anchor_census(self):
@@ -423,8 +423,8 @@ class FractalPreparedFrontendTests(unittest.TestCase):
                 profile.authenticate_fractal_metadata(forged)
 
     def test_first_frontend_blocker_is_exact_julia_iteration_loop(self):
-        self.assertEqual(("julia", "261:5-269:6"), profile.UNPROVED_LOOP_SPANS[0])
-        self.assertIn("julia 261:5-269:6", profile.FRONTEND_BLOCKER)
+        self.assertEqual(("julia", "259:5-267:6"), profile.UNPROVED_LOOP_SPANS[0])
+        self.assertIn("julia 259:5-267:6", profile.FRONTEND_BLOCKER)
 
     def test_apply_attaches_exact_three_fractal_iteration_proofs(self):
         proofed = profile.apply_fractal_frontend(

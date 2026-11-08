@@ -27,11 +27,11 @@ PREPARED_PROFILES: dict[str, str] = {}
 ALLOWED_ROW_FIELDS = {KEY: frozenset({"defines", "program_key", "color_lab_frontend_profile"})}
 REQUIRED_COMPANION_PROFILES = {KEY: ()}
 
-RAW_SOURCE_SHA256 = "4bf9ea925634ee684e01917ea3b690d332b37905d21c8aa7377bf88625570945"
-NORMALIZED_SOURCE_SHA256 = "601f1cbbf9a2091e88ec2c6434242cc8226e61a54e10526e465b8b0c0e696e36"
-FUNCTIONS_SHA256 = "a25b2238f53b238d649094eb875af667adf2f23540616e303e5c5201388bf19b"
-WHOLE_PROGRAM_SHA256 = "5d4435bf708e73ccfaf5ae55a83f242f55777828090c94eea71452c3d067cd99"
-INTERFACE_SHA256 = "d9b8011a259bda1a0591512337886c38ec2e359f3bb53644e170b485b975f062"
+RAW_SOURCE_SHA256 = "8fb3a991281479e65376151223e52e23ea7b7301c391788feca855a66ceabdcc"
+NORMALIZED_SOURCE_SHA256 = "8646365325cfadc7a363c748ef2f35aaabb98884b9d168791e023d49d552b38e"
+FUNCTIONS_SHA256 = "88f0ef899c986fe08b5064d673786b3507ccf0ad0bfe4aaaa2a21f5e4ca8db5e"
+WHOLE_PROGRAM_SHA256 = "7195ecc4a7c9d8f25f16869dc76a56d706be9ea2c067a924ca20b158b437c0ac"
+INTERFACE_SHA256 = "679c86a5178de12b6392142538c4daccd8092c132875867b0d24b5176727df00"
 
 SOURCE_UNIFORMS = (
     ("inputTex", "sampler2D"), ("resolution", "vec2"),
@@ -67,11 +67,11 @@ FUNCTION_NAMES = (
     "oklab_from_linear_srgb", "pal", "pcg", "periodicFunction", "posterize",
     "prng", "random", "rgb2hsv", "saturate", "srgbToLinear",
 )
-EXPECTED_OPERATOR_COUNTS = {"-": 38, "*": 37, "==": 32, "/": 29, "+": 22,
-                            "<": 15, "&&": 8, "<=": 8, "||": 6,
+EXPECTED_OPERATOR_COUNTS = {"-": 38, "*": 37, "==": 32, "/": 28, "+": 22,
+                            "<": 14, "&&": 7, "<=": 7, "||": 6,
                             "++": 2, "!=": 2, ">>": 1}
-EXPECTED_NODE_COUNTS = {"id": 314, "literal": 203, "binary": 176,
-                        "swizzle": 90, "assign": 61, "construct": 51,
+EXPECTED_NODE_COUNTS = {"id": 311, "literal": 197, "binary": 172,
+                        "swizzle": 90, "assign": 60, "construct": 50,
                         "declaration": 43, "call": 27, "builtin": 26,
                         "unary": 24, "index": 13, "conditional": 7}
 

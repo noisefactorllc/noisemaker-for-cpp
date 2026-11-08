@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 KEY = 'classicNoisedeck/effects:effects'
 CORPUS = ROOT / f'tools/glslcpp/corpus/{CORPUS_REVISION}'
 SOURCE = CORPUS / 'sources/classicNoisedeck/effects/effects.glsl'
-SHA = 'b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316'
+SHA = 'ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d'
 
 
 def candidate(raw: str):

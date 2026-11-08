@@ -75,16 +75,16 @@ class _Profile:
 # diamond metric with its own `dist`; every other shape falls through to
 # shapeDistance(). Read outside the chain at `d = smin(d, dist, ...)`.
 _CELL_REFRACT = _Profile(
-    raw_sha256="aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70",
-    raw_bytes=13719,
+    raw_sha256="ada20a78762ccfa36b83995b7020f37e434e23da20650027ffa1784a8344430b",
+    raw_bytes=13642,
     hoists=(_Hoist("float", "dist", "#if SHAPE == 1", 0, 2),),
 )
 
 # classicNoisedeck/kaleido:kaleido -- DIRECTION selects the rotation sign fed
 # into the sides repeat below the chain.
 _KALEIDO = _Profile(
-    raw_sha256="18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52",
-    raw_bytes=27570,
+    raw_sha256="2cf9e5528e3b19debec7e9761afbcf0f47452a124dd4bef74b907b2ee67f9642",
+    raw_bytes=27493,
     hoists=(_Hoist("float", "dir", "#if DIRECTION == 1", 0, 3),),
 )
 
@@ -239,8 +239,8 @@ def transform_source(source: str, program_key: str) -> str:
         return source
     raw = source.encode("utf-8")
     if (program_key == "classicNoisedeck/noise:noise"
-            and hashlib.sha256(raw).hexdigest() == '513f8278e29564b7f2b0735b539b5990b53dc920d487fffb87d54a0c92fc5f0b'):
-        profile = _Profile('513f8278e29564b7f2b0735b539b5990b53dc920d487fffb87d54a0c92fc5f0b', 32596, _NOISE.hoists)
+            and hashlib.sha256(raw).hexdigest() == '276b5ca70973c57057adb389d8cb49946a0bdedb4486ffafbaa8e8e876d14a9a'):
+        profile = _Profile('276b5ca70973c57057adb389d8cb49946a0bdedb4486ffafbaa8e8e876d14a9a', 32519, _NOISE.hoists)
     if len(raw) != profile.raw_bytes or hashlib.sha256(raw).hexdigest() != profile.raw_sha256:
         raise HoistError(f"{program_key}: pinned source hash mismatch for dynamic-define hoist")
     lines = source.split("\n")

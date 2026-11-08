@@ -291,6 +291,11 @@ from .frontend.hash_scalar_uint_rshift_profile import (
     HASH_SCALAR_UINT_RSHIFT_KEYS,
     PROFILE as HASH_SCALAR_UINT_RSHIFT_PROFILE,
     authenticate_hash_scalar_uint_rshift)
+from .frontend.stipple_fixed_point_profile import (
+    KEY as STIPPLE_KEY,
+    PROFILE as STIPPLE_FIXED_POINT_PROFILE,
+    RAW_SHA256 as STIPPLE_RAW_SHA256,
+    authenticate_stipple_fixed_point)
 from .frontend.vec_scalar_modulo_profile import (
     VEC_SCALAR_MODULO_KEYS,
     PROFILE as VEC_SCALAR_MODULO_PROFILE,
@@ -419,7 +424,7 @@ _CURRENT_BICUBIC_NESTED_DOT_SOURCES = {
     GLITCH_KEY: ("4bb633e963eed011c4724d9b18470baed3ac474eadce98e06288ace5c382846a",),
     EFFECTS_BICUBIC_KEY: (
         "1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90",
-        "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316",
+        "ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d",
     ),
 }
 from .frontend.emboss_color_style_profile import (
@@ -1466,6 +1471,21 @@ class _Emitter:
         init=False, default=())
     emitted_hash_scalar_uint_rshifts: list[TypedExpression] = field(
         init=False, default_factory=list)
+    # stipple-fixed-point-v1 (see stipple_fixed_point_profile).
+    authorized_stipple: object | None = field(init=False, default=None)
+    emitted_stipple_tables: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_stipple_indexes: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_stipple_rshifts: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_stipple_lshifts: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_stipple_steps: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_stipple_blends: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitting_stipple_blend: bool = field(init=False, default=False)
     authorized_vec_scalar_modulos: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_vec_scalar_modulos: list[TypedExpression] = field(
@@ -2019,6 +2039,7 @@ class _Emitter:
     distortion_frontend_profile: str | None = None
     scatter_jitter_cross_lane_assignment_profile: str | None = None
     prng_boolean_mix_select_profile: str | None = None
+    stipple_fixed_point_profile: str | None = None
     authorized_testpattern_proof: object | None = field(init=False, default=None)
     authorized_osd_proof: object | None = field(init=False, default=None)
     authorized_moodscape_projection: object | None = field(
@@ -2297,6 +2318,11 @@ class _Emitter:
 
     def _analyze_number_storage(self) -> None:
         nodes = []
+        if self.authorized_stipple is not None:
+            # canonicalFactory149 truncates both scalar uint quotients
+            # (`2097152 / c256|0`, `Math.trunc(... / (2 * aa|0))`).
+            self.number_truncated.update(
+                id(node) for node in self.authorized_stipple.truncated_divisions)
         pixel_source = _PIXELSORT_SAMPLE_SOURCES.get(self.program.key)
         if pixel_source is not None and (
                 self.source_hash != pixel_source
@@ -4489,6 +4515,28 @@ class _Emitter:
                         self.hash_scalar_uint_rshift_profile))
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
+        if self.stipple_fixed_point_profile is not None:
+            if (self.program.key != STIPPLE_KEY
+                    or self.stipple_fixed_point_profile != STIPPLE_FIXED_POINT_PROFILE
+                    or self.compatibility_transform is not None
+                    or self.custom_comparer_profile is not None
+                    or self.numeric_literal_contract != "glsl-f32"
+                    or self.source_global_literal_int_profile is not None
+                    or self.hash_scalar_uint_rshift_profile is not None
+                    or self.derivative_admission_profile is not None):
+                raise _error(
+                    self.program, self.program,
+                    "Stipple fixed-point profile metadata mismatch")
+            try:
+                self.authorized_stipple = authenticate_stipple_fixed_point(
+                    self.program, self.source_hash,
+                    self.stipple_fixed_point_profile)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        elif (self.program.key == STIPPLE_KEY
+                and self.source_hash == STIPPLE_RAW_SHA256):
+            raise _error(self.program, self.program,
+                         "exact Stipple fixed-point profile carrier required")
         if self.vec_scalar_modulo_profile is not None:
             if (self.program.key not in VEC_SCALAR_MODULO_KEYS
                     or self.compatibility_transform is not None
@@ -8887,6 +8935,18 @@ class _Emitter:
             if self._median_index(value):
                 return (f"{self.expression(value.children[0])}["
                         f"static_cast<std::size_t>({self.expression(value.children[1])})]")
+            stipple = self.authorized_stipple
+            if stipple is not None and value is stipple.table_index:
+                if (len(value.children) != 2
+                        or value.children[0] is not stipple.table_reference
+                        or value.children[1].kind != "id"
+                        or value.children[1].type.display() != "int"
+                        or any(value is item for item in self.emitted_stipple_indexes)):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Stipple table read")
+                self.emitted_stipple_indexes.append(value)
+                return (f"{self.expression(value.children[0])}["
+                        f"static_cast<std::size_t>({self.expression(value.children[1])})]")
             if any(value is item for item in self.authorized_newton_root_indexes):
                 if (len(value.children) != 2
                         or value.children[0].kind != "id"
@@ -8917,6 +8977,27 @@ class _Emitter:
             top_face = self._extrude_top_face_offset(value)
             if top_face is not None:
                 return self.expression(top_face)
+            stipple = self.authorized_stipple
+            if (stipple is not None and value is stipple.f32_blend
+                    and not self.emitting_stipple_blend):
+                if (value.operator != "+" or value.type.display() != "uvec3"
+                        or any(value is item for item in self.emitted_stipple_blends)):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Stipple blend")
+                self.emitted_stipple_blends.append(value)
+                self.emitting_stipple_blend = True
+                try:
+                    lanes = self.expression(value)
+                finally:
+                    self.emitting_stipple_blend = False
+                # canonicalFactory149 stores the three exact uint sums in a
+                # PooledFloat32Array before vec3.rshift: each lane rounds to
+                # float32 (the sums reach 2^28) and ToUint32 reads it back.
+                return ("([&]() { const glsl::UVec3 lanes = " + lanes + "; "
+                        "return glsl::UVec3("
+                        "static_cast<std::uint32_t>(noisemaker::f32(static_cast<double>(lanes[0]))), "
+                        "static_cast<std::uint32_t>(noisemaker::f32(static_cast<double>(lanes[1]))), "
+                        "static_cast<std::uint32_t>(noisemaker::f32(static_cast<double>(lanes[2])))); }())")
             if value is self.extrude_scale_initializer and not self.emitting_extrude_scale:
                 self.emitting_extrude_scale = True
                 try:
@@ -8928,11 +9009,14 @@ class _Emitter:
                 and any(value is item
                         for item in self.authorized_median_frontend_proof.expression_nodes
                         if item.kind == "binary" and item.operator == "<<"))
+            stipple_lshift = (
+                self.authorized_stipple is not None
+                and any(value is item for item in self.authorized_stipple.left_shifts))
             if (value.operator not in _BINARY_OPERATORS
                     and not (value.operator == "<<"
                              and (any(value is item
                                       for item in self.authorized_bit_effects_nodes)
-                                  or median_shift))):
+                                  or median_shift or stipple_lshift))):
                 median = self.authorized_median_frontend_proof
                 if (median is not None
                         and any(value is item for item in median.expression_nodes
@@ -9180,6 +9264,28 @@ class _Emitter:
                     return ("glsl::detail::js_shift_right("
                             f"{self.expression(value.children[0])}, "
                             f"{self.expression(value.children[1])})")
+                stipple = self.authorized_stipple
+                if stipple is not None and any(
+                        value is item for item in (*stipple.scalar_uint_rshifts,
+                                                   stipple.signed_vector_rshift)):
+                    signature = (left_type, right_type, value.type.display())
+                    if (signature not in {("uint", "uint", "uint"),
+                                          ("ivec2", "int", "ivec2")}
+                            or value.category != "rvalue"
+                            or any(value is item for item in self.emitted_stipple_rshifts)):
+                        raise _error(self.program, value,
+                                     "malformed authenticated Stipple right shift")
+                    self.emitted_stipple_rshifts.append(value)
+                    left = self.expression(value.children[0])
+                    right = self.expression(value.children[1])
+                    if signature == ("uint", "uint", "uint"):
+                        # `>>>`: logical uint32 shift, count masked to 5 bits.
+                        return f"({left} >> ({right} & 31U))"
+                    # `.map(_ => _ >> 8)`: ToInt32 arithmetic shift per lane.
+                    return ("([&]() { const glsl::IVec2 lanes = " + left + "; "
+                            "const std::uint32_t count = static_cast<std::uint32_t>("
+                            + right + ") & 31U; "
+                            "return glsl::IVec2(lanes[0] >> count, lanes[1] >> count); }())")
                 if any(value is item for item in self.authorized_hash_scalar_uint_rshifts):
                     if ((left_type, right_type, value.type.display()) !=
                             ("uint", "uint", "uint")
@@ -9195,6 +9301,26 @@ class _Emitter:
                     raise _error(self.program, value, "unsupported binary operator >>")
                 return (f"glsl::shift_right({self.expression(value.children[0])}, "
                         f"{self.expression(value.children[1])})")
+            if (value.operator == "<<" and self.authorized_stipple is not None
+                    and any(value is item for item in self.authorized_stipple.left_shifts)):
+                signature = (left_type, right_type, value.type.display())
+                if (signature not in {("uvec2", "uvec2", "uvec2"),
+                                      ("uint", "uint", "uint")}
+                        or value.category != "rvalue"
+                        or any(value is item for item in self.emitted_stipple_lshifts)):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Stipple left shift")
+                self.emitted_stipple_lshifts.append(value)
+                left = self.expression(value.children[0])
+                right = self.expression(value.children[1])
+                if signature == ("uint", "uint", "uint"):
+                    # `(x << n) >>> 0`: uint32 shift, count masked to 5 bits.
+                    return f"({left} << ({right} & 31U))"
+                # vec2.lshift: `(left << right) >>> 0` per lane.
+                return ("([&]() { const glsl::UVec2 lanes = " + left + "; "
+                        "const glsl::UVec2 counts = " + right + "; "
+                        "return glsl::UVec2(lanes[0] << (counts[0] & 31U), "
+                        "lanes[1] << (counts[1] & 31U)); }())")
             if value.operator == "<<":
                 median = self.authorized_median_frontend_proof
                 if (median is not None
@@ -9634,6 +9760,19 @@ class _Emitter:
             if folded is not None:
                 return folded
             return f"({value.operator}{self.expression(value.children[0])})"
+        if (value.kind == "post" and self.authorized_stipple is not None
+                and any(value is item for item in self.authorized_stipple.uint_steps)):
+            # isqrt's `r--`/`r++`: uint32 steps of a uint local.
+            if (value.operator not in {"++", "--"}
+                    or len(value.children) != 1
+                    or value.type.display() != "uint"
+                    or value.children[0].kind != "id"
+                    or value.children[0].type.display() != "uint"
+                    or any(value is item for item in self.emitted_stipple_steps)):
+                raise _error(self.program, value,
+                             "malformed authenticated Stipple uint step")
+            self.emitted_stipple_steps.append(value)
+            return f"({self.expression(value.children[0])}{value.operator})"
         if value.kind == "post":
             median_post = (
                 self.authorized_median_frontend_proof is not None
@@ -11643,6 +11782,34 @@ class _Emitter:
                             f"{indent}[[maybe_unused]] std::array<glsl::Vec2, 8> "
                             f"{emitted_name}{{}};")
                         continue
+                    stipple = self.authorized_stipple
+                    if (stipple is not None
+                            and declaration is stipple.table_declaration):
+                        constructor = stipple.table_constructor
+                        if (declaration.type.display() != "uint[5]"
+                                or declaration.symbol is None
+                                or declaration.symbol.name != "M"
+                                or declaration.children != (constructor,)
+                                or len(constructor.children) != 5
+                                or any(item.kind != "literal"
+                                       or item.type.display() != "uint"
+                                       or not isinstance(item.literal_value, int)
+                                       for item in constructor.children)
+                                or any(declaration is item
+                                       for item in self.emitted_stipple_tables)):
+                            raise _error(
+                                self.program, declaration,
+                                "malformed authenticated Stipple table declaration")
+                        self.emitted_stipple_tables.append(declaration)
+                        # canonicalFactory149: `var M = [65536, ...]`, a
+                        # plain array of exact integers read by cpu_umul.
+                        values = ", ".join(
+                            f"std::uint32_t({item.literal_value})"
+                            for item in constructor.children)
+                        lines.append(
+                            f"{indent}[[maybe_unused]] const std::array<std::uint32_t, 5> "
+                            f"{emitted_name}{{{values}}};")
+                        continue
                     median = self._median_array(declaration)
                     if median is not None:
                         native_type = ("glsl::UVec2"
@@ -11963,7 +12130,11 @@ class _Emitter:
                     value.expressions[0] is item for item in self.authorized_points_post_nodes)
                 ca_post = any(
                     value.expressions[0] is item for item in self.authorized_ca_posts)
-                if median_post or points_post or ca_post:
+                stipple_step = (
+                    self.authorized_stipple is not None
+                    and any(value.expressions[0] is item
+                            for item in self.authorized_stipple.uint_steps))
+                if median_post or points_post or ca_post or stipple_step:
                     return [f"{indent}{self.expression(value.expressions[0])};"]
             if (self.program.key == "render/renderLandscape3d:landscape"
                     and len(value.expressions) == 1
@@ -14325,7 +14496,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         # JavaScript object. Its Number members do not narrow at assignment.
         # Keep this exception bound to its exact source and frozen field set.
         if (self.program.key == "classicNoisedeck/shapes3d:shapes3d"
-                and self.source_hash == "818badfbadcf295d1863d208c0d0582a1349ff64f44dbf43f905a92fcfd4c5ad"
+                and self.source_hash == "e17550180972bf97883c33eb4b280bfb3456d9212162c91e76cc8befbae941dc"
                 and self.authorized_struct_frontier is not None
                 and item.name == "ShapeParams"
                 and tuple((member.name, member.type.display()) for member in item.fields)
@@ -15771,7 +15942,8 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      julia_frontend_profile: str | None = None,
                      distortion_frontend_profile: str | None = None,
                      noise_frontend_profile: str | None = None,
-                     dither_frontend_profile: str | None = None
+                     dither_frontend_profile: str | None = None,
+                     stipple_fixed_point_profile: str | None = None
                      ) -> str:
     """Render one typed program; raw parser mappings are intentionally rejected."""
     if not isinstance(program, TypedProgram):
@@ -15885,7 +16057,8 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        julia_frontend_profile=julia_frontend_profile,
                        distortion_frontend_profile=distortion_frontend_profile,
                        scatter_jitter_cross_lane_assignment_profile=scatter_jitter_cross_lane_assignment_profile,
-                       prng_boolean_mix_select_profile=prng_boolean_mix_select_profile)
+                       prng_boolean_mix_select_profile=prng_boolean_mix_select_profile,
+                       stipple_fixed_point_profile=stipple_fixed_point_profile)
     lines = [f"// Typed IR program: {program_key}", f"// Source SHA-256: {source_hash}"]
     lines.extend(emitter.render_body(namespace, factory))
     if emitter.lattice_expressions and program.key not in VOLUME_SEED_HASH_KEYS:
@@ -16183,6 +16356,21 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             != emitter.authorized_hash_scalar_uint_rshifts):
         raise _error(program, program,
                      "authenticated scalar uint right shift emission mismatch")
+    if emitter.authorized_stipple is not None:
+        stipple = emitter.authorized_stipple
+        def same_nodes(emitted, expected) -> bool:
+            return (len(emitted) == len(expected)
+                    and {id(item) for item in emitted} == {id(item) for item in expected})
+        if (not same_nodes(emitter.emitted_stipple_tables, (stipple.table_declaration,))
+                or not same_nodes(emitter.emitted_stipple_indexes, (stipple.table_index,))
+                or not same_nodes(emitter.emitted_stipple_rshifts,
+                                  (*stipple.scalar_uint_rshifts,
+                                   stipple.signed_vector_rshift))
+                or not same_nodes(emitter.emitted_stipple_lshifts, stipple.left_shifts)
+                or not same_nodes(emitter.emitted_stipple_steps, stipple.uint_steps)
+                or not same_nodes(emitter.emitted_stipple_blends, (stipple.f32_blend,))):
+            raise _error(program, program,
+                         "authenticated Stipple fixed-point emission mismatch")
     if (emitter.authorized_vec_scalar_modulos
             and tuple(emitter.emitted_vec_scalar_modulos)
             != emitter.authorized_vec_scalar_modulos):

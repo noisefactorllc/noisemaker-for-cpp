@@ -11219,13 +11219,9 @@ TEST(typed_task32_grade_srgb_linear_round_trip_is_close_to_identity_at_neutral_s
 // real unmodified JS reference through a fully deterministic synthetic input
 // generator (`patternedSurface`, derivative_oracle_generator.mjs:319-331 --
 // pure modular arithmetic, no RNG), so unlike Task 32's oracle this one IS
-// reproducible bit-exactly on the native side. Three programs -- one per
-// admitted "shape" -- are ported here: bulge (dFdx/dFdy, antialias-gated,
-// 2 ordinals), celShadingColor (fwidth, antialias-gated, vec3 argument,
-// 1 ordinal), stipple (fwidth, unconditional under its pinned MODE define,
-// 1 ordinal, and the "compile-time define read as a runtime uniform in JS"
-// hazard the roadmap flags -- MODE is deliberately NOT bound here since the
-// C++ side already baked it in at generation time). Each case reproduces the
+// reproducible bit-exactly on the native side. Two programs are ported
+// here: bulge (dFdx/dFdy, antialias-gated, 2 ordinals) and celShadingColor
+// (fwidth, antialias-gated, vec3 argument, 1 ordinal). Each case reproduces the
 // oracle's exact input texture, uniform bindings, and case parameters, then
 // asserts the full f32/RGBA8 buffer hashes AND all five corner/center probes
 // bit-for-bit against the vendored oracle -- stronger evidence than Task 32's
@@ -11408,63 +11404,8 @@ TEST(typed_task33_celshadingcolor_fwidth_vec3_matches_vendored_oracle_bit_exact)
   REQUIRE(task23_float_bytes(direct_output) == task23_float_bytes(public_output));
 }
 
-TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact) {
-  // Case "small-cells-jitter": w6 h5, phase 120, MODE pinned to 0 at
-  // generation time (the "defines read as runtime uniforms in JS" hazard --
-  // MODE is deliberately NOT among the bound uniforms below, because the
-  // C++ program's resources tuple never declares it; see
-  // filter/stipple:stipple's `_defaults()`-authorized define map). The
-  // fwidth call is unconditional under this pinned define -- 1 ordinal,
-  // no antialias uniform at all.
-  // CPU reference binds paperColor as the same raw Number array as DVec3.
-  const Task33Case fixture{
-      "filter/stipple:stipple", 6U, 5U, 120,
-      "dbcd61385725c44173bd97265cf2d035836025e7e7008d5084316f8ebd0b3bdf",
-      "9f9b464da96f3bf3895aee8dacef72c26bf488a449d8031d9272a68869d7c6a5",
-      120U,
-      {{{0U, 0U, {0x3f1079aaU, 0x3e13cb37U, 0x3f697e98U, 0x3e0ee23cU}},
-        {5U, 0U, {0x3e367ebcU, 0x3f507eaeU, 0x3f09d89eU, 0x3e8ee23cU}},
-        {0U, 4U, {0x3f06453eU, 0x3f5357c1U, 0x3eeb10acU, 0x3efa0be8U}},
-        {5U, 4U, {0x3f60a616U, 0x3f18ebdaU, 0x3f497736U, 0x3f20be83U}},
-        {3U, 2U, {0x3f498529U, 0x3f383248U, 0x3ebf4ee7U, 0x3eee23b9U}}}}};
-  const auto input = task33_patterned_surface(fixture.width, fixture.height,
-                                              fixture.phase);
-  noisemaker::glsl::Bindings direct;
-  direct.set_texture("inputTex", input);
-  direct.set_uniform("resolution", noisemaker::glsl::Vec2(6.0f, 5.0f));
-  direct.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
-  direct.set_uniform("cellSize", 4.0f);
-  direct.set_uniform("grainSize", 2.0f);
-  direct.set_uniform("density", 50.0f);
-  direct.set_uniform("paperColor",
-                      noisemaker::glsl::DVec3(0.98, 0.96, 0.9));
-  direct.set_uniform("seed", std::int32_t{7});
-  direct.set_uniform("MODE", std::int32_t{0});
-  task33_verify(noisemaker::generated::bind_filter_stipple_stipple(direct),
-               fixture);
-
-  noisemaker::glsl::Bindings via_public;
-  via_public.set_texture("inputTex", input);
-  via_public.set_uniform("resolution", noisemaker::glsl::Vec2(6.0f, 5.0f));
-  via_public.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
-  via_public.set_uniform("cellSize", 4.0f);
-  via_public.set_uniform("grainSize", 2.0f);
-  via_public.set_uniform("density", 50.0f);
-  via_public.set_uniform("paperColor",
-                         noisemaker::glsl::DVec3(0.98, 0.96, 0.9));
-  via_public.set_uniform("seed", std::int32_t{7});
-  via_public.set_uniform("MODE", std::int32_t{0});
-  const auto direct_output = noisemaker::run_pass(
-      noisemaker::generated::bind_filter_stipple_stipple(direct),
-      fixture.width, fixture.height);
-  const auto public_output = noisemaker::run_pass(
-      noisemaker::generated::bind("filter/stipple:stipple", via_public),
-      fixture.width, fixture.height);
-  REQUIRE(task23_float_bytes(direct_output) == task23_float_bytes(public_output));
-}
-
 TEST(typed_task33_all_fifteen_derivative_kernels_are_registered_and_report_uses_derivatives) {
-  constexpr std::array<std::pair<std::string_view, std::string_view>, 15>
+  constexpr std::array<std::pair<std::string_view, std::string_view>, 14>
       kDerivativeFactories{{
           {"filter/bulge:bulge", "bulge"},
           {"filter/celShading:celShadingColor", "celShadingColor"},
@@ -11478,7 +11419,6 @@ TEST(typed_task33_all_fifteen_derivative_kernels_are_registered_and_report_uses_
           {"filter/spiral:spiral", "spiral"},
           {"filter/stamp:stThreshold", "stThreshold"},
           {"filter/step:step", "step"},
-          {"filter/stipple:stipple", "stipple"},
           {"filter/tunnel:tunnel", "tunnel"},
           {"filter/warp:warp", "warp"},
       }};
@@ -11492,7 +11432,7 @@ TEST(typed_task33_all_fifteen_derivative_kernels_are_registered_and_report_uses_
     (void)label;
     ++found;
   }
-  REQUIRE(found == 15U);
+  REQUIRE(found == 14U);
   // A non-derivative program (already-landed, unaffected by this task) must
   // still report false -- the BoundKernel constructor's third argument
   // defaults false, so every pre-existing factory site is untouched.
@@ -11503,6 +11443,203 @@ TEST(typed_task33_all_fifteen_derivative_kernels_are_registered_and_report_uses_
                .uses_derivatives());
 }
 // TASK33_NATIVE_TESTS_END
+
+// filter/stipple:stipple after the 6f98d26a corpus rewrote it as unsigned
+// fixed-point integer arithmetic with no screen-space derivatives. Expected
+// values come from the pinned CPU authority, noisemaker-for-cpu 3ea825a8
+// (its canonical stipple kernel with the uint-semantics restoration),
+// rendered through createCanonicalBindings -> bindGlslKernel -> runPass on
+// `task33_patterned_surface` at 6x5 with resolution (6, 5), tileOffset
+// (0, 0), cellSize 4, grainSize 2 and paperColor (0.98, 0.96, 0.9), which
+// the CPU reference binds as a raw Number array (DVec3 here). MODE is a
+// runtime int in the generated program, so every mode branch is bound
+// explicitly: pointillize, mezzoDots, mezzoLines, mezzoStrokes and
+// reticulation, each on phase 120 / seed 7 / density 50 and on phase 0 /
+// seed -3 / density 80, so the PCG3D hash also sees a negative seed cast to
+// uint. Both the direct binder and the public catalog path must reproduce
+// the full f32 and RGBA8 hashes and the corner/center probes bit-for-bit.
+namespace {
+
+struct StippleAuthorityCase {
+  std::int32_t mode;
+  float density;
+  std::int32_t seed;
+  Task33Case expected;
+};
+
+void stipple_authority_bind(noisemaker::glsl::Bindings& bindings,
+                            const noisemaker::Surface& input,
+                            const StippleAuthorityCase& c) {
+  bindings.set_texture("inputTex", input);
+  bindings.set_uniform("resolution",
+                       noisemaker::glsl::Vec2(static_cast<float>(c.expected.width),
+                                              static_cast<float>(c.expected.height)));
+  bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+  bindings.set_uniform("cellSize", 4.0f);
+  bindings.set_uniform("grainSize", 2.0f);
+  bindings.set_uniform("density", c.density);
+  bindings.set_uniform("paperColor", noisemaker::glsl::DVec3(0.98, 0.96, 0.9));
+  bindings.set_uniform("seed", c.seed);
+  bindings.set_uniform("MODE", c.mode);
+}
+
+// task33_verify without its uses_derivatives requirement: the rewritten
+// stipple calls no derivative builtin.
+void stipple_authority_verify(const noisemaker::BoundKernel& kernel,
+                              const Task33Case& c) {
+  const auto first = noisemaker::run_pass(kernel, c.width, c.height);
+  REQUIRE(first.data().size() == c.width * c.height * 4U);
+  std::size_t finite = 0U;
+  for (const float value : first.data()) {
+    if (std::isfinite(value)) ++finite;
+  }
+  REQUIRE(finite == c.finite_lanes);
+  REQUIRE(task23_hex(task23_sha256(task23_float_bytes(first))) == c.f32_hash);
+  REQUIRE(task23_hex(task23_sha256(first.to_rgba8())) == c.rgba8_hash);
+  for (const Task33Probe& probe : c.probes) {
+    const std::size_t offset = (probe.y * c.width + probe.x) * 4U;
+    for (std::size_t lane = 0; lane < 4U; ++lane) {
+      REQUIRE(noisemaker::float_bits_to_uint(first.data()[offset + lane]) ==
+              probe.bits[lane]);
+    }
+  }
+  // Determinism: a second render of the same bound kernel reproduces the
+  // identical bytes.
+  const auto second = noisemaker::run_pass(kernel, c.width, c.height);
+  REQUIRE(task23_float_bytes(first) == task23_float_bytes(second));
+}
+
+}  // namespace
+
+TEST(typed_stipple_fixed_point_matches_authority_bit_exact) {
+  const StippleAuthorityCase cases[] = {
+      // pointillize, phase 120, seed 7, density 50
+      {std::int32_t{0}, 50.0f, std::int32_t{7},
+       {"filter/stipple:stipple", 6U, 5U, 120,
+        "90f6ef565b360cf8e94654ebc62b9606aab8d9e705a4a73bd79cce31530ecd12",
+        "fe8d8cebacd633634ba39f54f8a7bb5ea729acb9859afe9b07a6183021398bf2",
+        120U,
+        {{{0U, 0U, {0x3f113300U, 0x3e197c00U, 0x3f697800U, 0x3e0ee23cU}},
+          {5U, 0U, {0x3ef73000U, 0x3f5ea600U, 0x3f2d0000U, 0x3e8ee23cU}},
+          {0U, 4U, {0x3e1f6c00U, 0x3ece3400U, 0x3e513400U, 0x3efa0be8U}},
+          {5U, 4U, {0x3f2ee400U, 0x3dfd5800U, 0x3f340b00U, 0x3f20be83U}},
+          {3U, 2U, {0x3f4db900U, 0x3eed1200U, 0x3f487900U, 0x3eee23b9U}}}}}},
+      // mezzoDots, phase 120, seed 7, density 50
+      {std::int32_t{1}, 50.0f, std::int32_t{7},
+       {"filter/stipple:stipple", 6U, 5U, 120,
+        "5132b157dc0c3b855d896db67f01ed922dba53990976378cdcfbe1d6b5843ed0",
+        "7dac534614327107d4c4a8bd1b8ca3d326922e1677980a40ced1310bac89f709",
+        120U,
+        {{{0U, 0U, {0x00000000U, 0x00000000U, 0x3f800000U, 0x3e0ee23cU}},
+          {5U, 0U, {0x00000000U, 0x3f800000U, 0x3f800000U, 0x3e8ee23cU}},
+          {0U, 4U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3efa0be8U}},
+          {5U, 4U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f20be83U}},
+          {3U, 2U, {0x3f800000U, 0x00000000U, 0x00000000U, 0x3eee23b9U}}}}}},
+      // mezzoLines, phase 120, seed 7, density 50
+      {std::int32_t{2}, 50.0f, std::int32_t{7},
+       {"filter/stipple:stipple", 6U, 5U, 120,
+        "bdde1577350cae89320b084e1c055141a357f09c8c0027ed0fba7be9095576e9",
+        "eaa67164934a48fe435adbc325373e8828193a3d4b5b44092ef3533d66d152b1",
+        120U,
+        {{{0U, 0U, {0x3f800000U, 0x00000000U, 0x3f800000U, 0x3e0ee23cU}},
+          {5U, 0U, {0x00000000U, 0x3f800000U, 0x3f800000U, 0x3e8ee23cU}},
+          {0U, 4U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3efa0be8U}},
+          {5U, 4U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f20be83U}},
+          {3U, 2U, {0x3f800000U, 0x00000000U, 0x00000000U, 0x3eee23b9U}}}}}},
+      // mezzoStrokes, phase 120, seed 7, density 50
+      {std::int32_t{3}, 50.0f, std::int32_t{7},
+       {"filter/stipple:stipple", 6U, 5U, 120,
+        "d8d64b6475b90121fd396ba4c9880fc24c16d197902863051ee7261e7baf78f4",
+        "250411d2f9f4da20c157d674e869d288dd6aa579e3d8227266bcad85cb3fd7f0",
+        120U,
+        {{{0U, 0U, {0x3f800000U, 0x00000000U, 0x3f800000U, 0x3e0ee23cU}},
+          {5U, 0U, {0x00000000U, 0x3f800000U, 0x3f800000U, 0x3e8ee23cU}},
+          {0U, 4U, {0x00000000U, 0x3f800000U, 0x00000000U, 0x3efa0be8U}},
+          {5U, 4U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3f20be83U}},
+          {3U, 2U, {0x3f800000U, 0x3f800000U, 0x3f800000U, 0x3eee23b9U}}}}}},
+      // reticulation, phase 120, seed 7, density 50
+      {std::int32_t{4}, 50.0f, std::int32_t{7},
+       {"filter/stipple:stipple", 6U, 5U, 120,
+        "fe2e0903a52dc46197354c5f1e1dd4982babdf8ab6bd6b099f2ca3a9c23455af",
+        "06ee9310f0cb1e88d841aab6bbdb9d330f7b078fc53ebcf5b5c29064099294b7",
+        120U,
+        {{{0U, 0U, {0x3d4ccccdU, 0x3d4ccccdU, 0x3d4ccccdU, 0x3e0ee23cU}},
+          {5U, 0U, {0x3f7851ecU, 0x3f7851ecU, 0x3f7851ecU, 0x3e8ee23cU}},
+          {0U, 4U, {0x3f7851ecU, 0x3f7851ecU, 0x3f7851ecU, 0x3efa0be8U}},
+          {5U, 4U, {0x3f7851ecU, 0x3f7851ecU, 0x3f7851ecU, 0x3f20be83U}},
+          {3U, 2U, {0x3f7851ecU, 0x3f7851ecU, 0x3f7851ecU, 0x3eee23b9U}}}}}},
+      // pointillize, phase 0, seed -3, density 80
+      {std::int32_t{0}, 80.0f, std::int32_t{-3},
+       {"filter/stipple:stipple", 6U, 5U, 0,
+        "9f0f57527ccd6792cc6ae28bd8f1248a3933896d37347c33c3fa23c885098c4d",
+        "e9637ccadbd5647ed0d7f3cbcb8a93ef95107bded7a70c691708723e3a414b7c",
+        120U,
+        {{{0U, 0U, {0x3f5f3c00U, 0x3f72aa00U, 0x3f42e900U, 0x3e9aca6bU}},
+          {5U, 0U, {0x3f3d0f00U, 0x3f583f00U, 0x3f2e6f00U, 0x3ee23b89U}},
+          {0U, 4U, {0x3f520c00U, 0x3f713000U, 0x3f31fc00U, 0x3f26b29bU}},
+          {5U, 4U, {0x3ed4f200U, 0x3f084d00U, 0x3f548e00U, 0x3f4a6b2aU}},
+          {3U, 2U, {0x3ec0a200U, 0x3ec34c00U, 0x3f2e6a00U, 0x3f20be83U}}}}}},
+      // mezzoDots, phase 0, seed -3, density 80
+      {std::int32_t{1}, 80.0f, std::int32_t{-3},
+       {"filter/stipple:stipple", 6U, 5U, 0,
+        "d3f9fe2507a5a0d9fda41dcf0f3f0cf2a0067cb00482f300511557321004b729",
+        "cfc4dde5ca30ac1fc849a1c30ed71c1ec1bd065244ad911103da4b5278c6e3df",
+        120U,
+        {{{0U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3e9aca6bU}},
+          {5U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3ee23b89U}},
+          {0U, 4U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f26b29bU}},
+          {5U, 4U, {0x00000000U, 0x00000000U, 0x3f800000U, 0x3f4a6b2aU}},
+          {3U, 2U, {0x00000000U, 0x00000000U, 0x3f800000U, 0x3f20be83U}}}}}},
+      // mezzoLines, phase 0, seed -3, density 80
+      {std::int32_t{2}, 80.0f, std::int32_t{-3},
+       {"filter/stipple:stipple", 6U, 5U, 0,
+        "2a9ac077f85a9c908d9330f4748a6c37b69e325c34c06baf3c5ad17efbd58039",
+        "8a4e9812653b76d1b504d54c987abbd7d90b7342be8e377696268420696e7bf8",
+        120U,
+        {{{0U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3e9aca6bU}},
+          {5U, 0U, {0x00000000U, 0x3f800000U, 0x00000000U, 0x3ee23b89U}},
+          {0U, 4U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f26b29bU}},
+          {5U, 4U, {0x00000000U, 0x00000000U, 0x3f800000U, 0x3f4a6b2aU}},
+          {3U, 2U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f20be83U}}}}}},
+      // mezzoStrokes, phase 0, seed -3, density 80
+      {std::int32_t{3}, 80.0f, std::int32_t{-3},
+       {"filter/stipple:stipple", 6U, 5U, 0,
+        "4f718fcef8ecd13f3a51d6c239d91bfd6db25f5721e6ba75a89b99391faf85a4",
+        "28c829082e2819be7e4da4ad5a8e189bf19d5278068aa6f4d4f90cf9d81c26fe",
+        120U,
+        {{{0U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3e9aca6bU}},
+          {5U, 0U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3ee23b89U}},
+          {0U, 4U, {0x00000000U, 0x00000000U, 0x00000000U, 0x3f26b29bU}},
+          {5U, 4U, {0x00000000U, 0x00000000U, 0x3f800000U, 0x3f4a6b2aU}},
+          {3U, 2U, {0x00000000U, 0x00000000U, 0x3f800000U, 0x3f20be83U}}}}}},
+      // reticulation, phase 0, seed -3, density 80
+      {std::int32_t{4}, 80.0f, std::int32_t{-3},
+       {"filter/stipple:stipple", 6U, 5U, 0,
+        "4ce896ce8c6d25430db7620ae6d66b8a192a7259ab901808833dae8c7b2af667",
+        "89e4cc663a5cfa6b05860c8fdb35b8b49fa358fc0714bf94f17c8232bb5d44f8",
+        120U,
+        {{{0U, 0U, {0x3d4ccccdU, 0x3d4ccccdU, 0x3d4ccccdU, 0x3e9aca6bU}},
+          {5U, 0U, {0x3f7851ecU, 0x3f7851ecU, 0x3f7851ecU, 0x3ee23b89U}},
+          {0U, 4U, {0x3d4ccccdU, 0x3d4ccccdU, 0x3d4ccccdU, 0x3f26b29bU}},
+          {5U, 4U, {0x3d4ccccdU, 0x3d4ccccdU, 0x3d4ccccdU, 0x3f4a6b2aU}},
+          {3U, 2U, {0x3d4ccccdU, 0x3d4ccccdU, 0x3d4ccccdU, 0x3f20be83U}}}}}},
+  };
+  for (const StippleAuthorityCase& c : cases) {
+    const auto input = task33_patterned_surface(c.expected.width,
+                                                c.expected.height,
+                                                c.expected.phase);
+    noisemaker::glsl::Bindings direct;
+    stipple_authority_bind(direct, input, c);
+    stipple_authority_verify(
+        noisemaker::generated::bind_filter_stipple_stipple(direct), c.expected);
+
+    noisemaker::glsl::Bindings via_public;
+    stipple_authority_bind(via_public, input, c);
+    stipple_authority_verify(
+        noisemaker::generated::bind(c.expected.program_key, via_public),
+        c.expected);
+  }
+}
 
 // posterize (round) / waves (any+notEqual+bvec2) -- the two derivative
 // programs whose second, unrelated builtin gap (round / any+notEqual) is now
@@ -18032,7 +18169,7 @@ TEST(typed_shapes_binding_abi_and_catalog_are_exact) {
 
 TEST(typed_shapes_runtime_defines_match_all_current_cpu_cases) {
   REQUIRE(classic_shapes_runtime_oracle::kSourceSha256 ==
-          "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e");
+          "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5");
   REQUIRE(classic_shapes_runtime_oracle::kCases.size() == 55U);
   REQUIRE(classic_shapes_runtime_oracle::kLoopADomain.size() == 25U);
   REQUIRE(classic_shapes_runtime_oracle::kLoopBDomain.size() == 25U);
@@ -31144,7 +31281,7 @@ void require_oracle_metadata() {
   constexpr std::string_view factory_sha =
       "0543dcdfa0c2cbe72f8a90f079100d1551ee754a11457da617c2254828d4e11f";
   constexpr std::string_view source_sha =
-      "a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b";
+      "737c53308c306163c02885e2edc3700b571aaec41ef98b8cf817e3175b5475bd";
   REQUIRE(factory_sha.size() == 64U);
   REQUIRE(source_sha.size() == 64U);
   constexpr std::array<std::string_view, 29> names{
@@ -31964,7 +32101,7 @@ TEST(typed_dynamic_cellrefract_kaleido_cpu9f3_enums_exact_repeatable_nonmutating
 // Exact CPU4307 cases from tests/fixtures/effects_runtime_reference.mjs.
 TEST(typed_effects_runtime_defines_match_all_current_cpu_cases) {
   REQUIRE(effects_runtime_oracle::kSourceSha256 ==
-          "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316");
+          "ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d");
   REQUIRE(effects_runtime_oracle::kCases.size() == 72U);
   REQUIRE(effects_runtime_oracle::kEffects.size() == 19U);
   REQUIRE(effects_runtime_oracle::kFlips.size() == 12U);

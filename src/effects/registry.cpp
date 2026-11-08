@@ -920,19 +920,19 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     throw std::invalid_argument("Production catalog requires the generated singleton");
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
-      provenance_.corpus_revision != "2cf5bad078ecd94b00c966d08a2dd50cd095f884" ||
-      provenance_.generated_payload_sha256 != "a82ef6a0bf7af3b856af78ceca62860e3792011d8ac50c449a9abbc80af25a58" ||
+      provenance_.corpus_revision != "6f98d26ab84f17ba7fb154bb74252d6362736f89" ||
+      provenance_.generated_payload_sha256 != "19fdce57afb7c981de17da548d7f621d737f222b4da473daa91474e6cdefd9c0" ||
       provenance_.normalized_record_stream_sha256 != "fb72ad197ea19e667c5697fd234d983e5b70f299bad1d79bde69661969342215" ||
-      provenance_.compatibility_sha256 != "7b483984cafcb0d595bbb834cb16e693bd054a5ee61e12e28b233f5de51f74b4" ||
-      provenance_.cpu_behavioral_lock != "2702f6d313b216480d37f35951bde1d2845c558ee6d73e34bda951748d428500" ||
+      provenance_.compatibility_sha256 != "1f148f2b54ce62b02a3b3dd137a3daa45d30a6b71aa24ae0d36b90718e655708" ||
+      provenance_.cpu_behavioral_lock != "eeebf0c2a9b23256f3000aa4c3370572456dd303cdf29b85f129caa72091c278" ||
       provenance_.cpu_behavioral_file_count != 98 ||
-      provenance_.cpu_revision != "2702f6d313b216480d37f35951bde1d2845c558ee6d73e34bda951748d428500" ||
-      provenance_.source_lock_sha256 != "072f2ea30d9776a46f3e0106580296899b560e6d489ab25a427f574a74d805d5" ||
+      provenance_.cpu_revision != "eeebf0c2a9b23256f3000aa4c3370572456dd303cdf29b85f129caa72091c278" ||
+      provenance_.source_lock_sha256 != "4e27ba5445657248ebf566ec7c585bdf009ab0f5633db1cc01c7f2a7056dac5a" ||
       provenance_.cpu_package_sha256 != "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
-      provenance_.cpu_source_lock_sha256 != "5db9df2ce812600cb64085afa9b5bdb5d040eba2cf8bf4541d3dab868973d598" ||
-      provenance_.upstream_revision != "2cf5bad078ecd94b00c966d08a2dd50cd095f884" ||
-      provenance_.upstream_tree != "ee1827916a307d3dde4efedcee1b79084ef7611f" ||
+      provenance_.cpu_source_lock_sha256 != "fb6e5d79e6f0797851b12380200c130f2f47b10326b6f6c31a80d22e69c886bd" ||
+      provenance_.upstream_revision != "6f98d26ab84f17ba7fb154bb74252d6362736f89" ||
+      provenance_.upstream_tree != "ea1d5eb2a92021a2850f0f26a2b54dd16f243847" ||
       provenance_.upstream_package_sha256 != "53b9e0f37e555b786a7d71b9959420319703ca9b030c919b903111e7fc7380f2" ||
       provenance_.upstream_package_lock_sha256 != "8f1efa408d7ee4f5e3f0fe2a52048ade8234cfb16a3739863edd4815cacef343" ||
       provenance_.first_effect_id != "classicNoisedeck/bitEffects" || provenance_.last_effect_id != "synth3d/shape3d")

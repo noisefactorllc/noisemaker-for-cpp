@@ -34,7 +34,7 @@ MODULE = "tools.glslcpp.frontend.shapes_float_bits_ingress_profile"
 
 KEY = "classicNoisedeck/shapes:shapes"
 PROFILE = "shapes-float-bits-ingress-v1"
-RAW_SHA256 = "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e"
+RAW_SHA256 = "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5"
 SOURCE = CORPUS / "classicNoisedeck/shapes/shapes.glsl"
 FOREIGN = CORPUS / "classicNoisedeck/shapeMixer/shapeMixer.glsl"
 INGRESS_SPAN = "119:21-119:46"

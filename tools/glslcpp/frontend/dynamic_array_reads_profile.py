@@ -8,10 +8,10 @@ from tools.glslcpp.frontend import mutable_global_array_profile as array
 # of the frozen KERNEL=0/EFFECT=0 array-store proof.
 ROWS = {
     'classicNoisedeck/kaleido:kaleido': (
-        '18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52',
-        '52fde2632c05665e39b5b31ddd45f283f60c877f8fcd7fdc80616b5b653435ab',
+        '2cf9e5528e3b19debec7e9761afbcf0f47452a124dd4bef74b907b2ee67f9642',
+        'a8eee87d4b2b780a400425618bbc4e8e08006e91a0dcb71d2adceba6ad9d134b',
         (('DIRECTION','str','int'),('KERNEL','str','int'),('LOOP_OFFSET','str','int'),('METRIC','str','int')),
-        45, 4, 'aa2cc76f7d6e7b6d5adae834106e0ba7afe3d4042ffc0e4db7541b5819a21500',
+        45, 4, 'f0bc2b4256ba48e82e9012ba6c2e43cb4b73132b928b7cfcdaa0f588e56c107e',
         'convolutionKernel', 3, 10),
     'classicNoisedeck/effects:effects': (
         '1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90',
@@ -20,18 +20,18 @@ ROWS = {
         63, 7, '9a2d52305cee708fca09e59879847d087975d96db28c5abc7a981bf8a5436fd2',
         'convolutionEffect', 20, 25),
     'classicNoisedeck/cellRefract:cellRefract': (
-        'aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70',
-        'c4c0697307f78b7114d077a5c25a32f502ea5b20cb884daca96acefc78ba390b',
+        'ada20a78762ccfa36b83995b7020f37e434e23da20650027ffa1784a8344430b',
+        'c6af551b60bffcaadcd18ec21323b06b263382b0b0721b02747cfc75ad12b801',
         (('KERNEL','str','int'),('SHAPE','str','int')),
-        45, 5, '657eea28baafcb298e1ad5137835f76113a01c181374e9d0a248f22b5e5808df',
+        45, 5, '95322e0029a70c14b9805461ffa2dd5cf06d871fb59301e173241ea61d81cad9',
         'convolutionKernel', 3, 15),
 }
 
 CURRENT_EFFECTS_ROW = (
-    'b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316',
-    '8837586c616d95ddad64be70054b15be46395f87603ffbb18f012161d7f8302d',
+    'ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d',
+    'b7f653b09c80845559b8528519e51b347fd69441965681f0b5be74eefc8ae218',
     (('EFFECT','str','int'),('FLIP','str','int')),
-    63, 7, '5268a0f8776eb5805942b17df07213303c6810f8a8b0cc422dc0048b56e64709',
+    63, 7, '7b100d0cc31a4808f7374801f91bd0f83855304b25ca339790a14b40a2f31448',
     'convolutionEffect', 20, 25,
 )
 

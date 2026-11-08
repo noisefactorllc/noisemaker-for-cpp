@@ -159,6 +159,12 @@ if __package__ in (None, ""):
         PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
         authenticate_vec_scalar_modulo)
+    from tools.glslcpp.frontend.stipple_fixed_point_profile import (
+        KEY as STIPPLE_KEY,
+        PROFILE as STIPPLE_FIXED_POINT_PROFILE,
+        RAW_SHA256 as STIPPLE_RAW_SHA256,
+        apply_stipple_fixed_point,
+        authenticate_stipple_fixed_point)
     from tools.glslcpp.frontend.cross_builtin_profile import (
         CROSS_KEYS,
         PROFILE as CROSS_BUILTIN_PROFILE,
@@ -634,6 +640,12 @@ else:
         PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
         authenticate_vec_scalar_modulo)
+    from .frontend.stipple_fixed_point_profile import (
+        KEY as STIPPLE_KEY,
+        PROFILE as STIPPLE_FIXED_POINT_PROFILE,
+        RAW_SHA256 as STIPPLE_RAW_SHA256,
+        apply_stipple_fixed_point,
+        authenticate_stipple_fixed_point)
     from .frontend.cross_builtin_profile import (
         CROSS_KEYS,
         PROFILE as CROSS_BUILTIN_PROFILE,
@@ -1990,6 +2002,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                                    "runtime_loop_bound_profile"}
         if key in PRNG_BOOLEAN_MIX_SELECT_KEYS:
             expected = expected | {"prng_boolean_mix_select_profile"}
+        # Stipple's fixed-point identity carrier rides on top of its generic
+        # runtime-define field: the one extra field, no shared-arm widening.
+        if key == STIPPLE_KEY:
+            expected = expected | {"stipple_fixed_point_profile"}
         if set(item) != expected:
             raise GeneratorError("typed slice programs are invalid")
     keys = [item["program_key"] for item in programs]
@@ -2214,6 +2230,13 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for key in sorted(HASH_SCALAR_UINT_RSHIFT_KEYS)
         if key in keys
     ]
+    stipple_fixed_point_profiles = [
+        (item["program_key"], item.get("stipple_fixed_point_profile"),
+         item["defines"])
+        for item in programs if "stipple_fixed_point_profile" in item]
+    expected_stipple_fixed_point_profiles = [
+        (STIPPLE_KEY, STIPPLE_FIXED_POINT_PROFILE, {"MODE": 0})
+    ] if STIPPLE_KEY in keys else []
     vec_scalar_modulo_profiles = [
         (item["program_key"], item.get("vec_scalar_modulo_profile"),
          item["defines"])
@@ -2251,6 +2274,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                  {"DIMENSIONS": 2})]
             or hash_scalar_uint_xor_profiles != expected_hash_scalar_uint_xor_profiles
             or hash_scalar_uint_rshift_profiles != expected_hash_scalar_uint_rshift_profiles
+            or stipple_fixed_point_profiles != expected_stipple_fixed_point_profiles
             or vec_scalar_modulo_profiles != expected_vec_scalar_modulo_profiles
             or points_float_bits_ingress_profiles != expected_points_float_bits_ingress_profiles
             or dla_bit_ingress_profiles != expected_dla_bit_ingress_profiles
@@ -2337,8 +2361,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             or derivative_profiles != [
                 (key, DERIVATIVE_ADMISSION_PROFILE,
                  {"MODE": 0, "PATTERN": 0} if key == "filter/halftone:halftone" else
-                 {"STYLE": 2, "WRAP": 0} if key == "filter/pondRipples:pondRipples" else
-                 {"MODE": 0} if key == "filter/stipple:stipple" else {})
+                 {"STYLE": 2, "WRAP": 0} if key == "filter/pondRipples:pondRipples" else {})
                 for key in sorted(DERIVATIVE_ADMISSION_KEYS)]
             or reflect_profiles != [
                 (REFLECT_ADMISSION_KEY, REFLECT_ADMISSION_PROFILE, {})]
@@ -3868,6 +3891,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           perlin_scalar_uint_xor_profile: str | None = None,
                           hash_scalar_uint_xor_profile: str | None = None,
                           hash_scalar_uint_rshift_profile: str | None = None,
+                          stipple_fixed_point_profile: str | None = None,
                           vec_scalar_modulo_profile: str | None = None,
                           cross_builtin_profile: str | None = None,
                           dla_bit_ingress_profile: str | None = None,
@@ -4522,6 +4546,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_hash_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_hash_scalar_uint_xors: list[TypedExpression] = []
     authorized_hash_scalar_uint_rshifts: tuple[TypedExpression, ...] = ()
+    # stipple-fixed-point-v1: the exact Stipple nodes the frozen vocabulary
+    # does not admit, by object identity (see stipple_fixed_point_profile).
+    authorized_stipple = None
+    visited_stipple_types: list[TypedExpression] = []
+    visited_stipple_index: list[TypedExpression] = []
+    visited_stipple_rshifts: list[TypedExpression] = []
+    visited_stipple_lshifts: list[TypedExpression] = []
+    visited_stipple_steps: list[TypedExpression] = []
     visited_hash_scalar_uint_rshifts: list[TypedExpression] = []
     authorized_vec_scalar_modulos: tuple[TypedExpression, ...] = ()
     visited_vec_scalar_modulos: list[TypedExpression] = []
@@ -5895,6 +5927,25 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     typed, source_hash, hash_scalar_uint_rshift_profile))
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
+    if stipple_fixed_point_profile is not None:
+        if (typed.key != STIPPLE_KEY
+                or stipple_fixed_point_profile != STIPPLE_FIXED_POINT_PROFILE
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or hash_scalar_uint_rshift_profile is not None
+                or derivative_admission_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: Stipple fixed-point profile metadata mismatch")
+        try:
+            authorized_stipple = authenticate_stipple_fixed_point(
+                typed, source_hash, stipple_fixed_point_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key == STIPPLE_KEY and source_hash == STIPPLE_RAW_SHA256:
+        raise GeneratorError(
+            f"{typed.key}: exact Stipple fixed-point profile carrier required")
     if vec_scalar_modulo_profile is not None:
         if (typed.key not in VEC_SCALAR_MODULO_KEYS
                 or compatibility_transform is not None
@@ -6962,6 +7013,16 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if typ.kind == "array":
             if audio_proof is not None and value is audio_proof.declaration:
                 visited_audio_declarations.append(value)
+                return
+            # Stipple's one function-local `const uint M[5]` table: its
+            # declaration and its `uint[5](...)` initializer, by object
+            # identity (the index arm consumes its one `M` reference). `uint`
+            # is already an approved type; only the array wrapper of this
+            # exact table is admitted.
+            if (authorized_stipple is not None
+                    and any(value is item
+                            for item in authorized_stipple.array_type_nodes)):
+                visited_stipple_types.append(value)
                 return
             if any(value is item for item in authorized_dither_globals):
                 return
@@ -8132,13 +8193,17 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 raise GeneratorError(f"{location(value)}: unsupported matrix conversion")
         elif value.kind == "binary":
             dither_bitwise_valid = any(value is item for item in authorized_dither_bitwise)
+            stipple_lshift = (
+                authorized_stipple is not None
+                and any(value is item for item in authorized_stipple.left_shifts))
             if (value.operator not in APPROVED_BINARY_OPERATORS
                     and not (value.operator == "<<"
                              and authorized_median_frontend_proof is not None
                              and any(value is item
                                      for item in authorized_median_frontend_proof.expression_nodes
                                      if item.kind == "binary"
-                                     and item.operator == "<<"))):
+                                     and item.operator == "<<"))
+                    and not stipple_lshift):
                 raise GeneratorError(f"{location(value)}: unsupported binary operator {value.operator}")
             left, right = value.children
             left_type, right_type = left.type.display(), right.type.display()
@@ -8150,6 +8215,16 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     used.add("integer-modulo")
                 else:
                     raise GeneratorError(f"{location(value)}: unsupported binary operator %")
+            elif value.operator == "<<" and stipple_lshift:
+                # Stipple's three exact left shifts: two `uvec2 << uvec2`
+                # 12-bit fractions and one `uint << uint` edge ramp.
+                if ((left_type, right_type, value.type.display()) not in {
+                        ("uvec2", "uvec2", "uvec2"), ("uint", "uint", "uint")}
+                        or value.category != "rvalue"
+                        or any(value is item for item in visited_stipple_lshifts)):
+                    raise GeneratorError(
+                        f"{location(value)}: malformed authenticated Stipple left shift")
+                visited_stipple_lshifts.append(value)
             elif value.operator == "<<":
                 if (value.type.display() != "uint" or len(value.children) != 2
                         or value.children[0].type.display() != "uint"
@@ -8226,6 +8301,19 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                             raise GeneratorError(
                                 f"{location(value)}: malformed authenticated scalar uint right shift")
                         visited_hash_scalar_uint_rshifts.append(value)
+                    elif (authorized_stipple is not None
+                          and any(value is item for item in (
+                              *authorized_stipple.scalar_uint_rshifts,
+                              authorized_stipple.signed_vector_rshift))):
+                        # Stipple's exact scalar `uint >> uint` shifts and its
+                        # one `ivec2 >> int` seed-texel shift.
+                        if ((left_type, right_type, value.type.display()) not in {
+                                ("uint", "uint", "uint"), ("ivec2", "int", "ivec2")}
+                                or value.category != "rvalue"
+                                or any(value is item for item in visited_stipple_rshifts)):
+                            raise GeneratorError(
+                                f"{location(value)}: malformed authenticated Stipple right shift")
+                        visited_stipple_rshifts.append(value)
                     elif (left_type not in {"uvec2", "uvec3", "uvec4"}
                           or right_type not in {"uint", left_type}):
                         raise GeneratorError(f"{location(value)}: unsupported binary operator >>")
@@ -9173,8 +9261,21 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 value is item for item in authorized_newton_root_indexes)
             landscape_index_valid = any(
                 value is item for item in authorized_landscape_indexes)
+            stipple_index_valid = (
+                authorized_stipple is not None
+                and value is authorized_stipple.table_index)
             if color_lab_index_valid:
                 pass
+            elif stipple_index_valid:
+                # fbm's one `M[k]` read of the function-local const table.
+                if (context != "rvalue"
+                        or base is not authorized_stipple.table_reference
+                        or index.kind != "id" or index.type.display() != "int"
+                        or value.type.display() != "uint"
+                        or any(value is item for item in visited_stipple_index)):
+                    raise GeneratorError(
+                        f"{location(value)}: malformed authenticated Stipple table read")
+                visited_stipple_index.append(value)
             elif runtime_color_index_valid:
                 visited_runtime_color_indexes.append(value)
             elif dither_index_valid:
@@ -9305,7 +9406,21 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 and value.span.start_column == 9)
             points_post = any(value is item for item in authorized_points_post_nodes)
             ca_post = any(value is item for item in authorized_ca_posts)
-            if (not (median_post or julia_period_post or points_post or ca_post)
+            stipple_step = (authorized_stipple is not None
+                            and any(value is item
+                                    for item in authorized_stipple.uint_steps))
+            if stipple_step:
+                # isqrt's four `r--`/`r++` corrections of a uint local.
+                if (value.operator not in {"++", "--"}
+                        or len(value.children) != 1
+                        or value.type.display() != "uint"
+                        or value.children[0].kind != "id"
+                        or value.children[0].type.display() != "uint"
+                        or any(value is item for item in visited_stipple_steps)):
+                    raise GeneratorError(
+                        f"{location(value)}: malformed authenticated Stipple uint step")
+                visited_stipple_steps.append(value)
+            elif (not (median_post or julia_period_post or points_post or ca_post)
                     or value.operator not in {"++", "--"}
                     or len(value.children) != 1
                     or value.type.display() != "int"
@@ -9766,6 +9881,24 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             != authorized_hash_scalar_uint_rshifts):
         raise GeneratorError(
             f"{typed.key}: authenticated scalar uint right shift traversal mismatch")
+    if authorized_stipple is not None:
+        def same_nodes(visited, expected) -> bool:
+            return ({id(item) for item in visited} == {id(item) for item in expected}
+                    and len({id(item) for item in visited}) == len(expected))
+        if (not same_nodes(visited_stipple_types,
+                           authorized_stipple.array_type_nodes)
+                or not same_nodes(visited_stipple_index,
+                                  (authorized_stipple.table_index,))
+                or len(visited_stipple_index) != 1
+                or not same_nodes(visited_stipple_rshifts,
+                                  (*authorized_stipple.scalar_uint_rshifts,
+                                   authorized_stipple.signed_vector_rshift))
+                or not same_nodes(visited_stipple_lshifts,
+                                  authorized_stipple.left_shifts)
+                or not same_nodes(visited_stipple_steps,
+                                  authorized_stipple.uint_steps)):
+            raise GeneratorError(
+                f"{typed.key}: authenticated Stipple fixed-point traversal mismatch")
     if (authorized_vec_scalar_modulos
             and tuple(visited_vec_scalar_modulos)
             != authorized_vec_scalar_modulos):
@@ -10520,6 +10653,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: hash scalar uint right shift identity profile mutated program")
             typed = profiled
+        stipple_fixed_point_profile = slice_spec["programs"][index].get(
+            "stipple_fixed_point_profile")
+        if stipple_fixed_point_profile is not None:
+            try:
+                profiled = apply_stipple_fixed_point(
+                    typed, source_hash, stipple_fixed_point_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: Stipple fixed-point identity profile mutated program")
+            typed = profiled
         attractor_any_isnan_profile = slice_spec["programs"][index].get(
             "attractor_any_isnan_profile")
         if attractor_any_isnan_profile is not None:
@@ -11222,6 +11367,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               perlin_scalar_uint_xor_profile=perlin_scalar_uint_xor_profile,
                               hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                               hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
+                              stipple_fixed_point_profile=stipple_fixed_point_profile,
                               vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                               points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                               points_post_profile=points_post_profile,
@@ -11310,6 +11456,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            perlin_scalar_uint_xor_profile=perlin_scalar_uint_xor_profile,
                                            hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                                            hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
+                                           stipple_fixed_point_profile=stipple_fixed_point_profile,
                                            vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                                            points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                                            points_post_profile=points_post_profile,
@@ -11457,6 +11604,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if hash_scalar_uint_rshift_profile is not None:
             manifest_program["hash_scalar_uint_rshift_profile"] = (
                 hash_scalar_uint_rshift_profile)
+        if stipple_fixed_point_profile is not None:
+            manifest_program["stipple_fixed_point_profile"] = (
+                stipple_fixed_point_profile)
         if attractor_any_isnan_profile is not None:
             manifest_program["attractor_any_isnan_profile"] = (
                 attractor_any_isnan_profile)

@@ -5,36 +5,36 @@ from . import struct_frontier_profile as sf
 from . import shapes3d_round_profile as sr
 
 KEY='classicNoisedeck/shapes3d:shapes3d'
-RAW='818badfbadcf295d1863d208c0d0582a1349ff64f44dbf43f905a92fcfd4c5ad'
+RAW='e17550180972bf97883c33eb4b280bfb3456d9212162c91e76cc8befbae941dc'
 DEFINES=(('BLEND_MODE','str','int'),('SHAPE_A','str','int'),('SHAPE_B','str','int'))
 SOURCE_GLOBAL={
     **lp._SOURCE_GLOBAL_LITERAL_INT_PROFILES[KEY],
-    'source':'9d7172e600232078e3a839062211078a010916500c9fa28eca1ee93e4defd027',
+    'source':'686b78a3907e7ca7e3e54540e33872cf69290c0dcc49be57d22940db55e5fbc0',
     'defines':DEFINES,
     'integer':('MAX_STEPS',40,'100',100),
     'globals':(('MIN_DIST',38,'float','0.01'),('MAX_DIST',39,'float','200.0'),('MAX_STEPS',40,'int','100'),('fwdA',64,'mat3',None),('fwdB',65,'mat3',None),('invB',66,'mat3',None),('invA',67,'mat3',None)),
-    'reads':(('rayMarch',121,454,25,454,34),),
-    'pre_functions':'2de010ae09ba5471fd58470d24b9697b6a3154ded2513d771532333650638e81',
-    'post_functions':'19b8390e3a1c9b27e6d1e1426dbb95764bebbe252c9ae16b613bdbdf84cf4638',
-    'pre_whole':'5b16e972999ae8b0ac81002c950d3ece1bddba6626a4c3a210a200b8db67eb54',
-    'post_whole':'1de623422c24594d21eb07c601f36a4bb90de73cca1cfe68b5b85ef34e14f698',
-    'interface':'f480aac072fc94a3dd049f9d9f05ed209776179d9621e5f8496bdf5ec247d752',
+    'reads':(('rayMarch',121,452,25,452,34),),
+    'pre_functions':'5067e298d11a66e13ed4a75272695ad948ec9e7c88824dd18b78343d794ad4b3',
+    'post_functions':'72c61beb04a80246634aa433fa7ef0065a47a47dfed7688844fb308319bf0bb3',
+    'pre_whole':'6ea2a2a8641b6cecd71134196a21f7de9297292dc3b253fa9f0fe7c47a8c1e97',
+    'post_whole':'573042d824cb84682c0cda3eaf07a59c0b53de425ce053a6a0e33c4611e80cce',
+    'interface':'87fbe0cfc5754b191c8c85a892a77d2b20ff2145907fe8fb8c5b04e6fe194a9b',
 }
 STRUCT={
-    'normalized_bytes':13223,
+    'normalized_bytes':13146,
     'normalized_sha256':SOURCE_GLOBAL['source'],
     'functions_sha256':SOURCE_GLOBAL['post_functions'],
-    'whole_sha256':'6ce6fb8e611d09f1ff4a1beefcaea63ef660cd872e21a4ac1853bb40c0cfa559',
-    'interface_sha256':'77805614c9db5abd2ee111507102145485fbc8e340daba9307bdb2659f195731',
+    'whole_sha256':'c6ae975864a68e553bb0fbb4e793a932a4707605121fed1adfbb2078b3903507',
+    'interface_sha256':'82c5020cb65855377f2cfea181166c94779b7a14b631bd349e9b6cfa4f5475b2',
     'structs_sha256':'31dcf4e9341576df7031ffffec3f88958eeb0937829c923618a6ec342ab48713',
     'returns_sha256':'d21f32f11f838feb6173bdee13332a7b479ba0d5e7774cbe57e54eada03572cd',
     'parameters_sha256':'9f6fb0b9e33347f408ab375ba7b10d0e357680ba2885608558adc64a93c15f7f',
-    'locals_sha256':'572adecfd4d50a8e3d2d6568c71fbc64c0881c69c95cc069a5b337d6fbcf4bb4',
-    'members_sha256':'f7941b803cd6baffeaf88deb6c10940677d2a9e1575539f0f4f26c033b55a548',
-    'census':(2,4,29,0,1509,94),
+    'locals_sha256':'0df6de8e0c7e0aedb934d808c81d99d8a9bb4cc05eccf3ce0363e6947dde9f26',
+    'members_sha256':'6331c1cd2620f73632a5efeed1b6374da8e594f4ee7dc8d5d5c8680e67ed94d7',
+    'census':(2,4,29,0,1494,93),
 }
-ROUND_SITES=((415,35,'7d40b6f5fc9fcc824dd8053e11c6b8927be850de8701e57c427df747171be1e1','c248789f7c90824ad79323c01b97d6aa911942223f8795acfd1acbbd05811b30'),(422,35,'04279fccbbd836ca62baf1712e51ed33fcbe0e9f463366ec4efa244ceced5912','f44847f2f0ca7d8fc916a0531741a320960052be8d7a3682e115fde548aa285e'))
-INDEX_SITES=((195,13,63,'9e9b6c8971eaf4272a3e0ff1f00b407dc5e5cdb7e55093fd05fc4d06bf16f24c'),(196,13,152,'22a6d3db207e4bafbe7a4009f9d6c5fa97b216969004592b73188b6e6793aa33'),(196,23,63,'94b1cab7b22430ce3c26962a5b4a48a2f57a06b697a54b2ca30ed95dc43bb1a5'),(198,13,152,'781f3c52b6842939f63717257d7a9e706a926ed2c146d6b05264947afb16fcf2'),(198,35,63,'d13a69b85082c313dad26a75d27d4d5f7517e8a6687787dc86f57844e6321126'))
+ROUND_SITES=((413,35,'544a0fae68a0ebca773f0b127268362cf7c8bcc37c0f19915fdd0a17e31e7491','5fa874d640cb48927b455398bcb8ef9cd41a75d84d2e4918449383eb23a02b63'),(420,35,'85f3bb68b483d6e5e5d743daaf2b5d66e2f84ad6a8e4b1f104f22050ebbc3fb9','78daf1c7263e2582491890a35137e588d6a09149f8ba8e5d08ac3c0f2d6dc7c1'))
+INDEX_SITES=((193,13,63,'cc544821fcfa3a932b4ec1bd5e0685911ee53f487139eafa2a2c2ef842894e65'),(194,13,152,'bdf1c983219388eb8231132c3cafaf9086baed85407908ea70898b72327fb08a'),(194,23,63,'bf729da7f9878f6ff0d1da73726e06c1de809e29c4d9111984e414a2915ad267'),(196,13,152,'69a5720fe9d9af41fdcb11dd39a01b2eb6e4892a3aa35d6e0602d13b4c199fa1'),(196,35,63,'f048529c762f325f8736620668d5092d1e7a7996854dec2697a6d1d66ca6994a'))
 
 def authenticate(program, source_hash):
     if program.key != KEY or source_hash != RAW or hashlib.sha256(program.raw_source.encode()).hexdigest()!=RAW:

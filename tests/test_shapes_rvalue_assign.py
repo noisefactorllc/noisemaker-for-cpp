@@ -41,7 +41,7 @@ MODULE = "tools.glslcpp.frontend.shapes_rvalue_assign_profile"
 
 KEY = "classicNoisedeck/shapes:shapes"
 PROFILE = "shapes-rvalue-assign-v1"
-RAW_SHA256 = "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e"
+RAW_SHA256 = "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5"
 SOURCE = CORPUS / "classicNoisedeck/shapes/shapes.glsl"
 ASSIGN_SPAN = "42:19-42:39"
 COARSE = "source, define, function, whole-program, or interface mismatch"
@@ -340,7 +340,7 @@ class ShapesRvalueAssignCensusTests(unittest.TestCase):
     def test_census_counts_are_the_real_program_counts(self):
         module = _module()
         self.assertEqual(1, module._RVALUE_ASSIGN_CENSUS)
-        self.assertEqual(58, module._TOTAL_ASSIGN_CENSUS)
+        self.assertEqual(57, module._TOTAL_ASSIGN_CENSUS)
 
     def test_a_second_rvalue_assignment_anywhere_is_a_hard_failure(self):
         module = _module()
@@ -396,7 +396,7 @@ class ShapesRvalueAssignCensusTests(unittest.TestCase):
                     candidate, values["_RAW_SHA256"], PROFILE)
         message = str(raised.exception)
         self.assertNotIn(COARSE, message)
-        self.assertIn("total assignment census mismatch: 57", message)
+        self.assertIn("total assignment census mismatch: 56", message)
 
     def test_a_nested_assignment_in_another_function_hits_the_owner_guard(self):
         """Covers the `outside the owner function` branch, which a second node
@@ -423,7 +423,7 @@ class ShapesRvalueAssignCensusTests(unittest.TestCase):
         """The census selects by "not statement-rooted", not by parent.
 
         Re-kinding an `expr` statement whose sole expression is an assignment
-        leaves `_TOTAL_ASSIGN_CENSUS` at 58, so a parent-based census would
+        leaves `_TOTAL_ASSIGN_CENSUS` at 57, so a parent-based census would
         have let this reach the emitter's expression dispatcher unadmitted,
         visible only to the refrozen function hash. It is caught here.
         """
@@ -468,7 +468,7 @@ class ShapesRvalueAssignCensusTests(unittest.TestCase):
                         nested += 1
         self.assertEqual(module._TOTAL_ASSIGN_CENSUS, rooted + nested)
         self.assertEqual(module._RVALUE_ASSIGN_CENSUS, nested)
-        self.assertEqual(57, rooted)
+        self.assertEqual(56, rooted)
         self.assertFalse(module._is_statement_rooted(None, None, 0),
                          "a global initializer root is never statement-rooted")
 
@@ -489,7 +489,7 @@ class ShapesRvalueAssignCensusTests(unittest.TestCase):
                     candidate, values["_RAW_SHA256"], PROFILE)
         message = str(raised.exception)
         self.assertNotIn(COARSE, message)
-        self.assertIn("total assignment census mismatch: 59", message)
+        self.assertIn("total assignment census mismatch: 58", message)
 
 
 class ShapesRvalueAssignLockDeletionTests(unittest.TestCase):

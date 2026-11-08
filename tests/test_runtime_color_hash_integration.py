@@ -25,8 +25,8 @@ def candidate(kind: str, runtime: bool):
     source_root = SOURCE_ROOT if runtime else (SOURCE_ROOT.parents[1] / "32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3/sources")
     raw = (source_root / "classicNoisedeck" / kind / f"{kind}.glsl").read_text()
     digest = hashlib.sha256(raw.encode()).hexdigest()
-    expected = ({"noise": "513f8278e29564b7f2b0735b539b5990b53dc920d487fffb87d54a0c92fc5f0b",
-                 "moodscape": "2b020887bfb1a4dd366b1583e4ff68fd47193bd4993ba1052170de0981aabfa1"}[kind]
+    expected = ({"noise": "276b5ca70973c57057adb389d8cb49946a0bdedb4486ffafbaa8e8e876d14a9a",
+                 "moodscape": "c93cc8744c2368446fe6214a80cdc9e6fd8b36b1dee89f511812c7ba2f0145dc"}[kind]
                 if runtime else profile.RAW_SHA256)
     assert digest == expected, "fixture source identity mismatch"
     defines = ({name: "int" for name, _, _ in profile.FIXED_DEFINES}

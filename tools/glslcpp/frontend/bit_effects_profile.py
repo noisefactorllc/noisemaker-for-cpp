@@ -51,13 +51,13 @@ RUNTIME_ABI = {
         "whole NaN-bearing xi sum through JavaScript ToInt32",
 }
 
-_RAW_BYTES = 12748
-_RAW_SHA256 = "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b"
-_NORMALIZED_BYTES = 8169
-_NORMALIZED_SHA256 = "70c88967c308368f81a8739296786c3e501005e536e987446bdc9c1dc93b7bb0"
-_FUNCTIONS_SHA256 = "c2ffa4525ea4f39ba9e2395e2e755f580d450b645dee628408ddb089281377f5"
-_WHOLE_SHA256 = "ae7c66f434f86a1c5b72bfb55faba6dada4b3be5ea5b967885fd6cce1ac6de44"
-_INTERFACE_SHA256 = "22a5c8be48bbe78e87c503b1bbce3bdfeead3e452259dd46057ceccd1f2dc664"
+_RAW_BYTES = 12671
+_RAW_SHA256 = "ce0bc2e032849d863ddb733297367cd8c640c32caccad09000ac8199e23e18d5"
+_NORMALIZED_BYTES = 8092
+_NORMALIZED_SHA256 = "b3a59800bda225b39af8f6b71f1b3894cdc3aea642c2150ff0048c309a0a2917"
+_FUNCTIONS_SHA256 = "bd202d8840b5b54ccf8cc04745952c2a9d2c555d8ba1a27f8436c4f1b569efd1"
+_WHOLE_SHA256 = "2293b8476644532c75972a51caf50a2c2851656651ac8330b380e2176815fdde"
+_INTERFACE_SHA256 = "a52b3f55cbab9ea1d096ea564ed9ffa95429e28757cc8fc2db308d04cab2bd2b"
 _DEFINES = (
     ("COLOR_SCHEME", "int", "20"), ("FORMULA", "int", "0"),
     ("INTERP", "int", "0"), ("MASK_COLOR_SCHEME", "int", "1"),
@@ -107,8 +107,8 @@ _SCALAR_UINT_XOR_SITES = (
     ("101:10-101:47", "89c933e13eea0b6619023a7554bffb353eb1bd8c22890671cb91390823a66d8b"),
 )
 _CANONICAL_OVERLOAD_MISDISPATCH_SITE = (
-    92, "bitMask", "340:32-340:58",
-    "3a74a6ccca85eb676129416f2486e88c290295c11bfd96a2081ecff417deed1d",
+    92, "bitMask", "338:32-338:58",
+    "18de586d46b13a3897bd37e4fef194d2d6c4e9029f85de5d5b6417c5c0fb0538",
     101, ("vec2", "float", "float"),
 )
 _CANONICAL_XI_TO_INT32_SITE = (
@@ -315,7 +315,7 @@ def authenticate_bit_effects_frontend(
     misdispatch = [(function, node) for function, node in located
                    if function is not None and function.id == 92
                    and node.kind == "call" and node.callee == "maskValue"
-                   and _span(node) == "340:32-340:58"]
+                   and _span(node) == _CANONICAL_OVERLOAD_MISDISPATCH_SITE[2]]
     if len(misdispatch) != 1:
         raise _fail("canonical overload misdispatch cardinality mismatch")
     owner, misdispatch_call = misdispatch[0]

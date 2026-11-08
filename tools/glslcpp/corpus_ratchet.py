@@ -284,6 +284,9 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
     )
+    from tools.glslcpp.frontend.stipple_fixed_point_profile import (
+        KEY as STIPPLE_KEY, PROFILE as STIPPLE_FIXED_POINT_PROFILE,
+    )
     from tools.glslcpp.frontend.cross_builtin_profile import (
         CROSS_KEYS, PROFILE as CROSS_BUILTIN_PROFILE,
         apply_cross_admission,
@@ -360,6 +363,9 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     vec_scalar_modulo_profile = (
         VEC_SCALAR_MODULO_PROFILE if key in VEC_SCALAR_MODULO_KEYS else None
     )
+    stipple_fixed_point_profile = (
+        STIPPLE_FIXED_POINT_PROFILE if key == STIPPLE_KEY else None
+    )
     cross_builtin_profile = (
         CROSS_BUILTIN_PROFILE if key in CROSS_KEYS else None
     )
@@ -420,6 +426,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             simulation_sampler_profile=simulation_sampler_profile,
             hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
             hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
+            stipple_fixed_point_profile=stipple_fixed_point_profile,
             vec_scalar_modulo_profile=vec_scalar_modulo_profile,
             cross_builtin_profile=cross_builtin_profile,
             dla_bit_ingress_profile=dla_bit_ingress_profile,
@@ -455,7 +462,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             attractor_any_isnan_profile=attractor_any_isnan_profile,
             any_relational_profile=any_relational_profile,
             struct_frontier_profile=struct_frontier_profile,
-            out_inout_admission_profile=out_inout_admission_profile)
+            out_inout_admission_profile=out_inout_admission_profile,
+            stipple_fixed_point_profile=stipple_fixed_point_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None

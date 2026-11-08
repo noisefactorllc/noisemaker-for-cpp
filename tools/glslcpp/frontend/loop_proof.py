@@ -263,8 +263,8 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
     # the program's recorded first blocker to its next authentic frontier
     # (`54:1: unsupported struct declaration`) without promoting it.
     "classicNoisedeck/shapes3d:shapes3d": {
-        "raw": "818badfbadcf295d1863d208c0d0582a1349ff64f44dbf43f905a92fcfd4c5ad",
-        "source": "2f2b40281c84c67297a466a42f7780c8b21b2b037a41bcf7d9c9fb6a98b03617",
+        "raw": "e17550180972bf97883c33eb4b280bfb3456d9212162c91e76cc8befbae941dc",
+        "source": "1879adb1262c150d2080725875a18a3be35129867a6120145932d9e97d64d2b2",
         "defines": (("BLEND_MODE", "int", "10"),
                     ("SHAPE_A", "int", "30"),
                     ("SHAPE_B", "int", "10")),
@@ -276,12 +276,12 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
                     ("fwdB", 62, "mat3", None),
                     ("invB", 63, "mat3", None),
                     ("invA", 64, "mat3", None)),
-        "reads": (("rayMarch", 118, 367, 25, 367, 34),),
-        "pre_functions": "9d16cfdf81910e96d30e7b91e6ece36985ecca22bb04dc72448ef4bf7badcf5e",
-        "post_functions": "4d4046d9448e38c67aab440872deb681ccb03fb632f02c1e25fdd303df5285da",
-        "pre_whole": "87b2d56ef1f6db7e70e407069e17d95ff3e384ff685358075a52b2fde2e1497b",
-        "post_whole": "fdd41134212bfb343a643861cd2fed235e5d83c13da7f81aeb27f0ec2a980316",
-        "interface": "e347814a67a9611866fcb8c923c5f32e3e96a850ab08116dd23471e3b66fc24a",
+        "reads": (("rayMarch", 118, 365, 25, 365, 34),),
+        "pre_functions": "ac1358e7ca39bd78f5acec450c02214da7f334384ea09849f492aff0e6d5853e",
+        "post_functions": "21d2930ab1dd6100f7b062698269f9d0a832b0fa9172021c5d700c9baea354a5",
+        "pre_whole": "7bd60d543cc9e23da13d2f8ae6e5f80ff859cc93cc3907fbf9d8c365521026fa",
+        "post_whole": "41d766a9686c9a8753c038539535fc9c3233a1e546470bb6bf01b207a917667a",
+        "interface": "ea7464219162eb9cfe0a9abee77025e131ce64d378bf5ef9026a8559b57574f5",
     },
     # The three render-family march programs. renderLit3d's single march loop
     # is a plain MAX_STEPS read; render3d and renderCubemap3d additionally

@@ -27,7 +27,7 @@ authenticateCpuRoot(cpu,ledger)
 const [{canonicalKernelFactories,kernelFactories,canonicalAdapterFactories},{effectRecords,UPSTREAM_REVISION},{bindCanonicalKernel},{runPass},{Surface}]=await Promise.all([
   load('src/effects/catalog.js'),load('src/effects/generated/upstream-snapshot.js'),load('src/csl/glsl-kernel.js'),load('src/runtime/pass-runner.js'),load('src/runtime/surface.js')])
 const revision='6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d'
-const sourceSha='b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316'
+const sourceSha='ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d'
 const factorySha='6d6adaeff42719de80378bbaf61d1f3c405dc24e34cae99b9354750582b66cd2'
 const key='classicNoisedeck/effects:effects'
 const factory=canonicalKernelFactories[key]

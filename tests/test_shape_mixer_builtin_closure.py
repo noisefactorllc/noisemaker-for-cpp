@@ -23,7 +23,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "classicNoisedeck/shapeMixer:shapeMixer"
 PROFILE = "shape-mixer-builtin-closure-v1"
 SCALAR_XOR_PROFILE = "scalar-uint-xor-v1"
-RAW_SHA256 = "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b"
+RAW_SHA256 = "ae511c7398c65a9a8b5adc09d00efda254184da5636abea143685a92363e1a7c"
 SOURCE = (
     ROOT
     / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
@@ -148,22 +148,22 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
             program,
         )
         self.assertEqual(
-            ("673:17-673:49", "626:17-626:49"),
+            ("671:17-671:49", "624:17-624:49"),
             tuple(profile._span(item) for item in proof.reflect_nodes),
         )
         self.assertEqual(
-            ("676:17-676:48", "629:17-629:48"),
+            ("674:17-674:48", "627:17-627:48"),
             tuple(profile._span(item) for item in proof.refract_nodes),
         )
-        self.assertEqual("620:17-620:45", profile._span(proof.wide_mod_node))
-        self.assertEqual("412:21-412:46", profile._span(proof.bit_ingress))
+        self.assertEqual("618:17-618:45", profile._span(proof.wide_mod_node))
+        self.assertEqual("410:21-410:46", profile._span(proof.bit_ingress))
         self.assertEqual(
             (
-                "117:13-117:22",
+                "115:13-115:22",
+                "116:13-116:20",
+                "116:23-116:32",
                 "118:13-118:20",
-                "118:23-118:32",
-                "120:13-120:20",
-                "120:35-120:44",
+                "118:35-118:44",
             ),
             tuple(profile._span(item) for item in proof.dynamic_indexes),
         )
@@ -543,7 +543,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
         main = next(item for item in program.functions if item.name == "main")
         palette_branch = main.body[16]
         self.assertEqual("if", palette_branch.kind)
-        self.assertEqual("727:5-749:6", profile._span(palette_branch))
+        self.assertEqual("725:5-747:6", profile._span(palette_branch))
 
         vector_blend_statement = palette_branch.children[0].children[0]
         shortened_true = dataclasses.replace(

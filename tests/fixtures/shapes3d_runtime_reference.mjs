@@ -17,7 +17,7 @@ assert.equal(kernelFactories.get(key),factory)
 const corpus=path.join(repo,'tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d')
 const source=fs.readFileSync(path.join(corpus,'sources/classicNoisedeck/shapes3d/shapes3d.glsl'))
 const hash=a=>crypto.createHash('sha256').update(a).digest('hex')
-assert.equal(hash(source),'818badfbadcf295d1863d208c0d0582a1349ff64f44dbf43f905a92fcfd4c5ad')
+assert.equal(hash(source),'e17550180972bf97883c33eb4b280bfb3456d9212162c91e76cc8befbae941dc')
 const meta=JSON.parse(fs.readFileSync(path.join(corpus,'metadata.json'))).effects['classicNoisedeck/shapes3d']
 const width=5,height=4,time=Math.fround(.375),seed=17
 const initial=new Float32Array(width*height*4)

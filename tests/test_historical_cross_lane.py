@@ -221,7 +221,7 @@ class HistoricalCrossLaneTests(unittest.TestCase):
         source_path = 'sources/classicNoisedeck/noise/noise.glsl'
         raw = (check_corpus._corpus_root(ROOT) / source_path).read_text()
         source_hash = hashlib.sha256(raw.encode()).hexdigest()
-        self.assertEqual("513f8278e29564b7f2b0735b539b5990b53dc920d487fffb87d54a0c92fc5f0b", source_hash)
+        self.assertEqual("276b5ca70973c57057adb389d8cb49946a0bdedb4486ffafbaa8e8e876d14a9a", source_hash)
         transformed = generate_typed_slice.transform_generic_dynamic_source(raw, key)
         parsed = parse_program(
             transformed, key, generate_typed_slice.GENERIC_DYNAMIC_DEFINE_TYPES[key])

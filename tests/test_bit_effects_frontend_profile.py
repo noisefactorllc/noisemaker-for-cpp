@@ -86,7 +86,7 @@ class BitEffectsFrontendProfileTests(unittest.TestCase):
             proof.canonical_overload_misdispatch_call.signature_id, 101)
         self.assertEqual(
             module._span(proof.canonical_overload_misdispatch_call),
-            "340:32-340:58")
+            "338:32-338:58")
         self.assertEqual(proof.canonical_xi_to_int32_node.kind, "binary")
         self.assertEqual(proof.canonical_xi_to_int32_node.operator, "+")
         self.assertEqual(

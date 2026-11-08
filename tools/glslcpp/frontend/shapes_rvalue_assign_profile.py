@@ -79,17 +79,17 @@ PROFILE = "shapes-rvalue-assign-v1"
 SHAPES_KEY = "classicNoisedeck/shapes:shapes"
 SHAPES_RVALUE_ASSIGN_KEYS = frozenset({SHAPES_KEY})
 
-_RAW_BYTES = 21292
-_RAW_SHA256 = "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e"
-_NORMALIZED_BYTES = 18713
+_RAW_BYTES = 21215
+_RAW_SHA256 = "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5"
+_NORMALIZED_BYTES = 18636
 _NORMALIZED_SHA256 = (
-    "347d19f46adb59129ec2f5eb58910b1ea981be9ec03788a068ff6e884bb848e6")
+    "55f47bda9940481fd48b43c548dddef0ebd0916e98c89d2d313d698b4def582e")
 _FUNCTIONS_SHA256 = (
-    "dfd7220ab36ed03702afbc5e69e7e3a7346c60d488d9b3a2087d31214219943a")
+    "df02261d613e4260d344b676c4ca4470dfeb29a4e22a65988514abc89accf54b")
 _WHOLE_SHA256 = (
-    "1de49bc92c4985f3a7650f27416dee085aeb5dedce40231535666a410890affc")
+    "28db4698e815ec39c4134ba8760fab4d52bbd6051cd9e142368e1dd390189405")
 _INTERFACE_SHA256 = (
-    "e27ca4581c14991de7a17e296353b1993e8f9c6e5a4ec48b170dde8f8d1b1b6c")
+    "4014d5a292c6a924ff834845c507094a8fbf97d7b197b67a25852c101cf26c92")
 
 _DEFINES = (("LOOP_A_OFFSET", "int", "40"), ("LOOP_B_OFFSET", "int", "30"))
 _DECLARATION_COUNT = 23
@@ -125,10 +125,10 @@ _PATH = (0, "e0", 0)
 _STATEMENT_CHAIN = (("decl", "42:5-42:40"),)
 
 # Exactly one assignment is not statement-rooted -- i.e. reaches the emitter's
-# expression dispatcher; 58 assignment nodes exist program-wide across function
+# expression dispatcher; 57 assignment nodes exist program-wide across function
 # bodies and the four `mat3` global declaration initializers.
 _RVALUE_ASSIGN_CENSUS = 1
-_TOTAL_ASSIGN_CENSUS = 58
+_TOTAL_ASSIGN_CENSUS = 57
 # `rot` is referenced exactly once as an expression, program-wide: the
 # assignment target. It is never read after the assignment.
 _TARGET_REFERENCES = 1

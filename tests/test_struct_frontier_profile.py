@@ -48,7 +48,7 @@ SHAPES3D_KEY = "classicNoisedeck/shapes3d:shapes3d"
 
 # (structs, locals, members, total_nodes) per carrier, measured this session.
 CENSUS = {
-    "classicNoisedeck/shapes3d:shapes3d": (2, 4, 29, 1146),
+    "classicNoisedeck/shapes3d:shapes3d": (2, 4, 29, 1131),
     "render/render3d:render3d": (2, 4, 29, 1207),
     "render/renderCubemap3d:renderCubemap3d": (2, 4, 29, 1165),
     "render/renderLit3d:renderLit3d": (1, 2, 18, 997),

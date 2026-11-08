@@ -344,6 +344,7 @@
     },
     {
       "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
       "program_key": "filter/craquelure:craquelure"
     },
     {
@@ -897,9 +898,9 @@
       "defines": {
         "MODE": 0
       },
-      "derivative_admission_profile": "derivative-admission-v1",
       "program_key": "filter/stipple:stipple",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "runtime_define_profile": "runtime-defines-generic-v1",
+      "stipple_fixed_point_profile": "stipple-fixed-point-v1"
     },
     {
       "defines": {},
@@ -1570,10 +1571,10 @@
         "LOOP_B_OFFSET": 30
       },
       "mutable_global_frame_profile": "mutable-global-frame-shape-v1",
+      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1",
       "program_key": "synth/shape:shape",
       "runtime_define_profile": "runtime-defines-generic-v1",
-      "scalar_uint_xor_profile": "scalar-uint-xor-v1",
-      "prng_boolean_mix_select_profile": "prng-boolean-mix-select-v1"
+      "scalar_uint_xor_profile": "scalar-uint-xor-v1"
     },
     {
       "defines": {},
@@ -1636,7 +1637,7 @@
       "program_key": "synth3d/shape3d:precompute"
     }
   ],
-  "revision": "2cf5bad078ecd94b00c966d08a2dd50cd095f884",
+  "revision": "6f98d26ab84f17ba7fb154bb74252d6362736f89",
   "schema": 1,
   "types": [
     "bool",
