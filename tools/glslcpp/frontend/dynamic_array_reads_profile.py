@@ -7,32 +7,21 @@ from tools.glslcpp.frontend import mutable_global_array_profile as array
 # writer/read call order and the exact whole-array argument census independent
 # of the frozen KERNEL=0/EFFECT=0 array-store proof.
 ROWS = {
-    'classicNoisedeck/kaleido:kaleido': (
-        '2cf9e5528e3b19debec7e9761afbcf0f47452a124dd4bef74b907b2ee67f9642',
-        'a8eee87d4b2b780a400425618bbc4e8e08006e91a0dcb71d2adceba6ad9d134b',
-        (('DIRECTION','str','int'),('KERNEL','str','int'),('LOOP_OFFSET','str','int'),('METRIC','str','int')),
-        45, 4, 'f0bc2b4256ba48e82e9012ba6c2e43cb4b73132b928b7cfcdaa0f588e56c107e',
-        'convolutionKernel', 3, 10),
-    'classicNoisedeck/effects:effects': (
-        '1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90',
-        '6bb2f3c967c83ffb39823c0fc3c228f5380bbbb5284d1eed4ff70b368f9d78a1',
-        (('EFFECT','str','int'),('FLIP','str','int')),
-        63, 7, '9a2d52305cee708fca09e59879847d087975d96db28c5abc7a981bf8a5436fd2',
-        'convolutionEffect', 20, 25),
-    'classicNoisedeck/cellRefract:cellRefract': (
-        'ada20a78762ccfa36b83995b7020f37e434e23da20650027ffa1784a8344430b',
-        'c6af551b60bffcaadcd18ec21323b06b263382b0b0721b02747cfc75ad12b801',
-        (('KERNEL','str','int'),('SHAPE','str','int')),
-        45, 5, '95322e0029a70c14b9805461ffa2dd5cf06d871fb59301e173241ea61d81cad9',
-        'convolutionKernel', 3, 15),
+    'classicNoisedeck/kaleido:kaleido': ('2cf9e5528e3b19debec7e9761afbcf0f47452a124dd4bef74b907b2ee67f9642', 'a8eee87d4b2b780a400425618bbc4e8e08006e91a0dcb71d2adceba6ad9d134b', (('DIRECTION', 'str', 'int'), ('KERNEL', 'str', 'int'), ('LOOP_OFFSET', 'str', 'int'), ('METRIC', 'str', 'int')), 45, 4, 'f0bc2b4256ba48e82e9012ba6c2e43cb4b73132b928b7cfcdaa0f588e56c107e', 'convolutionKernel', 3, 10,),
+    'classicNoisedeck/effects:effects': ('ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d', 'b7f653b09c80845559b8528519e51b347fd69441965681f0b5be74eefc8ae218', (('EFFECT', 'str', 'int'), ('FLIP', 'str', 'int')), 63, 7, '7b100d0cc31a4808f7374801f91bd0f83855304b25ca339790a14b40a2f31448', 'convolutionEffect', 20, 25,),
+    'classicNoisedeck/cellRefract:cellRefract': ('ada20a78762ccfa36b83995b7020f37e434e23da20650027ffa1784a8344430b', 'c6af551b60bffcaadcd18ec21323b06b263382b0b0721b02747cfc75ad12b801', (('KERNEL', 'str', 'int'), ('SHAPE', 'str', 'int')), 45, 5, '95322e0029a70c14b9805461ffa2dd5cf06d871fb59301e173241ea61d81cad9', 'convolutionKernel', 3, 15,),
 }
 
 CURRENT_EFFECTS_ROW = (
     'ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d',
     'b7f653b09c80845559b8528519e51b347fd69441965681f0b5be74eefc8ae218',
-    (('EFFECT','str','int'),('FLIP','str','int')),
-    63, 7, '7b100d0cc31a4808f7374801f91bd0f83855304b25ca339790a14b40a2f31448',
-    'convolutionEffect', 20, 25,
+    (('EFFECT', 'str', 'int'), ('FLIP', 'str', 'int')),
+    63,
+    7,
+    '7b100d0cc31a4808f7374801f91bd0f83855304b25ca339790a14b40a2f31448',
+    'convolutionEffect',
+    20,
+    25,
 )
 
 def authenticate(program, source_hash):

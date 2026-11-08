@@ -8,16 +8,16 @@ from .typed_ir import TypedExpression, TypedProgram, TypedStatement
 
 
 KEY = "filter/feedback:feedback"
-RAW_SHA256 = "047cbf124875f9d146c41c24f58081e19fb78b7d8c5cf4887e4255ea5bb43ca3"
+RAW_SHA256 = '047cbf124875f9d146c41c24f58081e19fb78b7d8c5cf4887e4255ea5bb43ca3'
 RAW_BYTES = 12346
-NORMALIZED_SHA256 = "4321055e525b9c7073552a29549b8b8d80dcba0b3d68e20702513e458194d403"
+NORMALIZED_SHA256 = '4321055e525b9c7073552a29549b8b8d80dcba0b3d68e20702513e458194d403'
 NORMALIZED_BYTES = 10330
-FUNCTIONS_SHA256 = "d918c2b1ae48bcf9bdafd19338cfa0c0ddbf7ee9c25a0a1c260824f13d4836f5"
-WHOLE_SHA256 = "8d49dc4074386964408001d4708087a6548f93e99489c98e4a8e9d9a7ba7e17c"
-INTERFACE_SHA256 = "098b518737980638801a1cd6f4de758f2f02e8b7428417aecb03455325143ac9"
+FUNCTIONS_SHA256 = 'd918c2b1ae48bcf9bdafd19338cfa0c0ddbf7ee9c25a0a1c260824f13d4836f5'
+WHOLE_SHA256 = '8d49dc4074386964408001d4708087a6548f93e99489c98e4a8e9d9a7ba7e17c'
+INTERFACE_SHA256 = '098b518737980638801a1cd6f4de758f2f02e8b7428417aecb03455325143ac9'
 SITES = (
-    (372, 5, "8a036d47a0d88a73ec1675218bc7250aecf2bab425fe130a67cb300ba54dbcb1"),
-    (372, 20, "99411d54abba37091a83eefcee66804416b5efbed12b4bea5a52405250dacbe6"),
+    (372, 5, '8a036d47a0d88a73ec1675218bc7250aecf2bab425fe130a67cb300ba54dbcb1'),
+    (372, 20, '99411d54abba37091a83eefcee66804416b5efbed12b4bea5a52405250dacbe6'),
 )
 
 
@@ -63,7 +63,7 @@ def authenticate_feedback_hue_indices(
         raise ValueError("feedback-hue-index: function, whole-program, or interface drift")
     owner = next((function for function in program.functions
                   if function.id == 54 and function.name == "main"), None)
-    if owner is None or len(owner.body) <= 7:
+    if owner is None or len(owner.body) <= 6:
         raise ValueError("feedback-hue-index: exact main required")
     declaration = owner.body[4]
     assignment = owner.body[6]

@@ -16,45 +16,61 @@ SHAPES_KEY = "classicNoisedeck/shapes:shapes"
 SHAPES_RVALUE_ASSIGN_KEYS = frozenset({SHAPES_KEY})
 
 _RAW_BYTES = 21215
-_RAW_SHA256 = "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5"
+_RAW_SHA256 = 'a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5'
 _NORMALIZED_BYTES = 18880
 _NORMALIZED_SHA256 = '0b3f8c3e710b05a811622caeecc70f8bfd0b43cee5eca4785789f69d0e928126'
 _FUNCTIONS_SHA256 = '07acc7aacf439c91fbfc284fea47b0b9bd40bfb44edae4fc306d19089d0bdd80'
 _WHOLE_SHA256 = 'cb74d5821280ea046fd872290106c488dcfb454e11e7ffa1d1562f0c453b31a5'
 _INTERFACE_SHA256 = 'ef9ea538787d8ad2275af24ace335e8e021918432a9333949d4e7da29840612e'
-
 _DEFINES = (('LOOP_A_OFFSET', 'str', 'int'), ('LOOP_B_OFFSET', 'str', 'int'))
 _DECLARATION_COUNT = 25
 _FUNCTION_COUNT = 36
-
-_OWNER = (145, 'rotate2D', 'vec2', ((27, 'st', 'vec2', 'in'), (28, 'rot', 'float', 'in')), 5, '43:1-49:2')
-_OWNER_BODY = (('decl', '44:5-44:40'), ('expr', '45:5-45:64'), ('expr', '46:5-46:69'), ('expr', '47:5-47:64'), ('return', '48:5-48:15'))
+_OWNER = (145,
+ 'rotate2D',
+ 'vec2',
+ ((27, 'st', 'vec2', 'in'), (28, 'rot', 'float', 'in')),
+ 5,
+ '43:1-49:2')
+_OWNER_BODY = (('decl', '44:5-44:40'),
+ ('expr', '45:5-45:64'),
+ ('expr', '46:5-46:69'),
+ ('expr', '47:5-47:64'),
+ ('return', '48:5-48:15'))
 _OWNER_STATEMENT_INDEX = 0
-
-# The compound operator, isolated so `_operator_holds` can be deleted alone.
 _OPERATOR = '*='
-# Assign node: span, type, category, hash.
-_ASSIGN = ('44:19-44:39', 'float', 'rvalue', '97b01faf5756c64a597cb9742c262cc2afa63f56adf303f6ee1714468d84b76a')
-# Declaration parent: kind, span, type, symbol id/name/storage/writable, hash.
-_PARENT = ('declaration', '44:11-44:39', 'float', 319, 'angle', 'local', True, '5933ecb0c8b6eb347d9ac8e1a9dfe4d76288105751c92a2f7edc1815c00f707b')
-# Target: kind, span, type, category, symbol id/name/storage/writable, hash.
-_TARGET = ('id', '44:19-44:22', 'float', 'lvalue', 28, 'rot', 'parameter', True, 'e0a0fd0af72ab0c08f80897c3ad279daa8b28335ca95451abce2a5e79c8068dc')
-# Operand: kind, span, type, category, literal text, literal value, hash. `PI`
-# is a preprocessor macro, substituted during normalization, so it arrives as
-# this literal rather than as a global reference.
-_OPERAND = ('literal', '44:26-44:39', 'float', 'rvalue', '3.14159265359', 3.14159265359, 'c550160e9c4577751c7c535214bf0211730ef798c368c7d64a2f68cf7813546a')
+_ASSIGN = ('44:19-44:39',
+ 'float',
+ 'rvalue',
+ '97b01faf5756c64a597cb9742c262cc2afa63f56adf303f6ee1714468d84b76a')
+_PARENT = ('declaration',
+ '44:11-44:39',
+ 'float',
+ 319,
+ 'angle',
+ 'local',
+ True,
+ '5933ecb0c8b6eb347d9ac8e1a9dfe4d76288105751c92a2f7edc1815c00f707b')
+_TARGET = ('id',
+ '44:19-44:22',
+ 'float',
+ 'lvalue',
+ 28,
+ 'rot',
+ 'parameter',
+ True,
+ 'e0a0fd0af72ab0c08f80897c3ad279daa8b28335ca95451abce2a5e79c8068dc')
+_OPERAND = ('literal',
+ '44:26-44:39',
+ 'float',
+ 'rvalue',
+ '3.14159265359',
+ 3.14159265359,
+ 'c550160e9c4577751c7c535214bf0211730ef798c368c7d64a2f68cf7813546a')
 _PATH = (0, 'e0', 0)
 _STATEMENT_CHAIN = (('decl', '44:5-44:40'),)
-
-# Exactly one assignment is not statement-rooted -- i.e. reaches the emitter's
-# expression dispatcher; 58 assignment nodes exist program-wide across function
-# bodies and the four `mat3` global declaration initializers.
 _RVALUE_ASSIGN_CENSUS = 1
 _TOTAL_ASSIGN_CENSUS = 59
-# `rot` is referenced exactly once as an expression, program-wide: the
-# assignment target. It is never read after the assignment.
 _TARGET_REFERENCES = 1
-
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
     "fixed_array_in_parameter_proof", "fixed_affine_centers13_proof",

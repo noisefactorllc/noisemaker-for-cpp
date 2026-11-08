@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "01ad70769641fb4c8717602f880dd0305b8831af41164aa8e3fe77e73d661c5e",
+  "metadata_sha256": "d9b21974fde23ec473578ad31d4a4b4059ad15b5ae2b1dea1ef6a7042cc4fdcb",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -5808,6 +5808,6 @@
       "varyings": []
     }
   ],
-  "revision": "6f98d26ab84f17ba7fb154bb74252d6362736f89",
+  "revision": "cf95f49c900762ac1f23cb620dc16654c98ace77",
   "schema": 1
 }

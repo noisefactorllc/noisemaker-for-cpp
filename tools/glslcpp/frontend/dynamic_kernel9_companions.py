@@ -120,6 +120,14 @@ def effects_ceil(program: TypedProgram, source_hash: str | None):
             ('main', '712:13-712:80',
              'cf6bd1d6049642208f36e078fb38d548bb81419bd5af0b21b69893d17ed4c8f4',
              'ae4773115783aa7d449f901fa6df7fb437b45490afc45b89536cc5a1c4ae74c8'))
+    elif source_hash == 'b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316':
+        expected = (
+            ('main', '713:13-713:70',
+             '6f234644acbcdf94f298b012cdf087c30f280492fe0f171f8272b5c006bb2ba7',
+             '8fcf99dca6424723c14f130b1f61f438660d480966476e2b31988b38eda3b8f2'),
+            ('main', '714:13-714:80',
+             'affa7b39b0f2447da5de5b5ef718405b7ef8166d9bf71ebe2edb3375126e8098',
+             '2f01f581755a9db5977fb6cfa7dc3862c35d33e3647679c17d47e29f59adb677'))
     actual = tuple((function.name, ceil._span(node), ceil._sha(node),
                     ceil._sha(node.children[0]) if len(node.children) == 1 else None)
                    for function, node in found)

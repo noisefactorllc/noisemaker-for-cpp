@@ -12,7 +12,6 @@ Authenticates exact scalar uint right shift (>>) expressions across hash functio
 - points/physical:agent (hash_uint)
 - render/pointsEmit:init (hash_uint)
 - points/dla:agent (hash_uint)
-- filter/craquelure:craquelure (hash12)
 
 All candidate right shift expressions operate strictly on uint operands and evaluate to uint.
 """
@@ -39,6 +38,7 @@ PHYSARUM_AGENT_KEY = "points/physarum:agent"
 DLA_AGENT_KEY = "points/dla:agent"
 ATTRACTOR_AGENT_KEY = "points/attractor:agent"
 CRAQUELURE_KEY = "filter/craquelure:craquelure"
+STIPPLE_KEY = "filter/stipple:stipple"
 HASH_SCALAR_UINT_RSHIFT_KEYS = frozenset({
     FLOW3D_AGENT_KEY,
     BUDDHABROT_AGENT_KEY,
@@ -53,19 +53,10 @@ HASH_SCALAR_UINT_RSHIFT_KEYS = frozenset({
     DLA_AGENT_KEY,
     ATTRACTOR_AGENT_KEY,
     CRAQUELURE_KEY,
+    STIPPLE_KEY,
 })
 
 _PROFILES = {
-    CRAQUELURE_KEY: {
-        "raw_bytes": 10348,
-        "raw_sha256": "876e499ca270346151a873e74c744c884e96e9db7632a9341a0baf5107724d53",
-        "norm_bytes": 3480,
-        "norm_sha256": "a56e8ae8b5537560dc11ae15d72c5188b58917140b7344601ec9987e692f62c2",
-        "functions_sha256": "e628d341d8e8e05c39c7325650bbcc9d3909e28ff4e7669cd868fa671b159597",
-        "whole_sha256": "40f8afc923710653258e7ad9d5b5f20ce61e9e1ade581930d11f674bd8d86f12",
-        "interface_sha256": "eda0c1abcfbfa0ec3a283714eb29ce8c79297bf93a72a2a774bc37a9d2232445",
-        "rshift_count": 1,
-    },
     FLOW3D_AGENT_KEY: {
         "raw_bytes": 9859,
         "raw_sha256": "f4e3622f4def27221de0bd0b93ed1152f56f835957361e0fcffea8b84d3ce356",
@@ -285,3 +276,23 @@ def apply_hash_scalar_uint_rshift(
     """Validate profile and return program untouched (identity carrier)."""
     authenticate_hash_scalar_uint_rshift(program, source_hash, profile)
     return program
+
+
+_PROFILES["filter/craquelure:craquelure"] = {'raw_bytes': 10348,
+ 'raw_sha256': '876e499ca270346151a873e74c744c884e96e9db7632a9341a0baf5107724d53',
+ 'norm_bytes': 3480,
+ 'norm_sha256': 'a56e8ae8b5537560dc11ae15d72c5188b58917140b7344601ec9987e692f62c2',
+ 'functions_sha256': 'e628d341d8e8e05c39c7325650bbcc9d3909e28ff4e7669cd868fa671b159597',
+ 'whole_sha256': '40f8afc923710653258e7ad9d5b5f20ce61e9e1ade581930d11f674bd8d86f12',
+ 'interface_sha256': 'eda0c1abcfbfa0ec3a283714eb29ce8c79297bf93a72a2a774bc37a9d2232445',
+ 'rshift_count': 1}
+
+
+_PROFILES["filter/stipple:stipple"] = {"raw_bytes": 10823,
+ 'raw_sha256': '84755c2b6b2bf86a9c0b73a1faceda9b9bbb5fbf7d7a0570e91e2caf979f52a6',
+ 'norm_bytes': 4821,
+ 'norm_sha256': '8dfaabf22a11f15e61c0abe50ced8036dc5acecc02a21b5bb5286266128f0eaa',
+ 'functions_sha256': '4daea2de58e00e9f8525a82ec36b0214cc556c07adfff07f73fd8418536359bd',
+ 'whole_sha256': '789bff0aaa4d54537f2e9f42420d59d14f00376162ae1a4d841e42b9718b6bae',
+ 'interface_sha256': '7c261199c004c39a6f6b58a0d9c1e53391beda34743b66369db7933b9bee9d7f',
+ 'rshift_count': 14}

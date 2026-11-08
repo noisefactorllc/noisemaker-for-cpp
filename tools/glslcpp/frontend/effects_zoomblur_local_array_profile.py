@@ -11,6 +11,12 @@ KEY = "classicNoisedeck/effects:effects"
 RAW_SHA256 = "1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90"
 NORMALIZED_SHA256 = "8e2724f35c3dba9c2531ebcdc114de42332fe7d74388a3a70e12aed8347fcbd1"
 WHOLE_SHA256 = "6bb2f3c967c83ffb39823c0fc3c228f5380bbbb5284d1eed4ff70b368f9d78a1"
+PRIOR_RAW_SHA256 = "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316"
+PRIOR_NORMALIZED_SHA256 = "681ded19ebe739c5ec7b017f0125f59fbb7b0e63378b86555c1bb0db5cf868e8"
+PRIOR_WHOLE_SHA256 = "8837586c616d95ddad64be70054b15be46395f87603ffbb18f012161d7f8302d"
+CURRENT_RAW_SHA256 = "ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d"
+CURRENT_NORMALIZED_SHA256 = "70fa6a908c13da4f765d9cbb7be477dd2ceb2e2b176e65c92256e8bf29e9f8a6"
+CURRENT_WHOLE_SHA256 = "b7f653b09c80845559b8528519e51b347fd69441965681f0b5be74eefc8ae218"
 DEFINES = (PreprocessorDefine("EFFECT", "str", "int"),
            PreprocessorDefine("FLIP", "str", "int"))
 WRITE_LOOP = (242, 0, 40, "<=", "++", "literal", 41, 1, 1, 41, 82)
@@ -54,10 +60,15 @@ class ZoomBlurLocalArrayProof:
 def authenticate_zoomblur_local_array(program, source_hash):
     if program.key != KEY or program.preprocessor_defines != DEFINES:
         return None
-    current = source_hash == 'ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d'
-    expected_raw = 'ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d' if current else RAW_SHA256
-    expected_normalized = '70fa6a908c13da4f765d9cbb7be477dd2ceb2e2b176e65c92256e8bf29e9f8a6' if current else NORMALIZED_SHA256
-    expected_whole = 'b7f653b09c80845559b8528519e51b347fd69441965681f0b5be74eefc8ae218' if current else WHOLE_SHA256
+    current = source_hash == CURRENT_RAW_SHA256
+    prior = source_hash == PRIOR_RAW_SHA256
+    expected_raw = (CURRENT_RAW_SHA256 if current
+                    else PRIOR_RAW_SHA256 if prior else RAW_SHA256)
+    expected_normalized = (CURRENT_NORMALIZED_SHA256 if current
+                           else PRIOR_NORMALIZED_SHA256 if prior
+                           else NORMALIZED_SHA256)
+    expected_whole = (CURRENT_WHOLE_SHA256 if current
+                      else PRIOR_WHOLE_SHA256 if prior else WHOLE_SHA256)
     if (source_hash != expected_raw
             or hashlib.sha256(program.raw_source.encode()).hexdigest() != expected_raw
             or hashlib.sha256(program.source.encode()).hexdigest() != expected_normalized
@@ -72,10 +83,10 @@ def authenticate_zoomblur_local_array(program, source_hash):
     read_loop = zoom.body[6]
     if (declaration.kind != "declaration" or declaration.type.display() != "vec3[41]"
             or declaration.symbol_id != 241 or declaration.symbol.name != "products"
-            or declaration.children or declaration.span.start_line != (620 if current else 604)
+            or declaration.children or declaration.span.start_line != (620 if current else 622 if prior else 604)
             or write_loop.kind != "for" or read_loop.kind != "for"
             or _loop_record(write_loop.loop_proof) != WRITE_LOOP
-            or _loop_record(read_loop.loop_proof) != ((252, 0, 41, "<", "++", "literal", 41, 1, 1, 41, 82) if current else READ_LOOP)):
+            or _loop_record(read_loop.loop_proof) != ((252, 0, 41, "<", "++", "literal", 41, 1, 1, 41, 82) if current or prior else READ_LOOP)):
         raise ValueError("Effects zoomBlur array extent or loop bound mismatch")
     first_nodes = tuple(_nodes(write_loop))
     second_nodes = tuple(_nodes(read_loop))
@@ -90,12 +101,12 @@ def authenticate_zoomblur_local_array(program, source_hash):
     store_index = store.children[0]
     read_index = reads[0]
     subscript = store_index.children[1]
-    if (store.operator != "=" or store.span.start_line != (639 if current else 614)
+    if (store.operator != "=" or store.span.start_line != (639 if current else 641 if prior else 614)
             or subscript.kind != "construct" or subscript.type.display() != "int"
             or len(subscript.children) != 1 or subscript.children[0].symbol_id != 242
-            or read_index.span.start_line != (643 if current else 618)
+            or read_index.span.start_line != (643 if current else 645 if prior else 618)
             or read_index.children[1].kind != "id"
-            or read_index.children[1].symbol_id != (252 if current else 251)):
+            or read_index.children[1].symbol_id != (252 if current or prior else 251)):
         raise ValueError("Effects zoomBlur local array store or read mismatch")
     all_nodes = tuple(node for statement in zoom.body for node in _nodes(statement))
     array_nodes = tuple(node for node in all_nodes if node.type.kind == "array")

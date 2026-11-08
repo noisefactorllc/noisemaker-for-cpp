@@ -315,7 +315,7 @@ def authenticate_bit_effects_frontend(
     misdispatch = [(function, node) for function, node in located
                    if function is not None and function.id == 92
                    and node.kind == "call" and node.callee == "maskValue"
-                   and _span(node) == _CANONICAL_OVERLOAD_MISDISPATCH_SITE[2]]
+                   and _span(node) == "338:32-338:58"]
     if len(misdispatch) != 1:
         raise _fail("canonical overload misdispatch cardinality mismatch")
     owner, misdispatch_call = misdispatch[0]

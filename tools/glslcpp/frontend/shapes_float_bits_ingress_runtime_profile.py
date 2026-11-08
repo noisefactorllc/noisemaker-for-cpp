@@ -19,13 +19,46 @@ SHAPES_KEY = "classicNoisedeck/shapes:shapes"
 SHAPES_FLOAT_BITS_INGRESS_KEYS = frozenset({SHAPES_KEY})
 
 _RAW_BYTES = 21215
-_RAW_SHA256 = "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5"
+_RAW_SHA256 = 'a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5'
 _NORMALIZED_BYTES = 18880
 _NORMALIZED_SHA256 = '0b3f8c3e710b05a811622caeecc70f8bfd0b43cee5eca4785789f69d0e928126'
 _FUNCTIONS_SHA256 = '07acc7aacf439c91fbfc284fea47b0b9bd40bfb44edae4fc306d19089d0bdd80'
 _WHOLE_SHA256 = 'cb74d5821280ea046fd872290106c488dcfb454e11e7ffa1d1562f0c453b31a5'
 _INTERFACE_SHA256 = 'ef9ea538787d8ad2275af24ace335e8e021918432a9333949d4e7da29840612e'
-
+_DEFINES = (('LOOP_A_OFFSET', 'str', 'int'), ('LOOP_B_OFFSET', 'str', 'int'))
+_DECLARATION_COUNT = 25
+_FUNCTION_COUNT = 36
+_RESOURCES = (('LOOP_A_OFFSET',
+  'LOOP_B_OFFSET',
+  'time',
+  'seed',
+  'wrap',
+  'resolution',
+  'tileOffset',
+  'fullResolution',
+  'loopAScale',
+  'loopBScale',
+  'speedA',
+  'speedB',
+  'paletteMode',
+  'paletteOffset',
+  'paletteAmp',
+  'paletteFreq',
+  'palettePhase',
+  'cyclePalette',
+  'rotatePalette',
+  'repeatPalette'),
+ (),
+ ('fragColor',),
+ False,
+ False)
+_LOOP_PROOF = (1, 0, 1, 3, 3, True)
+_OWNER = (142,
+ 'randomFromLatticeWithOffset',
+ 'vec3',
+ ((35, 'st', 'vec2', 'in'), (36, 'freq', 'float', 'in'), (37, 'offset', 'ivec2', 'in')),
+ 19,
+ '96:1-137:2')
 _DEFINES = (('LOOP_A_OFFSET', 'str', 'int'), ('LOOP_B_OFFSET', 'str', 'int'))
 _DECLARATION_COUNT = 25
 _FUNCTION_COUNT = 36
@@ -35,27 +68,70 @@ _LOOP_PROOF = (1, 0, 1, 3, 3, True)
 _OWNER = (142, 'randomFromLatticeWithOffset', 'vec3', ((35, 'st', 'vec2', 'in'), (36, 'freq', 'float', 'in'), (37, 'offset', 'ivec2', 'in')), 19, '96:1-137:2')
 
 # Ingress: callee, expression path, span, result type, node hash, category.
-_INGRESS = ('floatBitsToUint', (13, 'e0', 0), '121:21-121:46', 'uint', 'd07937bf73b620329a65b9ba0089f2efcc1f6cbd96465abf3f8514e6040f6952', 'rvalue')
-# Operand: kind, span, type, category, symbol id/name/storage/writable, hash.
-_INGRESS_OPERAND = ('id', '121:37-121:45', 'float', 'lvalue', 296, 'seedFrac', 'local', True, 'd73d9d9d692b18ffbd9688056cffb07184b14941546904ff88e6001b2507f900')
-# Declaration parent: kind, span, type, symbol id/name/storage/writable, hash.
-_PARENT = ('declaration', '121:10-121:46', 'uint', 304, 'fracBits', 'local', True, '279e85a94489bb632a860e9a7794b1abd5a3cdc9a1d1adc432b9dfaf71d76a51')
+_INGRESS = ('floatBitsToUint',
+ (13, 'e0', 0),
+ '121:21-121:46',
+ 'uint',
+ 'd07937bf73b620329a65b9ba0089f2efcc1f6cbd96465abf3f8514e6040f6952',
+ 'rvalue')
+_INGRESS_OPERAND = ('id',
+ '121:37-121:45',
+ 'float',
+ 'lvalue',
+ 296,
+ 'seedFrac',
+ 'local',
+ True,
+ 'd73d9d9d692b18ffbd9688056cffb07184b14941546904ff88e6001b2507f900')
+_PARENT = ('declaration',
+ '121:10-121:46',
+ 'uint',
+ 304,
+ 'fracBits',
+ 'local',
+ True,
+ '279e85a94489bb632a860e9a7794b1abd5a3cdc9a1d1adc432b9dfaf71d76a51')
 _OWNER_STATEMENT_INDEX = 13
 _STATEMENT_CHAIN = (('decl', '121:5-121:47'),)
-
-# `float seedFrac = 0.0;` -- statement index, declaration span/hash, and the
-# exact positive-zero literal initializer.
 _SEED_FRAC_STATEMENT_INDEX = 5
-_SEED_FRAC_DECLARATION = ('declaration', '103:11-103:25', 'float', 296, 'seedFrac', 'local', True, '7085b3dcfe45fe0da35d772c2081e2e500f33067307258c5d2d8cef0ed93f0b9')
-_SEED_FRAC_INITIALIZER = ('literal', '103:22-103:25', 'float', 'rvalue', '0.0', '8e4af0190cf0d93b73077338a75f1465d0b7675920ae542e77ac77a3cf0bc910')
-_SEED_FRAC_REFERENCES = (('declaration', '103:11-103:25', '7085b3dcfe45fe0da35d772c2081e2e500f33067307258c5d2d8cef0ed93f0b9'), ('id', '105:32-105:40', 'acbf4e1a3901bf2b23a47d59e2a856f1f9d9fe8d9fc4bd35cdbfc31296ac4e29'), ('id', '121:37-121:45', 'd73d9d9d692b18ffbd9688056cffb07184b14941546904ff88e6001b2507f900'))
-
-# Downstream ancestry, one row per scalar XOR lane: the XOR span, its `uint *
-# uint` product child (operator/span/hash), and the `fracBits` consumer id
-# (span/hash) that product reads.
-_XOR_ANCESTRY = (('124:10-124:46', '*', '124:10-124:31', 'ceffef4faf6caab3b0619c446f710341e59021891b86c8e9f02511caeb23a8ef', '124:10-124:18', '98915c2c853e3a8abac3829c7b15afc6c17a1647c448ad0a5fff33be88e58a96'), ('125:10-125:46', '*', '125:10-125:31', 'ef6fdac0a523b8178fbd26c1f293ca88e1c061fcf03942ac625963cf58097f88', '125:10-125:18', 'bd7373e021cc8012ab42f0cde4a1d113561f2f5b1f8c941b091aef511c6acd33'), ('126:10-126:47', '*', '126:10-126:32', '5601df8956f5b4c1270d06baa26ee0ac583e4b13a4db97ca7f17d8caf5da62c5', '126:10-126:18', '895129e23276908a3c2b75cd38f6c281f6f8a580c3d5d3bb49190e850bc103f8'))
+_SEED_FRAC_DECLARATION = ('declaration',
+ '103:11-103:25',
+ 'float',
+ 296,
+ 'seedFrac',
+ 'local',
+ True,
+ '7085b3dcfe45fe0da35d772c2081e2e500f33067307258c5d2d8cef0ed93f0b9')
+_SEED_FRAC_INITIALIZER = ('literal',
+ '103:22-103:25',
+ 'float',
+ 'rvalue',
+ '0.0',
+ '8e4af0190cf0d93b73077338a75f1465d0b7675920ae542e77ac77a3cf0bc910')
+_SEED_FRAC_REFERENCES = (('declaration',
+  '103:11-103:25',
+  '7085b3dcfe45fe0da35d772c2081e2e500f33067307258c5d2d8cef0ed93f0b9'),
+ ('id', '105:32-105:40', 'acbf4e1a3901bf2b23a47d59e2a856f1f9d9fe8d9fc4bd35cdbfc31296ac4e29'),
+ ('id', '121:37-121:45', 'd73d9d9d692b18ffbd9688056cffb07184b14941546904ff88e6001b2507f900'))
+_XOR_ANCESTRY = (('124:10-124:46',
+  '*',
+  '124:10-124:31',
+  'ceffef4faf6caab3b0619c446f710341e59021891b86c8e9f02511caeb23a8ef',
+  '124:10-124:18',
+  '98915c2c853e3a8abac3829c7b15afc6c17a1647c448ad0a5fff33be88e58a96'),
+ ('125:10-125:46',
+  '*',
+  '125:10-125:31',
+  'ef6fdac0a523b8178fbd26c1f293ca88e1c061fcf03942ac625963cf58097f88',
+  '125:10-125:18',
+  'bd7373e021cc8012ab42f0cde4a1d113561f2f5b1f8c941b091aef511c6acd33'),
+ ('126:10-126:47',
+  '*',
+  '126:10-126:32',
+  '5601df8956f5b4c1270d06baa26ee0ac583e4b13a4db97ca7f17d8caf5da62c5',
+  '126:10-126:18',
+  '895129e23276908a3c2b75cd38f6c281f6f8a580c3d5d3bb49190e850bc103f8'))
 _FRAC_BITS_REFERENCES = 4
-
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
     "fixed_array_in_parameter_proof", "fixed_affine_centers13_proof",

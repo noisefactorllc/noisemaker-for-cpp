@@ -358,6 +358,38 @@ template <std::size_t N>
 }
 
 template <std::size_t N>
+[[nodiscard]] constexpr Vec<N, std::uint32_t> shift_left(
+    const Vec<N, std::uint32_t>& value, std::uint32_t amount) noexcept {
+  Vec<N, std::uint32_t> result;
+  const std::uint32_t masked = amount & 31U;
+  for (std::size_t index = 0; index < N; ++index) result[index] = value[index] << masked;
+  return result;
+}
+
+// Lane-wise shift amount. GLSL allows `uvecN << uvecN`; JavaScript masks each
+// shift count mod 32 independently, so the mask is applied per lane exactly as
+// the scalar overload applies it once.
+template <std::size_t N>
+[[nodiscard]] constexpr Vec<N, std::uint32_t> shift_left(
+    const Vec<N, std::uint32_t>& value, const Vec<N, std::uint32_t>& amount) noexcept {
+  Vec<N, std::uint32_t> result;
+  for (std::size_t index = 0; index < N; ++index) result[index] = value[index] << (amount[index] & 31U);
+  return result;
+}
+
+// Signed arithmetic shift right for `ivecN >> int`. GLSL arithmetic shift on
+// int lanes; JavaScript masks the count mod 32 exactly as the scalar carrier
+// does.
+template <std::size_t N>
+[[nodiscard]] constexpr Vec<N, std::int32_t> shift_right_signed(
+    const Vec<N, std::int32_t>& value, std::int32_t amount) noexcept {
+  Vec<N, std::int32_t> result;
+  const std::int32_t masked = amount & 31;
+  for (std::size_t index = 0; index < N; ++index) result[index] = value[index] >> masked;
+  return result;
+}
+
+template <std::size_t N>
 [[nodiscard]] constexpr Vec<N, std::uint32_t> bitwise_xor(
     const Vec<N, std::uint32_t>& left,
     const Vec<N, std::uint32_t>& right) noexcept {

@@ -15,11 +15,11 @@ export const EXPECTED = Object.freeze({
   ledgerEntries: 904,
   packageSha256: 'f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807',
   packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
-  sourceLockSha256: 'fb6e5d79e6f0797851b12380200c130f2f47b10326b6f6c31a80d22e69c886bd',
-  behavioralLockSha256: 'eeebf0c2a9b23256f3000aa4c3370572456dd303cdf29b85f129caa72091c278',
+  sourceLockSha256: '766a232ced97f84166c7f99980871731bbc615725ff3a807c5a00b33f448d9fc',
+  behavioralLockSha256: '8364f18c6f2040083ac02a6e6196f9ced8f6b47f69420ff8c91736c48131cd55',
   behavioralFileCount: 98,
-  upstreamRevision: '6f98d26ab84f17ba7fb154bb74252d6362736f89',
-  upstreamSourceDigest: '4e27ba5445657248ebf566ec7c585bdf009ab0f5633db1cc01c7f2a7056dac5a',
+  upstreamRevision: 'cf95f49c900762ac1f23cb620dc16654c98ace77',
+  upstreamSourceDigest: 'fce09f2b5b13d41bada5e72aee10cad8c6d38ac2ecb0af47562cb5b68a343e5a',
 })
 
 const EXPECTED_9B729482 = Object.freeze({

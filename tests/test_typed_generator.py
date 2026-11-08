@@ -248,9 +248,6 @@ _FROZEN_TASK33_DERIVATIVE_KEYS = frozenset({
     "filter/warp:warp",
     "filter/waves:waves",
 })
-# Stipple left the live derivative screen when the 6f98d26a corpus moved it to
-# integer hashing; the frozen milestones above still admitted it there.
-_CURRENT_DERIVATIVE_KEYS = _FROZEN_TASK33_DERIVATIVE_KEYS - {"filter/stipple:stipple"}
 
 
 def _task26_parse_executable_tables(cpp: str) -> dict[str, object]:
@@ -816,13 +813,15 @@ class TypedGeneratorTests(unittest.TestCase):
         from tools.glslcpp.frontend.gather_sorted_round_profile import (
             GATHER_SORTED_KEY, PROFILE)
         from tools.glslcpp.frontend.literal_vec3_lane_index_profile import KEYS
+        from tools.glslcpp.frontend.derivative_admission_profile import (
+            DERIVATIVE_ADMISSION_KEYS)
 
         spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                             if item["program_key"] not in KEYS
                             and item["program_key"] != "filter/dither:dither"
                             and item["program_key"] != "synth/julia:julia"
-                            and item["program_key"] not in _FROZEN_TASK33_DERIVATIVE_KEYS
+                            and item["program_key"] not in DERIVATIVE_ADMISSION_KEYS
                             and item["program_key"] != "filter/smooth:smoothEdge"
                             and item["program_key"] != "synth/perlin:perlin"
                             and item["program_key"] != "filter/rotate:rot"
@@ -2827,12 +2826,14 @@ and item["program_key"] != "filter/wobble:wobble"
             "filter/vaseline:upsample",
             "filter/wind:wind",
         )
+        from tools.glslcpp.frontend.derivative_admission_profile import (
+            DERIVATIVE_ADMISSION_KEYS)
 
         live_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec = copy.deepcopy(live_spec)
         spec["programs"] = [
             item for item in spec["programs"]
-            if item["program_key"] not in _FROZEN_TASK33_DERIVATIVE_KEYS
+            if item["program_key"] not in DERIVATIVE_ADMISSION_KEYS
             and item["program_key"] not in {"filter/dither:dither", "synth/julia:julia",
                 "classicNoisedeck/lensDistortion:lensDistortion",
                 "filter/pixelSort:gatherSorted",
@@ -11203,6 +11204,8 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp import check_corpus, generate_typed_slice
         from tools.glslcpp.frontend.literal_vec3_lane_index_profile import (
             LENS_KEY, PRISMATIC_KEY, PROFILE)
+        from tools.glslcpp.frontend.derivative_admission_profile import (
+            DERIVATIVE_ADMISSION_KEYS)
 
         expected_typed = tuple("""\
 classicNoisedeck/coalesce:coalesce
@@ -11337,7 +11340,7 @@ synth/subdivide:subdivide""".splitlines())
         spec = copy.deepcopy(spec)
         spec["programs"] = [
             item for item in spec["programs"]
-            if item["program_key"] not in _FROZEN_TASK33_DERIVATIVE_KEYS | {
+            if item["program_key"] not in DERIVATIVE_ADMISSION_KEYS | {
 "filter/dither:dither", "synth/julia:julia",
                 "filter/smooth:smoothEdge", "synth/perlin:perlin",
                 "filter/rotate:rot", "mixer/focusBlur:focusBlur",
@@ -11673,11 +11676,9 @@ synth/subdivide:subdivide""".splitlines())
         # 98d3135 adds the cellular automata age-packing captures, 0452493
         # re-captures the media tiling rows and adds the sampler metadata
         # fixtures, and 5a57539 binds Hydraulic's height and diffuse maps as the
-        # authority does; none of the three moved this pin. The 6f98d26a sync
-        # re-captures the scatterJitter math-slice row and the craquelure Task 15
-        # defaults row from the authority.
+        # authority does; none of the three moved this pin.
         self.assertEqual(
-            "4dc4120641b2d4e3bef76711b3bcb45c05bd372ee3e835484c39bfc1f16d65f0",
+            "daab3aefd26de5298a5613f7b69277b09ca6a56b146679987a20356813e38a68",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -11685,6 +11686,8 @@ synth/subdivide:subdivide""".splitlines())
         import copy
         from tools.glslcpp import generate_typed_slice
         from tools.glslcpp.frontend.literal_vec3_lane_index_profile import KEYS
+        from tools.glslcpp.frontend.derivative_admission_profile import (
+            DERIVATIVE_ADMISSION_KEYS)
 
         current = json.loads(
             (REPOSITORY / "tools/glslcpp/typed_slice.json").read_text())
@@ -11698,7 +11701,7 @@ synth/subdivide:subdivide""".splitlines())
         task24["custom_comparer_profiles"] = copy.deepcopy(current["custom_comparer_profiles"])
         task24["programs"] = [item for item in task24["programs"]
                               if item["program_key"] not in KEYS
-                              and item["program_key"] not in _FROZEN_TASK33_DERIVATIVE_KEYS
+                              and item["program_key"] not in DERIVATIVE_ADMISSION_KEYS
                               and item["program_key"] != "filter/dither:dither"
                               and item["program_key"] != "synth/julia:julia"
                               and item["program_key"] != "filter/smooth:smoothEdge"
@@ -11793,12 +11796,6 @@ synth/subdivide:subdivide""".splitlines())
                 self.assertEqual("prng-boolean-mix-select-v1",
                                  current_rows[item["program_key"]]["prng_boolean_mix_select_profile"])
                 item["prng_boolean_mix_select_profile"] = "prng-boolean-mix-select-v1"
-            # Craquelure gained its scalar uint right-shift carrier with the
-            # 6f98d26a corpus; the historical projection removes it.
-            if item["program_key"] == "filter/craquelure:craquelure":
-                self.assertEqual("hash-scalar-uint-rshift-v1",
-                                 current_rows[item["program_key"]]["hash_scalar_uint_rshift_profile"])
-                item["hash_scalar_uint_rshift_profile"] = "hash-scalar-uint-rshift-v1"
         self.assertFalse(any("literal_vec3_lane_index_profile" in item
                              for item in task24["programs"]))
         with tempfile.TemporaryDirectory() as temporary:
@@ -11892,7 +11889,7 @@ synth/subdivide:subdivide""".splitlines())
         final_predicate = comparer.authenticate_lens_custom_comparer_final(
             final, entry["raw_sha256"], comparer.PROFILE)
         self.assertIs(pre_predicate, final_predicate)
-        self.assertEqual(271, comparer.RAW_SOURCE_LINE)
+        self.assertEqual(273, comparer.RAW_SOURCE_LINE)
         self.assertEqual((21, "e0", 0, 1, 1), comparer.SITE_PATH)
         self.assertEqual(comparer.PROFILE_SHA256,
                          comparer._sha(comparer._profile_tuple()))
@@ -12047,8 +12044,8 @@ synth/subdivide:subdivide""".splitlines())
             ),
         }
         profile_hashes = {
-            LENS_KEY: "b04fe574170ccd989420ceff01174ff1c2b4dbab49204a6eac980dbf78f721a6",
-            PRISMATIC_KEY: "572efbae94569ec471147d70d0dfe280223b65180e211d3e258ee92500dadbaf",
+            LENS_KEY: "d1235bb6045a5795c4c10c5db8a990f51ee42e5541dcfa7a663c91f3245d10d3",
+            PRISMATIC_KEY: "25ad8a580a8263b4d2d15b41eb783abeed3433c94b9c8fffbbae2546300fd6b2",
         }
         for key in KEYS:
             lock = profile_module._LOCKS[key]
@@ -13971,12 +13968,14 @@ synth/subdivide:subdivide""".splitlines())
         from tools.glslcpp.frontend.smooth_edge_luma_weights_profile import (
             PROFILE, SMOOTH_EDGE_KEY)
 
+        from tools.glslcpp.frontend.derivative_admission_profile import (
+            DERIVATIVE_ADMISSION_KEYS)
 
         spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         task26_spec = copy.deepcopy(spec)
         task26_spec["programs"] = [
             item for item in task26_spec["programs"]
-            if item["program_key"] not in _FROZEN_TASK33_DERIVATIVE_KEYS
+            if item["program_key"] not in DERIVATIVE_ADMISSION_KEYS
             and item["program_key"] not in {"filter/dither:dither",
                 "synth/julia:julia", "synth/perlin:perlin",
                 "filter/rotate:rot",
@@ -16141,7 +16140,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
         from tools.glslcpp.frontend.rotate_mat2_return_profile import PROFILE, ROTATE_KEY
-        self.assertEqual(_CURRENT_DERIVATIVE_KEYS,
+        self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
         spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
@@ -16965,7 +16964,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         from tools.glslcpp.frontend.focus_blur_borrowed_sampler_profile import (
             FOCUS_BLUR_KEY, PROFILE)
 
-        self.assertEqual(_CURRENT_DERIVATIVE_KEYS,
+        self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
@@ -17895,7 +17894,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         from tools.glslcpp.frontend.extrude_bvec2_relational_reduction_profile import (
             EXTRUDE_KEY)
 
-        self.assertEqual(_CURRENT_DERIVATIVE_KEYS,
+        self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
 
         spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
@@ -18908,7 +18907,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
             DERIVATIVE_ADMISSION_KEYS)
         from tools.glslcpp.frontend.curl_vector_math_profile import CURL_KEY
 
-        self.assertEqual(_CURRENT_DERIVATIVE_KEYS,
+        self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
 
         spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
@@ -19480,7 +19479,7 @@ class Task32GradeClusterTests(unittest.TestCase):
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
 
-        self.assertEqual(_CURRENT_DERIVATIVE_KEYS,
+        self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
@@ -19673,7 +19672,7 @@ class Task32GradeClusterTests(unittest.TestCase):
 
 
 class Task33DerivativeAdmissionTests(unittest.TestCase):
-    """dFdx/dFdy/fwidth, admitted by node identity for 16 programs at once
+    """dFdx/dFdy/fwidth, admitted by node identity for 17 programs at once
     via one shared profile (derivative-admission-v1), following the
     round/tanh/floatBitsToUint/all+lessThanEqual precedent. `posterize` and
     `waves` were originally excluded (unrelated `round`/`any` blockers) and
@@ -19690,7 +19689,7 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         "filter/pinch:pinch", "filter/polar:polar",
         "filter/pondRipples:pondRipples", "filter/posterize:posterize",
         "filter/spiral:spiral", "filter/stamp:stThreshold",
-        "filter/step:step", "filter/tunnel:tunnel",
+        "filter/step:step", "filter/stipple:stipple", "filter/tunnel:tunnel",
         "filter/warp:warp", "filter/waves:waves",
     )
 
@@ -20146,7 +20145,7 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
 
         derivative_rows = [item for item in spec["programs"]
                            if "derivative_admission_profile" in item]
-        self.assertEqual(16, len(derivative_rows))
+        self.assertEqual(17, len(derivative_rows))
         self.assertEqual(self.KEYS, tuple(sorted(item["program_key"]
                                                   for item in derivative_rows)))
         self.assertTrue(all(item["derivative_admission_profile"] == PROFILE
@@ -20159,7 +20158,7 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         derivative_manifest_rows = [
             item for item in manifest["programs"]
             if "derivative_admission_profile" in item]
-        self.assertEqual(16, len(derivative_manifest_rows))
+        self.assertEqual(17, len(derivative_manifest_rows))
         self.assertEqual({"filter/lowPoly:lowPoly", "mixer/distortion:distortion"}, {
             item["program_key"] for item in manifest["programs"]
             if item["typed_abi"]["uses_derivatives"]
@@ -20171,22 +20170,22 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
             self.assertGreater(current_cpp.count(f"glsl::{name}(context, "), 0)
         # Every derivatives-enabled route has one BoundKernel construction
         # site that passes the third (uses_derivatives) argument as `true`.
-        self.assertEqual(18, current_cpp.count("::pixel, true);"))
+        self.assertEqual(19, current_cpp.count("::pixel, true);"))
 
         # The oracle vendored for the native fixture.
         oracle_path = REPOSITORY / "tests/oracles/task-33-oracles.json"
         self.assertTrue(oracle_path.is_file(), "Task 33 frozen oracle JSON is required")
         oracle_bytes = oracle_path.read_bytes()
         self.assertEqual(
-            "e477c6fe57835a9706b772a1b549548e0117fa0f7bb9bed8ed90961e1e07c47f",
+            "ef326ceb6687b434ffa23290e6f8d3e6509f68a9cfa5e842c4c453417db05109",
             hashlib.sha256(oracle_bytes).hexdigest())
         oracle = json.loads(oracle_bytes)
-        self.assertEqual(14, len(oracle["programs"]))
+        self.assertEqual(15, len(oracle["programs"]))
         historical_oracle_keys = DERIVATIVE_ADMISSION_KEYS - {
             "filter/posterize:posterize", "filter/waves:waves"}
         self.assertEqual(historical_oracle_keys,
                          frozenset(item["key"] for item in oracle["programs"].values()))
-        self.assertEqual({"total_cases": 54, "eligible_cases": 42,
+        self.assertEqual({"total_cases": 57, "eligible_cases": 45,
                           "diagnostic_cases": 12, "antialias_on_cases": 36,
                           "note": oracle["eligibility_summary"]["note"]},
                          oracle["eligibility_summary"])
@@ -22215,7 +22214,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         "runtime_define_profile": "runtime-defines-generic-v1",
     }
     SOURCE_SHA256 = (
-        "ada20a78762ccfa36b83995b7020f37e434e23da20650027ffa1784a8344430b")
+        "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70")
     # The pre-change 185-row state, recovered by removing only the new row.
     # Verified byte-for-byte against the committed working tree before this
     # slice began (all four match HEAD 8edff08).
@@ -22895,14 +22894,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43960,
-                "a15c10ca8fcfdffa1fbc9139ee17d31f40d7680ba65731b59c3e38880850044a"),
+                43891,
+                "ab458b4dd809d19c788521dfbe9117687a25ab505e1c946f486bb507d0061b5d"),
             "src/typed_generated/typed_slice.cpp": (
-                3918917,
-                "6389eb7919a0e72500ba39597a6ff893db2092bd4ab0de2ffdffca8b21864b6a"),
+                3916183,
+                "5b5e863cf8c9b26abce5ea07f5bf8a29059bbc6ab5a2d27e7f6dde95726c2bde"),
             "src/typed_generated/typed_manifest.json": (
-                931635,
-                "db5d05b56110a52a4c47dabee93ffc5839590f0bd67a799470a1264d2b07d4dd"),
+                931565,
+                "1f454ff9a219c6f4f53f7bdeae0da963b04e7ead0c857cbbb3e6e675375f8da8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23078,7 +23077,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         "scalar_uint_xor_profile": XOR_PROFILE,
     }
     SOURCE_SHA256 = (
-        "2cf9e5528e3b19debec7e9761afbcf0f47452a124dd4bef74b907b2ee67f9642")
+        "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52")
     # The pre-change 186-row state (cellRefract186), recovered by removing
     # only the new row. Quoted from the tree before regeneration began and
     # verified against the generator's --check on that tree (all four gates
@@ -23684,14 +23683,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43960,
-                "a15c10ca8fcfdffa1fbc9139ee17d31f40d7680ba65731b59c3e38880850044a"),
+                43891,
+                "ab458b4dd809d19c788521dfbe9117687a25ab505e1c946f486bb507d0061b5d"),
             "src/typed_generated/typed_slice.cpp": (
-                3918917,
-                "6389eb7919a0e72500ba39597a6ff893db2092bd4ab0de2ffdffca8b21864b6a"),
+                3916183,
+                "5b5e863cf8c9b26abce5ea07f5bf8a29059bbc6ab5a2d27e7f6dde95726c2bde"),
             "src/typed_generated/typed_manifest.json": (
-                931635,
-                "db5d05b56110a52a4c47dabee93ffc5839590f0bd67a799470a1264d2b07d4dd"),
+                931565,
+                "1f454ff9a219c6f4f53f7bdeae0da963b04e7ead0c857cbbb3e6e675375f8da8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23869,7 +23868,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
     SOURCE_SHA256 = (
         "1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90")
     CURRENT_SOURCE_SHA256 = (
-        "ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d")
+        "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316")
     FIELDS = ("emboss", "sharpen", "blur", "edge", "edge2", "edge3",
               "sharpenBlur")
     WRITER = "loadKernels"
@@ -24458,14 +24457,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43960,
-                "a15c10ca8fcfdffa1fbc9139ee17d31f40d7680ba65731b59c3e38880850044a"),
+                43891,
+                "ab458b4dd809d19c788521dfbe9117687a25ab505e1c946f486bb507d0061b5d"),
             "src/typed_generated/typed_slice.cpp": (
-                3918917,
-                "6389eb7919a0e72500ba39597a6ff893db2092bd4ab0de2ffdffca8b21864b6a"),
+                3916183,
+                "5b5e863cf8c9b26abce5ea07f5bf8a29059bbc6ab5a2d27e7f6dde95726c2bde"),
             "src/typed_generated/typed_manifest.json": (
-                931635,
-                "db5d05b56110a52a4c47dabee93ffc5839590f0bd67a799470a1264d2b07d4dd"),
+                931565,
+                "1f454ff9a219c6f4f53f7bdeae0da963b04e7ead0c857cbbb3e6e675375f8da8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24998,14 +24997,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43960,
-                "a15c10ca8fcfdffa1fbc9139ee17d31f40d7680ba65731b59c3e38880850044a"),
+                43891,
+                "ab458b4dd809d19c788521dfbe9117687a25ab505e1c946f486bb507d0061b5d"),
             "src/typed_generated/typed_slice.cpp": (
-                3918917,
-                "6389eb7919a0e72500ba39597a6ff893db2092bd4ab0de2ffdffca8b21864b6a"),
+                3916183,
+                "5b5e863cf8c9b26abce5ea07f5bf8a29059bbc6ab5a2d27e7f6dde95726c2bde"),
             "src/typed_generated/typed_manifest.json": (
-                931635,
-                "db5d05b56110a52a4c47dabee93ffc5839590f0bd67a799470a1264d2b07d4dd"),
+                931565,
+                "1f454ff9a219c6f4f53f7bdeae0da963b04e7ead0c857cbbb3e6e675375f8da8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25602,14 +25601,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                43960,
-                "a15c10ca8fcfdffa1fbc9139ee17d31f40d7680ba65731b59c3e38880850044a"),
+                43891,
+                "ab458b4dd809d19c788521dfbe9117687a25ab505e1c946f486bb507d0061b5d"),
             "src/typed_generated/typed_slice.cpp": (
-                3918917,
-                "6389eb7919a0e72500ba39597a6ff893db2092bd4ab0de2ffdffca8b21864b6a"),
+                3916183,
+                "5b5e863cf8c9b26abce5ea07f5bf8a29059bbc6ab5a2d27e7f6dde95726c2bde"),
             "src/typed_generated/typed_manifest.json": (
-                931635,
-                "db5d05b56110a52a4c47dabee93ffc5839590f0bd67a799470a1264d2b07d4dd"),
+                931565,
+                "1f454ff9a219c6f4f53f7bdeae0da963b04e7ead0c857cbbb3e6e675375f8da8"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -26995,7 +26994,6 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "points/physarum:agent": {"rshifts": 3, "rel": "points/physarum/agent.glsl"},
             "points/dla:agent": {"rshifts": 3, "rel": "points/dla/agent.glsl"},
             "points/attractor:agent": {"rshifts": 3, "rel": "points/attractor/agent.glsl"},
-            "filter/craquelure:craquelure": {"rshifts": 1, "rel": "filter/craquelure/craquelure.glsl"},
         }
 
         self.assertEqual(HASH_SCALAR_UINT_RSHIFT_KEYS, frozenset(expected_counts.keys()))

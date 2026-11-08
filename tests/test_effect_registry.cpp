@@ -199,7 +199,7 @@ TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contra
   const auto& provenance = registry.provenance();
   REQUIRE(registry.manifest_backed());
   REQUIRE(provenance.backend_schema == "noisemaker-cpp.backend-compatibility.v1");
-  REQUIRE(provenance.corpus_revision == "6f98d26ab84f17ba7fb154bb74252d6362736f89");
+  REQUIRE(provenance.corpus_revision == "cf95f49c900762ac1f23cb620dc16654c98ace77");
   REQUIRE(provenance.cpu_package_sha256.size() == 64);
   REQUIRE(provenance.upstream_package_lock_sha256.size() == 64);
   const auto* wormhole = registry.get("filter", "wormhole");
