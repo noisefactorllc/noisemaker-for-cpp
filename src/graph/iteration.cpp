@@ -256,6 +256,14 @@ const Surface* GroupResourceMap::find(std::string_view name) const noexcept {
   return it == resources_.end() ? nullptr : &it->second;
 }
 
+std::optional<Surface> GroupResourceMap::take(std::string_view name) {
+  const auto it = resources_.find(std::string(name));
+  if (it == resources_.end()) return std::nullopt;
+  std::optional<Surface> surface(std::move(it->second));
+  resources_.erase(it);
+  return surface;
+}
+
 std::vector<std::pair<std::string, Surface>> GroupResourceMap::release_all_except(
     const std::vector<std::string_view>& retained_names) {
   std::vector<std::pair<std::string, Surface>> released;

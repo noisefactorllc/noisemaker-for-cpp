@@ -313,9 +313,9 @@ def authenticate_bit_effects_frontend(
         raise _fail("scalar uint XOR site identity/cardinality mismatch")
 
     misdispatch = [(function, node) for function, node in located
-                   if function is not None and function.id == 92
+                   if function is not None and function.id == _CANONICAL_OVERLOAD_MISDISPATCH_SITE[0]
                    and node.kind == "call" and node.callee == "maskValue"
-                   and _span(node) == "338:32-338:58"]
+                   and _span(node) == _CANONICAL_OVERLOAD_MISDISPATCH_SITE[2]]
     if len(misdispatch) != 1:
         raise _fail("canonical overload misdispatch cardinality mismatch")
     owner, misdispatch_call = misdispatch[0]

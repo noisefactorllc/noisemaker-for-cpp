@@ -900,9 +900,7 @@
    },
    "program_key": "filter/stipple:stipple",
    "runtime_define_profile": "runtime-defines-generic-v1",
-   "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
-   "stipple_integer_shift_profile": "stipple-integer-shift-v1",
-   "stipple_fbm_const_array_profile": "stipple-fbm-const-array-v1"
+   "stipple_fixed_point_profile": "stipple-fixed-point-v1"
   },
   {
    "defines": {},

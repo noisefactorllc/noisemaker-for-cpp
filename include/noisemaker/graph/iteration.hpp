@@ -176,6 +176,12 @@ class GroupResourceMap {
   [[nodiscard]] std::vector<std::pair<std::string, Surface>> release_all_except(
       const std::vector<std::string_view>& retained_names);
 
+  // Removes and returns the surface stored under `name` -- the caller takes
+  // ownership (JS `Map.prototype.delete` plus the value it held). Mirrors
+  // renderer.js's chain-scoped `global_accum` handoff, which deletes the
+  // entry from one resource map and sets it on the next.
+  [[nodiscard]] std::optional<Surface> take(std::string_view name);
+
   [[nodiscard]] bool empty() const noexcept { return resources_.empty(); }
 
  private:

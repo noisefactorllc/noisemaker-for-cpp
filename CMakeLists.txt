@@ -195,6 +195,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_graph_blur.cpp
   tests/test_graph_features.cpp
   tests/test_mesh_render_graph.cpp
+  tests/test_stateful_chain_instances.cpp
   tests/test_graph_iteration.cpp
   tests/test_automation.cpp
   tests/test_graph_iterated_execution.cpp

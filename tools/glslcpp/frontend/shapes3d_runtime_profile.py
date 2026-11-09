@@ -10,16 +10,10 @@ DEFINES=(('BLEND_MODE','str','int'),('SHAPE_A','str','int'),('SHAPE_B','str','in
 SOURCE_GLOBAL={
     **lp._SOURCE_GLOBAL_LITERAL_INT_PROFILES[KEY],
     'source':'686b78a3907e7ca7e3e54540e33872cf69290c0dcc49be57d22940db55e5fbc0',
-    'defines':(('BLEND_MODE', 'str', 'int'), ('SHAPE_A', 'str', 'int'), ('SHAPE_B', 'str', 'int')),
-    'integer':('MAX_STEPS', 40, '100', 100),
-    'globals':(('MIN_DIST', 38, 'float', '0.01'),
- ('MAX_DIST', 39, 'float', '200.0'),
- ('MAX_STEPS', 40, 'int', '100'),
- ('fwdA', 64, 'mat3', None),
- ('fwdB', 65, 'mat3', None),
- ('invB', 66, 'mat3', None),
- ('invA', 67, 'mat3', None)),
-    'reads':(('rayMarch', 121, 452, 25, 452, 34),),
+    'defines':DEFINES,
+    'integer':('MAX_STEPS',40,'100',100),
+    'globals':(('MIN_DIST',38,'float','0.01'),('MAX_DIST',39,'float','200.0'),('MAX_STEPS',40,'int','100'),('fwdA',64,'mat3',None),('fwdB',65,'mat3',None),('invB',66,'mat3',None),('invA',67,'mat3',None)),
+    'reads':(('rayMarch',121,452,25,452,34),),
     'pre_functions':'5067e298d11a66e13ed4a75272695ad948ec9e7c88824dd18b78343d794ad4b3',
     'post_functions':'72c61beb04a80246634aa433fa7ef0065a47a47dfed7688844fb308319bf0bb3',
     'pre_whole':'6ea2a2a8641b6cecd71134196a21f7de9297292dc3b253fa9f0fe7c47a8c1e97',
@@ -37,21 +31,11 @@ STRUCT={
     'parameters_sha256':'9f6fb0b9e33347f408ab375ba7b10d0e357680ba2885608558adc64a93c15f7f',
     'locals_sha256':'0df6de8e0c7e0aedb934d808c81d99d8a9bb4cc05eccf3ce0363e6947dde9f26',
     'members_sha256':'6331c1cd2620f73632a5efeed1b6374da8e594f4ee7dc8d5d5c8680e67ed94d7',
-    'census':(2, 4, 29, 0, 1494, 93),
+    'census':(2,4,29,0,1494,93),
 }
-ROUND_SITES=((413,
-  35,
-  '544a0fae68a0ebca773f0b127268362cf7c8bcc37c0f19915fdd0a17e31e7491',
-  '5fa874d640cb48927b455398bcb8ef9cd41a75d84d2e4918449383eb23a02b63'),
- (420,
-  35,
-  '85f3bb68b483d6e5e5d743daaf2b5d66e2f84ad6a8e4b1f104f22050ebbc3fb9',
-  '78daf1c7263e2582491890a35137e588d6a09149f8ba8e5d08ac3c0f2d6dc7c1'))
-INDEX_SITES=((193, 13, 63, 'cc544821fcfa3a932b4ec1bd5e0685911ee53f487139eafa2a2c2ef842894e65'),
- (194, 13, 152, 'bdf1c983219388eb8231132c3cafaf9086baed85407908ea70898b72327fb08a'),
- (194, 23, 63, 'bf729da7f9878f6ff0d1da73726e06c1de809e29c4d9111984e414a2915ad267'),
- (196, 13, 152, '69a5720fe9d9af41fdcb11dd39a01b2eb6e4892a3aa35d6e0602d13b4c199fa1'),
- (196, 35, 63, 'f048529c762f325f8736620668d5092d1e7a7996854dec2697a6d1d66ca6994a'))
+ROUND_SITES=((413,35,'544a0fae68a0ebca773f0b127268362cf7c8bcc37c0f19915fdd0a17e31e7491','5fa874d640cb48927b455398bcb8ef9cd41a75d84d2e4918449383eb23a02b63'),(420,35,'85f3bb68b483d6e5e5d743daaf2b5d66e2f84ad6a8e4b1f104f22050ebbc3fb9','78daf1c7263e2582491890a35137e588d6a09149f8ba8e5d08ac3c0f2d6dc7c1'))
+INDEX_SITES=((193,13,63,'cc544821fcfa3a932b4ec1bd5e0685911ee53f487139eafa2a2c2ef842894e65'),(194,13,152,'bdf1c983219388eb8231132c3cafaf9086baed85407908ea70898b72327fb08a'),(194,23,63,'bf729da7f9878f6ff0d1da73726e06c1de809e29c4d9111984e414a2915ad267'),(196,13,152,'69a5720fe9d9af41fdcb11dd39a01b2eb6e4892a3aa35d6e0602d13b4c199fa1'),(196,35,63,'f048529c762f325f8736620668d5092d1e7a7996854dec2697a6d1d66ca6994a'))
+
 def authenticate(program, source_hash):
     if program.key != KEY or source_hash != RAW or hashlib.sha256(program.raw_source.encode()).hexdigest()!=RAW:
         raise ValueError('dynamic Shapes3D raw source drift')

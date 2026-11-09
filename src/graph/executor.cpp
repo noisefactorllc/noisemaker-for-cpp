@@ -4189,7 +4189,8 @@ struct GroupPublishResult {
                                                     GraphResource* group_input_geometry,
                                                     ResourceArena& arena,
                                                     const ExecutionInputs& inputs,
-                                                    std::size_t& pass_count) {
+                                                    std::size_t& pass_count,
+                                                    iteration::GroupResourceMap* chain_resources) {
   const auto& owner_variant = chain.steps[group.step_indices.front()];
   const auto* owner_step = std::get_if<EffectStep>(&owner_variant);
   if (owner_step == nullptr) {
@@ -4246,9 +4247,27 @@ struct GroupPublishResult {
                        "loop region has no input image to seed global_accum",
                        owner_step->effect.id);
     }
-    noisemaker::Surface accum = group_input->surface().clone();
-    accum.clear();
-    group_resources.store("global_accum", std::move(accum));
+    // renderer.js runIteratedGroupSync (CPU ae27c898): the loop accumulator is
+    // chain-scoped -- a global that different effects share keeps its chain
+    // scope, so a second loop region in the same chain continues the first
+    // region's feedback surface instead of a zeroed one. An inherited surface
+    // of the wrong size (cannot arise in one chain's image stream, but
+    // guarded, exactly like the JS authority) is released and re-created.
+    if (chain_resources != nullptr) {
+      if (std::optional<noisemaker::Surface> inherited = chain_resources->take("global_accum")) {
+        if (inherited->width() == group_input->surface().width() &&
+            inherited->height() == group_input->surface().height()) {
+          group_resources.store("global_accum", std::move(*inherited));
+        }
+        // A wrong-size inherited surface is dropped here (released); the
+        // fresh zeroed accumulator below replaces it.
+      }
+    }
+    if (!group_resources.contains("global_accum")) {
+      noisemaker::Surface accum = group_input->surface().clone();
+      accum.clear();
+      group_resources.store("global_accum", std::move(accum));
+    }
   }
 
   // renderer.js groupOwnerStateSize: a particle group's owner is its
@@ -4450,6 +4469,14 @@ struct GroupPublishResult {
     throw GraphError(GraphErrorCode::execution_failure, "iterated group produced no output",
                      owner_step->effect.id);
   }
+  // renderer.js finishGroupResources (CPU ae27c898): the loop accumulator is
+  // chain-scoped -- hand it to the chain's next loop region instead of
+  // releasing it with the group's other scratch resources.
+  if (chain_resources != nullptr) {
+    if (std::optional<noisemaker::Surface> accum = group_resources.take("global_accum")) {
+      chain_resources->store("global_accum", std::move(*accum));
+    }
+  }
   GroupPublishResult result;
   if (last_bundle.image.has_value()) {
     result.surface = std::move(*last_bundle.image);
@@ -4561,6 +4588,11 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
     GraphResource* current_volume = nullptr;
     GraphResource* current_geometry = nullptr;
     std::optional<double> current_volume_size;
+    // renderer.js runChainSync (CPU ae27c898): the chain-scoped resource map
+    // carries the loop accumulator across the chain's loop regions, matching
+    // upstream's chain-scoped shared globals. Each inline chain argument is
+    // its own chain scope (this recursive call builds a fresh map).
+    iteration::GroupResourceMap chain_resources;
     // The CPU authority partitions the chain into iteration groups. Each
     // iterated group shares its scratch resources across the requested ticks.
     for (const auto& group : iteration::compute_iteration_groups(plan, chain)) {
@@ -4596,7 +4628,8 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
         const auto* owner = std::get_if<EffectStep>(&chain.steps[group.step_indices.front()]);
         const auto& owner_definition = plan.effects[owner->snapshot_index].definition;
         auto group_result = run_iterated_group(plan, chain, group, current, current_volume,
-                                               current_geometry, arena, inputs, pass_count);
+                                               current_geometry, arena, inputs, pass_count,
+                                               &chain_resources);
         if (group_result.has_image && group_result.route != "inputTex") {
           current = &arena.insert(group_result.route, std::move(group_result.surface),
                                   group_result.format, ResourceLifetime::transient);
