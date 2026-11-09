@@ -424,7 +424,7 @@ _CURRENT_BICUBIC_NESTED_DOT_SOURCES = {
     GLITCH_KEY: ("4bb633e963eed011c4724d9b18470baed3ac474eadce98e06288ace5c382846a",),
     EFFECTS_BICUBIC_KEY: (
         "1a5d9684bef39715572e85aa24419cd002e592b6192cd2dbc3b0f7d53d836a90",
-        "b4f4279698ce60bd3c0c45f8339a4869cd6c2f0714f219ee6b2e997328057316",
+        "ed942954001dc94c191bd617c462e63d68bd68e3e3d4545c8863b7228f64879d",
     ),
 }
 from .frontend.emboss_color_style_profile import (

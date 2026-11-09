@@ -2723,7 +2723,7 @@ void loadKernels([[maybe_unused]] const State& state, [[maybe_unused]] const gls
   [[maybe_unused]] double u = glsl::fract(glsl::swizzle<1>(p));
   [[maybe_unused]] glsl::Vec4 tv = glsl::FloatExpr<4>(static_cast<float>(1.), t, (static_cast<double>(t) * static_cast<double>(t)), (static_cast<double>((static_cast<double>(t) * static_cast<double>(t))) * static_cast<double>(t)));
   [[maybe_unused]] glsl::Vec4 uv = glsl::FloatExpr<4>(static_cast<float>(1.), u, (static_cast<double>(u) * static_cast<double>(u)), (static_cast<double>((static_cast<double>(u) * static_cast<double>(u))) * static_cast<double>(u)));
-  return glsl::dot((tv * A), uv);
+  return glsl::dot(glsl::Vec4(glsl::dot(tv, A[0]), glsl::dot(tv, A[1]), glsl::dot(tv, A[2]), glsl::dot(tv, A[3])), uv);
 }
 
 [[nodiscard]] glsl::Vec3 bloom([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Frame& frame, [[maybe_unused]] glsl::Vec2 st) noexcept {
