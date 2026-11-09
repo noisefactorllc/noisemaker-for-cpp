@@ -191,7 +191,7 @@ else process.stdout.write(text)
 async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
   const FIXTURE_SHA256 = '661b9ed45d0bc83918454ead20bb9dcda516773b1604e42295efb62fe0d628ff'
-  const EXPECTED_STREAM_SHA256 = 'fdf941472961e0bf90e037ff8ad5fe0be23540817b7a228477b9b22f093d520b'
+  const EXPECTED_STREAM_SHA256 = '901e739a07b387d1c14b2200033bec9eefd771db696aba36cc2a4df93b63973f'
   if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
   const root = path.resolve(cpuRoot)
   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')

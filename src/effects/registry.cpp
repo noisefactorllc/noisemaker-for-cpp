@@ -921,7 +921,7 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "cf95f49c900762ac1f23cb620dc16654c98ace77" ||
-      provenance_.generated_payload_sha256 != "feb2b77849a7f4f3b8df64de0c8412bb12a967a1504437713c1f6de7959a0b55" ||
+      provenance_.generated_payload_sha256 != "d0f66d908399994c540e21f4b8d09856bdebe083ad6cdfee37b1472ec3e3cebe" ||
       provenance_.normalized_record_stream_sha256 != "fb72ad197ea19e667c5697fd234d983e5b70f299bad1d79bde69661969342215" ||
       provenance_.compatibility_sha256 != "5cc546b1c7b2b2232f6f20a83145b3f593c0db4c3c7e1dceab94f73857bcd7dd" ||
       provenance_.cpu_behavioral_lock != "0cb171ca00e85f18b7e3fbbd47153bdd1a9609166f652b1c94a94c20b20c9b2b" ||

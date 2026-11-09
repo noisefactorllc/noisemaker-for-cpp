@@ -116,8 +116,7 @@ _STATIC_SHAPE_MIXER_PROFILE = {'raw_bytes': 21644,
                134,
                135,
                136),
- 'unreachable': (105, 117, 129),
- 'owner_reachability': 'reachable'}
+ 'unreachable': (105, 117, 129)}
 
 _STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS = (
     ('52:31-52:54', '4824d4f88c67d9ad9f817bd45ca190523688f2496f7b924dbd93970761d7600e', 126, 'prng', 'construct', '52:37-52:53', '9eb472f5246286e1335cb69dba9e6a27edf9815c1f9922cfd0dc04447711dcd5', None, 'rvalue', 'literal', None, None, '52:9-52:54', '2d494dc2511a65d989d0ffe65f96986f6a3065f08f4d213746bc66cd555e9a08', 'binary', '/'),
@@ -316,8 +315,7 @@ _PROFILES: dict[str, dict[str, object]] = {
                135,
                136,
                137),
- 'unreachable': (106, 118, 130),
- 'owner_reachability': 'reachable'},
+ 'unreachable': (106, 118, 130)},
     "classicNoisedeck/shapes:shapes": {
         "raw_bytes": 21215, "raw_sha256": "a9885b0ceeb5d73bf5c851775d28f9d948fb0521bbc6b42d2b4afc206f5ec7e5",
         "normalized_bytes": 18636, "normalized_sha256": "55f47bda9940481fd48b43c548dddef0ebd0916e98c89d2d313d698b4def582e",
