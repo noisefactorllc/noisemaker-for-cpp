@@ -125,6 +125,53 @@ _STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS = (
     ('422:9-422:27', '37b89d3ce7a883986195ddb08c99961b37845ea455cb5daf90079168e70a8c79', 130, 'randomFromLatticeWithOffset', 'swizzle', '422:15-422:26', 'b2cc6db25e17eb2982dac5ff9231d2e28c10aaa9a2a8de57fca44ac606d97a27', 'y', 'lvalue', 'id', 212, 'prngState', '422:9-422:35', 'f9c8949979117e125b45dbfe8ccc65b2420eea774ed3d5baecd0ab4bf1ba16ad', 'binary', '/'),
     ('423:9-423:27', '501c37a6f5f8650101af3017c93ad7211f828c75cbdfd9578a0fba003a712d76', 130, 'randomFromLatticeWithOffset', 'swizzle', '423:15-423:26', '987b8d57450f8616f1325c9d8fb179e7909e3c61dd4b6acc6a6888999e4037de', 'z', 'lvalue', 'id', 212, 'prngState', '423:9-423:35', '8666648e1f2d9b09437e19f110cf23873ccc717d24e3e7fef02b07004316a98c', 'binary', '/'),
 )
+
+# The static Shape Mixer source before 6f98d26a (raw sha256 51bee071...),
+# which the frozen Shape Mixer parity probe still authenticates.
+_PRE_6F98D26A_STATIC_SHAPE_MIXER_PROFILE = {
+    "raw_bytes": 21721, "raw_sha256": "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b",
+    "normalized_bytes": 17664, "normalized_sha256": "afb1be09867bbbb02f63c115b84ef4fd813d72defc71e2cc7d8891db9113b1b8",
+    "functions_sha256": "ccf3834882fdd6ff45744377d38bd0b729f3e39d6d58c41c14a43095d6c99bcd",
+    "whole_program_sha256": "b88f21c04cce365d9832aef73330323551a4f9ba296d641e31aa5427f3850684",
+    "interface_sha256": "45782fb4605e8e140b66a4e6b462408f79488968895dc6e735d66f5de748a21d",
+    "defines": (("LOOP_OFFSET", "int", "10"),),
+    "declaration_count": 25, "function_count": 38,
+    "function_inventory_sha256": "fd267bcb5cb3035f9a2174bfd29de118a6dca4d990f1d9eea65d432296a05f81",
+    "bindings_sha256": "f7700f10ec7dd723ce09e8657e30d0e6aa5ce3a0e34b79cfe1d5bdbb4e3e5730",
+    "resources": (("inputTex", "tex", "resolution", "tileOffset", "fullResolution",
+                   "time", "seed", "blendMode", "loopScale", "paletteMode",
+                   "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
+                   "animate", "cyclePalette", "rotatePalette", "repeatPalette",
+                   "levels", "wrap"), ("inputTex", "tex"), ("fragColor",), True, False),
+    "loop": (1, 0, 1, 3, 3, True),
+    "owner": (130, "randomFromLatticeWithOffset", "vec3", 3, 19, "386:1-427:2",
+              "534f686001db15b2a002c5f8715da35f3c3c91a45796881b5e3a43dea742292f",
+              "89b5b6da39c72f0b3e52fb28a3daeaa481e8a96f2130716d90b948d4c735b22a"),
+    "parent": ("413:20-417:6", "a5fdc9609cf2061effd0cd7716846eaeb09a0aa56da15e3269c7db53321cca1d"),
+    "sites": (
+        ("414:10-414:46", "d61ee5dedd34f41977635b787534b900ebd7b9416c9711f558b5ce6e5294162b", "9ff109f0727b5a05ca60ae883227a703b8b474328da588db17df5ae0bea480bc", "29883f036cac6ff68efe1338811ce57520d028ba05c40226b6386e3a68901c23", 0),
+        ("415:10-415:46", "6f95ef7eee4ec54c0a31460816c193e4bc841b3a8622ed5d55610509b0c6113f", "b0cb483d126bc289f7c654259941d58432f5e065fcf83edd4d4e75161d65f418", "607f5bc320bd91ea351bbb878c4b640fc8a71ad2f73e61c149992500e0c3b34b", 1),
+        ("416:10-416:47", "a97b2dc920fab9dbd9ca11068c0b7bafc214b61a7748059dcfd79bcb3d603bd4", "645b21f7576cf2976fead4e358f0db9747159fd68fd5bf4134df5a33e397d1a7", "420c348860e5899ecd9420225395cd6ea71629faeded6779e1c048359f0626df", 2)),
+    "scalar_census_sha256": "928feb676c60b9f1668567811a38b7f4ecf873f62e5b7a78b36369eb5537a253",
+    "call_graph_sha256": "3bdb7adbc622ac11f82f0f664ec124c0c0ee5d90a69906b04e60d260340b3224",
+    "reachable": (99, 100, 101, 102, 103, 104, 106, 107, 108, 109, 110, 111,
+                  112, 113, 114, 115, 116, 118, 119, 120, 121, 122, 123, 124,
+                  125, 126, 127, 128, 130, 131, 132, 133, 134, 135, 136),
+    "unreachable": (105, 117, 129),
+}
+
+_PRE_6F98D26A_STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS = (
+    ('52:31-52:54', '4824d4f88c67d9ad9f817bd45ca190523688f2496f7b924dbd93970761d7600e', 126, 'prng', 'construct', '52:37-52:53', '9eb472f5246286e1335cb69dba9e6a27edf9815c1f9922cfd0dc04447711dcd5', None, 'rvalue', 'literal', None, None, '52:9-52:54', '2d494dc2511a65d989d0ffe65f96986f6a3065f08f4d213746bc66cd555e9a08', 'binary', '/'),
+    ('421:19-421:37', '0b08ff022b1c5b7fc64db054d241cd894a18133a925038c5fb04da637542c142', 130, 'randomFromLatticeWithOffset', 'literal', '421:25-421:36', '96c78bdc280934a1fa5b09219d955cfe40bdd1fbb03a867bcc085c3925e84d18', None, 'rvalue', 'literal', None, None, '421:11-421:37', '5354ac324b4c7dee48bcf4573f7ba132ae4afab40361cb293b96f3c876f22644', 'declaration', None),
+    ('423:9-423:27', '84ca341551004cf45ec3d8e58e9d0342a839fb56dc62092aa7db06b94f9ea410', 130, 'randomFromLatticeWithOffset', 'swizzle', '423:15-423:26', '94d6aea4f4c689cb2bdb7b208fb1b28ad2cc1d9c29227e61730182b52335564d', 'x', 'lvalue', 'id', 212, 'prngState', '423:9-423:35', 'c6b370c7d829e4227af59655e16fdff94e5b8fca1fcea1e969ea119c9584c777', 'binary', '/'),
+    ('424:9-424:27', 'a74e560f58cd5df465ee35b4ff4d03bddb8cfc9730afaeae11eb778e1cdfff75', 130, 'randomFromLatticeWithOffset', 'swizzle', '424:15-424:26', 'f38b10aa8530e1fe5eb95b332c9f5cb79b0e38a2043a025d5de626899e5cfa49', 'y', 'lvalue', 'id', 212, 'prngState', '424:9-424:35', 'c5153e7a6490c5a01d9a54050d01fe183ea22792c37050935094e268540d6454', 'binary', '/'),
+    ('425:9-425:27', '56e0f6dfbba76362613fc70ea586f7e3e308de6736fe50fc9ad6c2a53c9b3d43', 130, 'randomFromLatticeWithOffset', 'swizzle', '425:15-425:26', 'e6920403def68ff6c3e82eb70b93c52b724bf24399b38b9551d612b1d1512f8b', 'z', 'lvalue', 'id', 212, 'prngState', '425:9-425:35', '461e1ddc37afc1c89d0284c2c9bf62e1c7bb53071df491c49a94f733641b77c0', 'binary', '/'),
+)
+
+# Generated from the pinned corpus by the checked read-only profile probe
+# documented in docs/port-engineering/bitops/grain-parity.  Tuples named
+# owner/site/parent deliberately retain hashes at every structural layer so a
+# refrozen coarse program digest cannot absorb a node mutation.
 _PROFILES: dict[str, dict[str, object]] = {
     "filter/grain:grain": {
         "raw_bytes": 8796,
@@ -1291,7 +1338,9 @@ def authenticate_scalar_uint_xor(
     elif program.key == "classicNoisedeck/shapeMixer:shapeMixer" and any(
             item.name == "LOOP_OFFSET" and item.canonical_value == "10"
             for item in program.preprocessor_defines):
-        expected = _STATIC_SHAPE_MIXER_PROFILE
+        expected = (_PRE_6F98D26A_STATIC_SHAPE_MIXER_PROFILE
+                    if source_hash == _PRE_6F98D26A_STATIC_SHAPE_MIXER_PROFILE["raw_sha256"]
+                    else _STATIC_SHAPE_MIXER_PROFILE)
     else:
         expected = _PROFILES.get(program.key)
     if expected is None:
@@ -1484,7 +1533,9 @@ def authenticate_scalar_uint_to_float_narrowing_skips(
     elif program.key == "classicNoisedeck/shapeMixer:shapeMixer" and any(
             item.name == "LOOP_OFFSET" and item.canonical_value == "10"
             for item in program.preprocessor_defines):
-        records = _STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS
+        records = (_PRE_6F98D26A_STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS
+                   if source_hash == _PRE_6F98D26A_STATIC_SHAPE_MIXER_PROFILE["raw_sha256"]
+                   else _STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS)
     else:
         records = _UINT_TO_FLOAT_CENSUS_LOCKS.get(program.key)
     if records is None:
