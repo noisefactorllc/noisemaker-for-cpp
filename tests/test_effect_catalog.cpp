@@ -119,7 +119,7 @@ TEST(effect_catalog_value_preserves_negative_zero) {
 
 TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
-  REQUIRE(provenance.generated_payload_sha256 == "8027d68fe5d8c955493d811290157abd87d67a858df5b04242cf6fb7174bded7");
+  REQUIRE(provenance.generated_payload_sha256 == "3f4f340f076312776f3d41cb292b3bb9e74bff62a2f545ebf3f8ba68ee4f270e");
 }
 
 // The authority moved particle texture inputs into the behaviors: each
