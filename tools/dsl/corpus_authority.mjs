@@ -16,7 +16,7 @@ export const EXPECTED = Object.freeze({
   packageSha256: 'f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807',
   packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
   sourceLockSha256: '30485fe43f1a4bd9c76813a004788b74a0b11adaf86907cacf11168945c855a7',
-  behavioralLockSha256: '6af657bfd66cae0b863c9c855efdab548fc241db7b3fa96bb175fb5f0dd99112',
+  behavioralLockSha256: '05acfb39f355e0168a40ecc7a071d2ebc48e31bdc4a6895479eb715a310331f1',
   behavioralFileCount: 98,
   upstreamRevision: 'db2173e34223a663b08815fa32c34608ec5b4b91',
   upstreamSourceDigest: 'b5bf6087d062922cf2a5f17f76f1a5f5c265cae5d2ddceda81ffb47daa5c9d0a',

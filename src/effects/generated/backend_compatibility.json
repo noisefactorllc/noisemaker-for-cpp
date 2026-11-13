@@ -2,7 +2,7 @@
   "schema": "noisemaker-cpp.backend-compatibility.v1",
   "corpus_revision": "db2173e34223a663b08815fa32c34608ec5b4b91",
   "authority": {
-    "cpu_behavioral_lock": "6af657bfd66cae0b863c9c855efdab548fc241db7b3fa96bb175fb5f0dd99112",
+    "cpu_behavioral_lock": "05acfb39f355e0168a40ecc7a071d2ebc48e31bdc4a6895479eb715a310331f1",
     "cpu_behavioral_file_count": 98,
     "cpu_package_sha256": "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807",
     "cpu_package_lock_sha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",

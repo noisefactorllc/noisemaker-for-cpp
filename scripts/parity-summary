@@ -81,7 +81,7 @@ from tools.benchmark.corpus_lane import (  # noqa: E402
 from tools.benchmark.exact_compare import compare_rgba8, format_diagnostics  # noqa: E402
 from tools.parity.sweep import define_liveness, is_live, load_existing  # noqa: E402
 
-CPU_REV = "730a1ef5756c562eafb5b039c71750f029204f58"
+CPU_REV = "a7c26f6655184126b25292df7161518f37748fa5"
 CPU_CHECKOUT = pathlib.Path(
     os.environ.get("NOISEMAKER_FOR_CPU") or ROOT.parent / "noisemaker-for-cpu")
 DRIVER_ENV = "NOISEMAKER_DSL_CPU_CASE"
