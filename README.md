@@ -5,7 +5,7 @@
 
 # noisemaker-for-cpp
 
-> This package supports the "Export Shader Pipeline" feature in Noisedeck.app. The feature runs shader compositions on other platforms. Noise Factor derives this package from the upstream Noisemaker Engine project. It is not yet at full parity with `noisemaker-for-cpu`: see [Coverage](#coverage) for the measured gap.
+> This package supports the "Export Shader Pipeline" feature in Noisedeck.app. The feature runs shader compositions on other platforms. Noise Factor derives this package from the upstream Noisemaker Engine project. Use the CPU renderer directly or through Noisedeck's C++ export kit; see [Coverage](#coverage) for the reference and verification scope.
 
 A C++20 CPU port of the [Noisemaker](https://noisemaker.app) shader engine.
 
@@ -40,23 +40,28 @@ differs by a single byte. CI runs that check on pushes affecting source or valid
 
 ## Coverage
 
-This port is **incomplete**. The open work is listed below.
+The CPU renderer is available as a source library, command-line tool and Noisedeck export kit.
+Compatibility is measured against a pinned `noisemaker-for-cpu` reference.
 
-The pinned authority is `noisemaker-for-cpu` at `9b7294820eec2a0b95c66790b1dae374fa079c13`, which pins the upstream Noisemaker shaders at `32d8d3e6a6dbb3dee2dfbcc8d31bd1c52342eca3` (v1.0.310). CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes, so a newer authority fails it until the port is synced to that authority.
+`python3 scripts/authority-pins github` reports and validates the CPU and shader revisions used
+by the current source. CI checks out those exact commits. The `Authority drift` workflow compares
+the behavioral lock and upstream revision with the authority's `main` daily and on relevant
+pushes, so a newer authority fails it until the port is synced to that authority.
 
-| | Count | Derived from |
-|---|---:|---|
-| Effects the pinned authority renders | 210 | the authority's `sourceEffectIds` minus its `excludedEffects` (`export-kit/check-authority-coverage.mjs`) |
-| Effects this port's export kit claims | 210 | `export-kit/compat-effects.json` |
-| Effects in the sweep-verified list | 210 | the `effects` array in `export-kit/verified-effects.json` |
-| Effects whose every pass has an admitted kernel | 210 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
-| Authority GLSL programs | 308 | `counts.reference_program_keys` in the same file |
-| Corpus programs vendored here | 308 | the `programs` array in `tools/glslcpp/corpus/6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d/manifest.json` |
-| Typed-slice programs | 300 | the `programs` array in `src/typed_generated/typed_manifest.json` |
+The kit's supported effects are listed in `export-kit/compat-effects.json`, with sweep evidence
+in `export-kit/verified-effects.json`. `export-kit/check-authority-coverage.mjs` compares that
+list with the effects the authority renders. Kernel coverage is recorded in
+`src/effects/generated/effect_catalog.provenance.json`; the typed program inventory is in
+`src/typed_generated/typed_manifest.json`.
 
 The kit claims an effect only when the parameter sweep verified it. An admitted kernel is not enough.
 
-At the pinned authority, both CI sweep gates pass. The parameter sweep renders every effect the kit claims byte for byte, including the volume and loop effects. The define enumeration renders every value of every compile-define parameter byte for byte, and every define parameter changes the output. The open work is:
+Published export kits require a successful full CI run, including the parameter sweep and define
+enumeration against the pinned authority. A passing push CI run alone does not run those sweeps,
+and the latest source can be newer than the published kit. Check the
+[CI runs](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/workflows/ci.yml) and the
+[published kit's source revision](https://kits.noisedeck.app/cpp/0/deployment-meta.json) for the
+version you use. The sweep coverage has these limits:
 
 - Debug evidence: the corpus lane and both sweeps run a Release build of the C++ driver only.
 - Render options and state: the sweeps render frame 0 at `renderScale` 1. Later frames and other render scales are not measured.
@@ -73,7 +78,9 @@ Open gaps are tracked as [GitHub issues labelled `gap`](https://github.com/noise
 - **Gates**: both sweeps run in CI with `--gate kit`, which checks cases whose participating effects are all claimed by the kit. Cases outside that set remain reported gaps. Full closure requires `--gate all`, complete authority coverage, and Debug and Release evidence.
 - **Kit coverage** (`export-kit/check-authority-coverage.mjs`): fails until the kit claims every effect the authority renders.
 
-The corpus itself is vendored, not authored here. Its GLSL sources under `tools/glslcpp/corpus/` come from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at revision `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`, and are MIT-licensed there.
+The corpus itself is vendored, not authored here. Its GLSL sources under `tools/glslcpp/corpus/`
+come from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at the shader
+revision reported by `scripts/authority-pins`, and are MIT-licensed there.
 
 ### Parity and its documented exceptions
 
@@ -264,4 +271,4 @@ MIT. See [LICENSE](LICENSE).
 
 The vendored GLSL corpus under `tools/glslcpp/corpus/` is MIT-licensed source
 from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker),
-pinned at revision `6cb1a3c3e21010db956d41e7a6d57a02b0be1e7d`.
+pinned at the shader revision reported by `scripts/authority-pins`.
