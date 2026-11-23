@@ -8707,11 +8707,15 @@ class _Emitter:
                         or value.children[1].literal_value not in (0, 1)):
                     raise _error(self.program, value,
                                  "malformed authenticated Texture vector-scalar constructor")
-                # CPU9f3's integer vector constructor receives (cell, z).
-                # Its first scalar slot converts the vector to int zero;
-                # the second slot stores z; the missing third slot is zero.
+                # The authority's integer vector constructor fills in place:
+                # ivec3(cell, z) is (cell.x, cell.y, z). The CPU9f3-era
+                # reconstruction zeroed the leading vector slot; the current
+                # runtime fills slots left to right (see #integerVector).
                 self.emitted_texture_vector_scalar_conversions.append(value)
-                return f"glsl::IVec3(0, {value.children[1].literal_value}, 0)"
+                cell = self.expression(value.children[0])
+                return (f"glsl::IVec3(glsl::swizzle<0>({cell}), "
+                        f"glsl::swizzle<1>({cell}), "
+                        f"{value.children[1].literal_value})")
             if any(value is item for item in self.authorized_texture_material_layer_conversions):
                 # CPU9f3's exact Texture factory lowers both uint(z0) and
                 # uint(z1) in material_noise to zero before the two gradient

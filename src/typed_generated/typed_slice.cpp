@@ -25226,8 +25226,8 @@ struct State final : KernelState {
   for ([[maybe_unused]] std::int32_t y = (-std::int32_t(1)); (y <= std::int32_t(1)); ++y) {
     for ([[maybe_unused]] std::int32_t x = (-std::int32_t(1)); (x <= std::int32_t(1)); ++x) {
       [[maybe_unused]] glsl::IVec2 cell = (baseCell + glsl::IVec2(x, y));
-      [[maybe_unused]] double jx = (static_cast<double>(fast_hash(state, context, glsl::IVec3(0, 0, 0), salt)) - static_cast<double>(static_cast<float>(0.5)));
-      [[maybe_unused]] double jy = (static_cast<double>(fast_hash(state, context, glsl::IVec3(0, 1, 0), (salt ^ std::uint32_t(1757159915)))) - static_cast<double>(static_cast<float>(0.5)));
+      [[maybe_unused]] double jx = (static_cast<double>(fast_hash(state, context, glsl::IVec3(glsl::swizzle<0>(cell), glsl::swizzle<1>(cell), 0), salt)) - static_cast<double>(static_cast<float>(0.5)));
+      [[maybe_unused]] double jy = (static_cast<double>(fast_hash(state, context, glsl::IVec3(glsl::swizzle<0>(cell), glsl::swizzle<1>(cell), 1), (salt ^ std::uint32_t(1757159915)))) - static_cast<double>(static_cast<float>(0.5)));
       [[maybe_unused]] glsl::Vec2 point = ((glsl::FloatExpr<2>(float(x), float(y)) + static_cast<float>(0.5)) + (glsl::FloatExpr<2>(jx, jy) * static_cast<float>(0.6)));
       nearest = glsl::component_min(nearest, glsl::length((local - point)));
     }

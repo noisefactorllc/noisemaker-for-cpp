@@ -104,8 +104,12 @@ class TextureCentralAdmissionTests(unittest.TestCase):
                                     texture_frontend_profile=PROFILE)
         self.assertEqual(2, rendered.count("std::uint32_t{0}"))
         self.assertIn("float(glsl::detail::js_shift_right(h, 16))", rendered)
-        self.assertIn("glsl::IVec3(0, 0, 0)", rendered)
-        self.assertIn("glsl::IVec3(0, 1, 0)", rendered)
+        self.assertIn(
+            "glsl::IVec3(glsl::swizzle<0>(cell), glsl::swizzle<1>(cell), 0)",
+            rendered)
+        self.assertIn(
+            "glsl::IVec3(glsl::swizzle<0>(cell), glsl::swizzle<1>(cell), 1)",
+            rendered)
         with self.assertRaisesRegex(ValueError, "source|structural|identity"):
             authenticate_texture_frontend(dataclasses.replace(
                 program, raw_source=raw + " "), source_hash, PROFILE)
