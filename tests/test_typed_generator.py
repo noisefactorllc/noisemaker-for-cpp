@@ -11679,7 +11679,7 @@ synth/subdivide:subdivide""".splitlines())
         # re-captures the scatterJitter math-slice row and the craquelure Task 15
         # defaults row from the authority.
         self.assertEqual(
-            "4dc4120641b2d4e3bef76711b3bcb45c05bd372ee3e835484c39bfc1f16d65f0",
+            "00f031055ba8913b98d9a7436f87ac35cffb927c5145549b4abe1471200b71c1",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
