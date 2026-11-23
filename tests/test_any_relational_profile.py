@@ -100,7 +100,7 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertEqual(record.raw_sha256, _source_hash(_source_text(HEIGHTMAP_KEY)))
         self.assertEqual(
             (record.normalized_bytes, record.normalized_sha256),
-            (1667, "fc9f74e1a388e251dc5663c7022639ae8d9981c81c44abd6ba9d16edb581c0bc"))
+            (2280, "089eabe88c9a71e1bf3cac8ed7612d57b6f9ee45f07187040e9f0ff2a722c5f4"))
 
     def test_renderlit_source_matches_the_frozen_digests(self):
         module = _module()
@@ -120,22 +120,29 @@ class AdmissionGreenTests(unittest.TestCase):
         proof = module.authenticate_any_relational_admission(
             program, _source_hash(_source_text(HEIGHTMAP_KEY)), PROFILE)
         self.assertEqual(HEIGHTMAP_KEY, proof.key)
-        self.assertEqual(2, len(proof.reductions))
-        self.assertEqual(2, len(proof.relationals))
+        self.assertEqual(4, len(proof.reductions))
+        self.assertEqual(4, len(proof.relationals))
         for reduction in proof.reductions:
-            self.assertEqual("any", reduction.callee)
             self.assertEqual("bool", reduction.type.display())
+        self.assertEqual(("any", "any", "all", "all"),
+                         tuple(reduction.callee for reduction in proof.reductions))
         self.assertEqual("lessThan", proof.relationals[0].callee)
         self.assertEqual("greaterThanEqual", proof.relationals[1].callee)
-        for relational in proof.relationals:
-            self.assertEqual("bvec3", relational.type.display())
-            self.assertEqual(("ivec3", "ivec3"),
-                             tuple(child.type.display()
-                                   for child in relational.children))
+        self.assertEqual("greaterThanEqual", proof.relationals[2].callee)
+        self.assertEqual("lessThan", proof.relationals[3].callee)
+        self.assertEqual(("bvec3", "bvec3", "bvec2", "bvec2"),
+                         tuple(relational.type.display()
+                               for relational in proof.relationals))
+        self.assertEqual((("ivec3", "ivec3"), ("ivec3", "ivec3"),
+                          ("ivec2", "ivec2"), ("ivec2", "ivec2")),
+                         tuple(tuple(child.type.display()
+                                     for child in relational.children)
+                               for relational in proof.relationals))
         # Identity, not equality: each relational is exactly its reduction's
         # only child.
-        self.assertIs(proof.relationals[0], proof.reductions[0].children[0])
-        self.assertIs(proof.relationals[1], proof.reductions[1].children[0])
+        for index in range(4):
+            self.assertIs(proof.relationals[index],
+                          proof.reductions[index].children[0])
 
     def test_renderlit_authentication_returns_candidate_owned_objects(self):
         module = _module()
