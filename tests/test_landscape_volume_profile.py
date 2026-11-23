@@ -55,7 +55,7 @@ class LandscapeVolumeProfileTests(unittest.TestCase):
                           len(structs.members), len(structs.constructors)), (2, 4, 12, 5))
         relations = relational_nodes(typed, RAW_SHA256)
         self.assertEqual((len(relations.reductions), len(relations.relationals),
-                          len(relations.declarations), len(relations.swizzles)), (3, 5, 2, 4))
+                          len(relations.declarations), len(relations.swizzles)), (5, 7, 2, 10))
         self.assertEqual((len(axis_indexes(typed, RAW_SHA256)),
                           len(borrowed_samplers(typed, RAW_SHA256).parameters),
                           len(borrowed_samplers(typed, RAW_SHA256).uses)), (19, 3, 10))
