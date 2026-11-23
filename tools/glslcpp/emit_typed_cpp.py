@@ -8901,7 +8901,7 @@ class _Emitter:
                 if (len(value.children) != 2
                         or value.children[0].type.display() not in {"vec3", "ivec3"}
                         or value.children[1].kind != "id"
-                        or value.children[1].symbol_id not in {118, 126}):
+                        or value.children[1].symbol_id not in {125, 133}):
                     raise _error(self.program, value,
                                  "malformed bounded Landscape axis index")
                 return (f"{self.expression(value.children[0])}["
@@ -10932,7 +10932,7 @@ class _Emitter:
                 + ([frame_contract_here.instance_name]
                    if frame_contract_here is not None else []))
             if (self.program.key == "render/renderLandscape3d:landscape"
-                    and value.signature_id == 70
+                    and value.signature_id == 76
                     and value is self.authorized_landscape_perspective_call):
                 prefix += ", fragColor, geoOut"
             arguments = self._lattice_call_arguments(value, arguments)
@@ -12673,7 +12673,7 @@ class _Emitter:
                       "[[maybe_unused]] const glsl::PixelContext& context"]
         if (self.program.key == "render/renderLandscape3d:landscape"
                 and function is not None and function.name == "renderPerspective"
-                and function.signature.id == 70):
+                and function.signature.id == 76):
             parameters.extend(("glsl::Vec4& fragColor", "glsl::Vec4& geoOut"))
         contract = getattr(self, "authorized_frame_contract", None)
         if contract is not None:

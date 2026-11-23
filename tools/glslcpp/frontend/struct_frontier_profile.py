@@ -2178,13 +2178,13 @@ def _authenticate_landscape_structs(
     parameters = _derive_parameters(program)
     locals_out, members_out, constructors_out, nodes, assigns = _derive_census(program)
     if (_sha(structs) != '21a1f432092140d416502d565e40233f1e8ad02a8fa615d88a195322946db01a'
-            or _sha(returns) != '25de4485e7cc99f22b10b80fa6003c9fd4e09063a07425b71e07a9d4928f85b0'
-            or _sha(parameters) != '06aadfd2a06fa6f10f9e591e07b9bf62603adecbd995da13b69a59ee3ce52b6b'
+            or _sha(returns) != 'fe1755d2f7d3c1103c6ff5dfe5288708248547a3431ae2bdfae8e0aca9856982'
+            or _sha(parameters) != '27cad1a126e6a828dac5eb76a3a5c03f87f317b9a6c64ca6741352a2550d036f'
             or _sha((locals_out, members_out, constructors_out, nodes, assigns))
-            != '84daffc1bb1ca17b1b0d3a7e2dd13137886628d67c983db570d3a80e7e4ba861'
+            != '2e41ad93fb3f55f1023efe89f2828ae7beb9133f183fcadf9e013fa46a848643'
             or len(program.structs) != 2 or len(locals_out) != 4
             or len(members_out) != 12 or len(constructors_out) != 5
-            or (nodes, assigns) != (1469, 50)):
+            or (nodes, assigns) != (1596, 53)):
         raise _profile_fail(LANDSCAPE_PROFILE, 'struct plumbing census mismatch')
     struct_names = tuple(item.name for item in program.structs)
     if struct_names != ('AtlasCoords', 'IsoHit'):

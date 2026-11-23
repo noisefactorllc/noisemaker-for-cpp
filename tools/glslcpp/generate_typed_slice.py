@@ -4353,6 +4353,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_struct_frontier_constructors: list[TypedExpression] = []
     authorized_landscape_indexes: tuple[TypedExpression, ...] = ()
     authorized_landscape_samplers = None
+    authorized_landscape_parameter = None
     authorized_historic_palette_proof = None
     from tools.glslcpp.frontend.local_vec4_array_profile import authenticate_local_vec4_arrays
     try:
@@ -6017,11 +6018,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(f"{typed.key}: {error}") from error
     if typed.key == "render/renderLandscape3d:landscape":
         from tools.glslcpp.frontend.landscape_volume_profile import (
-            axis_indexes, borrowed_samplers, relational_nodes)
+            axis_indexes, borrowed_samplers, exposed_face_parameter,
+            relational_nodes)
         try:
             authorized_any_relational_proof = relational_nodes(typed, source_hash)
             authorized_landscape_indexes = axis_indexes(typed, source_hash)
             authorized_landscape_samplers = borrowed_samplers(typed, source_hash)
+            authorized_landscape_parameter = exposed_face_parameter(typed, source_hash)
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     if struct_frontier_profile is not None:
@@ -7171,6 +7174,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     and any(value.symbol_id == declaration.symbol_id
                             for declaration in
                             authorized_any_relational_proof.declarations)):
+                return
+            if (typed.key == "render/renderLandscape3d:landscape"
+                    and authorized_landscape_parameter is not None
+                    and (value is authorized_landscape_parameter.parameter_object
+                         or any(value is item
+                                for item in authorized_landscape_parameter.uses
+                                + authorized_landscape_parameter.constructs
+                                + authorized_landscape_parameter.assigns))):
                 return
             raise GeneratorError(
                 f"{location(value)}: unsupported typed type {typ.display()}")
@@ -9327,7 +9338,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 if (context not in {"lvalue", "rvalue"}
                         or base.type.display() not in {"vec3", "ivec3"}
                         or index.kind != "id"
-                        or index.symbol_id not in {118, 126}):
+                        or index.symbol_id not in {125, 133}):
                     raise GeneratorError(
                         f"{location(value)}: malformed bounded axis index")
             elif (authorized_stipple is not None

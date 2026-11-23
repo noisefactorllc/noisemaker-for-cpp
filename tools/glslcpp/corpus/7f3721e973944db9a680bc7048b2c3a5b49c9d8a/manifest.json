@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "f31e5557042e7d6c400d7150023299fefdaf62a9e4e207d6e0327f80bb0e45eb",
+  "metadata_sha256": "493a5f38a4c79341bc814bdcf4f90fb17e1f0e80cc5a9cea488bf559bd7fc653",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -4919,8 +4919,8 @@
     },
     {
       "effect_id": "render/renderLandscape3d",
-      "normalized_bytes": 7795,
-      "normalized_sha256": "2fa3e13d9254dc791d6d9aeff19dd272a988186cf1438fb18f607d674503f334",
+      "normalized_bytes": 8681,
+      "normalized_sha256": "56932fe65b3c60959dcc070cebce7249e2b2b4b19fa93ae3c7302f1fafe4e13e",
       "outputs": [
         "fragColor",
         "geoOut"
@@ -4929,8 +4929,8 @@
       "pass_name": "render",
       "program": "landscape",
       "program_key": "render/renderLandscape3d:landscape",
-      "raw_bytes": 13406,
-      "raw_sha256": "c9e9ab5c4d7226e774f8d1b9f8aff9d54fd4d6cd97e07c2d3c907df1d7b07ff8",
+      "raw_bytes": 14915,
+      "raw_sha256": "179f6394c13db68de0b2c0f07551c7a661380b7335421c36c4a3389792ac5f43",
       "runtime_key": "render/renderLandscape3d:landscape",
       "source": "sources/render/renderLandscape3d/landscape.glsl",
       "status": "generated",
@@ -5808,6 +5808,6 @@
       "varyings": []
     }
   ],
-  "revision": "b631fc2c37d75f4cedbdc5e760486f7ecd3a2ca8",
+  "revision": "7f3721e973944db9a680bc7048b2c3a5b49c9d8a",
   "schema": 1
 }
