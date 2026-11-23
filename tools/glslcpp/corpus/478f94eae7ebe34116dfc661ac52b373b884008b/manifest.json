@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "493a5f38a4c79341bc814bdcf4f90fb17e1f0e80cc5a9cea488bf559bd7fc653",
+  "metadata_sha256": "6b63240a517db265576bcf68f29e382d5c61c44f0e8f01887d640f803dc5f39f",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -3991,8 +3991,8 @@
     },
     {
       "effect_id": "points/heightGrid",
-      "normalized_bytes": 888,
-      "normalized_sha256": "96137e9bac6f715ebb9f4d3b52024003932cd54b80f26aa79db2191beb6d8352",
+      "normalized_bytes": 983,
+      "normalized_sha256": "39267553f1c51877518a3355ff2097230bfa6521713532c78ed60823475d9a8b",
       "outputs": [
         "outXYZ",
         "outVel",
@@ -4002,8 +4002,8 @@
       "pass_name": "agent",
       "program": "agent",
       "program_key": "points/heightGrid:agent",
-      "raw_bytes": 1180,
-      "raw_sha256": "9edb336514439c0cbe2c29eb38ad8acb26586bd5d59ac0f68ed999ba2ce9024a",
+      "raw_bytes": 1607,
+      "raw_sha256": "1a026b7c2f347e7d41e58d81b1674b000d73bd77be1d983e4b58ee8a89be248a",
       "runtime_key": "points/heightGrid:agent",
       "source": "sources/points/heightGrid/agent.glsl",
       "status": "generated",
@@ -5734,8 +5734,8 @@
     },
     {
       "effect_id": "synth3d/heightmap3d",
-      "normalized_bytes": 1667,
-      "normalized_sha256": "fc9f74e1a388e251dc5663c7022639ae8d9981c81c44abd6ba9d16edb581c0bc",
+      "normalized_bytes": 2280,
+      "normalized_sha256": "089eabe88c9a71e1bf3cac8ed7612d57b6f9ee45f07187040e9f0ff2a722c5f4",
       "outputs": [
         "fragColor",
         "geoOut"
@@ -5744,8 +5744,8 @@
       "pass_name": "precompute",
       "program": "precompute",
       "program_key": "synth3d/heightmap3d:precompute",
-      "raw_bytes": 1985,
-      "raw_sha256": "2a634fd3355925d3590f5857523acf185f7d77e0d32a5488c6546a5ea51e1427",
+      "raw_bytes": 3221,
+      "raw_sha256": "5048bda8ed7006354d5b2492a65a8ac7064d7ab0c3c74bd5d9f989ff4c3ba29b",
       "runtime_key": "synth3d/heightmap3d:precompute",
       "source": "sources/synth3d/heightmap3d/precompute.glsl",
       "status": "generated",
@@ -5808,6 +5808,6 @@
       "varyings": []
     }
   ],
-  "revision": "7f3721e973944db9a680bc7048b2c3a5b49c9d8a",
+  "revision": "478f94eae7ebe34116dfc661ac52b373b884008b",
   "schema": 1
 }

@@ -491,6 +491,25 @@ template <std::size_t N> requires(N == 2)
   return result;
 }
 
+// The heightmap3d terrain bounds add the exact ivec2 call shapes
+// greaterThanEqual(ivec2, ivec2) and lessThan(ivec2, ivec2), consumed
+// immediately by all(); the same integer-lane identity rules apply.
+[[nodiscard]] inline Vec<2, bool> lessThan(
+    const Vec<2, std::int32_t>& left, const Vec<2, std::int32_t>& right) noexcept {
+  Vec<2, bool> result;
+  for (std::size_t index = 0; index < 2; ++index)
+    result[index] = left[index] < right[index];
+  return result;
+}
+
+[[nodiscard]] inline Vec<2, bool> greaterThanEqual(
+    const Vec<2, std::int32_t>& left, const Vec<2, std::int32_t>& right) noexcept {
+  Vec<2, bool> result;
+  for (std::size_t index = 0; index < 2; ++index)
+    result[index] = left[index] >= right[index];
+  return result;
+}
+
 [[nodiscard]] inline Vec<3, bool> greaterThan(
     const Vec<3, float>& left, const FloatExpr<3>& right) noexcept {
   const Vec<3, float> materialized(right);

@@ -7116,9 +7116,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if any(value is item for item in authorized_dither_globals):
             return
         if typ.display() == "bvec2":
-            if (typed.key == "filter/lowPoly:lowPoly"
-                    and authorized_any_relational_proof is not None
-                    and any(value is item for item in authorized_any_relational_proof.relationals)):
+            if (authorized_any_relational_proof is not None
+                    and any(value is item
+                            for item in authorized_any_relational_proof.relationals)):
                 return
             # `bvec2` is deliberately absent from APPROVED_TYPES. It is admitted
             # only as the result type of an exact authenticated Extrude
@@ -8766,9 +8766,18 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     authorized_particle_base_color is not None
                     and (value is authorized_particle_base_color.relational
                          or value is authorized_particle_base_color.reduction))
+                # Independently, the heightmap3d terrain bounds carry the
+                # exact `all(relational(ivec2, ivec2))` reductions of
+                # any-relational-admission-v1, by object identity only.
+                heightmap_reduction = (
+                    value.callee == "all"
+                    and authorized_any_relational_proof is not None
+                    and any(value is item
+                            for item in authorized_any_relational_proof.reductions))
                 if (not emboss_reduction
                         and not landscape_relational
                         and not base_color_node
+                        and not heightmap_reduction
                         and not any(value is item
                                     for item in authorized_extrude_nodes)):
                     raise GeneratorError(
@@ -8800,6 +8809,19 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         raise GeneratorError(
                             f"{location(value)}: malformed Landscape relation")
                     visited_any_relational_relationals.append(value)
+                elif heightmap_reduction:
+                    if (value.type.display() != "bool"
+                            or len(value.children) != 1
+                            or value.children[0].type.display() != "bvec2"):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed authenticated "
+                            f"any-relational reduction")
+                    if any(value is item
+                           for item in visited_any_relational_reductions):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated any-relational "
+                            "reduction visited twice")
+                    visited_any_relational_reductions.append(value)
                 else:
                     visited_extrude_nodes.append(value)
             elif value.callee in {"greaterThanEqual", "lessThan", "greaterThan"}:
@@ -8818,10 +8840,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                                 authorized_prng_mix_proof.relationals)))
                 if any_relational_node:
                     if (len(value.children) != 2
-                            or value.type.display() != "bvec3"
-                            or tuple(child.type.display()
-                                     for child in value.children)
-                            not in (("ivec3", "ivec3"), ("vec3", "vec3"))):
+                            or (value.type.display(),
+                                tuple(child.type.display()
+                                      for child in value.children))
+                            not in (("bvec3", ("ivec3", "ivec3")),
+                                    ("bvec3", ("vec3", "vec3")),
+                                    ("bvec2", ("ivec2", "ivec2")))):
                         raise GeneratorError(
                             f"{location(value)}: malformed authenticated "
                             f"any-relational site")

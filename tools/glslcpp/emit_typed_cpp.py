@@ -10584,6 +10584,14 @@ class _Emitter:
                         and self.authorized_any_relational_proof is not None
                         and any(value is item for item in
                                 self.authorized_any_relational_proof.relationals))
+                    # Independently, the heightmap3d terrain bounds carry the
+                    # exact `all(relational(ivec2, ivec2))` reductions of
+                    # any-relational-admission-v1, by object identity only.
+                    heightmap_reduction = (
+                        value.callee == "all"
+                        and self.authorized_any_relational_proof is not None
+                        and any(value is item for item in
+                                self.authorized_any_relational_proof.reductions))
                     base_color = self.authorized_particle_base_color
                     if (base_color is not None
                             and (value is base_color.relational
@@ -10611,6 +10619,7 @@ class _Emitter:
                                 + "; return lanes[0] && lanes[1] && lanes[2] && lanes[3]; }())")
                     if (not emboss_reduction
                             and not landscape_relational
+                            and not heightmap_reduction
                             and not any(value is item for item in nodes)):
                         raise _error(self.program, value,
                                      f"unsupported builtin {value.callee}")
@@ -10637,6 +10646,18 @@ class _Emitter:
                                 + right + "); return glsl::BVec3("
                                 "lhs[0] <= rhs[0], lhs[1] <= rhs[1], "
                                 "lhs[2] <= rhs[2]); }())")
+                    elif heightmap_reduction:
+                        if (len(arguments) != 1
+                                or value.type.display() != "bool"
+                                or value.children[0].type.display() != "bvec2"):
+                            raise _error(self.program, value,
+                                         "malformed authenticated any-relational reduction")
+                        if any(value is item
+                               for item in self.emitted_any_relational_reductions):
+                            raise _error(self.program, value,
+                                         "authenticated any-relational reduction emitted twice")
+                        self.emitted_any_relational_reductions.append(value)
+                        return f"glsl::all({arguments[0]})"
                     else:
                         self.emitted_extrude_nodes.append(value)
                     if value.callee == "all":
@@ -10678,10 +10699,12 @@ class _Emitter:
                                 for item in any_relational_proof.relationals))
                     if any_relational_node:
                         if (len(arguments) != 2
-                                or value.type.display() != "bvec3"
-                                or tuple(child.type.display()
-                                         for child in value.children)
-                                not in (("ivec3", "ivec3"), ("vec3", "vec3"))):
+                                or (value.type.display(),
+                                    tuple(child.type.display()
+                                          for child in value.children))
+                                not in (("bvec3", ("ivec3", "ivec3")),
+                                        ("bvec3", ("vec3", "vec3")),
+                                        ("bvec2", ("ivec2", "ivec2")))):
                             raise _error(self.program, value,
                                          "malformed authenticated any-relational site")
                         if any(value is item

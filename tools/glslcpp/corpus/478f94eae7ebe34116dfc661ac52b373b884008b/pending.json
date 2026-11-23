@@ -1,9 +1,9 @@
 {
   "authority": {
     "effect_records": "src/effects/generated/upstream-snapshot.js",
-    "effect_records_sha256": "c1b136afda7f2f5fdc24a9bb9be3fd35e7d85287e61ca6c3af8928ce61a01919",
+    "effect_records_sha256": "ded7271f9a389d390540592325ee24999498b68d3b060c7ac6d32c04af67dd40",
     "program_coverage": "src/effects/generated/glsl-coverage.js",
-    "program_coverage_sha256": "7c393d0803cf1d6cd537a70b8bf6a9f2def4d0ec3baa2309d971cb122d529822",
+    "program_coverage_sha256": "886eb08337b4913ac98eacf3127057e1bf0f7c20369f6e5a0568057757a06e87",
     "programs": [
       {
         "file": "bitEffects.glsl",
@@ -1549,6 +1549,6 @@
   },
   "effects": {},
   "pending": [],
-  "revision": "7f3721e973944db9a680bc7048b2c3a5b49c9d8a",
+  "revision": "478f94eae7ebe34116dfc661ac52b373b884008b",
   "schema": 1
 }

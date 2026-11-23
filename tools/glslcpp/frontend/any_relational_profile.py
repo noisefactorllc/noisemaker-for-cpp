@@ -5,7 +5,9 @@ capability. It authenticates the two corpus programs whose four
 ``any(<relational>(<vector>, <vector>))`` trees may be lowered:
 
 - ``synth3d/heightmap3d:precompute`` -- ``any(lessThan(ivec3, ivec3))`` and
-  ``any(greaterThanEqual(ivec3, ivec3))`` (the density bounds check).
+  ``any(greaterThanEqual(ivec3, ivec3))`` (the density bounds check), plus
+  ``all(greaterThanEqual(ivec2, ivec2))`` and ``all(lessThan(ivec2, ivec2))``
+  (the terrain bounds check).
 - ``render/renderLit3d:renderLit3d`` -- ``any(lessThan(vec3, vec3))`` and
   ``any(greaterThan(vec3, vec3))`` (the march volume-exit check).
 
@@ -15,10 +17,10 @@ validator and the emitter -- the same node-identity pattern used by Waves'
 Extrude's ``all(lessThanEqual(vec2, vec2))`` closure, and the Attractor
 agent's ``any(isnan(vec3))`` closure.
 
-Each ``bvec3`` intermediate produced by a relational is consumed immediately
-by its exact parent ``any``. It is never declared, stored, returned,
-subscripted, aggregated, or otherwise escaped, and this module proves that
-rather than assuming it.
+Each ``bvec2``/``bvec3`` intermediate produced by a relational is consumed
+immediately by its exact parent reduction (``any`` or ``all``). It is never
+declared, stored, returned, subscripted, aggregated, or otherwise escaped,
+and this module proves that rather than assuming it.
 
 Deliberately independent of, and composed with, the per-program loop-proof
 and struct-frontier carriers: ``renderLit3d`` carries the frozen
@@ -79,50 +81,71 @@ class AnyRelationalRecord:
 
 _HEIGHTMAP = AnyRelationalRecord(
     key=HEIGHTMAP_KEY,
-    raw_bytes=1985,
-    raw_sha256="2a634fd3355925d3590f5857523acf185f7d77e0d32a5488c6546a5ea51e1427",
-    normalized_bytes=1667,
+    raw_bytes=3221,
+    raw_sha256="5048bda8ed7006354d5b2492a65a8ac7064d7ab0c3c74bd5d9f989ff4c3ba29b",
+    normalized_bytes=2280,
     normalized_sha256=(
-        "fc9f74e1a388e251dc5663c7022639ae8d9981c81c44abd6ba9d16edb581c0bc"),
+        "089eabe88c9a71e1bf3cac8ed7612d57b6f9ee45f07187040e9f0ff2a722c5f4"),
     functions_sha256=(
-        "5b64b5f7df4407c6eb19f8f50c5691a6e724a8bf0ccdf26b05c49204fc0c1e17"),
+        "d4cef966c334a79c21787609f2e917d76f0eded2b746f7117c0788fe8f697df6"),
     whole_sha256=(
-        "c78e04585fcebf69608f7de7bed19d2f693397cec29fea85d7f89c9820d55dd9"),
+        "88880bdd5d3a93f67c9956f018de48d3fd29ddb476bfee7d999d47f9887d3323"),
     interface_sha256=(
-        "9821a97096a01ad868dec8faea5ef8c57011b5bde434ea6a3283ceab10dc6797"),
-    main_id=15,
-    main_span="32:1-50:2",
+        "4e25e4690eab6192cd98624e2df56ffb0d6ccd04006227861e7009ac4d673ba7"),
+    main_id=20,
+    main_span="59:1-77:2",
     main_body_len=11,
-    function_count=4,
+    function_count=7,
     loop_proof=(0, 0, 0, 0, 0, True),
     resources=(
-        ("heightTex", "tex", "volumeSize", "heightScale", "baseHeight"),
+        ("heightTex", "tex", "volumeSize", "heightScale", "baseHeight",
+         "aspect", "aspectInv"),
         ("heightTex", "tex"),
         ("fragColor", "geoOut"), True, False),
     struct_names=(),
     nodes=(
-        ("any", (0, "e0", 0), "28:9-28:35", "bool",
-         "0fb108d48ad00ecd572959f7095ec26d8f727a44b9958c97b0a3fa76089343c1",
+        ("any", (0, "e0", 0), "55:9-55:35", "bool",
+         "a33b04b156bfe6f613f5543054429c7e26e93326787dad77db76610b1f4b83a9",
          "binary", ("bvec3",),
-         ("57aa60a744f505cd700672410bb094c186136b352038218924f282c38f5ff54e",)),
-        ("lessThan", (0, "e0", 0, 0), "28:13-28:34", "bvec3",
-         "57aa60a744f505cd700672410bb094c186136b352038218924f282c38f5ff54e",
+         ("334a578bd0b2fa229246816f47a5178e1a44b01beadcd15726478c09afac9f22",)),
+        ("lessThan", (0, "e0", 0, 0), "55:13-55:34", "bvec3",
+         "334a578bd0b2fa229246816f47a5178e1a44b01beadcd15726478c09afac9f22",
          "builtin", ("ivec3", "ivec3"),
-         ("eb2ddbc8e710e6a260cacddf1821a09fd3df9d04aa2362d293006f3e7ac4528b",
-          "5cb0a5a54768462c33715f65fdc87add0a836c90e865d0b2382aa7317a94c50a")),
-        ("any", (0, "e0", 1), "28:39-28:82", "bool",
-         "e37929400677f665159ac854c9365e3cc4d4f04bea0b09061aa1a13a4809173d",
+         ("869c5d40aa1e2b6e9a114a7071b6ac2096a7f80b755ca23f670ab196fdc84b83",
+          "dbdb2ca6e268a5248ffaeb54aefb476867cd4619011306283e083afd0f3a7d25")),
+        ("any", (0, "e0", 1), "55:39-55:82", "bool",
+         "f622d30ea612a31f10e47aabc3f691484aa96455034b3c56870f2187186f4296",
          "binary", ("bvec3",),
-         ("aa37e581524ecd32a800df39881d0ff9e3ccd3b00a95da3b7bc19b73e09e5016",)),
-        ("greaterThanEqual", (0, "e0", 1, 0), "28:43-28:81", "bvec3",
-         "aa37e581524ecd32a800df39881d0ff9e3ccd3b00a95da3b7bc19b73e09e5016",
+         ("e4febce98fcc8ac8fcb5fb8fb91c4677995d67ae53e0fcd4a36ebeb0a25f8448",)),
+        ("greaterThanEqual", (0, "e0", 1, 0), "55:43-55:81", "bvec3",
+         "e4febce98fcc8ac8fcb5fb8fb91c4677995d67ae53e0fcd4a36ebeb0a25f8448",
          "builtin", ("ivec3", "ivec3"),
-         ("8bc832be76cb0b5ceb48c17c0425d72cad3bdb0549475145a0c3d5b0321e9735",
-          "39f35f2eba5110111fa3882362cb3124b2f4f012ee1fb740a5323b0e3d792661")),
+         ("715cbce64478b7c976c34c3fc677fbd83ee8a65e5de4784d72283420f6b21214",
+          "76c675a54d33deadb4ecc375dac8b57ea2a8ba02a93e25fdd4f3bb4804e83bd5")),
+        ("all", (1, "e0", 0), "39:12-39:50", "bool",
+         "0f0bfd3d87a4243c3c00d2f28b7df753e016286b049f4131cb0a4d0f16313fb0",
+         "binary", ("bvec2",),
+         ("3e54db6d11c1c1354f3dfa82ed57eee3841e8f9fa5bffdf6c647465674b21e68",)),
+        ("greaterThanEqual", (1, "e0", 0, 0), "39:16-39:49", "bvec2",
+         "3e54db6d11c1c1354f3dfa82ed57eee3841e8f9fa5bffdf6c647465674b21e68",
+         "builtin", ("ivec2", "ivec2"),
+         ("7024bd4b14dee1b03b861224749027b3c495fb119dbfa646716bd16d861238bf",
+          "296311a9508b65add7bf3799f60de9c725253a9af741302edb5abd24d3d9a535")),
+        ("all", (1, "e0", 1), "39:54-39:89", "bool",
+         "707d1c240b9d777c0274506edc5a04f37f16e296b98c5b707966850572835ca9",
+         "binary", ("bvec2",),
+         ("7b2de3be52f4f7497701d098e22600683f919c6b017dc1cbdc724fcdd3b4eb9a",)),
+        ("lessThan", (1, "e0", 1, 0), "39:58-39:88", "bvec2",
+         "7b2de3be52f4f7497701d098e22600683f919c6b017dc1cbdc724fcdd3b4eb9a",
+         "builtin", ("ivec2", "ivec2"),
+         ("04bc61380279fe7d994a05ca4dce1ed377bebd7661f5f3405ba59deae791bbf1",
+          "c7f834a5cc40a68562926c19a622844d90d3529434b138628c124427ecfadd69")),
     ),
     chains=(
-        (("if",), ("28:5-28:95",)),
-        (("if",), ("28:5-28:95",)),
+        (("if",), ("55:5-55:95",)),
+        (("if",), ("55:5-55:95",)),
+        (("return",), ("39:5-39:90",)),
+        (("return",), ("39:5-39:90",)),
     ),
 )
 
@@ -191,11 +214,13 @@ _RECORDS: dict[str, AnyRelationalRecord] = {
 
 # Self-integrity: the frozen record reprs must survive any accidental edit.
 _RECORD_SHA256 = {
-    HEIGHTMAP_KEY: "e44a17436a67d750ba3c4ab14fc05300084eba39d1477a35cd6d9f22126b960f",
+    HEIGHTMAP_KEY: "e62afdfb18fcd82f902170dfcd2dddddf5d73f37c361e34d8f030c80e536a01e",
     RENDERLIT_KEY: "2653509f034c4e3116b885b73764b2d681d4ec6dcdbc17d59198f0e2909cb6f5",
 }
 
 _ANY_SIGNATURE_ID = -4
+_ALL_SIGNATURE_ID = -3
+_REDUCTION_CALLEES = frozenset({"any", "all"})
 _RELATIONAL_SIGNATURE_IDS = {
     "lessThan": -23, "greaterThan": -50, "greaterThanEqual": -20,
     "lessThanEqual": -24, "notEqual": -32, "equal": -22}
@@ -382,6 +407,7 @@ def authenticate_any_relational_admission(
 
     expected_signature_ids = (
         _ANY_SIGNATURE_ID if node[0] == "any"
+        else _ALL_SIGNATURE_ID if node[0] == "all"
         else _RELATIONAL_SIGNATURE_IDS[node[0]] for node in record.nodes)
     for (callee, _, item, _, _), expected_signature in zip(
             located, expected_signature_ids):
@@ -389,9 +415,9 @@ def authenticate_any_relational_admission(
             raise _fail("closure node signature mismatch")
 
     reductions = tuple(item for callee, _, item, _, _ in located
-                       if callee == "any")
+                       if callee in _REDUCTION_CALLEES)
     relationals = tuple(item for callee, _, item, _, _ in located
-                        if callee != "any")
+                        if callee not in _REDUCTION_CALLEES)
     if len(reductions) * 2 != len(located) or len(relationals) != len(located) // 2:
         raise _fail("closure shape mismatch")
     # Each relational is consumed immediately, by identity, by exactly one
@@ -415,7 +441,8 @@ def authenticate_any_relational_admission(
     # Each `any` node's single ancestor statement chain is the pinned one.
     chains: list[tuple[TypedStatement, ...]] = []
     for (callee, _, _, _, chain), expected_row in zip(
-            (row for row in located if row[0] == "any"), record.chains):
+            (row for row in located if row[0] in _REDUCTION_CALLEES),
+            record.chains):
         if (tuple(item.kind for item in chain) != expected_row[0]
                 or tuple(_span(item) for item in chain) != expected_row[1]):
             raise _fail("closure ancestry mismatch")
