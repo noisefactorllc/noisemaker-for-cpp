@@ -29,7 +29,7 @@ on:
       - 'docs/port-engineering/task-*design*.md'
       - 'docs/port-engineering/task-*design*.md.sha256'
       - 'docs/port-engineering/shape-mixer-parity/README.md'
-    branches: [main]
+    branches: [main, 2.x]
   pull_request:
     paths-ignore:
       - '*.md'
