@@ -15,7 +15,7 @@ from tools.glslcpp.frontend.shape_positive_modulo_profile import authenticate_sh
 ROOT = Path(__file__).resolve().parents[1]
 KEY = 'synth/shape:shape'
 REVISIONS = ('d0ed94ae19cca7328bc7d6b28902712a0838e1a9',
-             '688794aca5998d9573afa5601c2b9b023c896007')
+             'f4a1382a1dc863bebe5a3204acfdec425a19c983')
 
 class SyncShapeProfilesTests(unittest.TestCase):
     @classmethod

@@ -28,7 +28,7 @@ JS_WHITESPACE = "\t\n\v\f\r \u00a0\u1680\u2028\u2029\u202f\u205f\u3000\ufeff" + 
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-COMPATIBILITY_SHA256 = "ead01adc97c93afbe0bc08f297c930ede5842ede68d155988bd6aec4650db4c7"
+COMPATIBILITY_SHA256 = "f9e08995d7055943abe161eda5d3bbb7b472224fb36d9f883234eb9510085067"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
