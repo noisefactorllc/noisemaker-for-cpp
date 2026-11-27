@@ -38,4 +38,4 @@ const results = cases.map(test => {
     destination, externalInputs: {meshData}});
   return {name: test.name, pixels, words: Array.from(new Uint32Array(destination.data.buffer)), rgba8: Array.from(destination.toRgba8())};
 });
-console.log(JSON.stringify({cpu_revision: '170d7ba2cbcf12790ad24f71a825fcd58683d0fb', source_hashes: sourceHashes, results}));
+console.log(JSON.stringify({cpu_revision: '93dc81c7d42e25efee2e880d4a220d13a90f0596', source_hashes: sourceHashes, results}));

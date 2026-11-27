@@ -162,7 +162,7 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
     def test_capture_has_immutable_cpu_provenance(self):
         expected = json.loads(capture_path().read_text())
-        self.assertEqual(expected["cpu_revision"], "170d7ba2cbcf12790ad24f71a825fcd58683d0fb")
+        self.assertEqual(expected["cpu_revision"], "93dc81c7d42e25efee2e880d4a220d13a90f0596")
         self.assertEqual(expected["source_hashes"], {
             "src/effects/cpu/mesh-render.js": "832a804f357173542daa4bd66f57fc4a0ae7c8388f0c5fdae7fe5408368a95c8",
             "src/runtime/external-input.js": "705f8f27b29e6ddc2334eb1e9af6ad57004063d848ea3bee9356626218c12757",
