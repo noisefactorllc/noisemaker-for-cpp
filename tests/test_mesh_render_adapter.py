@@ -228,6 +228,6 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
 FIXTURE_HASHES = {
     "cases.json": "161358e3d0bfb3bcb2798d05ff5c2c681982d369441726256d265458b8c65830",
-    "expected.json": "f93ba6fe0e3501efcdd94f4a8466b7147fc9f0ac07f272d2e1bf0cbbe4ad44d4",
-    "expected_linux_x86_64_node26.json": "59f8e05bd7e4afe678cf9658aedd0b7bd06a017556956fb5e423ab78918c423c",
+    "expected.json": "98f734097a995c145bddbca5b60e45505ec0ac518f95364d1641e55b06465cc7",
+    "expected_linux_x86_64_node26.json": "b422a7740fa4f5d5f888ed87e0143d8778a6a39432d62849a42d18c0b11e78b9",
 }
