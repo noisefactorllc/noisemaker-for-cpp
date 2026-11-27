@@ -22,17 +22,20 @@ from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json"
+# ECMAScript WhiteSpace and LineTerminator characters used by String.prototype.trim.
+JS_WHITESPACE = "\t\n\v\f\r \u00a0\u1680\u2028\u2029\u202f\u205f\u3000\ufeff" + "".join(
+    chr(code) for code in range(0x2000, 0x200b))
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-COMPATIBILITY_SHA256 = "c14beb874bcdb8fb2087d6899abef9f9719e2a46e824a04508cad3f7ea15c502"
+COMPATIBILITY_SHA256 = "781369791bbbe84a70c78ec76c3323414d3e0923c4acaae3860528a7ce82a6b7"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
-    "outputTex3d", "outputGeo", "outputXyz", "outputVel", "outputRgba", "iterated", "loopRole",
+    "outputTex", "outputTex3d", "outputGeo", "outputXyz", "outputVel", "outputRgba", "iterated", "loopRole",
 })
 PARAM_KEYS = frozenset({"type", "default", "define", "uniform", "zero", "enum", "choices", "min", "max", "texture", "colorModeUniform", "cpuOnly"})
-PASS_KEYS = frozenset({"name", "program", "inputs", "outputs", "uniforms", "count", "repeat", "conditions", "viewport", "blend", "drawMode", "drawBuffers", "type", "defines"})
+PASS_KEYS = frozenset({"name", "program", "inputs", "outputs", "storageTextures", "uniforms", "count", "repeat", "conditions", "viewport", "blend", "drawMode", "drawBuffers", "type", "defines"})
 TEXTURE_KEYS = frozenset({"width", "height", "format"})
 DIMENSION_KEYS = frozenset({"default", "param", "paramDefault", "screenDivide", "inputOverride", "power", "inherit"})
 
@@ -398,11 +401,16 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
             lines.append(f"    t.format = {_cpp_optional_string(format_value)};")
         lines.append(f"    t.raw = {_raw_pairs(texture)};")
         lines += ["    e.textures.push_back(std::move(t));", "  }"]
-    for current_pass in effect.get("passes", []):
+    for raw_pass in effect.get("passes", []):
+        current_pass = backend.normalize_pass(raw_pass)
         lines += ["  {", "    PassDefinition p;", f"    p.name = {_cpp_string(str(current_pass.get('name', '')))};", f"    p.program = {_cpp_string(str(current_pass.get('program', '')))};"]
         for key, field in (("inputs", "inputs"), ("outputs", "outputs")):
             pairs = "{" + ", ".join("{" + _cpp_string(k) + ", " + _cpp_string(str(v)) + "}" for k, v in (current_pass.get(key) or {}).items()) + "}"
             lines.append(f"    p.{field} = {pairs};")
+        if raw_pass.get("storageTextures") is not None:
+            routes = ", ".join("{" + _cpp_string(k) + ", " + _cpp_string(v) + "}"
+                              for k, v in raw_pass["storageTextures"].items())
+            lines.append(f"    p.storage_textures = {{{routes}}};")
         if "uniforms" in current_pass: lines.append(f"    p.uniforms = {_raw_pairs(current_pass['uniforms'])};")
         for key in ("count", "repeat", "conditions", "viewport", "drawBuffers", "defines"):
             if key in current_pass: lines.append(f"    p.{ {'drawBuffers':'draw_buffers'}.get(key,key) } = {cpp_value(current_pass[key])};")
@@ -411,9 +419,12 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
             lines.append(f"    p.blend = {_blend(current_pass['blend'], blend_context)};")
         if "drawMode" in current_pass: lines.append(f"    p.draw_mode = {_cpp_optional_string(current_pass['drawMode'])};")
         if "type" in current_pass: lines.append(f"    p.type = {_cpp_optional_string(current_pass['type'])};")
-        lines.append(f"    p.raw = {_raw_pairs(current_pass)};")
+        lines.append(f"    p.raw = {_raw_pairs(raw_pass)};")
         lines += ["    e.passes.push_back(std::move(p));", "  }"]
-    for key, field in (("externalTexture", "external_texture"), ("outputTex3d", "output_tex3d"), ("outputGeo", "output_geo"), ("outputXyz", "output_xyz"), ("outputVel", "output_velocity"), ("outputRgba", "output_rgba"), ("loopRole", "loop_role")):
+    for key, field in (("externalTexture", "external_texture"), ("outputTex", "output_tex"), ("outputTex3d", "output_tex3d"), ("outputGeo", "output_geo"), ("outputXyz", "output_xyz"), ("outputVel", "output_velocity"), ("outputRgba", "output_rgba"), ("loopRole", "loop_role")):
+        if key.startswith("output") and key in effect:
+            if not isinstance(effect[key], str) or not effect[key].strip(JS_WHITESPACE):
+                raise CatalogError(f"{effect.get('id', '<effect>')}.{key} must be a non-empty string")
         if key in effect and effect[key] is not None: lines.append(f"  e.{field} = {_cpp_optional_string(effect[key])};")
     if "iterated" in effect: lines.append(f"  e.iterated = {'true' if effect['iterated'] else 'false'};")
     lines.append(f"  e.raw = {_raw_pairs(effect)};")

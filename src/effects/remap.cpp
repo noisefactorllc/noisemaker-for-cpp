@@ -77,14 +77,13 @@ struct State final : KernelState {
 
 // Mirrors the authority's texture() dispatch (src/csl/glsl-runtime.js
 // GlslCpuRuntime#texture): bilinear when the surface asks for it, nearest
-// otherwise, both bottom-left-origin. Uses the double-precision sampler
-// overloads directly -- sampleUv in the authority is never rounded to
-// float32 before the floor/clamp inside the sampler, so neither is this.
+// otherwise, both bottom-left-origin. sampleUv stays double until the
+// nearest sampler rounds its product with the texture extent to float32.
 [[nodiscard]] Rgba sample_zone_texture(const Surface& surface, double u, double v) noexcept {
   if (surface.filter() == TextureFilter::linear) {
     return sample_bilinear_bottom_left(surface, u, v);
   }
-  return sample_nearest_bottom_left(surface, u, v);
+  return sample_nearest_texel_bottom_left(surface, u, v);
 }
 
 struct ZoneTest {

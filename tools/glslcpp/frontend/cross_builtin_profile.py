@@ -95,6 +95,42 @@ _RENDER_DYNAMIC_PROFILE = {
 }
 
 
+_MARCHER_CROSS_UPDATES = {
+    'render/render3d:render3d': {
+        'raw_sha256': '88708d8a300ebdf74c4fa2470ecba4e214efba5c2bc476f59ccb0019c7c9b226',
+        'raw_bytes': 14244,
+        'norm_sha256': '21eb12470a353e44fe7cd31ff12281a896f87bf796d74a337b24011e679ffd72',
+        'norm_bytes': 10715,
+        'functions_sha256': '802f3b26dfafc9aaed5fc875bc12c4861e4ac90edfd78a219d78981eaf15fbe0',
+        'whole_sha256': 'fc0a9230c5a8b3e8bd0d5e06a86074c8c10af22093312a26a818b77ab88291ae',
+        'interface_sha256': 'c58f1cbc57a69ddf38550ecdd2c4deb4c4e21cb5e55425c40d583f95f9aab6d1',
+    },
+    'render/renderLit3d:renderLit3d': {
+        'raw_sha256': '8129bf08ffef71df58ac24dd5838795c173b9744765f807c36c3fd845e2f4f93',
+        'raw_bytes': 12414,
+        'whole_sha256': '1fd56819563296a43ea14dd9d521ae4a3c08bfd02cf3094fe26cfa6115642c8a',
+    },
+}
+
+_PRE_MARCHER_CROSS = {
+    (_key, _PROFILES[_key]['raw_sha256'], False): _PROFILES[_key] for _key in _MARCHER_CROSS_UPDATES
+}
+for _key, _changes in _MARCHER_CROSS_UPDATES.items():
+    _PROFILES[_key] = {**_PROFILES[_key], **_changes}
+
+_PRE_MARCHER_CROSS[(RENDER_3D_KEY, _RENDER_DYNAMIC_PROFILE['raw_sha256'], True)] = _RENDER_DYNAMIC_PROFILE
+_RENDER_DYNAMIC_PROFILE = {
+    **_RENDER_DYNAMIC_PROFILE,
+    'raw_sha256': '88708d8a300ebdf74c4fa2470ecba4e214efba5c2bc476f59ccb0019c7c9b226',
+    'raw_bytes': 14244,
+    'norm_sha256': '8b87f60670b80900f2f57bd0dd3402dde0dd93375599d4a99293aa0363956909',
+    'norm_bytes': 10769,
+    'functions_sha256': '01e01a38af941eb0fb9ddf022569516e34de2bf949f111abf55cc563f4a0273d',
+    'whole_sha256': 'df7e47e09c4601ca20278ad78eb8f0086c34c74ff0a539eba95b27e4ce736963',
+    'interface_sha256': '9d83dde4b0940cd7e2bb851fdeb4dc4739c5d1702e2226d30d4c4e6f0631ce68',
+}
+
+
 def _sha(value: object) -> str:
     return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
 
@@ -137,7 +173,9 @@ def authenticate_cross_sites(
         raise ValueError(f"{PROFILE}: exact profile carrier required")
     if program.key not in CROSS_KEYS:
         raise ValueError(f"{PROFILE}: program key {program.key} not in {CROSS_KEYS}")
-    expected = _RENDER_DYNAMIC_PROFILE if dynamic_render else _PROFILES[program.key]
+    expected = _PRE_MARCHER_CROSS.get(
+        (program.key, source_hash, dynamic_render),
+        _RENDER_DYNAMIC_PROFILE if dynamic_render else _PROFILES[program.key])
     if source_hash != expected["raw_sha256"]:
         raise ValueError(f"{PROFILE}: {program.key} caller source hash mismatch")
 

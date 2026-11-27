@@ -46,7 +46,54 @@ def probe_input(case):
         values.extend((name, *value))
     full_resolution = case["bindings"].get("fullResolution")
     values.extend((int(full_resolution is not None), *(full_resolution or [])))
+    count = case.get("pass", {"count": "input"}).get("count")
+    count_value = ('"' + count.replace('\\', '\\\\').replace('"', '\\"') + '"'
+                   if isinstance(count, str) else count if count is not None else "-")
+    values.extend(("number" if isinstance(count, (int, float)) else "string" if count is not None else "absent",
+                   count_value,
+                   case.get("pass", {}).get("countUniform", "-")))
+    inputs = case.get("inputs", {"meshPositions": {"width": case["tex_width"], "height": case["tex_height"]}})
+    extent = inputs.get("meshPositions", inputs.get("inputTex"))
+    values.extend((int(extent is not None), *((extent["width"], extent["height"]) if extent else ())))
     return " ".join(map(str, values))
+
+
+def count_cases():
+    basic = json.loads((FIXTURE / "cases.json").read_text())[0]
+    # The first triangle is culled. The second produces the existing basic
+    # capture, so both outcomes have independently captured words and bytes.
+    small = {"width": 3, "height": 1}
+    large = {"width": 3, "height": 2}
+    rows = [
+        ("literal-six", 6, None, {}, True),
+        ("literal-fraction", 5.99, None, {}, False),
+        ("literal-zero", 0, None, {}, False),
+        ("uniform-overrides-literal", 3, "six", {}, True),
+        ("uniform-overrides-extent", "screen", "two", {"meshPositions": large}, False),
+        ("zero-uniform-falls-back", 6, "zero", {}, True),
+        ("missing-uniform-falls-back", 6, "missing", {}, True),
+        ("vector-uniform-falls-back", 6, "meshColor", {}, True),
+        ("mesh-positions-extent", "input", None, {"meshPositions": large, "inputTex": small}, True),
+        ("positions-precede-input", "input", None, {"meshPositions": small, "inputTex": large}, False),
+        ("screen-uses-input-extent", "screen", None, {"inputTex": large}, True),
+        ("auto-uses-input-extent", "auto", None, {"inputTex": large}, True),
+        ("extent-absent", "input", None, {}, False),
+        ("no-count", None, None, {"meshPositions": large}, False),
+        ("oversized-count", 1e12, None, {}, True),
+    ]
+    for name, count, uniform, inputs, draws in rows:
+        draw_pass = {} if count is None else {"count": count}
+        if uniform is not None:
+            draw_pass["countUniform"] = uniform
+        yield {**basic, "name": name, "positions": [0] * 12 + basic["positions"],
+               "normals": basic["normals"] * 2, "pass": draw_pass, "inputs": inputs,
+               "uniforms": {**basic["uniforms"], "six": 6, "two": 2, "zero": 0}}, draws
+    for literal, draws in [("+3", True), (" 3 ", True), ("\ufeff3\u00a0", True),
+                           ("0x3", True), ("0b11", True), ("0o3", True),
+                           ("+.3e1", True), ("1e9999", True), ("Infinity", True),
+                           ("1e-9999", False), ("+0x3", False), ("0x3p0", False),
+                           ("0b12", False), ("inf", False), ("  ", False), ("3px", False)]:
+        yield {**basic, "name": f"count-string-{literal!r}", "pass": {"count": literal}}, draws
 
 
 @full_run_only
@@ -73,7 +120,9 @@ class MeshRenderAdapterTests(unittest.TestCase):
         expected = json.loads(capture_path().read_text())["results"]
         self.assertEqual([case["name"] for case in cases], [row["name"] for row in expected])
         self.assertEqual(len(cases), 23)
-        for case, row in zip(cases, expected, strict=True):
+        basic, clear = expected[0], next(row for row in expected if row["name"] == "all-invalid-alpha")
+        for case, row in [*zip(cases, expected, strict=True),
+                          *((case, basic if draws else clear) for case, draws in count_cases())]:
             with self.subTest(case=case["name"]):
                 result = subprocess.run([str(self.probe)], input=probe_input(case),
                                         text=True, capture_output=True, check=True)
@@ -84,6 +133,21 @@ class MeshRenderAdapterTests(unittest.TestCase):
 
 
 class MeshRenderAuthorityTests(unittest.TestCase):
+    def test_count_controls_match_current_cpu(self):
+        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        if not configured:
+            self.skipTest("NOISEMAKER_CPU_ROOT is required to reproduce the CPU capture")
+        cases = list(count_cases())
+        expected = json.loads(capture_path().read_text())["results"]
+        basic, clear = expected[0], next(row for row in expected if row["name"] == "all-invalid-alpha")
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory, "count-cases.json")
+            path.write_text(json.dumps([case for case, _ in cases]))
+            output = subprocess.check_output(["node", str(FIXTURE / "reference.mjs"), configured, str(path)])
+        for (case, draws), row in zip(cases, json.loads(output)["results"], strict=True):
+            with self.subTest(case=case["name"]):
+                self.assertEqual(row, {**(basic if draws else clear), "name": case["name"]})
+
     def test_capture_profile_is_explicit(self):
         for system, machine, filename in (
                 ("darwin", "arm64", "expected.json"),
@@ -98,9 +162,9 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
     def test_capture_has_immutable_cpu_provenance(self):
         expected = json.loads(capture_path().read_text())
-        self.assertEqual(expected["cpu_revision"], "9b7294820eec2a0b95c66790b1dae374fa079c13")
+        self.assertEqual(expected["cpu_revision"], "170d7ba2cbcf12790ad24f71a825fcd58683d0fb")
         self.assertEqual(expected["source_hashes"], {
-            "src/effects/cpu/mesh-render.js": "ea9480452c59bcc51aa33fa0e699368b3dcadc6c629569a3b0fa7142186ee499",
+            "src/effects/cpu/mesh-render.js": "832a804f357173542daa4bd66f57fc4a0ae7c8388f0c5fdae7fe5408368a95c8",
             "src/runtime/external-input.js": "705f8f27b29e6ddc2334eb1e9af6ad57004063d848ea3bee9356626218c12757",
             "src/runtime/surface.js": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
         })
@@ -164,6 +228,6 @@ class MeshRenderAuthorityTests(unittest.TestCase):
 
 FIXTURE_HASHES = {
     "cases.json": "161358e3d0bfb3bcb2798d05ff5c2c681982d369441726256d265458b8c65830",
-    "expected.json": "5f5f3be26f0a7736eb518e3b538481402510a0bdd6f63bc5303af600a3cb0d97",
-    "expected_linux_x86_64_node26.json": "d5e77157a151612080b2cc80ce7244690c9247eda8af155142a314dfccb2c230",
+    "expected.json": "f93ba6fe0e3501efcdd94f4a8466b7147fc9f0ac07f272d2e1bf0cbbe4ad44d4",
+    "expected_linux_x86_64_node26.json": "59f8e05bd7e4afe678cf9658aedd0b7bd06a017556956fb5e423ab78918c423c",
 }

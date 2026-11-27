@@ -387,13 +387,18 @@ def source_for_single(effect: dict, overrides: dict[str, Any], aux_rng: random.R
 
     if effect["domain"].startswith("volume-"):
         ns = _dedupe_namespaces(["synth3d", "filter3d", "render"], namespaces)
-        volume_size = (effect["params"].get("volumeSize") or {}).get("default", 16)
         if effect["domain"] == "volume-generator":
-            chain = f"{call}.render3d()"
-        elif effect["domain"] == "volume-filter":
-            chain = f"noise3d(volumeSize: {dsl_number(volume_size)}).{call}.render3d()"
-        else:  # volume-renderer
-            chain = f"noise3d(volumeSize: {dsl_number(volume_size)}).{call}"
+            return _assemble(ns, aux_lines, f"{call}.render3d()")
+        size_param = effect["params"].get("volumeSize") or {}
+        volume_size = resolved.get("volumeSize")
+        if isinstance(volume_size, str):
+            choice = volume_size.rsplit(".", 1)[-1]
+            volume_size = size_param.get("choices", {}).get(choice)
+        if volume_size is None:
+            volume_size = size_param.get("default", 16)
+        chain = f"noise3d(volumeSize: {dsl_number(volume_size)}).{call}"
+        if effect["domain"] == "volume-filter":
+            chain += ".render3d()"
         return _assemble(ns, aux_lines, chain)
 
     namespaces.add(effect["namespace"])

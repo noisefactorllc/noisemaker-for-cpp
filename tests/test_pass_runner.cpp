@@ -227,3 +227,27 @@ TEST(pass_runner_checks_exact_extent_before_surface_construction) {
   }
   REQUIRE(exact_message);
 }
+
+TEST(fullscreen_fragment_blend_uses_each_previous_pixel_before_quantization) {
+  noisemaker::Surface source(1, 1), previous(1, 1);
+  previous.clear({0.25f, 0.5f, 1.0f, 0.75f});
+  const std::array<float, 4> color{0.5f, 0.25f, 0.75f, 0.5f};
+  source.clear(color);
+  noisemaker::effects::BlendDefinition state;
+  state.kind = noisemaker::effects::BlendKind::factors;
+  state.factors = {"SRC_ALPHA", "ONE_MINUS_SRC_ALPHA"};
+  noisemaker::blend_pass_output(state, source, &previous);
+  const std::array<float, 4> expected{0.375f, 0.375f, 0.875f, 0.625f};
+  for (std::size_t lane = 0; lane < 4; ++lane) REQUIRE(source.data()[lane] == expected[lane]);
+  state.factors = {"770", "ZERO"};
+  source.clear(color);
+  noisemaker::blend_pass_output(state, source, &previous);
+  for (std::size_t lane = 0; lane < 4; ++lane) REQUIRE(source.data()[lane] == color[lane]);
+
+  state.factors = {"DST_COLOR", "ZERO"};
+  noisemaker::Surface wrong_size(2, 1);
+  wrong_size.clear({1, 1, 1, 1});
+  source.clear(color);
+  noisemaker::blend_pass_output(state, source, &wrong_size);
+  for (auto value : source.data()) REQUIRE(value == 0);
+}

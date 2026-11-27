@@ -44,6 +44,23 @@ EffectDefinition source_effect() {
 }
 }
 
+TEST(effect_registry_normalizes_storage_and_published_output_names) {
+  auto effect = source_effect();
+  auto& pass = effect.passes.front();
+  pass.storage_textures = {{"second", "velocity"}, {"first", "positions"}};
+  auto explicit_output = pass;
+  explicit_output.outputs = {{"fragColor", "image"}};
+  effect.passes.push_back(explicit_output);
+  effect.output_tex = "image";
+  EffectRegistry registry({effect});
+  const auto& passes = registry.get("fixture", "source")->passes;
+  REQUIRE(passes[0].outputs == passes[0].storage_textures);
+  REQUIRE(passes[1].outputs == explicit_output.outputs);
+  REQUIRE(effect.passes[0].outputs.empty());
+  effect.output_geo = "\u00a0\ufeff";
+  REQUIRE_THROWS_AS(EffectRegistry({effect}), std::invalid_argument);
+}
+
 TEST(effect_registry_resolves_in_search_order_and_normalizes_defaults) {
   EffectRegistry registry;
   registry.register_effect(source_effect());
@@ -199,7 +216,7 @@ TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contra
   const auto& provenance = registry.provenance();
   REQUIRE(registry.manifest_backed());
   REQUIRE(provenance.backend_schema == "noisemaker-cpp.backend-compatibility.v1");
-  REQUIRE(provenance.corpus_revision == "478f94eae7ebe34116dfc661ac52b373b884008b");
+  REQUIRE(provenance.corpus_revision == "5596e69fd6e3b9014e9df0f8674e10e70c332e11");
   REQUIRE(provenance.cpu_package_sha256.size() == 64);
   REQUIRE(provenance.upstream_package_lock_sha256.size() == 64);
   const auto* wormhole = registry.get("filter", "wormhole");

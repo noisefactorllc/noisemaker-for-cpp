@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "6b63240a517db265576bcf68f29e382d5c61c44f0e8f01887d640f803dc5f39f",
+  "metadata_sha256": "aadb964c7743f52f132c0daede05e4687549ca6c17555fbcafacf87823e5572c",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -4862,8 +4862,8 @@
     },
     {
       "effect_id": "render/render3d",
-      "normalized_bytes": 10973,
-      "normalized_sha256": "4a92f2321a877bf13e45b35a103f2809afa6150b0b5cfdb76d3268790905ab02",
+      "normalized_bytes": 10725,
+      "normalized_sha256": "9d59d3bfe7a9193e7b81823e4ee3d42db39c18c2c4537afbde267eff1bf8cd06",
       "outputs": [
         "fragColor",
         "geoOut"
@@ -4872,8 +4872,8 @@
       "pass_name": "render",
       "program": "render3d",
       "program_key": "render/render3d:render3d",
-      "raw_bytes": 14393,
-      "raw_sha256": "138d3e0daa247100fe3553b2699bce3f302e77fce25d9d4fb507868d31a84a30",
+      "raw_bytes": 14244,
+      "raw_sha256": "88708d8a300ebdf74c4fa2470ecba4e214efba5c2bc476f59ccb0019c7c9b226",
       "runtime_key": "render/render3d:render3d",
       "source": "sources/render/render3d/render3d.glsl",
       "status": "generated",
@@ -4881,8 +4881,8 @@
     },
     {
       "effect_id": "render/renderCubemap3d",
-      "normalized_bytes": 10600,
-      "normalized_sha256": "caa449d9ec72cba0d158dcf5f5f73c0607464d2ab90d01d57e0036e1c67574f4",
+      "normalized_bytes": 10380,
+      "normalized_sha256": "664483466fa92bc172cd40f18e10f8256446387facee40a8b6971fec81e2b264",
       "outputs": [
         "fragColor",
         "geoOut"
@@ -4891,8 +4891,8 @@
       "pass_name": "render",
       "program": "renderCubemap3d",
       "program_key": "render/renderCubemap3d:renderCubemap3d",
-      "raw_bytes": 14026,
-      "raw_sha256": "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
+      "raw_bytes": 14113,
+      "raw_sha256": "46046c3360de7b70ae0e48a54bc6a4b643ce1bc158625bf3239c60b6e3123f31",
       "runtime_key": "render/renderCubemap3d:renderCubemap3d",
       "source": "sources/render/renderCubemap3d/renderCubemap3d.glsl",
       "status": "generated",
@@ -4910,8 +4910,8 @@
       "pass_name": "render",
       "program": "renderCubemapSurface",
       "program_key": "render/renderCubemapSurface:renderCubemapSurface",
-      "raw_bytes": 4410,
-      "raw_sha256": "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+      "raw_bytes": 4749,
+      "raw_sha256": "07ed8f69414d43e6bac80151965b8f200c54634f0e208b7847131cdc197ea4c1",
       "runtime_key": "render/renderCubemapSurface:renderCubemapSurface",
       "source": "sources/render/renderCubemapSurface/renderCubemapSurface.glsl",
       "status": "generated",
@@ -4948,8 +4948,8 @@
       "pass_name": "render",
       "program": "renderLit3d",
       "program_key": "render/renderLit3d:renderLit3d",
-      "raw_bytes": 12406,
-      "raw_sha256": "ea309e7e9c4bcb13fd96bf05f0e587bfd25557b7184872b32aabc160df49b627",
+      "raw_bytes": 12414,
+      "raw_sha256": "8129bf08ffef71df58ac24dd5838795c173b9744765f807c36c3fd845e2f4f93",
       "runtime_key": "render/renderLit3d:renderLit3d",
       "source": "sources/render/renderLit3d/renderLit3d.glsl",
       "status": "generated",
@@ -5808,6 +5808,6 @@
       "varyings": []
     }
   ],
-  "revision": "478f94eae7ebe34116dfc661ac52b373b884008b",
+  "revision": "5596e69fd6e3b9014e9df0f8674e10e70c332e11",
   "schema": 1
 }

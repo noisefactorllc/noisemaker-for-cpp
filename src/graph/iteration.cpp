@@ -29,12 +29,15 @@ namespace {
 // value is the resource route) matching PARTICLE_STATE_PATTERN.
 [[nodiscard]] bool references_particle_state(
     const effects::EffectDefinition& definition) noexcept {
+  const auto is_particle_route = [](std::string_view route) {
+    return is_particle_state_name(route) || route == "inputXyz" || route == "inputVel" || route == "inputRgba";
+  };
   for (const auto& pass : definition.passes) {
     for (const auto& input : pass.inputs) {
-      if (is_particle_state_name(input.second)) return true;
+      if (is_particle_route(input.second)) return true;
     }
     for (const auto& output : pass.outputs) {
-      if (is_particle_state_name(output.second)) return true;
+      if (is_particle_route(output.second)) return true;
     }
   }
   return false;

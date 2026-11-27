@@ -1973,6 +1973,163 @@ _RENDER_DYNAMIC_LOCKS = {
 }
 
 
+# Preserve the exact historical struct ledgers alongside the ledgers for
+# the 5596e69f-generated shaders. The two comment-only changes keep their
+# typed structures; the new light constant changes symbol IDs in the marchers.
+_MARCHER_STRUCT_UPDATES = {
+    'render/render3d:render3d': {
+        'raw_sha256': '88708d8a300ebdf74c4fa2470ecba4e214efba5c2bc476f59ccb0019c7c9b226',
+        'normalized_bytes': 10715,
+        'normalized_sha256': '21eb12470a353e44fe7cd31ff12281a896f87bf796d74a337b24011e679ffd72',
+        'functions_sha256': '802f3b26dfafc9aaed5fc875bc12c4861e4ac90edfd78a219d78981eaf15fbe0',
+        'whole_sha256': 'fc0a9230c5a8b3e8bd0d5e06a86074c8c10af22093312a26a818b77ab88291ae',
+        'interface_sha256': 'c58f1cbc57a69ddf38550ecdd2c4deb4c4e21cb5e55425c40d583f95f9aab6d1',
+        'raw_bytes': 14244,
+        'structs': (
+            (1, 'VoxelHit', 'VoxelHit', 'struct', '115:1-119:3', '288fa99e5a505e45fe7cd352515fef7e547081456d56a6001e64ad359b7d5150', ((28, 'dist', 'float', '116:5-116:15', '18bf0ad5ea12ccf00ea15ec5655489c627eb254ae22653b348bf9d7aef1f49f1'), (29, 'normal', 'vec3', '117:5-117:16', '022ea136fcb43a0d93b6e95dbd3d8b82ed91da475a171603d3f2c737188f2e7d'), (30, 'voxel', 'ivec3', '118:5-118:16', '3ff1c07a0f3fd392c8379dc1b0c90b123726f8b7a3f8371606892c7c209f8ee8'))),
+            (2, 'IsoHit', 'IsoHit', 'struct', '242:1-246:3', 'c359debedb4080d4914cf605182e9fe0abf3bedc3294d92c8b079c07309e1c91', ((34, 'dist', 'float', '243:5-243:15', 'a47f215851c7b2ccab6f1e48298680f9830c7de188602d909bc09beeec21e903'), (35, 'pos', 'vec3', '244:5-244:13', '54bc3cd222b0da368a69a1689da99c501913071e20c6443753e27ca0a00abf6d'), (36, 'hit', 'bool', '245:5-245:13', '392223eacdb8d6b944c83b23646f6864d4fe12798e7d2fa64323f840c8ec0b44'))),
+        ),
+        'return_functions': (
+            (49, 'isosurfaceTrace', 'IsoHit', '249:1-319:2', '047d8814c12d5194c7856b6088ec0d7dc4e657450f748c999a1fc0c03083ef10', ((37, 'ro', 'vec3', 'in'), (38, 'rd', 'vec3', 'in'))),
+            (56, 'voxelTrace', 'VoxelHit', '121:1-222:2', '3d13bb45f9535f903d3a2ac5a871cdfa45c836c6cdccf6474ec6db1ad13a8bec', ((31, 'ro', 'vec3', 'in'), (32, 'rd', 'vec3', 'in'))),
+        ),
+        'locals': (
+            (56, 148, 'result', 'VoxelHit', '122:14-122:20', 'fe81a720d425b813f1749aeb6d2367c1bd2e552375a62c94b52035ca9ea42422', 'decl', '122:5-122:21', '0f13175da893a3fa3031aba72df8cc7524f8ee3bdd1c000b4e13dc6c9955bb58', False, 'local'),
+            (49, 67, 'result', 'IsoHit', '250:12-250:18', '9a0844aa1270807805f223df1ea8b1dd281e601a7c1e96561bc811e5cc2cc402', 'decl', '250:5-250:19', '0659dbb0c74b6aed7febe960763ace125e4a1c02b81e99a2cf248dc3913170d6', False, 'local'),
+            (50, 102, 'hit', 'VoxelHit', '400:18-400:42', 'e6218be7b5a1fbe75c1914a4bfe85e1e5f4596e4a26be9372914a04066a17971', 'decl', '400:9-400:43', 'ebd6f262cd9fba8f181aa960f888431dfcc02fc2fefd04b218a3f9edc99ab3ec', True, 'local', 'call', '400:24-400:42', '3ffe53fd537f84af90a0e5603cccb9e0b73ced8988f001c8ca40b9976b4e7ed8', 'voxelTrace', 56),
+            (50, 104, 'hit', 'IsoHit', '412:16-412:45', '20f88fb21d2bf988d1472f3fbb8639730e836129de301f836b28e9237bbceb2c', 'decl', '412:9-412:46', 'db9db49604f353da02f3d9d6ed1b28771c036c677f567dcf82612982124af6b0', True, 'local', 'call', '412:22-412:45', 'af8a1ba6c4a6bf1ae04ef47c91a1241f6994ae59572f673ccd1851273b6dcf9f', 'isosurfaceTrace', 49),
+        ),
+        'members': (
+            (56, 'dist', 148, 'id', 'VoxelHit', 'float', 'write', 'assign', '123:5-123:16', '781b8efd19c5103c2eb6eb41d1fe0a2d5be59199eb4cc1692c80a233e18f33a8'),
+            (56, 'normal', 148, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '124:5-124:18', '0effc94c4e45345039a9e9087b7d2f5763b72d9c68c0c3cd05a762b37d0dd3e6'),
+            (56, 'voxel', 148, 'id', 'VoxelHit', 'ivec3', 'write', 'assign', '125:5-125:17', '7552688cc3ac2cf1c678d989ab439e6ef140a2ead38ce2915ca3510cfdeeb2c0'),
+            (56, 'dist', 148, 'id', 'VoxelHit', 'float', 'write', 'assign', '171:17-171:28', '62baa4c08e1dc115dbbfcd307ed5a02d1cf629d16e2775dd3d66971bfa2c0e71'),
+            (56, 'normal', 148, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '172:17-172:30', '9c8cc5b67f986c405c3826d752a5fa88df9a66f9f9e2a2d3c6479f365935c0af'),
+            (56, 'voxel', 148, 'id', 'VoxelHit', 'ivec3', 'write', 'assign', '173:17-173:29', 'de6e3bfa5b3c3c633829f989206a9e2babea162cc3638e053af19e1b915405e3'),
+            (56, 'normal', 148, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '179:25-179:38', '117d9fe9b34fd94a93d66dd215512380d109f3a6c1124d6d75b9fb26ba73e3eb'),
+            (56, 'normal', 148, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '181:25-181:38', 'ce7c91c546636d30f80b1d6517e08253a0759258a65f41b7f81a7a022855ccf5'),
+            (56, 'normal', 148, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '183:25-183:38', '871580189f73744529d467c07fd5c2af435073ef1bdab340fc884602e8dafde3'),
+            (49, 'hit', 67, 'id', 'IsoHit', 'bool', 'write', 'assign', '251:5-251:15', '561002b75e6544b466a485ed932a4d62273379f2e288bce328939fec5c1bafa3'),
+            (49, 'dist', 67, 'id', 'IsoHit', 'float', 'write', 'assign', '252:5-252:16', 'd736512914e935cc2bd2ccea89b2d8eb4222561557548b509f5e8203bfdbabf9'),
+            (49, 'pos', 67, 'id', 'IsoHit', 'vec3', 'write', 'assign', '253:5-253:15', '5370e4537775119cf9b4cd66aa4ccb65393bfe52281ecbcce910d3e0ba33e3b9'),
+            (49, 'hit', 67, 'id', 'IsoHit', 'bool', 'write', 'assign', '277:9-277:19', '009ad73da18c814a61a8833f5ea066c56457641b8ac35a53bd50c88262a11e81'),
+            (49, 'dist', 67, 'id', 'IsoHit', 'float', 'write', 'assign', '278:9-278:20', 'bc15c2c0c5e7aadaa2526bd1260df9c90379ef6d996502c25a619e3a7e19ef92'),
+            (49, 'pos', 67, 'id', 'IsoHit', 'vec3', 'write', 'assign', '279:9-279:19', 'a429c66fa75d2e5c5c16e5be20203fb7e2c2ffbbd1c1bb6bb9517eaaa24cca40'),
+            (49, 'hit', 67, 'id', 'IsoHit', 'bool', 'write', 'assign', '309:13-309:23', '94444639db4e926b41d75705713f371e8cbc7b4ec1dec33487aa7fce1f408815'),
+            (49, 'dist', 67, 'id', 'IsoHit', 'float', 'write', 'assign', '310:13-310:24', '8999f7e4456af47d0b409b81f4477b79baded29836f1ac0388be1368b8c8dde1'),
+            (49, 'pos', 67, 'id', 'IsoHit', 'vec3', 'write', 'assign', '311:13-311:23', '035d9de826003f41a393caffcb5c106d45e99a7d90797222fb657b4eb0e3daeb'),
+            (49, 'dist', 67, 'id', 'IsoHit', 'float', 'read', 'binary', '311:36-311:47', '5f9cec6a16ff3b121a7730679b532e20fe8168c3cf77acacaf0ef391255a0f58'),
+            (50, 'dist', 102, 'id', 'VoxelHit', 'float', 'read', 'binary', '401:13-401:21', '252ea1792c0402d847f199341afae64f99e3dd8637ec1bf3a6fef7aea29cec71'),
+            (50, 'dist', 102, 'id', 'VoxelHit', 'float', 'read', 'binary', '402:32-402:40', '66210f1f9fedce98565bb3f109b9939b191913b453608eeb49179294783b6d9f'),
+            (50, 'normal', 102, 'id', 'VoxelHit', 'vec3', 'read', 'call', '403:39-403:49', 'ce783254c8059bb9257fb4226a4df8a241c50f51591451919db80f7ac7f6656b'),
+            (50, 'voxel', 102, 'id', 'VoxelHit', 'ivec3', 'read', 'call', '403:51-403:60', '8354034621aa7136697df6caaa56104fecfaaf870806255b279449628d94962b'),
+            (50, 'normal', 102, 'id', 'VoxelHit', 'vec3', 'read', 'assign', '404:22-404:32', '82bb5ba1d4265527f4bc0d60bf18368f4f5f25fc9a5b0c96f4f6acc75796921e'),
+            (50, 'dist', 102, 'id', 'VoxelHit', 'float', 'read', 'binary', '405:21-405:29', '9ea2cc60033eb96e08ee8020541e09a6d44f563c5fa14186d70c1f7aa45ad2a0'),
+            (50, 'hit', 104, 'id', 'IsoHit', 'bool', 'read', None, '413:13-413:20', 'f8e23dd6e9d3ce420ec0ea6bf0f676868da7c5b6cc44c78b7581b24ae6454739'),
+            (50, 'pos', 104, 'id', 'IsoHit', 'vec3', 'read', 'call', '414:27-414:34', '539a121b4759eb58bf55c9c297ed7c67e4f6feb03819366f3cb3f83183703da8'),
+            (50, 'pos', 104, 'id', 'IsoHit', 'vec3', 'read', 'call', '415:33-415:40', '3d785f736b17ff83e3f0bcdb34f354cb03e969c98530237f1790c09cd1ff2615'),
+            (50, 'dist', 104, 'id', 'IsoHit', 'float', 'read', 'binary', '416:21-416:29', 'd4604facff15194e1ac39840d55f0b01fefa1a8340943562f079a84a2da63131'),
+        ),
+        'total_nodes': 1205,
+    },
+    'render/renderCubemap3d:renderCubemap3d': {
+        'raw_sha256': '46046c3360de7b70ae0e48a54bc6a4b643ce1bc158625bf3239c60b6e3123f31',
+        'normalized_bytes': 10370,
+        'normalized_sha256': '2b6573bd05cf84826dda0c0abfa03b37e5e8f34c48b719f5fed773a43d5a05d1',
+        'functions_sha256': '54af22949fa3cb6d061ba149f05b3bc7825f0c68214a86672add90f524532a38',
+        'whole_sha256': '976c7d8f78f9189d24908f0129195b138bd0365db17ed97d1e24c5af9ca3ade9',
+        'interface_sha256': '2067da77cdd8df9662b614e85bc4eaea673517abf649d3bea04621b39de765f6',
+        'raw_bytes': 14113,
+        'structs': (
+            (1, 'VoxelHit', 'VoxelHit', 'struct', '114:1-118:3', '0d5464cc86569e9cde11513bf76ba4c5fdb23b9a9c8259cf48454b3cf00ac850', ((27, 'dist', 'float', '115:5-115:15', 'c4e5d38e92a14879c61bf830725164916ef1bfaac35c166bf40b01a2ce5c883b'), (28, 'normal', 'vec3', '116:5-116:16', '6bed5869fead91c6232c9a12ebe43a52d8e9f2ec9045a72b0b2c9480613ce959'), (29, 'voxel', 'ivec3', '117:5-117:16', 'df0f3e31836f2304e73c5b16c918a839c760941258c52b47d651ed167a00072f'))),
+            (2, 'IsoHit', 'IsoHit', 'struct', '241:1-245:3', '2acf78c6b929a56c3a651fbdb2d6e0d854b028db1b044645124a729cdaa8720f', ((33, 'dist', 'float', '242:5-242:15', 'f64be55608d6222d32f54c2e9e94cd82d28333a89c15261932971c5cb863249c'), (34, 'pos', 'vec3', '243:5-243:13', '8a44e9b397b5f214fcc9d969b8317d54fc5f14a97106229a75fb94d3b50fc971'), (35, 'hit', 'bool', '244:5-244:13', '2b4bd91356c457c25f1b6f84499bce1454d6818c0a3508aad1f00607b151e117'))),
+        ),
+        'return_functions': (
+            (48, 'isosurfaceTrace', 'IsoHit', '248:1-318:2', '2da7292df5b886bc462339e0cba1cfb0b6a9ddc29bbc89b78972d0f198e27eb1', ((36, 'ro', 'vec3', 'in'), (37, 'rd', 'vec3', 'in'))),
+            (55, 'voxelTrace', 'VoxelHit', '120:1-221:2', '65125577561ac2dd2ad1132e918a615f4db3ae219f64b7e80a27e849d2efbd75', ((30, 'ro', 'vec3', 'in'), (31, 'rd', 'vec3', 'in'))),
+        ),
+        'locals': (
+            (55, 140, 'result', 'VoxelHit', '121:14-121:20', '3239d210a57b1920b4fbd8882d587c775fc88ad9c962254a8ed10596fb272fde', 'decl', '121:5-121:21', 'e71c9158817714c6b25e44a63fe378898ca13b46cd37021fe78208eb0aa7550e', False, 'local'),
+            (48, 66, 'result', 'IsoHit', '249:12-249:18', 'f078b5eef8c07e1220dddeb4c86cc4b1e1a5f75ca7bde1d40c04e897aeb98f14', 'decl', '249:5-249:19', '09a49c082fd3cab63057cdf66b5b6871a691b37daa0b0b7aa24aaff25fb1f138', False, 'local'),
+            (49, 94, 'hit', 'VoxelHit', '388:18-388:42', '3aceb33a32ca684348bbf2bad13caacc32c8c78b508b68e8ed5bcb4b6d9bccee', 'decl', '388:9-388:43', 'e1474de82e4aa8bb3b83705bb9be5304c5f08b924dc08c12ff11c1b64e68e3af', True, 'local', 'call', '388:24-388:42', '28358bd9fb0c88f70f8512fa15f127e054ed0837a60639c8f0af0f6bce6788a1', 'voxelTrace', 55),
+            (49, 96, 'hit', 'IsoHit', '400:16-400:45', '272c05626ebc5fe9fe5113f1c284ac939761e3039a596b9071e0272863a13b7d', 'decl', '400:9-400:46', '9a0a37fcaaaf24c4179fb3395ee50e13d9e32ef8a999c19f81dab77f95218e7a', True, 'local', 'call', '400:22-400:45', '5b17c8fbf559ca99bd906362954c7043b2689fc526b42ceee4c4b97dc4b06475', 'isosurfaceTrace', 48),
+        ),
+        'members': (
+            (55, 'dist', 140, 'id', 'VoxelHit', 'float', 'write', 'assign', '122:5-122:16', '46296b410f47ed685103322ca4b0820f1f5185c12c3e4cadf2219a77df49b718'),
+            (55, 'normal', 140, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '123:5-123:18', '418df1cf70b6cd28e767ebef6481d0b1d6a980549b14b83e7899934fd455d397'),
+            (55, 'voxel', 140, 'id', 'VoxelHit', 'ivec3', 'write', 'assign', '124:5-124:17', '6b4b90c199f775e906ad4435465a953e5da0fd9d419091f7bf7f669cc4a96917'),
+            (55, 'dist', 140, 'id', 'VoxelHit', 'float', 'write', 'assign', '170:17-170:28', 'ce51b228845caf39bc2471df8549c9525b0e043bced6571b0288199ae0729ee2'),
+            (55, 'normal', 140, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '171:17-171:30', '140af0cb97da3c8d1309698fea060cc823399d88ad0d98da7e76bfa7e1935600'),
+            (55, 'voxel', 140, 'id', 'VoxelHit', 'ivec3', 'write', 'assign', '172:17-172:29', '78127b389cc4f1b9ec4f771ae89e0b2a994bae96c6c618cd1891765d8612150b'),
+            (55, 'normal', 140, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '178:25-178:38', '6348e93f8f89965d0b981aec06bd63f4ed8fa93e66b1f358e83a5a3f3abf90ad'),
+            (55, 'normal', 140, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '180:25-180:38', '9f5e3186e0ec860fa9da1af4619dbb21994fa4c627024382ce952b7215fd32f7'),
+            (55, 'normal', 140, 'id', 'VoxelHit', 'vec3', 'write', 'assign', '182:25-182:38', '0ac23ff92a663b6a0cf99bac4c5f8aa2257a75d81666b033c992724374d66176'),
+            (48, 'hit', 66, 'id', 'IsoHit', 'bool', 'write', 'assign', '250:5-250:15', '395f252fe2064b158a021ac574f4d26ac41fce64b16dd2aa5880049ea8f6fb33'),
+            (48, 'dist', 66, 'id', 'IsoHit', 'float', 'write', 'assign', '251:5-251:16', 'baa6dd8925554027db14d2557a828af77a9c42d57323f376dc84de9d6ab95169'),
+            (48, 'pos', 66, 'id', 'IsoHit', 'vec3', 'write', 'assign', '252:5-252:15', '0d94faa1e8e74dbb8260f75c918d4ba82df53f4cd3ec8a70cc8f4948306a2fd8'),
+            (48, 'hit', 66, 'id', 'IsoHit', 'bool', 'write', 'assign', '276:9-276:19', '182ffb66b133eaaa76bff4b4295f9c578783c23445eb923ddff2ab88c7d62b4a'),
+            (48, 'dist', 66, 'id', 'IsoHit', 'float', 'write', 'assign', '277:9-277:20', '60146dcea1d0c14b82d52e64530b6d705a047ed5bcbf9632532b5ae8544a923b'),
+            (48, 'pos', 66, 'id', 'IsoHit', 'vec3', 'write', 'assign', '278:9-278:19', 'f99f63ae16f5c46e3347cb99fa47bbfcc09fec5acf62824b18304fa22d911518'),
+            (48, 'hit', 66, 'id', 'IsoHit', 'bool', 'write', 'assign', '308:13-308:23', '931569f1c9b20b7b84f8ded9b80287573392aa2be3870c9ff3be2af6d847610f'),
+            (48, 'dist', 66, 'id', 'IsoHit', 'float', 'write', 'assign', '309:13-309:24', 'fd0793adc0c1fb495bd59ec39fee5f23cc55a4a704b45bdfcda4e53defdc8e56'),
+            (48, 'pos', 66, 'id', 'IsoHit', 'vec3', 'write', 'assign', '310:13-310:23', '209720b295bf731629024bed9d87d0653b13bee55f22041f6dd715e3aebe81b5'),
+            (48, 'dist', 66, 'id', 'IsoHit', 'float', 'read', 'binary', '310:36-310:47', '90f4348b37a7d0ca9195820d19fc71f9b50057ce0cc69af780d6fd1770a85f4f'),
+            (49, 'dist', 94, 'id', 'VoxelHit', 'float', 'read', 'binary', '389:13-389:21', '00da69cb0f1d594bc02af5d7d0efa2d3228a20c570823109ee42f23e35b632cc'),
+            (49, 'dist', 94, 'id', 'VoxelHit', 'float', 'read', 'binary', '390:32-390:40', '1d5c20e7b7d7d14a5ec8e585c832f18f2feb8181a601b8d9bc7d01431efb7919'),
+            (49, 'normal', 94, 'id', 'VoxelHit', 'vec3', 'read', 'call', '391:39-391:49', '45e11145cb8f78fee6138bdddc46537aa169026cadf67e8c407c46c55c817ea9'),
+            (49, 'voxel', 94, 'id', 'VoxelHit', 'ivec3', 'read', 'call', '391:51-391:60', '1946eaa05ddaf6d4b1bffb47a73d6c4680b91c94136e5e1603bdcf340e060bda'),
+            (49, 'normal', 94, 'id', 'VoxelHit', 'vec3', 'read', 'assign', '392:22-392:32', 'd184d710051718b2d4e5469bbfcb242d7d2920e9d81b2399cb1e0b48253d1445'),
+            (49, 'dist', 94, 'id', 'VoxelHit', 'float', 'read', 'binary', '393:21-393:29', '4c0750acdc847341722a46f6b3bb4b9a920cf93dc6ff4a701bf2e7492bea6154'),
+            (49, 'hit', 96, 'id', 'IsoHit', 'bool', 'read', None, '401:13-401:20', '110b62c0f0f8dbe87e404e359eea2781f6e811dbd6241ff62662a9470f31028a'),
+            (49, 'pos', 96, 'id', 'IsoHit', 'vec3', 'read', 'call', '402:27-402:34', '75cb8e3d7713153a26837e1e909c23a2b397b2d3e854c141542a328bf82313b5'),
+            (49, 'pos', 96, 'id', 'IsoHit', 'vec3', 'read', 'call', '403:33-403:40', 'f49f3ae26458a4d440e62f768e3673bb59c68ab5739b8a69e590d66d11132d43'),
+            (49, 'dist', 96, 'id', 'IsoHit', 'float', 'read', 'binary', '404:21-404:29', 'cbfb23b0d195e3597e68504defc453adbd6cd8aa262db9f56bd61a4ae4dc886d'),
+        ),
+    },
+    'render/renderLit3d:renderLit3d': {
+        'raw_sha256': '8129bf08ffef71df58ac24dd5838795c173b9744765f807c36c3fd845e2f4f93',
+        'whole_sha256': '1fd56819563296a43ea14dd9d521ae4a3c08bfd02cf3094fe26cfa6115642c8a',
+        'raw_bytes': 12414,
+    },
+}
+
+_MARCHER_DYNAMIC_STRUCT_UPDATES = {
+    'render/render3d:render3d': {
+        'raw_sha256': '88708d8a300ebdf74c4fa2470ecba4e214efba5c2bc476f59ccb0019c7c9b226',
+        'normalized_bytes': 10769,
+        'normalized_sha256': '8b87f60670b80900f2f57bd0dd3402dde0dd93375599d4a99293aa0363956909',
+        'functions_sha256': '01e01a38af941eb0fb9ddf022569516e34de2bf949f111abf55cc563f4a0273d',
+        'whole_sha256': 'df7e47e09c4601ca20278ad78eb8f0086c34c74ff0a539eba95b27e4ce736963',
+        'interface_sha256': '9d83dde4b0940cd7e2bb851fdeb4dc4739c5d1702e2226d30d4c4e6f0631ce68',
+        'structs_sha256': '18e67f3fa842ebed6a51296dccc4c0ed27e028751617d1717dbbc948bd98bc92',
+        'returns_sha256': 'f4e5473072ff9180c09333344b2e8a6e306a2fd833d96f28f476e7b32071fde9',
+        'locals_sha256': '84b1cace64b99d65a974118ce39a9e458264b53959b374f1eb04fe9f55f6f6b6',
+        'members_sha256': 'a43f9d0ef9f87a51f5b5c61a2fbb317d67d0a47b3d96d5d032e3f963ec9f4a5c',
+        'census': (2, 4, 29, 0, 1205, 59),
+    },
+    'render/renderCubemap3d:renderCubemap3d': {
+        'raw_sha256': '46046c3360de7b70ae0e48a54bc6a4b643ce1bc158625bf3239c60b6e3123f31',
+        'normalized_bytes': 10424,
+        'normalized_sha256': 'bcefbcbd673f3177241f0fe92851c2516f7461bc6b783d2e7fa87626f1c0d750',
+        'functions_sha256': '8d54d78cfbeceb03818841a446905417ff13a030f0f2aa991ac870ad775aa52e',
+        'whole_sha256': 'c99b9427a1128019bf1b755966f94bfa0fcf57c9a056635ed956f5da3d1fe945',
+        'interface_sha256': '98491a48c58c13cae355ff037b294e9eb432470fc27dd08c69c2638924046f04',
+        'structs_sha256': '022ef07d624e4bd2480de6d1d21b65846d826342eeec94b6b4c43bdb67b47959',
+        'returns_sha256': 'b3c8b2bb2fcd2da9dc57df64f73647668618722bef0f65e20a34accaa65bac2b',
+        'locals_sha256': 'ff8cbb14ce42ce1e3158fb4b639480a82fe69c4570d8f9d4b41342156e1ea587',
+        'members_sha256': 'efd66e142973f308b4278971f722312da7ea2b50449ee3ba73727897dd9786fe',
+    },
+}
+
+_PRE_MARCHER_STRUCTS = {}
+for _locks, _updates in ((_LOCKS, _MARCHER_STRUCT_UPDATES),
+                         (_RENDER_DYNAMIC_LOCKS, _MARCHER_DYNAMIC_STRUCT_UPDATES)):
+    for _key, _changes in _updates.items():
+        _old = _locks[_key]
+        _PRE_MARCHER_STRUCTS[(_key, _old['raw_sha256'], _locks is _RENDER_DYNAMIC_LOCKS)] = _old
+        _locks[_key] = {**_old, **_changes}
+
+
 def _walk_statements(value):
     yield value
     for child in value.children:
@@ -2113,7 +2270,7 @@ class StructFrontierRecord(NamedTuple):
 def _authenticate_dynamic_render_structs(
         program: TypedProgram, source_hash: str | None,
         profile: str) -> StructFrontierRecord:
-    lock = _RENDER_DYNAMIC_LOCKS[program.key]
+    lock = _PRE_MARCHER_STRUCTS.get((program.key, source_hash, True), _RENDER_DYNAMIC_LOCKS[program.key])
     raw = program.raw_source.encode('utf-8')
     normalized = program.source.encode('utf-8')
     if (source_hash != lock['raw_sha256']
@@ -2249,7 +2406,7 @@ def authenticate_struct_frontier(
                 f"{RENDER_LIT_KEY} IsoHit, {FLYTHROUGH_KEY} FractalResult "
                 "are the sole admitted declarations")
         return None
-    lock = _LOCKS[program.key]
+    lock = _PRE_MARCHER_STRUCTS.get((program.key, source_hash, False), _LOCKS[program.key])
     profile_name = PROFILES[program.key]
 
     def fail(message: str) -> ValueError:

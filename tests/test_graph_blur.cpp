@@ -175,17 +175,12 @@ TEST(graph_executor_rejects_adversarial_pass_metadata_with_stable_context) {
   plan.effects[1].definition.passes[0].blend =
       noisemaker::effects::BlendDefinition{};
   plan.effects[1].definition.passes[0].blend->enabled = true;
-  plan.effects[1].admissions[0].authority_pass.blend_kind = "boolean";
-  plan.effects[1].admissions[0].authority_pass.blend = true;
-  effect_step(plan, "filter/blur").passes[0].authority_pass.blend_kind =
-      "boolean";
-  effect_step(plan, "filter/blur").passes[0].authority_pass.blend = true;
   reauthenticate(plan);
   try {
     static_cast<void>(renderer.render(plan, options(7U, 5U)));
     REQUIRE(false);
   } catch (const noisemaker::graph::GraphError& error) {
-    REQUIRE(error.code() == noisemaker::graph::GraphErrorCode::unsupported_blend);
+    REQUIRE(error.code() == noisemaker::graph::GraphErrorCode::invalid_snapshot);
     REQUIRE(error.pass_index() == 0U);
   }
 

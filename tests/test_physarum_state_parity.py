@@ -15,8 +15,8 @@ from tools.benchmark.corpus_lane import JS_RUNNER, record_flags, resolve_cpu_roo
 
 ROOT = Path(__file__).resolve().parents[1]
 CAPTURE_ENV = "NOISEMAKER_TEST_PHYSARUM_CAPTURE"
-SEAM = """                        iteration::GroupResourceMap& group_resources) {
-  if (iteration::is_group_shared_resource_name(name)) {"""
+SEAM = """void store_group_output(std::string_view name, noisemaker::Surface surface, TextureFormat format, GroupStepState& state,
+                        iteration::GroupResourceMap& group_resources) {"""
 CAPTURE = r'''
   if (const char* directory = std::getenv("NOISEMAKER_TEST_PHYSARUM_CAPTURE")) {
     static std::size_t ordinal = 0;
@@ -39,9 +39,7 @@ CAPTURE = r'''
 def instrument(source: str) -> str:
     if source.count(SEAM) != 1:
         raise ValueError("group output capture seam changed")
-    return '#include <fstream>\n' + source.replace(
-        SEAM, SEAM.split('  if (iteration::')[0] + CAPTURE
-        + '  if (iteration::is_group_shared_resource_name(name)) {')
+    return '#include <fstream>\n' + source.replace(SEAM, SEAM + CAPTURE)
 
 
 def captures(directory: Path) -> list[tuple[str, bytes, bytes]]:

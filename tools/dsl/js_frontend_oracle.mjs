@@ -29,9 +29,9 @@ if (compilerMode) {
   process.exit(0)
 }
 const EXPECTED_MODULE_SHA256 = new Map([
-  ['src/dsl/parser.js', 'ce5d9be3e3d3cdc775d96f0c40fc07c5b27f53b527e0ba3e54ed2cf108c62df1'],
-  ['src/dsl/tokenize.js', '16a07615769849537e0c363b1f47c44efebbe3542247a45e3414006fc3906b36'],
-  ['src/dsl/error.js', 'fdc8a674431666d48a8094e3c7021120df3767226c870e7bb9eb88aa25abde93']
+  ['src/dsl/parser.js', '7d560ff1cbdad1a1ff8716944eeb0cb34059a624f79427f0c1a604158bd30b1c'],
+  ['src/dsl/tokenize.js', '3f19bfa80cb7fb87302d4025c671597e2f7d42384f941690b2e35fe23fa18a2c'],
+  ['src/dsl/error.js', '26322fe2ece843113359ac1e5ffbd1708419790146c54a3d3f86011f9504b49b']
 ])
 if (!cpuRoot || !fixturesPath || !path.isAbsolute(cpuRoot)) usage('explicit absolute --cpu-root is required')
 const requestedRoot = path.resolve(cpuRoot)
@@ -190,21 +190,21 @@ else process.stdout.write(text)
 
 async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
-  const FIXTURE_SHA256 = '661b9ed45d0bc83918454ead20bb9dcda516773b1604e42295efb62fe0d628ff'
-  const EXPECTED_STREAM_SHA256 = 'e7b8712e2b71ca719ae036eda043ee002fa036d23a1c43bafc1c23826da2beea'
+  const FIXTURE_SHA256 = 'cd742778b2e6ced6f55e58d63919671636fed2cf976d1e5c1d8dd9ab30a67e67'
+  const EXPECTED_STREAM_SHA256 = '9b021ad912b995b48fe7bca94f5ad3e56eb223a767b3997b0078283d9c2a643c'
   if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
   const root = path.resolve(cpuRoot)
   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')
   if (fs.realpathSync(root) !== root || fs.lstatSync(root).isSymbolicLink()) fail('CPU root must be a real path, not a symlink')
   const expected = new Map([
-    ['src/dsl/compiler.js', '3a5a25172a6a3d193fee1c08a9f05a4a3790bd3965d19afe0494e0e4880ee07a'],
-    ['src/dsl/error.js', 'fdc8a674431666d48a8094e3c7021120df3767226c870e7bb9eb88aa25abde93'],
-    ['src/dsl/parser.js', 'ce5d9be3e3d3cdc775d96f0c40fc07c5b27f53b527e0ba3e54ed2cf108c62df1'],
-    ['src/dsl/tokenize.js', '16a07615769849537e0c363b1f47c44efebbe3542247a45e3414006fc3906b36'],
-    ['src/effects/definition.js', '9ffd11c838b9b791a26f2ae0701c9a3f640acf1b40be486a93664e2f10af9f2e'],
+    ['src/dsl/compiler.js', '638243af2d5e2afefa5f6af5d010a5901d2a9a53457b427807bf2db7d34450e3'],
+    ['src/dsl/error.js', '26322fe2ece843113359ac1e5ffbd1708419790146c54a3d3f86011f9504b49b'],
+    ['src/dsl/parser.js', '7d560ff1cbdad1a1ff8716944eeb0cb34059a624f79427f0c1a604158bd30b1c'],
+    ['src/dsl/tokenize.js', '3f19bfa80cb7fb87302d4025c671597e2f7d42384f941690b2e35fe23fa18a2c'],
+    ['src/effects/definition.js', '01c9602161954a7487c877e1b757fa500a40ac964ed443cf5c49bc8dec80395b'],
     ['src/runtime/automation.js', '7ec5b11a269eae6899a2e2d78a4687d87e82b0e623a8b150d0fa7d8feb09065f'],
     ['src/effects/registry.js', '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
-    ['src/effects/generated/upstream-snapshot.js', 'ded7271f9a389d390540592325ee24999498b68d3b060c7ac6d32c04af67dd40']
+    ['src/effects/generated/upstream-snapshot.js', '2c4ad1a20b1caedbae36ae8ff72a9dcf5165c2d2dd6c01b93c22eb497b64acbe']
   ])
   const customExpected = new Map([...expected].filter(([key]) => !key.endsWith('upstream-snapshot.js')))
   const fixtureBytes = fs.readFileSync(fixturesPath)
@@ -255,7 +255,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   if (snapshot) {
     const compatibilityBytes = fs.readFileSync(compatibilityPath)
     const compatibilityHash = crypto.createHash('sha256').update(compatibilityBytes).digest('hex')
-    if (compatibilityHash !== 'c14beb874bcdb8fb2087d6899abef9f9719e2a46e824a04508cad3f7ea15c502') fail('compatibility manifest sha256 mismatch')
+    if (compatibilityHash !== '781369791bbbe84a70c78ec76c3323414d3e0923c4acaae3860528a7ce82a6b7') fail('compatibility manifest sha256 mismatch')
     compatibility = JSON.parse(compatibilityBytes)
   }
   function customDefinitions() {
@@ -343,6 +343,14 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     }
     return result
   }
+  // Generated BlendDefinition keeps literal strings and resolves numeric GL enums.
+  function blendFactor(factor) {
+    if (typeof factor !== 'number') return factor
+    if (factor === 0) return 'zero'
+    const enums = ['src-color', 'one-minus-src-color', 'src-alpha', 'one-minus-src-alpha',
+      'dst-alpha', 'one-minus-dst-alpha', 'dst-color', 'one-minus-dst-color']
+    return enums[factor - 768] ?? 'one'
+  }
   function definitionProjection(definition, rawRecord = null) {
     const source = rawRecord ?? {}
     const params = Object.entries(definition.params ?? {}).map(([name, param]) => {
@@ -354,15 +362,17 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       cpuOnly: param.cpuOnly === true, raw: rawRecord ? Object.entries(param).map(([key, item]) => [key, taggedEffect(item)]) : []
       }
     })
-    const passes = (definition.passes ?? []).map((pass) => {
+    const passes = (definition.passes ?? []).map((pass, passIndex) => {
       const blend = pass.blend === undefined || pass.blend === null ? { present: false } : {
         present: true,
-        value: Array.isArray(pass.blend) ? { kind: 'factors', enabled: true, factors: [...pass.blend] } : { kind: 'boolean', enabled: pass.blend === true, factors: ['', ''] }
+        value: Array.isArray(pass.blend) ? { kind: 'factors', enabled: true, factors: pass.blend.map(blendFactor) } : { kind: 'boolean', enabled: pass.blend === true, factors: ['', ''] }
       }
       return {
         name: pass.name, program: pass.program, inputs: pairs(pass.inputs), outputs: pairs(pass.outputs), uniforms: pairs(pass.uniforms).map(([name, value]) => [name, taggedEffect(value)]),
         count: optionalEffect(pass.count), repeat: optionalEffect(pass.repeat), conditions: optionalEffect(pass.conditions), viewport: optionalEffect(pass.viewport), blend,
-        drawMode: optionalString(pass.drawMode), drawBuffers: optionalEffect(pass.drawBuffers), raw: rawRecord ? Object.entries(pass).map(([key, item]) => [key, taggedEffect(item)]) : []
+        drawMode: optionalString(pass.drawMode), drawBuffers: optionalEffect(pass.drawBuffers),
+        ...(Object.keys(pass.storageTextures ?? {}).length ? { storageTextures: pairs(pass.storageTextures) } : {}),
+        raw: rawRecord ? Object.entries(rawRecord.passes[passIndex]).map(([key, item]) => [key, taggedEffect(item)]) : []
       }
     })
     const textures = Object.entries(definition.textures ?? {}).map(([name, texture]) => ({
@@ -373,7 +383,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       id: definition.id, directoryName: definition.directoryName ?? source.directoryName ?? '', name: definition.name ?? source.name ?? definition.func ?? '', namespace: definition.namespace, func: definition.func,
       kind: definition.kind, domain: definition.domain, tags: [...(definition.tags ?? [])], description: definition.description ?? '', parameterAliases: pairs(definition.paramAliases),
       parameters: params, passes, textures, externalTexture: optionalString(definition.externalTexture), outputTex3d: optionalString(definition.outputTex3d), outputGeo: optionalString(definition.outputGeo),
-      outputXyz: optionalString(source.outputXyz), outputVelocity: optionalString(source.outputVel), outputRgba: optionalString(source.outputRgba), iterated: definition.iterated === true,
+      outputXyz: optionalString(source.outputXyz), outputVelocity: optionalString(source.outputVel), outputRgba: optionalString(source.outputRgba), ...(definition.outputTex !== undefined ? { outputTex: definition.outputTex } : {}), iterated: definition.iterated === true,
       loopRole: optionalString(definition.loopRole), raw
     }
   }
@@ -413,9 +423,9 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   function writeDefinition(writer, value) {
     ;[value.id, value.directoryName, value.name, value.namespace, value.func, value.kind, value.domain].forEach((item) => writer.token(item)); writer.size(value.tags.length); value.tags.forEach((item) => writer.token(item)); writer.token(value.description); writePairs(writer, value.parameterAliases, (out, item) => out.token(item))
     writer.size(value.parameters.length); value.parameters.forEach((item) => { writer.token(item.name); writer.token(item.type); writeOptionalEffect(writer, item.default); writeOptionalString(writer, item.define); writeOptionalEffect(writer, item.zero); writePairs(writer, item.choices, writeEffectValue); writePairs(writer, item.enumValues, writeEffectValue); writeOptionalString(writer, item.enumName); writeOptionalEffect(writer, item.min); writeOptionalEffect(writer, item.max); writeOptionalString(writer, item.uniform); writeOptionalString(writer, item.texture); writeOptionalString(writer, item.colorModeUniform); writer.boolean(item.cpuOnly); writePairs(writer, item.raw, writeEffectValue) })
-    writer.size(value.passes.length); value.passes.forEach((item) => { writer.token(item.name); writer.token(item.program); writePairs(writer, item.inputs, (out, entry) => out.token(entry)); writePairs(writer, item.outputs, (out, entry) => out.token(entry)); writePairs(writer, item.uniforms, writeEffectValue); writeOptionalEffect(writer, item.count); writeOptionalEffect(writer, item.repeat); writeOptionalEffect(writer, item.conditions); writeOptionalEffect(writer, item.viewport); writer.optional(item.blend.present); if (item.blend.present) { writer.size(item.blend.value.kind === 'factors' ? 1 : 0); writer.boolean(item.blend.value.enabled); writer.token(item.blend.value.factors[0]); writer.token(item.blend.value.factors[1]) } writeOptionalString(writer, item.drawMode); writeOptionalEffect(writer, item.drawBuffers); writePairs(writer, item.raw, writeEffectValue) })
+    writer.size(value.passes.length); value.passes.forEach((item) => { writer.token(item.name); writer.token(item.program); writePairs(writer, item.inputs, (out, entry) => out.token(entry)); writePairs(writer, item.outputs, (out, entry) => out.token(entry)); writePairs(writer, item.uniforms, writeEffectValue); writeOptionalEffect(writer, item.count); writeOptionalEffect(writer, item.repeat); writeOptionalEffect(writer, item.conditions); writeOptionalEffect(writer, item.viewport); writer.optional(item.blend.present); if (item.blend.present) { writer.size(item.blend.value.kind === 'factors' ? 1 : 0); writer.boolean(item.blend.value.enabled); writer.token(item.blend.value.factors[0]); writer.token(item.blend.value.factors[1]) } writeOptionalString(writer, item.drawMode); writeOptionalEffect(writer, item.drawBuffers); if (item.storageTextures) { writer.token('storageTextures'); writePairs(writer, item.storageTextures, (out, name) => out.token(name)) } writePairs(writer, item.raw, writeEffectValue) })
     writer.size(value.textures.length); value.textures.forEach((item) => { writer.token(item.name); writeDimension(writer, item.width); writeDimension(writer, item.height); writeOptionalString(writer, item.format); writePairs(writer, item.raw, writeEffectValue) })
-    writeOptionalString(writer, value.externalTexture); writeOptionalString(writer, value.outputTex3d); writeOptionalString(writer, value.outputGeo); writeOptionalString(writer, value.outputXyz); writeOptionalString(writer, value.outputVelocity); writeOptionalString(writer, value.outputRgba); writer.boolean(value.iterated); writeOptionalString(writer, value.loopRole); writePairs(writer, value.raw, writeEffectValue)
+    writeOptionalString(writer, value.externalTexture); writeOptionalString(writer, value.outputTex3d); writeOptionalString(writer, value.outputGeo); writeOptionalString(writer, value.outputXyz); writeOptionalString(writer, value.outputVelocity); writeOptionalString(writer, value.outputRgba); if (value.outputTex !== undefined) { writer.token('outputTex'); writer.token(value.outputTex) } writer.boolean(value.iterated); writeOptionalString(writer, value.loopRole); writePairs(writer, value.raw, writeEffectValue)
   }
   function writeBinding(writer, value) { ;[value.name, value.type, value.source, value.sourceName, value.resource, value.cppType].forEach((item) => writer.token(item ?? '')) }
   function writeOutput(writer, value) { writer.size(value.slot); writer.token(value.physicalName); writer.token(value.logicalRoute); writer.token(value.cppType) }
@@ -428,6 +438,11 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   function writeSurface(writer, value) { writer.size({ none: 0, input: 1, named: 2 }[value.kind]); writer.token(value.name); writer.size(value.index); const location = value.loc ?? { sourceName: '', line: 0, column: 0, index: 0 }; writer.token(location.sourceName); writer.size(location.line); writer.size(location.column); writer.size(location.index) }
   function writeChain(writer, chain) { writer.token(chain.loc.sourceName); writer.size(chain.loc.line); writer.size(chain.loc.column); writer.size(chain.loc.index); writer.size(chain.steps.length); chain.steps.forEach((item) => writeStep(writer, item)) }
   function writeStep(writer, value) {
+    if (value._id || value._skip) {
+      writer.token('element-metadata'); writer.optional(value._id !== undefined)
+      if (value._id !== undefined) writer.token(value._id)
+      writer.boolean(Boolean(value._skip))
+    }
     if (value.kind === 'read' || value.kind === 'write') { writer.token(value.kind); writeSurface(writer, surfaceValue(value.surface, value.surfaceLocation ?? value.loc)); writer.token(value.loc.sourceName); writer.size(value.loc.line); writer.size(value.loc.column); writer.size(value.loc.index); return }
     if (value.kind === 'write3d' || value.kind === 'read3d') { writer.token(value.kind); writer.token(value.volume); writer.token(value.geometry); writer.token(value.loc.sourceName); writer.size(value.loc.line); writer.size(value.loc.column); writer.size(value.loc.index); return }
     // A step without chain arguments keeps the original `effect` grammar.
@@ -509,7 +524,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       name: pass.name, inputs: pairs(pass.inputs), outputs: pairs(pass.outputs), uniforms: pairs(pass.uniforms).map(([name, value]) => [name, tagged(value)]),
       blendKind: Array.isArray(blend) ? 'factors' : (typeof blend === 'boolean' ? 'boolean' : 'none'),
       blend: Array.isArray(blend) ? true : (blend === true),
-      blendFactors: Array.isArray(blend) ? [...blend] : ['', ''],
+      blendFactors: Array.isArray(blend) ? blend.map(blendFactor) : ['', ''],
       repeat: pass.repeat == null ? { present: false } : { present: true, value: tagged(pass.repeat) },
       defines: optionalEffect(pass.defines, Object.prototype.hasOwnProperty.call(pass, 'defines')),
       viewport: optionalEffect(pass.viewport, Object.prototype.hasOwnProperty.call(pass, 'viewport'))
@@ -574,10 +589,13 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       // a read in one locates its surface at the read call.
       const flatCalls = (astChain) => astChain?.calls?.flatMap((element) => element.kind === 'Subchain' ? element.body : [element]) ?? null
       const projectSteps = (steps, astCalls) => steps.map((step, stepIndex) => {
-        const surfaceLocation = astCalls?.[stepIndex]?.args?.[0]?.value?.loc ?? null
-        if (step.kind === 'read') return { kind: 'read', surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
-        if (step.kind === 'write') return { kind: 'write', surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
-        if (step.kind === 'write3d' || step.kind === 'read3d') return { kind: step.kind, volume: step.volume, geometry: step.geometry, loc: loc(step.loc) }
+        const metadata = {}
+        if (step._id !== undefined) metadata._id = step._id
+        if (step._skip) metadata._skip = true
+        const surfaceLocation = astCalls?.[stepIndex]?.args?.find(arg => arg.name !== '_id' && arg.name !== '_skip')?.value?.loc ?? null
+        if (step.kind === 'read') return { kind: 'read', ...metadata, surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
+        if (step.kind === 'write') return { kind: 'write', ...metadata, surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
+        if (step.kind === 'write3d' || step.kind === 'read3d') return { kind: step.kind, ...metadata, volume: step.volume, geometry: step.geometry, loc: loc(step.loc) }
         // Chain arguments run before the step, so their effects take snapshot
         // and availability positions first.
         const inlineChains = (step.inlineChains ?? []).map((item) => ({ surface: item.surface, chain: { loc: loc(item.chain.loc), steps: projectSteps(item.chain.steps, null) } }))
@@ -593,7 +611,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
           snapshotValue.snapshotSha256 = hashSnapshot(snapshotValue)
           snapshots.push(snapshotValue)
         }
-        const result = { kind: 'effect', effectId: step.definition.id, domain: step.definition.domain, effectKind: step.definition.kind, snapshotIndex, params, explicitParams: [...step.explicitParams], passes }
+        const result = { kind: 'effect', ...metadata, effectId: step.definition.id, domain: step.definition.domain, effectKind: step.definition.kind, snapshotIndex, params, explicitParams: [...step.explicitParams], passes }
         if (inlineChains.length > 0) result.inlineChains = inlineChains
         result.loc = loc(step.loc)
         return result
@@ -607,7 +625,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
         throw Object.assign(new Error(`${step.loc.sourceName}:${step.loc.line}:${step.loc.column}: Effect pass "${unavailable.programKey}" unavailable: ${unavailable.reasons.map((reason) => `${reason.code} (${reason.detail})`).join(': ')}`), { sourceName: step.loc.sourceName, line: step.loc.line, column: step.loc.column })
       }
       const provenance = fixture.registryMode === 'catalog_records'
-        ? { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: catalogProvenance.corpus_revision, generatedPayloadSha256: catalogProvenance.generated_payload_sha256, normalizedRecordStreamSha256: catalogProvenance.normalized_record_stream_sha256, authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: compatibility.authority.upstream_tree, upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: 'c14beb874bcdb8fb2087d6899abef9f9719e2a46e824a04508cad3f7ea15c502', counts: { definitions: catalogProvenance.counts.definitions, passes: catalogProvenance.counts.passes, referenceProgramKeys: catalogProvenance.counts.reference_program_keys, backendPrograms: catalogProvenance.counts.backend_programs, compatiblePrograms: catalogProvenance.counts.compatible_programs, incompatiblePrograms: catalogProvenance.counts.incompatible_programs, missingPasses: catalogProvenance.counts.missing_passes, scatterPasses: catalogProvenance.counts.scatter_passes, executableDefinitions: catalogProvenance.counts.executable_definitions, incompleteDefinitions: catalogProvenance.counts.incomplete_definitions } }
+        ? { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: catalogProvenance.corpus_revision, generatedPayloadSha256: catalogProvenance.generated_payload_sha256, normalizedRecordStreamSha256: catalogProvenance.normalized_record_stream_sha256, authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: compatibility.authority.upstream_tree, upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: '781369791bbbe84a70c78ec76c3323414d3e0923c4acaae3860528a7ce82a6b7', counts: { definitions: catalogProvenance.counts.definitions, passes: catalogProvenance.counts.passes, referenceProgramKeys: catalogProvenance.counts.reference_program_keys, backendPrograms: catalogProvenance.counts.backend_programs, compatiblePrograms: catalogProvenance.counts.compatible_programs, incompatiblePrograms: catalogProvenance.counts.incompatible_programs, missingPasses: catalogProvenance.counts.missing_passes, scatterPasses: catalogProvenance.counts.scatter_passes, executableDefinitions: catalogProvenance.counts.executable_definitions, incompleteDefinitions: catalogProvenance.counts.incomplete_definitions } }
         : { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', backendSchema: '', corpusRevision: '', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', cpuPackageSha256: '', cpuPackageLockSha256: '', cpuSourceLockSha256: '', upstreamRevision: '', upstreamTree: '', upstreamPackageSha256: '', upstreamPackageLockSha256: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
       const plan = { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], effects: snapshots, chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance }
       const renderLocation = compiled.ast?.render?.loc ?? [...chains].reverse().flatMap((chain) => [...chain.steps].reverse()).find((step) => step.kind === 'write')?.surfaceLocation ?? null
@@ -617,7 +635,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       return { name: fixture.name, plan }
     } catch (error) {
       const sourceName = error.sourceName ?? fixture.sourceName ?? fixture.name, line = error.line ?? 1, column = error.column ?? 1
-      return { name: fixture.name, error: { name: error.name === 'DslError' ? 'DslError' : 'DslError', message: error.message, sourceName, line, column, index: indexFor(fixture.source, line, column) } }
+      return { name: fixture.name, error: { name: error.name === 'DslError' ? 'DslError' : 'DslError', message: error.message, sourceName, line, column, index: indexFor(fixture.source, line, column), ...(error.code ? { code: error.code } : {}) } }
     }
   }
   const text = fixtures.map(canonical).map((entry) => JSON.stringify(entry)).join('\n') + '\n'

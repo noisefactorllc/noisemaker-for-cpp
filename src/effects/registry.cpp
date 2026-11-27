@@ -1,6 +1,7 @@
 #include "noisemaker/effects/registry.hpp"
 #include "noisemaker/effects/mesh_render_contract.hpp"
 
+#include "noisemaker/dsl/lexer.hpp"
 #include "noisemaker/js_number.hpp"
 
 #include <algorithm>
@@ -920,21 +921,21 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     throw std::invalid_argument("Production catalog requires the generated singleton");
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
-      provenance_.corpus_revision != "478f94eae7ebe34116dfc661ac52b373b884008b" ||
-      provenance_.generated_payload_sha256 != "1163c510d8770bbb8144fccd08f354b87f93a65c04c6aabfe720e854021bf66b" ||
-      provenance_.normalized_record_stream_sha256 != "fb72ad197ea19e667c5697fd234d983e5b70f299bad1d79bde69661969342215" ||
-      provenance_.compatibility_sha256 != "c14beb874bcdb8fb2087d6899abef9f9719e2a46e824a04508cad3f7ea15c502" ||
-      provenance_.cpu_behavioral_lock != "ea6364296a188f47cfd66702d32d931602c6b297b0929a812fef96d7c42760ae" ||
+      provenance_.corpus_revision != "5596e69fd6e3b9014e9df0f8674e10e70c332e11" ||
+      provenance_.generated_payload_sha256 != "466afce4880efc4a448963a4f26105a512034b2d36565dcb72102f1f860ede2d" ||
+      provenance_.normalized_record_stream_sha256 != "9ab6409e26011b2d68e6b336392592c6ed5311fb9bd77933eb1156a99097dad1" ||
+      provenance_.compatibility_sha256 != "781369791bbbe84a70c78ec76c3323414d3e0923c4acaae3860528a7ce82a6b7" ||
+      provenance_.cpu_behavioral_lock != "8516b22b515cc754c7670f9cf8d9ef5a455d58bce31b9640e766bcdbc7e244c7" ||
       provenance_.cpu_behavioral_file_count != 98 ||
-      provenance_.cpu_revision != "ea6364296a188f47cfd66702d32d931602c6b297b0929a812fef96d7c42760ae" ||
-      provenance_.source_lock_sha256 != "e5e271a0716b6b6bb4b4d021e5c86c5b5878b2d3e84426d33881359c655b5775" ||
+      provenance_.cpu_revision != "8516b22b515cc754c7670f9cf8d9ef5a455d58bce31b9640e766bcdbc7e244c7" ||
+      provenance_.source_lock_sha256 != "cb05119578cf58eeefe64ab5ccef771639b92427ef0e95001b4c5336109cc770" ||
       provenance_.cpu_package_sha256 != "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
-      provenance_.cpu_source_lock_sha256 != "337d4274fa55501b5cd97671c452efba9c67105c45feb50caf82d83162295e29" ||
-      provenance_.upstream_revision != "478f94eae7ebe34116dfc661ac52b373b884008b" ||
-      provenance_.upstream_tree != "1dd7f165322057416e78412c99d7fd347b1287a2" ||
-      provenance_.upstream_package_sha256 != "f0949b6fe18b6a5d26dba8383bca0fa5138689034a6341e2b2786e2e1dab4312" ||
-      provenance_.upstream_package_lock_sha256 != "7bc2eaa3d228d4c69c6e0ef74e37efdd5f18b936297b42877d0efe0d9ae0b520" ||
+      provenance_.cpu_source_lock_sha256 != "c3953863d98c58711cd5c7716f0d57c8ae4e050f29220192b5e67b721c22c1c3" ||
+      provenance_.upstream_revision != "5596e69fd6e3b9014e9df0f8674e10e70c332e11" ||
+      provenance_.upstream_tree != "148ce3ba003445fe96c0e3a50d95303cc937e010" ||
+      provenance_.upstream_package_sha256 != "e352b069e7452d2e9e5f9a0053e3b864384c70b02f42a0da07db4bf733c6e6a2" ||
+      provenance_.upstream_package_lock_sha256 != "53e1dcf748c0a5ec19823353a29594fca2b16e6597e43d321a48f51b8595dbd8" ||
       provenance_.first_effect_id != "classicNoisedeck/bitEffects" || provenance_.last_effect_id != "synth3d/shape3d")
     throw std::invalid_argument("Production catalog provenance authentication failed");
   manifest_backed_ = true;
@@ -1185,6 +1186,13 @@ EffectRegistry& EffectRegistry::register_effect(EffectDefinition definition) {
   const std::vector<std::string> domains = {"image", "volume-generator", "volume-filter", "volume-renderer", "loop-begin", "loop-end"};
   if (std::find(domains.begin(), domains.end(), definition.domain) == domains.end()) throw std::invalid_argument("Invalid effect domain \"" + definition.domain + "\"");
   if (get(definition.name_space, definition.function) != nullptr) throw std::invalid_argument("Effect \"" + definition.id + "\" is already registered");
+  for (const auto* route : {&definition.output_tex, &definition.output_tex3d, &definition.output_geo,
+                            &definition.output_xyz, &definition.output_velocity, &definition.output_rgba}) {
+    if (*route && dsl::is_blank(**route)) throw std::invalid_argument("Effect output name must be a non-empty string");
+  }
+  for (auto& pass : definition.passes) {
+    if (pass.outputs.empty()) pass.outputs = pass.storage_textures;
+  }
   definitions_.push_back(std::move(definition));
   return *this;
 }

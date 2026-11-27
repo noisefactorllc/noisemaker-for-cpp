@@ -3,6 +3,7 @@
 
 #include "noisemaker/effects/bit_effects.hpp"
 #include "noisemaker/effects/median.hpp"
+#include "noisemaker/effects/remap.hpp"
 #include "noisemaker/effects/snow.hpp"
 #include "noisemaker/graph/executor.hpp"
 #include "noisemaker/renderer.hpp"
@@ -1118,6 +1119,45 @@ TEST(graph_executor_publishes_a_bound_zone_surface_into_the_remap_block) {
   REQUIRE(bindings.get_or<double>("zone1_active", -1.0) == 0.0);
   REQUIRE(rgba8_sha256(renderer.render(plan, inputs)) ==
           "8a9c935c59f4b61cd6baaf7cb0413e1e0671418073528aefde032fd5078bba45");
+}
+
+TEST(remap_preserves_sub_float32_polygon_edges_through_dsl_bindings) {
+  Renderer renderer;
+  for (const auto& [edge, hash] : {
+           std::pair{"0.50000000001", "3d92f5037c16711d6f2200a24e383ad1481581d7b1c6386db5a2495655a01bef"},
+           std::pair{"0.49999999999", "6f5776fbf507d6449c0cb2582ba00a4ed5f259516e8a3c08d680aa9866e90651"}}) {
+    const std::string source =
+        std::string("search synth\nsolid(color: #f00).write(o1)\n") +
+        "remap(zoneCount: 1, smoothEdge: 0, zone0_tex: read(o1), zone0_count: 4, zone0_v0: [0,0," +
+        edge + ",0], zone0_v1: [" + edge + ",1,0,1]).write(o0)\nrender(o0)\n";
+    REQUIRE(rgba8_sha256(renderer.render(source, options(7U, 5U))) == hash);
+  }
+}
+
+TEST(remap_samples_double_coordinates_with_the_bound_texture_filter) {
+  Surface texture(90U, 1U);
+  for (std::size_t i = 0; i < texture.width(); ++i) {
+    texture.data()[4U * i] = static_cast<float>(i);
+    texture.data()[4U * i + 3U] = 1.0F;
+  }
+  glsl::Bindings bindings;
+  bindings.set_uniform("zoneCount", 1.0);
+  bindings.set_uniform("zone0_count", 4.0);
+  bindings.set_uniform("zone0_active", 1.0);
+  bindings.set_uniform("zone0_v0", glsl::DVec4(0, 0, 1, 0));
+  bindings.set_uniform("zone0_v1", glsl::DVec4(1, 1, 0, 1));
+  bindings.set_uniform("resolution", glsl::Vec2(5, 3));
+  bindings.set_uniform("fullResolution", glsl::Vec2(5, 3));
+  bindings.set_texture("zone0_tex", texture);
+  glsl::PixelContext context;
+  context.frag_coord = glsl::Vec4(3.5F, 1.5F, 0, 1);
+  for (const auto& [filter, expected] : {
+           std::pair{TextureFilter::nearest, 63.0F}, std::pair{TextureFilter::linear, 62.5F}}) {
+    texture.set_filter(filter);
+    glsl::Vec4 pixel;
+    effects::bind_remap(bindings).run_pixel(context, pixel);
+    REQUIRE(pixel[0] == expected);
+  }
 }
 
 TEST(graph_executor_rejects_every_forged_component_of_the_ordered_binding_abi) {

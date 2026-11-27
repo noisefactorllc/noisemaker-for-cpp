@@ -5,7 +5,7 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const sourceHashes = {
-  'src/effects/cpu/mesh-render.js': 'ea9480452c59bcc51aa33fa0e699368b3dcadc6c629569a3b0fa7142186ee499',
+  'src/effects/cpu/mesh-render.js': '832a804f357173542daa4bd66f57fc4a0ae7c8388f0c5fdae7fe5408368a95c8',
   'src/runtime/external-input.js': '705f8f27b29e6ddc2334eb1e9af6ad57004063d848ea3bee9356626218c12757',
   'src/runtime/surface.js': '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
 };
@@ -33,7 +33,9 @@ const results = cases.map(test => {
   const normalData = new Float32Array(test.normals);
   const meshData = {positionData: positions, normalData, texWidth: test.tex_width, texHeight: test.tex_height};
   const {pixels} = meshRenderTrianglesAdapter({uniforms: test.uniforms, bindings: test.bindings,
+    pass: test.pass ?? {count: 'input'},
+    inputs: test.inputs ?? {meshPositions: {width: test.tex_width, height: test.tex_height}},
     destination, externalInputs: {meshData}});
   return {name: test.name, pixels, words: Array.from(new Uint32Array(destination.data.buffer)), rgba8: Array.from(destination.toRgba8())};
 });
-console.log(JSON.stringify({cpu_revision: '9b7294820eec2a0b95c66790b1dae374fa079c13', source_hashes: sourceHashes, results}));
+console.log(JSON.stringify({cpu_revision: '170d7ba2cbcf12790ad24f71a825fcd58683d0fb', source_hashes: sourceHashes, results}));

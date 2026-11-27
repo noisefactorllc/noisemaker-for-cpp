@@ -14,8 +14,8 @@ FACTORY = "noisemaker::effects::render_triangles"
 NATIVE_SOURCE = "src/effects/mesh_render.cpp"
 HEADER = "include/noisemaker/effects/mesh_render_contract.hpp"
 CPU_SOURCE = "src/effects/cpu/mesh-render.js"
-CPU_SHA256 = "ea9480452c59bcc51aa33fa0e699368b3dcadc6c629569a3b0fa7142186ee499"
-REVISION = "478f94eae7ebe34116dfc661ac52b373b884008b"
+CPU_SHA256 = "832a804f357173542daa4bd66f57fc4a0ae7c8388f0c5fdae7fe5408368a95c8"
+REVISION = "5596e69fd6e3b9014e9df0f8674e10e70c332e11"
 UPSTREAM = {
     "definition.js": "4ab85873f6851d0d212e6ed71ff8335430ea69310d62924e32e02dd29e045e6f",
     "glsl/render.vert": "a4baf8432c78f411ba28782c3f1276aa08c7448a4e748ce864a1c9178d34ddb9",

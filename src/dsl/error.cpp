@@ -16,6 +16,11 @@ DslError::DslError(std::string message, SourceLocation location)
       location_(std::move(location)),
       detail_(std::move(message)) {}
 
+DslError::DslError(std::string message, SourceLocation location, std::string diagnostic_code)
+    : DslError(std::move(message), std::move(location)) {
+  code = std::move(diagnostic_code);
+}
+
 DslError::DslError(std::string message, std::string_view source_name,
                    std::size_t line, std::size_t column, std::size_t index,
                    std::size_t byte_index)

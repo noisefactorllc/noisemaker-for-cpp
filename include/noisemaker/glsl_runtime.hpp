@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -472,6 +473,16 @@ class Bindings {
   template <class T> [[nodiscard]] T get(std::string_view name) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())throw KernelBindingError("uniform binding '"+std::string(name)+"' is missing");if(const auto* value=std::get_if<T>(&found->second);value!=nullptr)return *value;throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
   template <class T> [[nodiscard]] T get_or(std::string_view name,const T& fallback) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())return fallback;if(const auto* value=std::get_if<T>(&found->second);value!=nullptr)return *value;throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
   [[nodiscard]] double get_number(std::string_view name) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())throw KernelBindingError("uniform binding '"+std::string(name)+"' is missing");if(const auto* value=std::get_if<double>(&found->second);value!=nullptr)return *value;if(const auto* value=std::get_if<float>(&found->second);value!=nullptr)return static_cast<double>(*value);throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
+  [[nodiscard]] std::optional<double> find_number(std::string_view name) const {
+    const auto entry = uniforms_.find(std::string(name));
+    if (entry == uniforms_.end()) return std::nullopt;
+    const auto& value = entry->second;
+    if (const auto* number = std::get_if<double>(&value)) return *number;
+    if (const auto* number = std::get_if<float>(&value)) return *number;
+    if (const auto* number = std::get_if<std::int32_t>(&value)) return *number;
+    if (const auto* number = std::get_if<std::uint32_t>(&value)) return *number;
+    return std::nullopt;
+  }
   // Metadata queries and adapters that access surface fields require a binding.
   [[nodiscard]] const noisemaker::Surface& texture(std::string_view name) const;
   // GLSL pixel reads default an absent sampler to immutable transparent black.

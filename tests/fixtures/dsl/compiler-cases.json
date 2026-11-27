@@ -533,5 +533,45 @@
         "requireExecutable": false
       },
       "sourceSha256": "182a981e1fbd478db24a21b122bce26965b9418c1e14db7cef14e47e4ee249cb"
-    }
+    },
+  {
+    "name": "saved-element-ids",
+    "registryMode": "custom",
+    "sourceName": "saved-element-ids.dsl",
+    "source": "search fixture\nlet t=source(_id:'base',first:2)\nt().write(o1,_id:'save')\nread(_id:'r',tex:o1,_skip:true).mixer(_id:'use').write(o0,_id:'result')\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "e33a2c0484db5c918b9cf613ca695a5d702eb907961dc26ee7eb4c3d517afe01"
+  },
+  {
+    "name": "saved-inline-id",
+    "registryMode": "custom",
+    "sourceName": "saved-inline-id.dsl",
+    "source": "search fixture\nall(surf:source(_id:'nested'),v4:vec4(0,0.25,0.5,1,),).write(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "54fcb2ef2948bcdae522d3a1efa8c90b9449fae419b54db611a6f6a051954c83"
+  },
+  {
+    "name": "stable-overridden-argument",
+    "registryMode": "custom",
+    "sourceName": "stable-overridden-argument.dsl",
+    "source": "search fixture\nlet tuned=source(first:3,_id:'stored')\ntuned(bogus(),4,).write(o0,_id:bogus())\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "06395f46f96369bc7e0837c2c57f27a0712369f0d99bf19dd28baa0b5f2bf9e2"
+  },
+  {
+    "name": "invalid-bound-read-chain",
+    "registryMode": "custom",
+    "sourceName": "invalid-bound-read-chain.dsl",
+    "source": "search fixture\nlet layer=read(o1).mixer()\nall(surf:layer).write(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "a4ba8b15ba9eee1574cb81bc87fd090c4166619d4cccf4da5f3f3d8e67a62f44"
+  }
 ]

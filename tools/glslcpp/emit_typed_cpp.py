@@ -1073,11 +1073,13 @@ _TYPES = {
     "mat2": "glsl::Mat2", "mat3": "glsl::Mat3",
 }
 
-_DOUBLE_CUBEMAP_BASIS_SOURCES = {
+DOUBLE_CUBEMAP_BASIS_SOURCES = {
     "render/renderCubemap3d:renderCubemap3d":
-        "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
+        ("bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
+         "46046c3360de7b70ae0e48a54bc6a4b643ce1bc158625bf3239c60b6e3123f31"),
     "render/renderCubemapSurface:renderCubemapSurface":
-        "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+        ("ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+         "07ed8f69414d43e6bac80151965b8f200c54634f0e208b7847131cdc197ea4c1"),
 }
 
 # classicNoisedeck's palette-typed parameter overrides an effect's
@@ -7658,7 +7660,7 @@ class _Emitter:
         Returns `None` for every other uniform.
         """
         if (symbol.name == "cubeBasis" and symbol.type.display() == "mat3"
-                and self.source_hash == _DOUBLE_CUBEMAP_BASIS_SOURCES.get(self.program.key)):
+                and self.source_hash in DOUBLE_CUBEMAP_BASIS_SOURCES.get(self.program.key, ())):
             return "glsl::DMat3"
         if (self.program.key, symbol.name) in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS:
             return "glsl::DVec3"

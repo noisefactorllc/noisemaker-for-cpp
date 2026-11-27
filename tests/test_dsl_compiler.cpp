@@ -140,6 +140,123 @@ const noisemaker::graph::PlanValue& param_value(const noisemaker::graph::EffectS
 }
 }  // namespace
 
+TEST(dsl_compiler_preserves_element_ids_across_saved_effects_inline_chains_and_io) {
+  auto plan = catalog_plan(R"(search synth,synth3d,filter,mixer,render
+let n=noise(_id:'base_2',seed:1)
+n().subchain(id:'block'){.invert(_id:'flip')}.write(o1,_id:'w')
+read(tex:o1,_skip:true,_id:'r').blendMode(tex:n(_id:'over')).write(o0)
+noise3d().write3d(vol0,geo0,_id:'w3')
+read3d(_skip:true,_id:'r3',tex3d:vol0,geo:geo0).render3d().write(o3)
+read3d(vol0,geo0,_id:'r4',).render3d().write(o4))");
+  using namespace noisemaker::graph;
+  REQUIRE(validate_execution_plan(plan));
+  REQUIRE(effect_step(plan.chains[0], 0).id == "base_2");
+  REQUIRE(effect_step(plan.chains[0], 1).id == "flip");
+  REQUIRE(std::get<WriteStep>(plan.chains[0].steps[2]).id == "w");
+  const auto& read = std::get<ReadStep>(plan.chains[1].steps[0]);
+  REQUIRE(read.id == "r" && read.skip && read.surface.name == "o1");
+  const auto& overlay = effect_step(effect_step(plan.chains[1], 1).inline_chains.at(0).chain, 0);
+  REQUIRE(overlay.id == "over");
+  REQUIRE(overlay.explicit_params == std::vector<std::string>({"seed"}));
+  REQUIRE(std::get<Write3DStep>(plan.chains[2].steps[1]).id == "w3");
+  const auto& read3d = std::get<Read3DStep>(plan.chains[3].steps[0]);
+  REQUIRE(read3d.id == "r3" && read3d.skip && read3d.geometry == "geo0");
+  REQUIRE(std::get<Read3DStep>(plan.chains[4].steps[0]).id == "r4");
+  std::get<ReadStep>(plan.chains[1].steps[0]).skip = false;
+  REQUIRE(!validate_execution_plan(plan));
+  std::get<ReadStep>(plan.chains[1].steps[0]).skip = true;
+  std::get<WriteStep>(plan.chains[0].steps[2]).id = "modified";
+  REQUIRE(!validate_execution_plan(plan));
+}
+
+TEST(dsl_compiler_ignores_invalid_id_expressions_and_enforces_io_argument_forms) {
+  for (std::string id : {"''", "'9a'", "'a-b'", "'_x'", "5", "alias", "unknown()"}) {
+    const auto plan = catalog_plan("search synth; let alias='valid'; let t=noise(_id:'base'); t(_id:" + id +
+        ").write(o1,_id:" + id + "); read(o1,_id:" + id + ").write(o0)");
+    REQUIRE(!effect_step(plan.chains[0], 0).id);
+    REQUIRE(!std::get<noisemaker::graph::WriteStep>(plan.chains[0].steps[1]).id);
+    REQUIRE(!std::get<noisemaker::graph::ReadStep>(plan.chains[1].steps[0]).id);
+  }
+  for (std::string call : {"noise(1,_id:'x').write(o0)", "noise(_id:'x',1).write(o0)",
+      "noise().write(o0,)", "noise().write(surface:o0,_id:'x')", "noise().write(o0,_id:'x',)",
+      "noise().write(o0,other:1)", "noise(_skip:true).write(o0)", "read(o0,other:1).write(o0)",
+      "read(o0,_skip:true).write(o0)", "noise3d().write3d(vol0,geo0,_id:'x',)",
+      "read3d(vol0,geo0,other:1).render3d().write(o0)"}) {
+    REQUIRE_THROWS_AS(catalog_plan("search synth,synth3d,render; " + call), noisemaker::dsl::DslError);
+  }
+  auto plan = catalog_plan("search synth,mixer; noise().blendMode(tex:read(_id:'r',tex:o1,_skip:true)).write(o0)");
+  REQUIRE(param_value(effect_step(plan.chains[0],1),"tex").surface.name == "o1");
+}
+
+TEST(dsl_compiler_binds_stable_lists_discards_unused_expressions_and_captures_hex_colors) {
+  for (std::string call : {"solid(color:[1,0.25,0.5,],)", "solid([1,0.25,0.5,/*end*/],)",
+                            "solid(color:vec3(1,0.25,0.5,),)"}) {
+    const auto plan = catalog_plan("search synth; " + call + ".write(o0)");
+    REQUIRE(param_value(effect_step(plan.chains[0],0),"color").array[1].number == 0.25);
+  }
+  for (std::string call : {"solid([1,,0])", "solid([,1])", "noise(,)", "noise(12,,)", "noise(scaleX:,)",
+                          "noise(seed:7,12)", "noise(12,seed:7)", "noise({seed:7})"}) {
+    REQUIRE_THROWS_AS(catalog_plan("search synth; " + call + ".write(o0)"), noisemaker::dsl::DslError);
+  }
+  for (std::string body : {"let t=noise(seed:7); t(3,4,)", "let t=noise(3,4); t(seed:7,)",
+                            "let t=noise(seed:7); let u=t; u(3,4)"}) {
+    const auto plan = catalog_plan("search synth; " + body + ".write(o0)");
+    const auto& step = effect_step(plan.chains[0],0);
+    REQUIRE(param_value(step,"type").number == 3.0 && param_value(step,"octaves").number == 4.0);
+    REQUIRE(param_value(step,"seed").number == 7.0);
+  }
+  const auto overridden = catalog_plan("search synth; let t=noise(type:11); t(bogus(),4).write(o0)");
+  REQUIRE(param_value(effect_step(overridden.chains[0],0),"type").number == 11.0);
+  std::ostringstream warnings;
+  auto* old = std::cerr.rdbuf(warnings.rdbuf());
+  try {
+    const auto extra = catalog_plan("search synth; let t=solid(#f00); t(1,unknown()).write(o0)");
+    REQUIRE(effect_step(extra.chains[0],0).inline_chains.empty());
+  } catch (...) { std::cerr.rdbuf(old); throw; }
+  std::cerr.rdbuf(old);
+  REQUIRE(warnings.str() == "Too many positional arguments for solid(): 'solid' takes 2\n");
+  const auto nested = catalog_plan("search synth,filter,mixer; let c=#f00; let alias=c; let t=blendMode(tex:solid(color:alias).invert()); let u=t(mix:.5); let c=#0f0; let alias=#00f; noise().u(_id:'m').write(o0)");
+  const auto& inner = effect_step(effect_step(nested.chains[0],1).inline_chains.at(0).chain,0);
+  REQUIRE(param_value(inner,"color").array[0].number == 1.0 && param_value(inner,"color").array[2].number == 0.0);
+}
+
+TEST(dsl_compiler_reports_invalid_inline_chains_at_the_stored_first_call) {
+  for (const auto& [prefix, rest] : std::vector<std::pair<std::string,std::string>>{
+      {"noise().blendMode(tex: ", "read(o1).invert()).write(o0)"},
+      {"noise().blendMode(", "read3d(vol0,geo0).render3d()).write(o0)"},
+      {"noise().blendMode(tex: ", "noise().subchain('s'){.invert()}).write(o0)"},
+      {"let t=blendMode(tex: ", "read(o1).invert()); noise().t().write(o0)"},
+      {"let layer = ", "read(o1).invert(); noise().blendMode(tex:layer).write(o0)"}}) {
+    try { static_cast<void>(catalog_plan("search synth,synth3d,filter,mixer,render\n" + prefix + rest)); }
+    catch (const noisemaker::dsl::DslError& error) {
+      REQUIRE(error.code == "S001");
+      REQUIRE(error.line == 2 && error.column == prefix.size() + 1);
+      REQUIRE(error.detail() == "Chain for argument 'tex' in blendMode() may contain only effect calls");
+      continue;
+    }
+    REQUIRE(false);
+  }
+}
+
+TEST(dsl_compiler_splats_hex_color_into_rgb_slots_with_partial_keyword_precedence) {
+  auto probe = effect("rgb");
+  for (const auto* name : {"r","g","b","a"}) {
+    noisemaker::effects::ParameterDefinition p;
+    p.name = name; p.type = "float"; p.default_value = noisemaker::effects::Value::number_value(1.0);
+    probe.parameters.push_back(std::move(p));
+  }
+  const noisemaker::effects::EffectRegistry registry({probe});
+  for (const auto& [body, expected] : std::vector<std::pair<std::string,std::vector<double>>>{
+      {"let c=#804020; let t=rgb(c,.5,.6,.7); let c=#fff; t(g:.25)", {128.0/255.0,.25,32.0/255.0,.7}},
+      {"let t=rgb(r:.25); let u=t(#804020,.6); u(_id:'u')", {.25,.6,1.0,1.0}},
+      {"let t=rgb(_id:'t'); t(#f00)", {1.0,0.0,0.0,1.0}}}) {
+    const auto plan = noisemaker::dsl::compile("search fixture; " + body + ".write(o0)", registry);
+    const auto& step = effect_step(plan.chains[0],0);
+    for (std::size_t i = 0; i < expected.size(); ++i) REQUIRE(step.params[i].value.number == expected[i]);
+  }
+  REQUIRE_THROWS_AS(noisemaker::dsl::compile("search fixture; rgb([1,0,0]).write(o0)",registry),noisemaker::dsl::DslError);
+}
+
 TEST(dsl_compiler_lets_follow_statement_order_and_reassignment) {
   const auto plan = catalog_plan("search synth\nlet x = 10\nnoise(scaleX: x).write(o0)\nlet x = 90\nnoise(scaleX: x).write(o1)\nrender(o1)\n");
   REQUIRE(param_value(effect_step(plan.chains[0], 0), "scaleX").number == 10.0);
@@ -464,6 +581,8 @@ TEST(dsl_compiler_snapshot_authenticates_every_nested_definition_and_admission_f
   rejects([](auto& plan) { plan.effects[0].definition.passes[0].draw_buffers->number = 2.0; });
   rejects([](auto& plan) { plan.effects[0].definition.passes[0].raw[0].second.string = "changed"; });
   rejects([](auto& plan) { plan.effects[0].definition.external_texture = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].definition.output_tex = "replacement"; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].storage_textures.emplace_back("frag", "replacement"); });
   rejects([](auto& plan) { plan.effects[0].definition.raw[0].second.string = "changed"; });
   rejects([](auto& plan) { plan.effects[0].admissions[0].canonical_factory = "changed"; });
   rejects([](auto& plan) { plan.effects[0].admissions[0].source_sha256 = "changed"; });
@@ -699,6 +818,7 @@ std::string oracle_pass(const noisemaker::effects::PassDefinition& value) {
          ",\"blend\":" + oracle_blend(value.blend) +
          ",\"drawMode\":" + oracle_optional_string(value.draw_mode) +
          ",\"drawBuffers\":" + oracle_optional_effect_value(value.draw_buffers) +
+         (value.storage_textures.empty() ? std::string{} : ",\"storageTextures\":" + oracle_effect_string_pairs(value.storage_textures)) +
          ",\"raw\":" + oracle_effect_value_pairs(value.raw) + "}";
 }
 
@@ -727,6 +847,7 @@ std::string oracle_definition(const noisemaker::effects::EffectDefinition& value
     ",\"outputXyz\":" + oracle_optional_string(value.output_xyz) +
     ",\"outputVelocity\":" + oracle_optional_string(value.output_velocity) +
     ",\"outputRgba\":" + oracle_optional_string(value.output_rgba) +
+    (value.output_tex ? ",\"outputTex\":" + oracle_escape(*value.output_tex) : std::string{}) +
     ",\"iterated\":" + std::string(value.iterated ? "true" : "false") +
     ",\"loopRole\":" + oracle_optional_string(value.loop_role) +
     ",\"raw\":" + oracle_effect_value_pairs(value.raw) + "}";
@@ -828,16 +949,21 @@ std::string oracle_chain(const noisemaker::graph::ExecutionChain& chain) {
 std::string oracle_step(const noisemaker::graph::CompiledStep& step) {
   return std::visit([](const auto& current) -> std::string {
     using T = std::decay_t<decltype(current)>;
+    std::string metadata;
+    if (current.id) metadata = ",\"_id\":" + oracle_escape(*current.id);
+    if constexpr (std::is_same_v<T, noisemaker::graph::ReadStep> || std::is_same_v<T, noisemaker::graph::Read3DStep>) {
+      if (current.skip) metadata += ",\"_skip\":true";
+    }
     if constexpr (std::is_same_v<T, noisemaker::graph::ReadStep>) {
-      return "{\"kind\":\"read\",\"surface\":" + oracle_surface(current.surface) + ",\"loc\":" + oracle_loc(current.loc) + "}";
+      return "{\"kind\":\"read\"" + metadata + ",\"surface\":" + oracle_surface(current.surface) + ",\"loc\":" + oracle_loc(current.loc) + "}";
     } else if constexpr (std::is_same_v<T, noisemaker::graph::WriteStep>) {
-      return "{\"kind\":\"write\",\"surface\":" + oracle_surface(current.surface) + ",\"loc\":" + oracle_loc(current.loc) + "}";
+      return "{\"kind\":\"write\"" + metadata + ",\"surface\":" + oracle_surface(current.surface) + ",\"loc\":" + oracle_loc(current.loc) + "}";
     } else if constexpr (std::is_same_v<T, noisemaker::graph::Write3DStep> || std::is_same_v<T, noisemaker::graph::Read3DStep>) {
       return std::string("{\"kind\":\"") + (std::is_same_v<T, noisemaker::graph::Write3DStep> ? "write3d" : "read3d") +
-             "\",\"volume\":" + oracle_escape(current.volume) + ",\"geometry\":" + oracle_escape(current.geometry) +
+             "\"" + metadata + ",\"volume\":" + oracle_escape(current.volume) + ",\"geometry\":" + oracle_escape(current.geometry) +
              ",\"loc\":" + oracle_loc(current.loc) + "}";
     } else {
-      std::string result = "{\"kind\":\"effect\",\"effectId\":" + oracle_escape(current.effect.id) + ",\"domain\":" + oracle_escape(current.effect.domain) +",\"effectKind\":" + oracle_escape(current.effect.kind) + ",\"snapshotIndex\":" + std::to_string(current.snapshot_index) + ",\"params\":[";
+      std::string result = "{\"kind\":\"effect\"" + metadata + ",\"effectId\":" + oracle_escape(current.effect.id) + ",\"domain\":" + oracle_escape(current.effect.domain) +",\"effectKind\":" + oracle_escape(current.effect.kind) + ",\"snapshotIndex\":" + std::to_string(current.snapshot_index) + ",\"params\":[";
       for (std::size_t index = 0; index < current.params.size(); ++index) { if (index) result += ','; result += "{\"name\":" + oracle_escape(current.params[index].name) + ",\"value\":" + oracle_value(current.params[index].value) + "}"; }
       result += "],\"explicitParams\":[";
       for (std::size_t index = 0; index < current.explicit_params.size(); ++index) { if (index) result += ','; result += oracle_escape(current.explicit_params[index]); }
@@ -941,7 +1067,9 @@ int main(int argc, char** argv) {
     output += "],\"provenance\":{\"sourceSha256\":" + oracle_escape(p.source_sha256) + ",\"sourceName\":" + oracle_escape(p.source_name) + ",\"planPayloadSha256\":" + oracle_escape(p.plan_payload_sha256) + ",\"kind\":" + oracle_escape(p.kind) + ",\"schema\":" + oracle_escape(p.schema) + ",\"backendSchema\":" + oracle_escape(p.backend_schema) + ",\"corpusRevision\":" + oracle_escape(p.corpus_revision) + ",\"generatedPayloadSha256\":" + oracle_escape(p.generated_payload_sha256) + ",\"normalizedRecordStreamSha256\":" + oracle_escape(p.normalized_record_stream_sha256) + ",\"authorityLock\":" + oracle_escape(p.authority_lock) + ",\"cpuRevision\":" + oracle_escape(p.cpu_revision) + ",\"sourceLockSha256\":" + oracle_escape(p.source_lock_sha256) + ",\"cpuPackageSha256\":" + oracle_escape(p.cpu_package_sha256) + ",\"cpuPackageLockSha256\":" + oracle_escape(p.cpu_package_lock_sha256) + ",\"cpuSourceLockSha256\":" + oracle_escape(p.cpu_source_lock_sha256) + ",\"upstreamRevision\":" + oracle_escape(p.upstream_revision) + ",\"upstreamTree\":" + oracle_escape(p.upstream_tree) + ",\"upstreamPackageSha256\":" + oracle_escape(p.upstream_package_sha256) + ",\"upstreamPackageLockSha256\":" + oracle_escape(p.upstream_package_lock_sha256) + ",\"compatibilitySha256\":" + oracle_escape(p.compatibility_sha256) + ",\"counts\":{\"definitions\":" + std::to_string(p.counts.definitions) + ",\"passes\":" + std::to_string(p.counts.passes) + ",\"referenceProgramKeys\":" + std::to_string(p.counts.reference_program_keys) + ",\"backendPrograms\":" + std::to_string(p.counts.backend_programs) + ",\"compatiblePrograms\":" + std::to_string(p.counts.compatible_programs) + ",\"incompatiblePrograms\":" + std::to_string(p.counts.incompatible_programs) + ",\"missingPasses\":" + std::to_string(p.counts.missing_passes) + ",\"scatterPasses\":" + std::to_string(p.counts.scatter_passes) + ",\"executableDefinitions\":" + std::to_string(p.counts.executable_definitions) + ",\"incompleteDefinitions\":" + std::to_string(p.counts.incomplete_definitions) + "}}}";
     std::cout << output;
   } catch (const noisemaker::dsl::DslError& error) {
-    std::cout << ",\"error\":{\"name\":\"DslError\",\"message\":" << oracle_escape(error.what()) << ",\"sourceName\":" << oracle_escape(error.sourceName) << ",\"line\":" << error.line << ",\"column\":" << error.column << ",\"index\":" << error.index << '}';
+    std::cout << ",\"error\":{\"name\":\"DslError\",\"message\":" << oracle_escape(error.what()) << ",\"sourceName\":" << oracle_escape(error.sourceName) << ",\"line\":" << error.line << ",\"column\":" << error.column << ",\"index\":" << error.index;
+    if (error.code) std::cout << ",\"code\":" << oracle_escape(*error.code);
+    std::cout << '}';
   }
   std::cout << "}\n";
   return 0;
