@@ -112,7 +112,10 @@ class Parser {
     result.name = name.lexeme;
     result.loc = location(start);
     if (peek().type == TokenType::identifier && peek(1).lexeme == "(") {
-      result.value = call();
+      Call first = call();
+      if ((first.name == "read" || first.name == "read3d") && is_punctuation(".")) {
+        result.value = expression_chain(std::move(first));
+      } else result.value = std::move(first);
     } else {
       result.value = value_expression();
     }
@@ -154,7 +157,6 @@ class Parser {
     Value volume = reference();
     consume(",");
     Value geometry = reference();
-    consume(")");
     Call result;
     result.name = "write3d";
     result.argument_mode = Call::ArgumentMode::positional;
@@ -165,7 +167,19 @@ class Parser {
       argument.value = std::move(*value);
       result.arguments.push_back(std::move(argument));
     }
+    parse_io_id(result);
+    consume(")");
     return result;
+  }
+
+  // Positional I/O has one optional trailing _id keyword.
+  bool parse_io_id(Call& call) {
+    if (!check(",") || peek(1).type != TokenType::identifier || peek(1).lexeme != "_id" ||
+        peek(2).type != TokenType::punctuation || peek(2).lexeme != ":") return false;
+    current_ += 3;
+    const auto loc = location(peek());
+    call.arguments.push_back({"_id", value_expression(), loc});
+    return true;
   }
 
   // A chain in a value position (upstream parseChain in its 'expression'
@@ -238,6 +252,9 @@ class Parser {
     if (!check(")")) {
       do {
         const bool named = peek().type == TokenType::identifier && peek(1).lexeme == ":";
+        if (name.lexeme == "write" && named && peek().lexeme == "_id") {
+          throw DslError("write() requires a positional surface before _id", location(peek()));
+        }
         const auto next_mode = named ? Call::ArgumentMode::named : Call::ArgumentMode::positional;
         if (mode.has_value() && *mode != next_mode && name.lexeme != "midi" && name.lexeme != "audio") {
           throw DslError("Cannot mix positional and named arguments", location(peek()));
@@ -251,7 +268,17 @@ class Parser {
         argument.loc = location(peek());
         argument.value = value_expression();
         result.arguments.push_back(std::move(argument));
-      } while (match(","));
+        if (mode == Call::ArgumentMode::positional) {
+          if (name.lexeme == "write") {
+            parse_io_id(result);
+            break;
+          }
+          if ((name.lexeme == "read" || name.lexeme == "read3d") && parse_io_id(result)) {
+            static_cast<void>(match(","));
+            break;
+          }
+        }
+      } while (match(",") && !check(")"));
     }
     consume(")");
     result.argument_mode = mode.value_or(Call::ArgumentMode::none);
@@ -322,7 +349,7 @@ class Parser {
       std::vector<Value> values;
       if (!check("]")) {
         do values.push_back(value_expression());
-        while (match(","));
+        while (match(",") && !check("]"));
       }
       consume("]");
       return Value::array(std::move(values), location(token));
@@ -349,45 +376,33 @@ class Parser {
       }
       // A one-argument `read3d(vol0)` names a volume or geometry for a
       // parameter. With two arguments it starts a chain.
-      if (name == "read3d" && is_punctuation("(")) {
+      if ((name == "read" || name == "read3d") && is_punctuation("(")) {
         --current_;
-        Call read3d = call();
-        if (read3d.arguments.size() == 1 && read3d.arguments.front().value.kind == Value::Kind::identifier) {
-          return read3d.arguments.front().value;
+        Call read = call();
+        if (is_punctuation(".")) return expression_chain(std::move(read));
+        const CallArgument* target = nullptr;
+        for (const auto& argument : read.arguments) {
+          if (argument.name == "_id" || argument.name == "_skip") continue;
+          if (target) { target = nullptr; break; }
+          target = &argument;
         }
-        return expression_chain(std::move(read3d));
-      }
-      if (name == "read" && match("(")) {
-        if (peek().type == TokenType::identifier && peek(1).lexeme == ":") {
-          const Token& argument_name = identifier();
-          if (argument_name.lexeme != "surface" && argument_name.lexeme != "tex") {
-            throw DslError("read() surface argument must be named \"surface\" or \"tex\"",
-                           location(previous()));
-          }
-          consume(":");
-        }
-        Value result = surface_value();
-        consume(")");
-        // `read(oN).effect()` in a value position is a chain argument that
-        // starts from the surface. A bare `read(oN)` stays a surface reference.
-        if (is_punctuation(".")) {
-          Call read;
-          read.name = "read";
-          read.argument_mode = Call::ArgumentMode::positional;
-          read.loc = location(name_token);
-          CallArgument argument;
-          argument.loc = result.loc;
-          argument.value = std::move(result);
-          read.arguments.push_back(std::move(argument));
+        if (name == "read3d") {
+          if (target && target->value.kind == Value::Kind::identifier) return target->value;
           return expression_chain(std::move(read));
         }
-        return result;
+        if (!target || target->value.kind != Value::Kind::surface) {
+          throw DslError("Expected surface reference", read.loc);
+        }
+        if (target->name && target->name != "surface" && target->name != "tex") {
+          throw DslError("read() surface argument must be named \"surface\" or \"tex\"", target->loc);
+        }
+        return target->value;
       }
       if ((name == "vec2" || name == "vec3" || name == "vec4") && match("(")) {
         std::vector<Value> values;
         if (!check(")")) {
           do values.push_back(value_expression());
-          while (match(","));
+          while (match(",") && !check(")"));
         }
         consume(")");
         return Value::vector(static_cast<std::size_t>(name.back() - '0'),

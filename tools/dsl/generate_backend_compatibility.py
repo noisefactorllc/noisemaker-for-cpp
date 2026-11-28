@@ -27,6 +27,7 @@ if __package__ in (None, ""):
 
 from tools.glslcpp import check_corpus, check_semantics, corpus_ratchet, generate_typed_slice
 from tools.dsl import mesh_render_contract
+from tools.glslcpp.emit_typed_cpp import DOUBLE_CUBEMAP_BASIS_SOURCES
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.remap_profile import (
     KEY as REMAP_KEY,
@@ -60,13 +61,13 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "src/effects/generated/backend_compatibility.json"
-UPSTREAM_REVISION = "478f94eae7ebe34116dfc661ac52b373b884008b"
-UPSTREAM_TREE = "1dd7f165322057416e78412c99d7fd347b1287a2"
-SOURCE_LOCK_SHA256 = "e5e271a0716b6b6bb4b4d021e5c86c5b5878b2d3e84426d33881359c655b5775"
+UPSTREAM_REVISION = "f4a1382a1dc863bebe5a3204acfdec425a19c983"
+UPSTREAM_TREE = "6272af4edfa7878be6dbb5a51b96a076d2015c7c"
+SOURCE_LOCK_SHA256 = "2486bf6dcd6192c4f79d3377a3e928db428516aa026b9568b971ac80619d5e49"
 CPU_PACKAGE_SHA256 = "f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807"
 CPU_LOCK_SHA256 = "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d"
-UPSTREAM_PACKAGE_SHA256 = "f0949b6fe18b6a5d26dba8383bca0fa5138689034a6341e2b2786e2e1dab4312"
-UPSTREAM_LOCK_SHA256 = "7bc2eaa3d228d4c69c6e0ef74e37efdd5f18b936297b42877d0efe0d9ae0b520"
+UPSTREAM_PACKAGE_SHA256 = "2077453e24996a7c5efd561971be03c521a244519cb31c7ec336e3a0098f878a"
+UPSTREAM_LOCK_SHA256 = "53e1dcf748c0a5ec19823353a29594fca2b16e6597e43d321a48f51b8595dbd8"
 CORPUS_REVISION = check_corpus.REVISION
 SCATTER_KEY = "filter/wormhole:deposit"
 # Particle-family deposit programs executed through registered C++ scatter
@@ -216,12 +217,6 @@ CPP_TYPES = {
     "vec4": "glsl::Vec4", "ivec2": "glsl::IVec2", "ivec3": "glsl::IVec3",
     "ivec4": "glsl::IVec4", "uvec2": "glsl::UVec2", "uvec3": "glsl::UVec3",
     "uvec4": "glsl::UVec4", "mat2": "glsl::Mat2", "mat3": "glsl::Mat3",
-}
-DOUBLE_CUBEMAP_BASIS_SOURCES = {
-    "render/renderCubemap3d:renderCubemap3d":
-        "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
-    "render/renderCubemapSurface:renderCubemapSurface":
-        "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
 }
 # Mirrors tools/glslcpp/emit_typed_cpp.py's
 # `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS` exactly -- the authority binds
@@ -552,6 +547,23 @@ def _authority(cpu_root: pathlib.Path, shader_git: pathlib.Path) -> dict[str, An
     }
 
 
+_NUMERIC_BLEND_FACTORS = {
+    0: "zero", 0x0300: "src-color", 0x0301: "one-minus-src-color",
+    0x0302: "src-alpha", 0x0303: "one-minus-src-alpha", 0x0304: "dst-alpha",
+    0x0305: "one-minus-dst-alpha", 0x0306: "dst-color", 0x0307: "one-minus-dst-color",
+}
+
+
+def normalize_pass(raw: dict[str, Any]) -> dict[str, Any]:
+    result = dict(raw)
+    if raw.get("storageTextures") and not raw.get("outputs"):
+        result["outputs"] = raw["storageTextures"]
+    if isinstance(raw.get("blend"), list):
+        result["blend"] = [_NUMERIC_BLEND_FACTORS.get(factor, "one")
+                           if type(factor) in (int, float) else factor for factor in raw["blend"]]
+    return result
+
+
 def _node_effect_records(cpu_root: pathlib.Path) -> list[dict[str, Any]]:
     module = (cpu_root / "src/effects/generated/upstream-snapshot.js").resolve()
     script = (
@@ -566,6 +578,8 @@ def _node_effect_records(cpu_root: pathlib.Path) -> list[dict[str, Any]]:
         raise CompatibilityError(f"unable to load CPU effect records: {error}") from error
     if not isinstance(value, list):
         raise CompatibilityError("CPU effect records are not an array")
+    for effect in value:
+        effect["passes"] = [normalize_pass(raw) for raw in effect["passes"]]
     return value
 
 
@@ -877,7 +891,7 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
                 "0e2cf2bb49dffd6d5e1360772e750fde7328c0e29e2122bcb829ab00e006b881"):
             raise CompatibilityError(f"{program_key}: Number seed carrier source mismatch")
         if (program_key in DOUBLE_CUBEMAP_BASIS_SOURCES and name == "cubeBasis"
-                and typed_record.get("source_sha256") != DOUBLE_CUBEMAP_BASIS_SOURCES[program_key]):
+                and typed_record.get("source_sha256") not in DOUBLE_CUBEMAP_BASIS_SOURCES[program_key]):
             raise CompatibilityError(f"{program_key}: double matrix carrier source mismatch")
         cpp_type = _cpp_type(typ, name, source, program_key)
         item = {"name": name, "type": typ, "cpp_type": cpp_type, "source": source,

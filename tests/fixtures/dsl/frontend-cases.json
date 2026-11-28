@@ -39,5 +39,9 @@
   {"name":"lex-triple-quoted-string","source":"text: \"\"\"x \"y\"\nz\"\"\" + 1"},
   {"name":"lex-subchain-braces","source":"subchain() { .invert() }"},
   {"name":"lex-unterminated-triple-quoted-string","source":"text: \"\"\"open\n"},
-  {"name":"empty","source":""}
+  {"name":"empty","source":""},
+  {"name":"lex-single-quoted-strings","source":"text('a\\'b', 'x\\ny')"},
+  {"name":"parse-saved-io-ids","parse":true,"source":"search synth,render\nnoise(_id:'base',).write(o1,_id:'w')\nread(tex:o1,_skip:true,_id:'r').write(o0)\n"},
+  {"name":"parse-stable-list-vector-commas","parse":true,"source":"search synth\nremap(zone0_bounds:vec4(0,0.25,0.5,1,),bgColor:[0,0,0,],).write(o0)\n"},
+  {"name":"parse-stored-read-chain","parse":true,"source":"search synth,filter\nlet layer=read(o1).invert()\nnoise().write(o0)\n"}
 ]

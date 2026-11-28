@@ -13,6 +13,7 @@
 #include <limits>
 #include <iostream>
 #include <map>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -147,6 +148,10 @@ void pass(CanonicalWriter& writer, const effects::PassDefinition& input) {
   string_pairs(writer, input.outputs); value_pairs(writer, input.uniforms); optional_value(writer, input.count);
   optional_value(writer, input.repeat); optional_value(writer, input.conditions); optional_value(writer, input.viewport);
   blend(writer, input.blend); optional_string(writer, input.draw_mode); optional_value(writer, input.draw_buffers);
+  if (!input.storage_textures.empty()) {
+    writer.token("storageTextures");
+    string_pairs(writer, input.storage_textures);
+  }
   value_pairs(writer, input.raw);
 }
 
@@ -171,6 +176,10 @@ void definition(CanonicalWriter& writer, const effects::EffectDefinition& input)
   vector_values(writer, input.textures, [](auto& out, const auto& item) { texture(out, item); });
   optional_string(writer, input.external_texture); optional_string(writer, input.output_tex3d); optional_string(writer, input.output_geo);
   optional_string(writer, input.output_xyz); optional_string(writer, input.output_velocity); optional_string(writer, input.output_rgba);
+  if (input.output_tex) {
+    writer.token("outputTex");
+    writer.token(*input.output_tex);
+  }
   writer.boolean(input.iterated); optional_string(writer, input.loop_role); value_pairs(writer, input.raw);
 }
 
@@ -233,6 +242,13 @@ void chain_steps(CanonicalWriter& writer, const ExecutionChain& input) {
 void step(CanonicalWriter& writer, const CompiledStep& input) {
   std::visit([&](const auto& current) {
     using T = std::decay_t<decltype(current)>;
+    bool skip = false;
+    if constexpr (std::is_same_v<T, ReadStep> || std::is_same_v<T, Read3DStep>) skip = current.skip;
+    if (current.id || skip) {
+      writer.token("element-metadata");
+      optional_string(writer, current.id);
+      writer.boolean(skip);
+    }
     if constexpr (std::is_same_v<T, ReadStep>) { writer.token("read"); surface(writer, current.surface); location(writer, current.loc); }
     else if constexpr (std::is_same_v<T, WriteStep>) { writer.token("write"); surface(writer, current.surface); location(writer, current.loc); }
     else if constexpr (std::is_same_v<T, Write3DStep> || std::is_same_v<T, Read3DStep>) {
@@ -318,7 +334,7 @@ struct ResolvedArgument { std::optional<std::string> name; PlanValue value; Sour
 // The authority's `let` bindings: a partial keeps its call unresolved (its
 // arguments resolve where it is called), an alias names an effect function,
 // and a value binding resolves its expression at its first use.
-struct Partial { Call call; };
+struct Partial { Call call; std::size_t color_splat_limit = std::numeric_limits<std::size_t>::max(); };
 struct Alias { std::string name; };
 struct LazyValue {
   std::variant<Value, Call> expression;
@@ -528,52 +544,149 @@ PlanValue evaluate(const Value& value, Scope& scope, int osc_depth,
   value_error("Unsupported DSL value", value.loc);
 }
 
-std::vector<ResolvedArgument> resolve_arguments(const Call& call, Scope& scope) {
+// Inspect aliases without evaluating an argument that might compile an inline chain.
+const Value& bound_expression(const Value& value, const Scope& scope) {
+  const Value* current = &value;
+  std::set<std::string_view> seen;
+  while (current->kind == Value::Kind::identifier) {
+    const auto& name = current->identifier_value().name;
+    if (!seen.insert(name).second) break;
+    const auto found = scope.bindings.find(name);
+    if (found == scope.bindings.end()) break;
+    const auto* binding = std::get_if<LazyValue>(&found->second);
+    if (!binding) break;
+    const auto* expr = std::get_if<Value>(&binding->expression);
+    if (!expr) break;
+    current = expr;
+  }
+  return *current;
+}
+
+void capture_call_colors(Call& call, const Scope& scope);
+
+void capture_hex_colors(Value& value, const Scope& scope) {
+  if (value.kind == Value::Kind::chain) {
+    for (auto& element : std::get<ChainValue>(value.data).chain->calls) {
+      if (auto* call = std::get_if<Call>(&element)) capture_call_colors(*call, scope);
+    }
+  } else if (value.kind == Value::Kind::call) {
+    capture_call_colors(*std::get<CallValue>(value.data).call, scope);
+  } else if (value.kind == Value::Kind::identifier) {
+    const auto& resolved = bound_expression(value, scope);
+    if (resolved.kind == Value::Kind::color) value = resolved;
+  }
+}
+
+void capture_call_colors(Call& call, const Scope& scope) {
+  for (auto& argument : call.arguments) capture_hex_colors(argument.value, scope);
+}
+
+std::string canonical_name(const effects::EffectDefinition& definition, const std::string& name) {
+  for (const auto& [alias, canonical] : definition.parameter_aliases) {
+    if (alias == name) return canonical;
+  }
+  return name;
+}
+
+std::vector<ResolvedArgument> resolve_arguments(const Call& call, Scope& scope,
+                                                const effects::EffectDefinition* definition) {
   std::vector<ResolvedArgument> result;
-  for (const auto& argument : call.arguments) result.push_back({argument.name, evaluate(argument.value, scope), argument.loc});
+  for (const auto& argument : call.arguments) {
+    if (definition) {
+      const auto& expr = bound_expression(argument.value, scope);
+      if (expr.kind == Value::Kind::chain && std::any_of(expr.chain().calls.begin(), expr.chain().calls.end(),
+          [](const auto& element) {
+            const auto* call = std::get_if<Call>(&element);
+            return !call || call->name == "read" || call->name == "read3d";
+          })) {
+        const auto name = argument.name ? canonical_name(*definition, *argument.name)
+                                        : definition->parameters.at(result.size()).name;
+        throw DslError("Chain for argument '" + name + "' in " + call.name +
+                       "() may contain only effect calls", expr.chain().loc, "S001");
+      }
+    }
+    result.push_back({argument.name, evaluate(argument.value, scope), argument.loc});
+  }
   return result;
 }
 
-// The authority's mergeArgs on unresolved calls: stored positional arguments
-// come first; named arguments overwrite in place and new keys append.
-Call merge_arguments(const Call& stored, const Call& call) {
-  if (stored.argument_mode == Call::ArgumentMode::none) {
-    Call result = call;
-    result.name = stored.name;
+Partial merge_partial(const Partial& stored, const Call& call) {
+  Partial result = stored;
+  auto& merged = result.call;
+  merged.loc = call.loc;
+  if (call.name_space) merged.name_space = call.name_space;
+  if (call.argument_mode == Call::ArgumentMode::none) return result;
+  if (stored.call.argument_mode == Call::ArgumentMode::none) {
+    merged.argument_mode = call.argument_mode;
+    merged.arguments = call.arguments;
     return result;
   }
-  if (call.argument_mode == Call::ArgumentMode::none) {
-    Call result = stored;
-    result.loc = call.loc;
-    return result;
-  }
-  if (stored.argument_mode != call.argument_mode) throw DslError("Partial and call arguments must use the same named or positional form", call.loc);
-  Call result = call;
-  result.name = stored.name;
-  if (stored.argument_mode == Call::ArgumentMode::positional) {
-    result.arguments = stored.arguments;
-    result.arguments.insert(result.arguments.end(), call.arguments.begin(), call.arguments.end());
-    return result;
-  }
-  result.argument_mode = Call::ArgumentMode::named;
-  result.arguments.clear();
-  const auto merge = [&](const CallArgument& argument) {
-    auto existing = std::find_if(result.arguments.begin(), result.arguments.end(),
-                                 [&](const auto& item) { return item.name == argument.name; });
-    if (existing == result.arguments.end()) result.arguments.push_back(argument);
-    else *existing = argument;
+  std::vector<CallArgument> positional, named;
+  const auto merge = [&](const CallArgument& arg) {
+    if (!arg.name) { positional.push_back(arg); return; }
+    const auto found = std::find_if(named.begin(), named.end(),
+                                    [&](const auto& item) { return item.name == arg.name; });
+    if (found == named.end()) named.push_back(arg);
+    else *found = arg;
   };
-  for (const auto& argument : stored.arguments) merge(argument);
-  for (const auto& argument : call.arguments) merge(argument);
+  for (const auto& arg : stored.call.arguments) merge(arg);
+  const auto earlier_positionals = positional.size();
+  const bool earlier_keyword = std::any_of(named.begin(), named.end(), [](const auto& arg) {
+    return arg.name != "_id" && arg.name != "_skip";
+  });
+  for (const auto& arg : call.arguments) merge(arg);
+  if (!positional.empty() && earlier_keyword) {
+    result.color_splat_limit = std::min(result.color_splat_limit, earlier_positionals);
+  }
+  merged.argument_mode = positional.empty() ? Call::ArgumentMode::named : Call::ArgumentMode::positional;
+  merged.arguments = std::move(positional);
+  merged.arguments.insert(merged.arguments.end(), named.begin(), named.end());
   return result;
 }
 
-// A `from(ns, ...)` namespace on the call site wins over one stored in the
-// partial, as in upstream's resolveCall.
-Call merge_partial(const Call& stored, const Call& call) {
-  Call merged = merge_arguments(stored, call);
-  merged.name_space = call.name_space.has_value() ? call.name_space : stored.name_space;
-  return merged;
+void bind_effect_arguments(Call& call, const effects::EffectDefinition& definition,
+                           const Scope& scope, std::size_t color_splat_limit, bool merged) {
+  const auto& params = definition.parameters;
+  std::vector<CallArgument> positional, named;
+  for (auto& arg : call.arguments) (arg.name ? named : positional).push_back(std::move(arg));
+  if (positional.size() > params.size()) {
+    std::cerr << "Too many positional arguments for " << call.name << "(): '" << call.name
+              << "' takes " << params.size() << '\n';
+    positional.resize(params.size());
+  }
+  for (std::size_t r = 0; r < positional.size() && r < color_splat_limit && r + 2 < params.size(); ++r) {
+    if (params[r].name != "r" || params[r].type == "color" || params[r+1].name != "g" || params[r+2].name != "b") continue;
+    const auto& color = bound_expression(positional[r].value, scope);
+    if (color.kind != Value::Kind::color) break;
+    const auto& rgb = color.color_value().components;
+    if (rgb.size() < 3) break;
+    std::vector<CallArgument> channels;
+    for (std::size_t c = 0; c < 3; ++c) {
+      const auto& loc = positional[r].loc;
+      channels.push_back({std::nullopt, Value::number(rgb[c], loc), loc});
+    }
+    auto out = positional.erase(positional.begin() + r, positional.begin() + std::min(r + 3, positional.size()));
+    positional.insert(out, channels.begin(), channels.end());
+    break;
+  }
+  call.arguments.clear();
+  if (merged) {
+    std::set<std::string> overridden;
+    for (const auto& arg : named) overridden.insert(canonical_name(definition, *arg.name));
+    for (std::size_t i = 0; i < positional.size(); ++i) {
+      if (overridden.contains(params[i].name)) continue;
+      positional[i].name = params[i].name;
+      call.arguments.push_back(std::move(positional[i]));
+    }
+  } else call.arguments = std::move(positional);
+  call.arguments.insert(call.arguments.end(), named.begin(), named.end());
+}
+
+bool valid_element_id(const std::string& value) {
+  const auto letter = [](char c) { return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z'); };
+  return !value.empty() && letter(value.front()) && std::all_of(value.begin()+1, value.end(), [&](char c) {
+    return letter(c) || ('0' <= c && c <= '9') || c == '_';
+  });
 }
 
 // `read3d(vol, geo)` and `write3d(vol, geo)` take two positional references:
@@ -651,6 +764,7 @@ ExecutionChain compile_chain(const Chain& source_chain, Scope& scope, bool inlin
   }
   for (std::size_t index = 0; index < calls.size(); ++index) {
     Call call = *calls[index];
+    auto color_splat_limit = std::numeric_limits<std::size_t>::max();
     const auto found_binding = scope.bindings.find(call.name);
     if (found_binding != scope.bindings.end()) {
       if (const auto* alias = std::get_if<Alias>(&found_binding->second)) {
@@ -658,16 +772,38 @@ ExecutionChain compile_chain(const Chain& source_chain, Scope& scope, bool inlin
       } else {
         const auto* partial = std::get_if<Partial>(&found_binding->second);
         if (partial == nullptr) throw DslError("Binding \"" + call.name + "\" is not callable", call.loc);
-        call = merge_partial(partial->call, call);
+        auto result = merge_partial(*partial, call);
+        color_splat_limit = result.color_splat_limit;
+        call = std::move(result.call);
       }
     }
+    const bool is_read = call.name == "read" || call.name == "read3d";
+    std::optional<std::string> id;
+    bool skip = false;
+    const bool merged = call.argument_mode == Call::ArgumentMode::positional &&
+        std::any_of(call.arguments.begin(), call.arguments.end(), [](const auto& arg) { return arg.name.has_value(); });
+    std::erase_if(call.arguments, [&](const auto& arg) {
+      if (arg.name == "_id") {
+        if (arg.value.kind == Value::Kind::string && valid_element_id(arg.value.string_value())) id = arg.value.string_value();
+        else id.reset();
+        return true;
+      }
+      if (arg.name == "_skip" && is_read) {
+        skip = arg.value.kind == Value::Kind::boolean && arg.value.boolean();
+        return true;
+      }
+      return arg.name == "_skip" && arg.value.kind == Value::Kind::boolean && !arg.value.boolean();
+    });
+    const std::vector<std::string> namespaces = call.name_space.has_value() ? std::vector<std::string>{*call.name_space} : scope.search;
+    const auto* definition = scope.registry->resolve(call.name, namespaces);
+    if (definition) bind_effect_arguments(call, *definition, scope, color_splat_limit, merged);
     // Chain arguments compile while the arguments resolve; they belong to this call.
     std::vector<graph::InlineChain> inline_chains;
     auto* const outer_pending = scope.pending;
     scope.pending = &inline_chains;
     std::vector<ResolvedArgument> args;
     try {
-      args = resolve_arguments(call, scope);
+      args = resolve_arguments(call, scope, definition);
     } catch (...) {
       scope.pending = outer_pending;
       throw;
@@ -679,14 +815,14 @@ ExecutionChain compile_chain(const Chain& source_chain, Scope& scope, bool inlin
       SurfaceReference surface = surface_from_value(args.front().value);
       // A read in a chain argument carries its call location.
       if (inline_chain) surface.loc = call.loc;
-      chain.steps.push_back(graph::ReadStep{std::move(surface), call.loc});
+      chain.steps.push_back(graph::ReadStep{std::move(surface), call.loc, id, skip});
       has_image = true;
       continue;
     }
     if (call.name == "write") {
       if (open_loop.has_value()) throw DslError("loopBegin must be closed by loopEnd before write", call.loc);
       if (!has_image || args.size() != 1 || args.front().value.kind != PlanValue::Kind::surface) throw DslError("write(surface) requires a current image", call.loc);
-      chain.steps.push_back(graph::WriteStep{surface_from_value(args.front().value), call.loc});
+      chain.steps.push_back(graph::WriteStep{surface_from_value(args.front().value), call.loc, id});
       continue;
     }
     // Built-in volume I/O (upstream `_write3d` and `_read3d`).
@@ -696,19 +832,17 @@ ExecutionChain compile_chain(const Chain& source_chain, Scope& scope, bool inlin
       if (open_loop.has_value()) throw DslError("loopBegin must be closed by loopEnd before write", call.loc);
       const auto references = volume_references(call);
       if (!references.has_value()) throw DslError("Expected surface reference", call.loc);
-      chain.steps.push_back(graph::Write3DStep{(*references)[0], (*references)[1], call.loc});
+      chain.steps.push_back(graph::Write3DStep{(*references)[0], (*references)[1], call.loc, id});
       continue;
     }
     if (index == 0 && call.name == "read3d") {
       if (const auto references = read3d_references(call); references.has_value()) {
-        chain.steps.push_back(graph::Read3DStep{(*references)[0], (*references)[1], call.loc});
+        chain.steps.push_back(graph::Read3DStep{(*references)[0], (*references)[1], call.loc, id, skip});
         has_volume = true;
         continue;
       }
     }
 
-    const std::vector<std::string> namespaces = call.name_space.has_value() ? std::vector<std::string>{*call.name_space} : scope.search;
-    const auto* definition = scope.registry->resolve(call.name, namespaces);
     if (definition == nullptr) throw DslError("Unknown effect \"" + call.name + "\" in search namespaces " + joined(namespaces), call.loc);
 
     if (definition->domain == "volume-generator") {
@@ -749,6 +883,7 @@ ExecutionChain compile_chain(const Chain& source_chain, Scope& scope, bool inlin
     try { normalized = scope.registry->normalize(*definition, parameter_args); }
     catch (const std::exception& error) { throw DslError(error.what(), call.loc); }
     graph::EffectStep step;
+    step.id = std::move(id);
     step.effect = {definition->id, definition->domain, definition->kind};
     ExecutionPlan& plan = *scope.plan;
     auto snapshot_it = std::find_if(plan.effects.begin(), plan.effects.end(), [&](const auto& snapshot) {
@@ -814,7 +949,14 @@ std::optional<InternalBinding> alias_binding(const Value& value, const Scope& sc
 void declare_binding(const Binding& binding, Scope& scope) {
   if (const auto* call = std::get_if<Call>(&binding.value)) {
     if (call->name != "osc" && !unsupported_input_name(call->name)) {
-      scope.bindings.insert_or_assign(binding.name, Partial{*call});
+      Partial partial{*call};
+      capture_call_colors(partial.call, scope);
+      const auto previous = scope.bindings.find(partial.call.name);
+      if (previous != scope.bindings.end()) {
+        if (const auto* stored = std::get_if<Partial>(&previous->second)) partial = merge_partial(*stored, partial.call);
+        else if (const auto* alias = std::get_if<Alias>(&previous->second)) partial.call.name = alias->name;
+      }
+      scope.bindings.insert_or_assign(binding.name, std::move(partial));
       return;
     }
   } else {
@@ -831,7 +973,10 @@ void declare_binding(const Binding& binding, Scope& scope) {
       }
     }
   }
-  scope.bindings.insert_or_assign(binding.name, LazyValue{binding.value, std::nullopt});
+  LazyValue lazy{binding.value, std::nullopt};
+  if (auto* value = std::get_if<Value>(&lazy.expression)) capture_hex_colors(*value, scope);
+  else capture_call_colors(std::get<Call>(lazy.expression), scope);
+  scope.bindings.insert_or_assign(binding.name, std::move(lazy));
 }
 
 }  // namespace

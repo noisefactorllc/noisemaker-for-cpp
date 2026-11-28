@@ -497,15 +497,107 @@ _STROKES_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILE = {
 }
 
 
-def _source_global_profile(key: str, defines: tuple[object, ...]) -> dict | None:
+# Source and typed-tree deltas for the generated marchers at 5596e69f.
+# Each entry inherits the same historical MAX_STEPS declaration and safety
+# bounds. The raw digest selects between the two authenticated revisions.
+_MARCHER_LOOP_PROFILES = {
+    'render/render3d:render3d': {
+        'raw': '88708d8a300ebdf74c4fa2470ecba4e214efba5c2bc476f59ccb0019c7c9b226',
+        'source': '21eb12470a353e44fe7cd31ff12281a896f87bf796d74a337b24011e679ffd72',
+        'globals': (
+            ('TAU', 15, 'float', '6.283185307179586'),
+            ('PI', 16, 'float', '3.141592653589793'),
+            ('MAX_STEPS', 17, 'int', '256'),
+            ('MAX_DIST', 18, 'float', '10.0'),
+            ('MARCHER_LIGHT_X', 19, 'float', None),
+        ),
+        'reads': (('isosurfaceTrace', 49, 283, 25, 283, 34), ('voxelTrace', 56, 163, 25, 163, 34)),
+        'pre_functions': 'a74b6dcffc01e77fc659bbc37db5e882ebf5f2dd6eb3e8cefcb07a9d1189160f',
+        'post_functions': '802f3b26dfafc9aaed5fc875bc12c4861e4ac90edfd78a219d78981eaf15fbe0',
+        'pre_whole': '5ea5c3063d2a6d8abeaf424928bc9bdc7a87868fccbde9484647bd9e712f66be',
+        'post_whole': 'fc0a9230c5a8b3e8bd0d5e06a86074c8c10af22093312a26a818b77ab88291ae',
+        'interface': 'c58f1cbc57a69ddf38550ecdd2c4deb4c4e21cb5e55425c40d583f95f9aab6d1',
+    },
+    'render/renderCubemap3d:renderCubemap3d': {
+        'raw': '46046c3360de7b70ae0e48a54bc6a4b643ce1bc158625bf3239c60b6e3123f31',
+        'source': '2b6573bd05cf84826dda0c0abfa03b37e5e8f34c48b719f5fed773a43d5a05d1',
+        'globals': (
+            ('TAU', 14, 'float', '6.283185307179586'),
+            ('PI', 15, 'float', '3.141592653589793'),
+            ('MAX_STEPS', 16, 'int', '256'),
+            ('MAX_DIST', 17, 'float', '10.0'),
+            ('MARCHER_LIGHT_X', 18, 'float', '1.0'),
+        ),
+        'reads': (('isosurfaceTrace', 48, 282, 25, 282, 34), ('voxelTrace', 55, 162, 25, 162, 34)),
+        'pre_functions': '82270bcc5ea33007838938b75685b9ac20f6bc4c6e297b7333b95303e5cf328b',
+        'post_functions': '54af22949fa3cb6d061ba149f05b3bc7825f0c68214a86672add90f524532a38',
+        'pre_whole': '6e2955a7f305414f0801491c0b98a1eba377cd7daddcc080684a563369c72f34',
+        'post_whole': '976c7d8f78f9189d24908f0129195b138bd0365db17ed97d1e24c5af9ca3ade9',
+        'interface': '2067da77cdd8df9662b614e85bc4eaea673517abf649d3bea04621b39de765f6',
+    },
+    'render/renderCubemapSurface:renderCubemapSurface': {
+        'raw': '07ed8f69414d43e6bac80151965b8f200c54634f0e208b7847131cdc197ea4c1',
+        'pre_whole': '99ddcb7cb60e685d807bc025410cf3d055f8c572a403e7625fd6a7244b66bafd',
+        'post_whole': '003d765bedbe46308774c7f2381b9d1ddc298a8ba32cc9642187ab1b6e7edc14',
+    },
+    'render/renderLit3d:renderLit3d': {
+        'raw': '8129bf08ffef71df58ac24dd5838795c173b9744765f807c36c3fd845e2f4f93',
+        'pre_whole': '499931cb44cc3a085583397121827db2480f0c72c68174ce37d35bc38d2d8db6',
+        'post_whole': '1fd56819563296a43ea14dd9d521ae4a3c08bfd02cf3094fe26cfa6115642c8a',
+    },
+}
+
+_MARCHER_DYNAMIC_LOOP_PROFILES = {
+    'render/render3d:render3d': {
+        'raw': '88708d8a300ebdf74c4fa2470ecba4e214efba5c2bc476f59ccb0019c7c9b226',
+        'source': '8b87f60670b80900f2f57bd0dd3402dde0dd93375599d4a99293aa0363956909',
+        'globals': (
+            ('TAU', 17, 'float', '6.283185307179586'),
+            ('PI', 18, 'float', '3.141592653589793'),
+            ('MAX_STEPS', 19, 'int', '256'),
+            ('MAX_DIST', 20, 'float', '10.0'),
+            ('MARCHER_LIGHT_X', 21, 'float', None),
+        ),
+        'reads': (('isosurfaceTrace', 51, 285, 25, 285, 34), ('voxelTrace', 58, 165, 25, 165, 34)),
+        'pre_functions': 'a788e224c62e897a59d78840d02f61e7d4f2ef42eaec3ab61509ccc7dafd072d',
+        'post_functions': '01e01a38af941eb0fb9ddf022569516e34de2bf949f111abf55cc563f4a0273d',
+        'pre_whole': '400cd98683051f2435672627002a993e39ca99fde4070dabd65fc87af2a4bc5e',
+        'post_whole': 'df7e47e09c4601ca20278ad78eb8f0086c34c74ff0a539eba95b27e4ce736963',
+        'interface': '9d83dde4b0940cd7e2bb851fdeb4dc4739c5d1702e2226d30d4c4e6f0631ce68',
+    },
+    'render/renderCubemap3d:renderCubemap3d': {
+        'raw': '46046c3360de7b70ae0e48a54bc6a4b643ce1bc158625bf3239c60b6e3123f31',
+        'source': 'bcefbcbd673f3177241f0fe92851c2516f7461bc6b783d2e7fa87626f1c0d750',
+        'globals': (
+            ('TAU', 16, 'float', '6.283185307179586'),
+            ('PI', 17, 'float', '3.141592653589793'),
+            ('MAX_STEPS', 18, 'int', '256'),
+            ('MAX_DIST', 19, 'float', '10.0'),
+            ('MARCHER_LIGHT_X', 20, 'float', '1.0'),
+        ),
+        'reads': (('isosurfaceTrace', 50, 284, 25, 284, 34), ('voxelTrace', 57, 164, 25, 164, 34)),
+        'pre_functions': 'a6427412bcf6edfaf4e98e5236972a4720c455e319387bcc5dc8ec3d3f695ae1',
+        'post_functions': '8d54d78cfbeceb03818841a446905417ff13a030f0f2aa991ac870ad775aa52e',
+        'pre_whole': '9ab73fd395fa0b3e166ce9bfbc25f3809fb57b149e80f5e8b253ef070f3b25fd',
+        'post_whole': 'c99b9427a1128019bf1b755966f94bfa0fcf57c9a056635ed956f5da3d1fe945',
+        'interface': '98491a48c58c13cae355ff037b294e9eb432470fc27dd08c69c2638924046f04',
+    },
+}
+
+
+def _source_global_profile(key: str, defines: tuple[object, ...], raw_source: str) -> dict | None:
     if not isinstance(defines, tuple) or any(
             not isinstance(item, PreprocessorDefine) for item in defines):
         raise ValueError(f"{key}: malformed source-global define profile")
     shape = tuple((item.name, item.kind, item.canonical_value) for item in defines)
     if key == "filter/strokes:stkSmear" and shape == _STROKES_RUNTIME_DEFINES:
         return _STROKES_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILE
-    if key in _RENDER_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILES and shape == _RENDER_RUNTIME_DEFINES:
-        return _RENDER_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
+    if key in _MARCHER_LOOP_PROFILES:
+        dynamic = shape == _RENDER_RUNTIME_DEFINES and key in _MARCHER_DYNAMIC_LOOP_PROFILES
+        updates = (_MARCHER_DYNAMIC_LOOP_PROFILES if dynamic else _MARCHER_LOOP_PROFILES)[key]
+        historical = (_RENDER_DYNAMIC_SOURCE_GLOBAL_LITERAL_INT_PROFILES if dynamic
+                      else _SOURCE_GLOBAL_LITERAL_INT_PROFILES)[key]
+        return {**historical, **updates} if _text_sha(raw_source) == updates["raw"] else historical
     if key == "classicNoisedeck/shapes3d:shapes3d":
         from .shapes3d_runtime_profile import DEFINES, SOURCE_GLOBAL
         if shape == DEFINES:
@@ -548,7 +640,7 @@ def authenticate_source_global_literal_int(
         functions: tuple[TypedFunction, ...], profile: str | None,
 ) -> tuple[tuple[int, int, str, object], ...]:
     """Authenticate the closed Task 23 pre-proof profile and return one bound seed."""
-    expected = _source_global_profile(key, preprocessor_defines)
+    expected = _source_global_profile(key, preprocessor_defines, raw_source)
     if expected is None:
         if profile is not None:
             raise ValueError(f"{key}: source-global literal-int profile is not admitted")
@@ -1417,7 +1509,7 @@ def rebuild_authenticated_counted_loop_proofs(
         program, _text_sha(program.raw_source), runtime_loop_bound_profile)
     if runtime_contract is not None:
         validate_runtime_loop_contract(runtime_contract)
-    expected = _source_global_profile(program.key, program.preprocessor_defines)
+    expected = _source_global_profile(program.key, program.preprocessor_defines, program.raw_source)
     pre_summary = summarize_counted_loop_proofs(pre_functions)
     if expected is not None:
         if _sha(_whole_program_identity(program, pre_functions, pre_summary)) != expected["pre_whole"]:
@@ -1442,7 +1534,7 @@ def validate_source_global_literal_int_program(
     if program.key not in _SOURCE_GLOBAL_LITERAL_INT_PROFILES and profile is None:
         return
     attached, summary = rebuild_authenticated_counted_loop_proofs(program, profile)
-    expected = _source_global_profile(program.key, program.preprocessor_defines)
+    expected = _source_global_profile(program.key, program.preprocessor_defines, program.raw_source)
     assert expected is not None
     if program.functions != attached or program.counted_loop_proof != summary:
         raise ValueError(f"{program.key}: source-global literal-int post-proof mismatch")

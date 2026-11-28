@@ -74,7 +74,62 @@ namespace {
   return computed;
 }
 
+enum class Factor { one, zero, src, inverse_src, src_alpha, inverse_src_alpha,
+                    dst_alpha, inverse_dst_alpha, dst, inverse_dst };
+
+Factor blend_factor(std::string name) {
+  for (char& c : name) {
+    if (c == '_') c = '-';
+    else if (c >= 'A' && c <= 'Z') c = static_cast<char>(c - 'A' + 'a');
+  }
+  if (name == "zero") return Factor::zero;
+  if (name == "src" || name == "src-color") return Factor::src;
+  if (name == "one-minus-src" || name == "one-minus-src-color") return Factor::inverse_src;
+  if (name == "src-alpha") return Factor::src_alpha;
+  if (name == "one-minus-src-alpha") return Factor::inverse_src_alpha;
+  if (name == "dst-alpha") return Factor::dst_alpha;
+  if (name == "one-minus-dst-alpha") return Factor::inverse_dst_alpha;
+  if (name == "dst" || name == "dst-color") return Factor::dst;
+  if (name == "one-minus-dst" || name == "one-minus-dst-color") return Factor::inverse_dst;
+  return Factor::one;
+}
+
+double weight(Factor factor, double src, double dst, double src_alpha, double dst_alpha) {
+  switch (factor) {
+    case Factor::zero: return 0;
+    case Factor::src: return src;
+    case Factor::inverse_src: return 1 - src;
+    case Factor::src_alpha: return src_alpha;
+    case Factor::inverse_src_alpha: return 1 - src_alpha;
+    case Factor::dst_alpha: return dst_alpha;
+    case Factor::inverse_dst_alpha: return 1 - dst_alpha;
+    case Factor::dst: return dst;
+    case Factor::inverse_dst: return 1 - dst;
+    default: return 1;
+  }
+}
 }  // namespace
+
+void blend_pass_output(const effects::BlendDefinition& blend, Surface& source,
+                       const Surface* previous) {
+  if (blend.kind == effects::BlendKind::boolean && !blend.enabled) return;
+  const auto source_factor = blend.kind == effects::BlendKind::boolean ? Factor::one : blend_factor(blend.factors[0]);
+  const auto destination_factor = blend.kind == effects::BlendKind::boolean ? Factor::one : blend_factor(blend.factors[1]);
+  const auto output = source.data();
+  const auto backdrop = previous && previous->width() == source.width() && previous->height() == source.height()
+      ? previous->data() : std::span<const float>{};
+  for (std::size_t p = 0; p < output.size(); p += 4) {
+    const double source_alpha = output[p + 3];
+    const double destination_alpha = backdrop.empty() ? 0 : backdrop[p + 3];
+    for (std::size_t c = 0; c < 4; ++c) {
+      const double src = output[p + c];
+      const double dst = backdrop.empty() ? 0 : backdrop[p + c];
+      output[p + c] = static_cast<float>(
+          src * weight(source_factor, src, dst, source_alpha, destination_alpha) +
+          dst * weight(destination_factor, src, dst, source_alpha, destination_alpha));
+    }
+  }
+}
 
 Surface run_pass(const BoundKernel& kernel, std::size_t width, std::size_t height,
                  float time, float seed, std::uint32_t frame, float delta_time) {
@@ -188,15 +243,23 @@ Surface run_pass(const BoundKernel& kernel, std::size_t width, std::size_t heigh
 std::vector<Surface> run_mrt_pass(const BoundKernelMrt& kernel, std::size_t width,
                                   std::size_t height, float time, float seed,
                                   std::uint32_t frame, float delta_time) {
+  return detail::run_fragment_attachments(kernel, width, height, time, seed, frame, delta_time, kernel.output_count());
+}
+
+std::vector<Surface> detail::run_fragment_attachments(
+    const BoundKernelMrt& kernel, std::size_t width, std::size_t height, float time, float seed,
+    std::uint32_t frame, float delta_time, std::size_t attachment_count) {
+  if (attachment_count == 0 || attachment_count > kernel.output_count())
+    throw std::invalid_argument("fragment attachment count exceeds the compiled outputs");
   kernel.validate_pass(width, height);
   const std::size_t output_count = kernel.output_count();
   std::vector<Surface> results;
-  results.reserve(output_count);
-  for (std::size_t index = 0; index < output_count; ++index) {
+  results.reserve(attachment_count);
+  for (std::size_t index = 0; index < attachment_count; ++index) {
     results.emplace_back(width, height);
   }
   std::vector<std::span<float>> pixels;
-  pixels.reserve(output_count);
+  pixels.reserve(attachment_count);
   for (auto& surface : results) pixels.push_back(surface.data());
   const glsl::Vec2 resolution(static_cast<float>(width), static_cast<float>(height));
 
@@ -216,7 +279,7 @@ std::vector<Surface> run_mrt_pass(const BoundKernelMrt& kernel, std::size_t widt
                        static_cast<float>(height - y) - 0.5f, time, seed, frame, delta_time);
       kernel.run_pixel(context, outputs.data());
       const std::size_t offset = (y * width + x) * 4U;
-      for (std::size_t slot = 0; slot < output_count; ++slot) {
+      for (std::size_t slot = 0; slot < attachment_count; ++slot) {
         for (std::size_t lane = 0; lane < 4U; ++lane) {
           pixels[slot][offset + lane] = outputs[slot][lane];
         }

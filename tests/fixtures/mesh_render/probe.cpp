@@ -1,6 +1,7 @@
 #include <bit>
 #include <cstdint>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 #include "noisemaker/effects/mesh_render.hpp"
@@ -39,8 +40,22 @@ int main() {
     double x, y; std::cin >> x >> y;
     bindings.set_uniform("fullResolution", glsl::DVec2(x, y));
   }
+  effects::PassDefinition pass;
+  std::string kind, count_value, uniform;
+  std::cin >> kind >> std::quoted(count_value) >> uniform;
+  if (kind == "number") pass.count = effects::Value::number_value(std::stod(count_value));
+  if (kind == "string") pass.count = effects::Value::string_value(count_value);
+  if (uniform != "-") pass.raw.emplace_back("countUniform", effects::Value::string_value(uniform));
+  bool has_extent;
+  std::cin >> has_extent;
+  std::optional<std::array<std::size_t, 2>> extent;
+  if (has_extent) {
+    std::size_t w, h;
+    std::cin >> w >> h;
+    extent = std::array{w, h};
+  }
   if (!std::cin) return 2;
-  std::cout << effects::render_triangles(mesh, bindings, destination) << '\n';
+  std::cout << effects::render_triangles(mesh, bindings, destination, pass, extent) << '\n';
   for (float value : destination.data()) std::cout << std::bit_cast<std::uint32_t>(value) << ' ';
   std::cout << '\n';
   for (auto value : destination.to_rgba8()) std::cout << static_cast<unsigned>(value) << ' ';

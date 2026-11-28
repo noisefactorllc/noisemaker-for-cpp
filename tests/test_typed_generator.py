@@ -22896,14 +22896,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39634,
-                "7b2151470ffa89d6e309e5833546c74be9203bad7b3d6af64f33433ba7350926"),
+                39634, "ad896ffde868a68aa869675180086b33ad5f67b5239dcc03fe395e82d259b56f"),
             "src/typed_generated/typed_slice.cpp": (
-                3924191,
-                "45790e771f226a19a1a7a281c6be3652f8b8234908297f9691ed2e018d02d1b0"),
+                3924391, "fc8419ed430dd003c74c2415e79e6e48ce01f55eb8399bc3dfef3ec1d6140fcc"),
             "src/typed_generated/typed_manifest.json": (
-                931890,
-                "5f773699a8f8a45eb961af1fe517e2bd9c7e274c32340960d7b72e08079d375d"),
+                931890, "1b38bf961903d41a06bfc22f64bad209b7c1360f7308e2bd2a78419c7c70666d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -23685,14 +23682,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39634,
-                "7b2151470ffa89d6e309e5833546c74be9203bad7b3d6af64f33433ba7350926"),
+                39634, "ad896ffde868a68aa869675180086b33ad5f67b5239dcc03fe395e82d259b56f"),
             "src/typed_generated/typed_slice.cpp": (
-                3924191,
-                "45790e771f226a19a1a7a281c6be3652f8b8234908297f9691ed2e018d02d1b0"),
+                3924391, "fc8419ed430dd003c74c2415e79e6e48ce01f55eb8399bc3dfef3ec1d6140fcc"),
             "src/typed_generated/typed_manifest.json": (
-                931890,
-                "5f773699a8f8a45eb961af1fe517e2bd9c7e274c32340960d7b72e08079d375d"),
+                931890, "1b38bf961903d41a06bfc22f64bad209b7c1360f7308e2bd2a78419c7c70666d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24459,14 +24453,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39634,
-                "7b2151470ffa89d6e309e5833546c74be9203bad7b3d6af64f33433ba7350926"),
+                39634, "ad896ffde868a68aa869675180086b33ad5f67b5239dcc03fe395e82d259b56f"),
             "src/typed_generated/typed_slice.cpp": (
-                3924191,
-                "45790e771f226a19a1a7a281c6be3652f8b8234908297f9691ed2e018d02d1b0"),
+                3924391, "fc8419ed430dd003c74c2415e79e6e48ce01f55eb8399bc3dfef3ec1d6140fcc"),
             "src/typed_generated/typed_manifest.json": (
-                931890,
-                "5f773699a8f8a45eb961af1fe517e2bd9c7e274c32340960d7b72e08079d375d"),
+                931890, "1b38bf961903d41a06bfc22f64bad209b7c1360f7308e2bd2a78419c7c70666d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -24999,14 +24990,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39634,
-                "7b2151470ffa89d6e309e5833546c74be9203bad7b3d6af64f33433ba7350926"),
+                39634, "ad896ffde868a68aa869675180086b33ad5f67b5239dcc03fe395e82d259b56f"),
             "src/typed_generated/typed_slice.cpp": (
-                3924191,
-                "45790e771f226a19a1a7a281c6be3652f8b8234908297f9691ed2e018d02d1b0"),
+                3924391, "fc8419ed430dd003c74c2415e79e6e48ce01f55eb8399bc3dfef3ec1d6140fcc"),
             "src/typed_generated/typed_manifest.json": (
-                931890,
-                "5f773699a8f8a45eb961af1fe517e2bd9c7e274c32340960d7b72e08079d375d"),
+                931890, "1b38bf961903d41a06bfc22f64bad209b7c1360f7308e2bd2a78419c7c70666d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -25603,14 +25591,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                39634,
-                "7b2151470ffa89d6e309e5833546c74be9203bad7b3d6af64f33433ba7350926"),
+                39634, "ad896ffde868a68aa869675180086b33ad5f67b5239dcc03fe395e82d259b56f"),
             "src/typed_generated/typed_slice.cpp": (
-                3924191,
-                "45790e771f226a19a1a7a281c6be3652f8b8234908297f9691ed2e018d02d1b0"),
+                3924391, "fc8419ed430dd003c74c2415e79e6e48ce01f55eb8399bc3dfef3ec1d6140fcc"),
             "src/typed_generated/typed_manifest.json": (
-                931890,
-                "5f773699a8f8a45eb961af1fe517e2bd9c7e274c32340960d7b72e08079d375d"),
+                931890, "1b38bf961903d41a06bfc22f64bad209b7c1360f7308e2bd2a78419c7c70666d"),
             "include/noisemaker/generated/catalog.hpp": (
                 29472,
                 "448dd7d1e52e1b7d9417bc2bdf5386748d79dd1d45ea2302b9726dc1e4c8c925"),
@@ -26032,11 +26017,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
             self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
             self.assertIn(key, generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
-            landed = loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
-            self.assertEqual(("MAX_STEPS", landed["integer"][1], "256", 256),
-                             landed["integer"])
             source_path = corpus / f"sources/{effect_id}/{program_name}.glsl"
             raw = source_path.read_text(encoding="utf-8")
+            metadata_doc = _json.loads(
+                (corpus / "metadata.json").read_text(encoding="utf-8"))
+            defaults = check_semantics._metadata_defaults(metadata_doc, key)
+            typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
+            landed = loop_proof._source_global_profile(
+                key, typed_no_profile.preprocessor_defines, raw)
+            self.assertIsNotNone(landed)
+            self.assertEqual(("MAX_STEPS", landed["integer"][1], "256", 256),
+                             landed["integer"])
             self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(),
                              landed["raw"])
             vendored = _json.loads((corpus / "manifest.json").read_text(
@@ -26045,13 +26036,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                           if item["program_key"] == key)
             self.assertEqual(record["raw_sha256"], landed["raw"])
 
-            metadata_doc = _json.loads(
-                (corpus / "metadata.json").read_text(encoding="utf-8"))
-            defaults = check_semantics._metadata_defaults(
-                metadata_doc, key)
-
             # Without the profile the carrier requirement fails closed.
-            typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
             with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
                 generate_typed_slice.validate_capabilities(
                     typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,

@@ -102,7 +102,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
         self.assertEqual(
             0,
             sum("outputTex" in effect for effect in records),
-            "outputTex is a pass route only, never an invented effect field",
+            "the pinned snapshot does not publish an explicit image route",
         )
 
         source = GENERATOR.read_text(encoding="utf-8")
@@ -112,11 +112,31 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
         self.assertNotIn("str(texture.get('format', ''))", source)
         self.assertNotIn("p.blend = {'true' if current_pass['blend'] else 'false'}", source)
 
+    def test_stable_outputs_and_blend_factors_preserve_authored_metadata(self) -> None:
+        storage = {"second": "velocity", "first": "positions"}
+        raw_pass = {"program": "raster", "storageTextures": storage, "outputs": {},
+                    "blend": [770, "770"]}
+        effect = {"id": "test/storage", "passes": [raw_pass], "outputTex": "image"}
+        normalized = generator.backend.normalize_pass(raw_pass)
+        self.assertEqual(list(normalized["outputs"].items()), list(storage.items()))
+        self.assertEqual(normalized["blend"], ["src-alpha", "770"])
+        self.assertEqual(raw_pass["outputs"], {})
+        self.assertEqual(raw_pass["blend"], [770, "770"])
+        self.assertEqual(generator.backend.normalize_pass({**raw_pass, "outputs": {"x": "y"}})["outputs"],
+                         {"x": "y"})
+        emitted = "\n".join(generator._emit_effect(0, effect))
+        self.assertIn('e.output_tex = std::string("image")', emitted)
+        self.assertIn('p.storage_textures = {{"second", "velocity"}, {"first", "positions"}}', emitted)
+        self.assertIn('p.outputs = {{"second", "velocity"}, {"first", "positions"}}', emitted)
+        for invalid in (None, 0, "  "):
+            with self.assertRaises(CatalogError):
+                generator._emit_effect(0, {**effect, "outputTex": invalid})
+
     def test_generator_rejects_malformed_polymorphic_metadata(self) -> None:
         with self.assertRaises(CatalogError):
             generator._blend(["one"])
         with self.assertRaises(CatalogError):
-            generator._blend(["one", 1])
+            generator._blend(["one", {}])
         with self.assertRaises(CatalogError):
             generator._blend({"enabled": True})
         with self.assertRaises(CatalogError):
@@ -146,7 +166,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(16, provenance["counts"]["scatter_passes"])
             self.assertEqual(210, provenance["counts"]["executable_definitions"])
             self.assertEqual(0, provenance["counts"]["incomplete_definitions"])
-            self.assertEqual("fb72ad197ea19e667c5697fd234d983e5b70f299bad1d79bde69661969342215", provenance["normalized_record_stream_sha256"])
+            self.assertEqual("9ab6409e26011b2d68e6b336392592c6ed5311fb9bd77933eb1156a99097dad1", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)
             payload_hash = provenance["generated_payload_sha256"]
             marker = f'c.provenance.generated_payload_sha256 = "{payload_hash}";'.encode()

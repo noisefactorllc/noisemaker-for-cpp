@@ -1,9 +1,7 @@
 name: Authority drift
 
-# CI proves parity against one pinned noisemaker-for-cpu commit. This workflow
-# fails whenever noisemaker-for-cpu's default branch behaves differently from
-# that pin, or when this port's export kit does not claim exactly the effects
-# the authority renders, so a stale or partial port cannot stay green.
+# Check the live CPU authority on main and verify the reviewed parity
+# authority on 2.x. Both checks require exact export kit effect coverage.
 
 on:
   push:
@@ -39,26 +37,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
-        with:
-          repository: noisefactorllc/noisemaker-for-cpu
-          ref: 2.x
-          path: cpu-authority-live
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+
+      - name: Read the pinned authority identities
+        if: github.ref == 'refs/heads/2.x'
+        id: pins
+        run: python -B scripts/authority-pins github >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: noisefactorllc/noisemaker-for-cpu
+          ref: ${{ steps.pins.outputs.cpu }}
+          path: cpu-authority
 
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Stage the live authority outside the repository tree
-        run: mv "$GITHUB_WORKSPACE/cpu-authority-live" "$RUNNER_TEMP/cpu-authority-live"
+      - name: Stage the CPU authority outside the repository tree
+        run: mv "$GITHUB_WORKSPACE/cpu-authority" "$RUNNER_TEMP/cpu-authority"
 
-      - name: Compare the pinned authority with the live authority
-        run: python -B tools/dsl/check_authority_drift.py --cpu-root "$RUNNER_TEMP/cpu-authority-live"
+      - name: Compare the lock with the live authority
+        if: github.ref != 'refs/heads/2.x'
+        run: python -B tools/dsl/check_authority_drift.py --cpu-root "$RUNNER_TEMP/cpu-authority"
+
+      - name: Verify the pinned CPU checkout and behavioral lock
+        if: github.ref == 'refs/heads/2.x'
+        env:
+          CPU_SHA: ${{ steps.pins.outputs.cpu }}
+          CORPUS_SHA: ${{ steps.pins.outputs.shader }}
+        run: python -B tools/dsl/check_authority_drift.py --cpu-root "$RUNNER_TEMP/cpu-authority" --pinned "$CPU_SHA" "$CORPUS_SHA"
 
       - name: Export kit claims exactly the effects the authority renders
         if: always()
-        run: node export-kit/check-authority-coverage.mjs --cpu-root "$RUNNER_TEMP/cpu-authority-live"
+        run: node export-kit/check-authority-coverage.mjs --cpu-root "$RUNNER_TEMP/cpu-authority"

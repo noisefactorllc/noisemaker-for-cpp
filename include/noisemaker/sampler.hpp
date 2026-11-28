@@ -20,6 +20,7 @@ using Rgba = std::array<float, 4>;
 // value rounds up onto a texel boundary selects the texel above it. A NaN
 // coordinate selects the last texel.
 [[nodiscard]] Rgba sample_nearest_texel_bottom_left(const Surface& surface, float u, float v) noexcept;
+[[nodiscard]] Rgba sample_nearest_texel_bottom_left(const Surface& surface, double u, double v) noexcept;
 // The texture() seam of the transpiled GLSL kernels (the authority's
 // GlslCpuRuntime #texture): bilinear for a linear surface, otherwise the GPU
 // nearest texel above.

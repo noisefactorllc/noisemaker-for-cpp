@@ -215,10 +215,10 @@ class Scanner {
       tokens_.back().lexeme = value;
       return;
     }
-    if (first == '"') {
+    if (first == '"' || first == '\'') {
       advance();
       std::string value;
-      while (!at_end() && peek().codepoint != '"') {
+      while (!at_end() && peek().codepoint != first) {
         if (peek().codepoint == '\n') throw DslError("Unterminated string", start);
         if (peek().codepoint == '\\') {
           advance();
@@ -307,6 +307,15 @@ const char* token_type_name(TokenType type) noexcept {
     case TokenType::eof: return "eof";
   }
   return "unknown";
+}
+
+bool is_blank(std::string_view text) noexcept {
+  for (std::size_t offset = 0; offset < text.size();) {
+    const auto character = decode(text, offset);
+    if (!character.valid || !js_whitespace(character.codepoint)) return false;
+    offset += character.width;
+  }
+  return true;
 }
 
 std::vector<Token> tokenize(std::string_view source, std::string_view source_name) {

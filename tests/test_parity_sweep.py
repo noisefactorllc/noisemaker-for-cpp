@@ -148,6 +148,22 @@ class SweepEvidenceTest(unittest.TestCase):
             return sweep.run_job(vars(self.job))
 
 
+class VolumeSweepSourceTest(unittest.TestCase):
+    def test_input_volume_uses_the_sampled_consumer_size(self) -> None:
+        for domain, func, prefix in (("volume-filter", "flow3d", "x"),
+                                     ("volume-renderer", "render3d", "v")):
+            size = {"type": "int", "default": 32,
+                    "choices": {f"{prefix}{n}": n for n in (16, 32, 64, 128)}}
+            effect = {"func": func, "domain": domain, "params": {"volumeSize": size}}
+            for supplied, expected in ((None, 32), (64, 64), (f"{prefix}128", 128),
+                                       (f"volumeSize.{prefix}128", 128)):
+                with self.subTest(domain=domain, supplied=supplied):
+                    overrides = {} if supplied is None else {"volumeSize": supplied}
+                    source = sweep.source_for_single(effect, overrides, sweep.rng_for("volume"))
+                    self.assertIn(f"noise3d(volumeSize: {expected}).{func}(volumeSize: "
+                                  f"{32 if supplied is None else supplied})", source)
+
+
 class SweepResumeTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="parity-resume-test-")

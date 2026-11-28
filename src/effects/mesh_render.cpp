@@ -2,14 +2,17 @@
 
 #include <algorithm>
 #include <array>
+#include <charconv>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <vector>
 
 #include "noisemaker/fdlibm.hpp"
+#include "noisemaker/effects/catalog_types.hpp"
 #include "noisemaker/glsl_runtime.hpp"
 #include "noisemaker/graph/executor.hpp"
+#include "noisemaker/js_number.hpp"
 #include "noisemaker/numeric.hpp"
 #include "noisemaker/surface.hpp"
 
@@ -109,9 +112,86 @@ struct Vertex { double px, py, z; V3 normal; };
 [[nodiscard]] double lane(const std::vector<float>& data, std::size_t index) noexcept {
   return index < data.size() ? static_cast<double>(data[index]) : std::numeric_limits<double>::quiet_NaN();
 }
+
+// Math.min coerces a string count through ECMAScript Number. Negative,
+// invalid and whitespace-only counts all draw zero vertices.
+[[nodiscard]] double string_vertex_count(std::string_view text) {
+  static constexpr std::string_view whitespace[] = {
+      " ", "\t", "\n", "\r", "\v", "\f", "\u00a0", "\u1680", "\u2000", "\u2001",
+      "\u2002", "\u2003", "\u2004", "\u2005", "\u2006", "\u2007", "\u2008",
+      "\u2009", "\u200a", "\u2028", "\u2029", "\u202f", "\u205f", "\u3000", "\ufeff"};
+  std::size_t previous_size;
+  do {
+    previous_size = text.size();
+    for (auto space : whitespace) {
+      if (text.starts_with(space)) text.remove_prefix(space.size());
+      if (text.ends_with(space)) text.remove_suffix(space.size());
+    }
+  } while (text.size() != previous_size);
+
+  if (text.size() >= 2 && text.front() == '0') {
+    int radix = 0;
+    switch (text[1]) {
+      case 'x': case 'X': radix = 16; break;
+      case 'o': case 'O': radix = 8; break;
+      case 'b': case 'B': radix = 2; break;
+    }
+    if (radix != 0) {
+      std::uint64_t integer = 0;
+      const char* end = text.data() + text.size();
+      const auto parsed = std::from_chars(text.data() + 2, end, integer, radix);
+      if (parsed.ptr != end || parsed.ec == std::errc::invalid_argument) return 0;
+      // Beyond uint64_t the draw always clips to the available position data.
+      if (parsed.ec == std::errc::result_out_of_range) return std::numeric_limits<double>::infinity();
+      return static_cast<double>(integer);
+    }
+  }
+  if (text.starts_with('+')) text.remove_prefix(1);
+  if (text == "Infinity") return std::numeric_limits<double>::infinity();
+  if (text.empty() || (text.front() != '.' && (text.front() < '0' || text.front() > '9'))) return 0;
+  const char* end = text.data() + text.size();
+  double number = 0;
+  const auto parsed = std::from_chars(text.data(), end, number);
+  if (parsed.ptr != end || parsed.ec == std::errc::invalid_argument) return 0;
+  if (parsed.ec == std::errc::result_out_of_range) return js_number_parse_exact(std::string(text));
+  return number;
+}
+
+[[nodiscard]] double vertex_count(const PassDefinition& pass, const glsl::Bindings& bindings,
+                                  std::optional<std::array<std::size_t, 2>> input_extent) {
+  for (const auto& [key, value] : pass.raw) {
+    if (key == "countUniform" && value.kind == ValueKind::string) {
+      const auto count = bindings.find_number(value.string);
+      if (count && *count > 0) return *count;
+      break;
+    }
+  }
+  if (!pass.count) return 3;
+  const auto& count = *pass.count;
+  if (count.kind == ValueKind::number) return count.number == 0 || std::isnan(count.number) ? 3 : count.number;
+  if (count.kind == ValueKind::string) {
+    if (count.string.empty()) return 3;
+    if (count.string == "auto" || count.string == "input" || count.string == "screen") {
+      return input_extent ? static_cast<double>((*input_extent)[0]) * static_cast<double>((*input_extent)[1]) : 3;
+    }
+    return string_vertex_count(count.string);
+  }
+  return count.kind == ValueKind::null_value || (count.kind == ValueKind::boolean && !count.boolean) ? 3 : 0;
+}
 }  // namespace
 
 std::size_t render_triangles(const graph::MeshData& mesh, const glsl::Bindings& bindings, Surface& destination) {
+  if (mesh.tex_width != 0 && mesh.tex_height > std::numeric_limits<std::size_t>::max() / mesh.tex_width / 4) {
+    throw std::invalid_argument("mesh texture dimensions overflow");
+  }
+  PassDefinition pass;
+  pass.count = Value::string_value("input");
+  return render_triangles(mesh, bindings, destination, pass, std::array{mesh.tex_width, mesh.tex_height});
+}
+
+std::size_t render_triangles(const graph::MeshData& mesh, const glsl::Bindings& bindings,
+                             Surface& destination, const PassDefinition& pass,
+                             std::optional<std::array<std::size_t, 2>> input_extent) {
   const double width = static_cast<double>(destination.width()), height = static_cast<double>(destination.height());
   const auto full_resolution = bindings.get_or<glsl::DVec2>("fullResolution", glsl::DVec2(width, height));
   const Uniforms u{
@@ -119,12 +199,13 @@ std::size_t render_triangles(const graph::MeshData& mesh, const glsl::Bindings& 
       bindings.get_number("rotateX"), bindings.get_number("rotateY"), bindings.get_number("rotateZ"), bindings.get_number("posX"), bindings.get_number("posY"), bindings.get_number("viewScale"), r(full_resolution[0] / full_resolution[1]),
       bindings.get_number("diffuseIntensity"), bindings.get_number("specularIntensity"), bindings.get_number("shininess"), bindings.get_number("rimPower"), bindings.get_number("rimIntensity"), bindings.get_or<double>("wireframe", 0),
       vector_binding(bindings, "lightDirection"), vector_binding(bindings, "meshColor"), vector_binding(bindings, "ambientColor"), vector_binding(bindings, "diffuseColor"), vector_binding(bindings, "specularColor")};
-  if (mesh.tex_width != 0 && mesh.tex_height > std::numeric_limits<std::size_t>::max() / mesh.tex_width / 4) {
-    throw std::invalid_argument("mesh texture dimensions overflow");
-  }
   std::vector<float> depth(destination.width() * destination.height(), 1.0F);
   std::size_t covered = 0;
-  const std::size_t triangle_count = mesh.tex_width * mesh.tex_height / 3;
+  const double requested = vertex_count(pass, bindings, input_extent);
+  const std::size_t available = mesh.position_data.size() / 4;
+  const std::size_t vertices = requested > 0
+      ? static_cast<std::size_t>(std::min(requested, static_cast<double>(available))) : 0U;
+  const std::size_t triangle_count = vertices / 3U;
   for (std::size_t tri = 0; tri < triangle_count; ++tri) {
     std::array<Vertex, 3> verts{};
     bool all_invalid = true;

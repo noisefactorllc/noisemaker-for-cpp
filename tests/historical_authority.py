@@ -364,7 +364,7 @@ def historical_authority(spec: dict):
         # The frozen Surface milestone used its recorded Mat3 ABI. Its GLSL
         # source is unchanged, but the current port fixes matrix ingress.
         stack.enter_context(mock.patch.object(
-            emit_typed_cpp, "_DOUBLE_CUBEMAP_BASIS_SOURCES", {}))
+            emit_typed_cpp, "DOUBLE_CUBEMAP_BASIS_SOURCES", {}))
         stack.enter_context(mock.patch.object(emit_typed_cpp, "OSD_GLYPH_INDEX_TRUNCATES", False))
         stack.enter_context(mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VALUE_COPIES", False))
         # The frozen milestones predate every authority 7f47340 lowering.

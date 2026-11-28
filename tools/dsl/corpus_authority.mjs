@@ -12,14 +12,14 @@ import { pathToFileURL } from 'node:url'
 export const AUTHORITY_LEDGER_ENV = 'NOISEMAKER_CPU_AUTHORITY_LEDGER'
 
 export const EXPECTED = Object.freeze({
-  ledgerEntries: 906,
+  ledgerEntries: 911,
   packageSha256: 'f00f155ac9c09fcda470f99210a7dae9e79985ca4d29a48f2bec26d63641d807',
   packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
-  sourceLockSha256: '337d4274fa55501b5cd97671c452efba9c67105c45feb50caf82d83162295e29',
-  behavioralLockSha256: 'ea6364296a188f47cfd66702d32d931602c6b297b0929a812fef96d7c42760ae',
+  sourceLockSha256: '3d82d5ced511b797fe77702bad93621db16a883550e284d99d2e8c8b7a3837f9',
+  behavioralLockSha256: 'a1c1eeed5cd7369259117b17ae44e5b073567eb665d1b83116348faeb08a8f2f',
   behavioralFileCount: 98,
-  upstreamRevision: '478f94eae7ebe34116dfc661ac52b373b884008b',
-  upstreamSourceDigest: 'e5e271a0716b6b6bb4b4d021e5c86c5b5878b2d3e84426d33881359c655b5775',
+  upstreamRevision: 'f4a1382a1dc863bebe5a3204acfdec425a19c983',
+  upstreamSourceDigest: '2486bf6dcd6192c4f79d3377a3e928db428516aa026b9568b971ac80619d5e49',
 })
 
 const EXPECTED_9B729482 = Object.freeze({

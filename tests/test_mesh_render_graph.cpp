@@ -97,6 +97,7 @@ TEST(mesh_whole_pass_controls_fail_closed_and_missing_mesh_data_draws_the_empty_
   preflight_pass_abi(step, admission, definition.passes[1], context);
   const std::function<void(effects::PassDefinition&)> mutations[] = {
       [](auto& value) { value.count = effects::Value::string_value("resolution"); },
+      [](auto& value) { value.raw.emplace_back("countUniform", effects::Value::string_value("meshScale")); },
       [](auto& value) { value.draw_mode = "fragment"; },
       [](auto& value) { value.blend->enabled = true; },
       [](auto& value) { value.viewport = effects::Value::string_value("screen"); },

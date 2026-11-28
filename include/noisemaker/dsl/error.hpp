@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -18,6 +19,7 @@ struct SourceLocation {
 class DslError final : public std::runtime_error {
  public:
   DslError(std::string message, SourceLocation location);
+  DslError(std::string message, SourceLocation location, std::string diagnostic_code);
   DslError(std::string message, std::string_view source_name,
            std::size_t line, std::size_t column, std::size_t index = 0,
            std::size_t byte_index = 0);
@@ -38,6 +40,9 @@ class DslError final : public std::runtime_error {
  private:
   SourceLocation location_;
   std::string detail_;
+
+ public:
+  std::optional<std::string> code{};
 };
 
 }  // namespace noisemaker::dsl

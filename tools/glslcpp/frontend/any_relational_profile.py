@@ -34,7 +34,7 @@ module fails closed if the optional proof fields it pins absent ever appear.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import ast
 import hashlib
 
@@ -218,6 +218,18 @@ _RECORD_SHA256 = {
     RENDERLIT_KEY: "2653509f034c4e3116b885b73764b2d681d4ec6dcdbc17d59198f0e2909cb6f5",
 }
 
+# Only a camera-range comment changed in renderLit3d. All measured
+# relational nodes, call chains, resources and loop charges are identical.
+_PRE_MARCHER_RENDERLIT = _RENDERLIT
+_PRE_MARCHER_RENDERLIT_SHA256 = _RECORD_SHA256[RENDERLIT_KEY]
+_RECORDS[RENDERLIT_KEY] = replace(
+    _RENDERLIT,
+    raw_bytes=12414,
+    raw_sha256='8129bf08ffef71df58ac24dd5838795c173b9744765f807c36c3fd845e2f4f93',
+    whole_sha256='1fd56819563296a43ea14dd9d521ae4a3c08bfd02cf3094fe26cfa6115642c8a',
+)
+_RECORD_SHA256[RENDERLIT_KEY] = '48ccf0ab43f48d8befd78ea5ce4862010ada9ddc8e416d0a446bdcf31f70b789'
+
 _ANY_SIGNATURE_ID = -4
 _ALL_SIGNATURE_ID = -3
 _REDUCTION_CALLEES = frozenset({"any", "all"})
@@ -325,7 +337,11 @@ def authenticate_any_relational_admission(
     record = _RECORDS.get(program.key)
     if record is None:
         raise _fail(f"no frozen record for {program.key}")
-    if _record_sha(record) != _RECORD_SHA256[record.key]:
+    integrity = _RECORD_SHA256[record.key]
+    if program.key == RENDERLIT_KEY and source_hash == _PRE_MARCHER_RENDERLIT.raw_sha256:
+        record = _PRE_MARCHER_RENDERLIT
+        integrity = _PRE_MARCHER_RENDERLIT_SHA256
+    if _record_sha(record) != integrity:
         raise _fail("internal frozen record mismatch")
     if source_hash != record.raw_sha256:
         raise _fail("selected key and exact caller source hash required")

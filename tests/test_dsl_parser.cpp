@@ -85,7 +85,7 @@ TEST(dsl_parser_accepts_named_read_forms_and_rejects_other_names) {
     static_cast<void>(parse("search synth\nsolid(read(foo: o0))", "read.dsl"));
   } catch (const DslError& error) {
     REQUIRE(error.what() == std::string(
-                "read.dsl:2:12: read() surface argument must be named \"surface\" or \"tex\""));
+                "read.dsl:2:17: read() surface argument must be named \"surface\" or \"tex\""));
     return;
   }
   REQUIRE(false);

@@ -179,6 +179,7 @@ struct PassDefinition {
   std::optional<std::string> type;
   std::optional<Value> defines;
   std::vector<std::pair<std::string, Value>> raw;
+  std::vector<std::pair<std::string, std::string>> storage_textures;
 };
 
 struct EffectDefinition {
@@ -204,6 +205,7 @@ struct EffectDefinition {
   bool iterated = false;
   std::optional<std::string> loop_role;
   std::vector<std::pair<std::string, Value>> raw;
+  std::optional<std::string> output_tex;
 };
 
 struct ProgramCompatibility {

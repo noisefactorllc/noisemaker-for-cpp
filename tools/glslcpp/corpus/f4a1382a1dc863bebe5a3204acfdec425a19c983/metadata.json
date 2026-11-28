@@ -15258,13 +15258,11 @@
           "viewport": {
             "height": {
               "default": 1024,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize",
               "power": 2
             },
             "width": {
               "default": 32,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize"
             }
           }
@@ -15282,13 +15280,11 @@
           "viewport": {
             "height": {
               "default": 1024,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize",
               "power": 2
             },
             "width": {
               "default": 32,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize"
             }
           }
@@ -15314,13 +15310,11 @@
           "viewport": {
             "height": {
               "default": 1024,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize",
               "power": 2
             },
             "width": {
               "default": 32,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize"
             }
           }
@@ -15342,13 +15336,11 @@
           "viewport": {
             "height": {
               "default": 1024,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize",
               "power": 2
             },
             "width": {
               "default": 32,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize"
             }
           }
@@ -15546,13 +15538,11 @@
           "viewport": {
             "height": {
               "default": 4096,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize",
               "power": 2
             },
             "width": {
               "default": 64,
-              "inputOverride": "inputTex3d",
               "param": "volumeSize"
             }
           }
@@ -21095,7 +21085,6 @@
         {
           "drawBuffers": 2,
           "inputs": {
-            "analyticalGeo": "inputGeo",
             "volumeCache": "inputTex3d"
           },
           "key": "render/render3d:render3d",
@@ -21188,7 +21177,6 @@
         {
           "drawBuffers": 2,
           "inputs": {
-            "analyticalGeo": "inputGeo",
             "volumeCache": "inputTex3d"
           },
           "key": "render/renderCubemap3d:renderCubemap3d",
@@ -21281,7 +21269,6 @@
         {
           "drawBuffers": 2,
           "inputs": {
-            "analyticalGeo": "inputGeo",
             "volumeCache": "inputTex3d"
           },
           "key": "render/renderCubemapSurface:renderCubemapSurface",
@@ -21650,7 +21637,6 @@
         {
           "drawBuffers": 2,
           "inputs": {
-            "analyticalGeo": "inputGeo",
             "volumeCache": "inputTex3d"
           },
           "key": "render/renderLit3d:renderLit3d",
@@ -27187,6 +27173,6 @@
     ],
     "snapshot": "noisemaker-for-python bundle metadata"
   },
-  "revision": "478f94eae7ebe34116dfc661ac52b373b884008b",
+  "revision": "f4a1382a1dc863bebe5a3204acfdec425a19c983",
   "schema": 1
 }

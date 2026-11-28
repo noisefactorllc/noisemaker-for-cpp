@@ -4,10 +4,15 @@
 #include <cstdint>
 #include <vector>
 
+#include "noisemaker/effects/catalog_types.hpp"
 #include "noisemaker/kernel.hpp"
 #include "noisemaker/surface.hpp"
 
 namespace noisemaker {
+
+// Composite a fullscreen fragment attachment before storage-format conversion.
+void blend_pass_output(const effects::BlendDefinition& blend, Surface& source,
+                       const Surface* previous);
 
 [[nodiscard]] Surface run_pass(const BoundKernel& kernel, std::size_t width,
                                std::size_t height, float time = 0.0f,
@@ -43,5 +48,12 @@ namespace noisemaker {
     const BoundKernelMrt& kernel, std::size_t width, std::size_t height,
     float time = 0.0f, float seed = 1.0f, std::uint32_t frame = 0,
     float delta_time = 0.0f);
+
+namespace detail {
+// Run the multi-output shader with the destinations selected by the graph.
+[[nodiscard]] std::vector<Surface> run_fragment_attachments(
+    const BoundKernelMrt& kernel, std::size_t width, std::size_t height,
+    float time, float seed, std::uint32_t frame, float delta_time, std::size_t attachment_count);
+}  // namespace detail
 
 }  // namespace noisemaker
